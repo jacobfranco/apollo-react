@@ -1,30 +1,29 @@
-# React + TypeScript + Vite
+# Apollo Web Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Apollo Web Frontend is the user interface for the Apollo platform, a combination gaming social media and eSports information and fantasy platform developed by [Jacob Franco](https://github.com/jacobfranco) and maintained by Apollo Fantasy Inc.
 
-Currently, two official plugins are available:
+## Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React**
 
-## Expanding the ESLint configuration
+- **Typescript** 
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Vite**
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+To start the development server, run the following command:
+
+```bash
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+This will start the development server, and you can access your app in your browser at `http://localhost:5173`.
+
+## License
+
+This project is proprietary and maintained by Apollo Fantasy Inc. All rights are reserved. Unauthorized use or distribution of this project is prohibited.
+
+## Contact Information
+
+For any inquiries or support related to this project, please contact Jacob Franco at [jacob@yoapollo.com](mailto:jacob@yoapollo.com).
