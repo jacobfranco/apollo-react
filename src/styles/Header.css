@@ -1,0 +1,35 @@
+.header {
+  background-color: var(--brand-color-10);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  height: 3rem;
+  position: fixed; /* Changed from sticky to fixed */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10; /* Make sure it's above all other content */
+}
+
+/* Light mode background color */
+body.light-mode .header {
+  background-color: var(--brand-color-85);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: inline-block;
+  padding-left: 1rem; /* Add padding to the left side */
+  margin-right: 1rem; /* Space between logo and search bar */
+}
+
+.logo {
+  max-height: 2.5rem; /* Adjust this value to fit your header's height */
+  width: auto; /* Maintain the aspect ratio */
+  max-width: 100%; /* Prevent the logo from exceeding the width of its container */
+}

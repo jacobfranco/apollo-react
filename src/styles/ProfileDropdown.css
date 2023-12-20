@@ -1,0 +1,18 @@
+.profile-dropdown {
+    position: relative; /* Changed from absolute to relative */
+    top: 0; /* Align with the header */
+    right: 0;
+    background-color: var(--brand-color-10); /* Dark mode background */
+    border-radius: 4px;
+    padding: 1em;
+    display: none; /* Hide by default */
+  }
+  
+  .header:hover .profile-dropdown,
+  .header:focus-within .profile-dropdown {
+    display: block;
+  }
+
+  body.light-mode .profile-dropdown {
+    background-color: var(--brand-color-85); /* Light mode background */
+  }

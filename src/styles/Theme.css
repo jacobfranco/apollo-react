@@ -1,0 +1,32 @@
+:root {
+    /* Base color in the middle of the spectrum */
+    --brand-color: hsl(260, 95%, 75%); 
+  
+    /* Lighter shades */
+    --brand-color-85: hsl(260, 95%, 85%);
+    --brand-color-95: hsl(260, 95%, 95%);
+  
+    /* Slightly lighter than the base */
+    --brand-color-80: hsl(260, 95%, 80%);
+    
+    /* Darker shades */
+    --brand-color-70: hsl(260, 95%, 70%);
+    --brand-color-60: hsl(260, 95%, 60%);
+    --brand-color-50: hsl(260, 95%, 50%);
+    --brand-color-40: hsl(260, 95%, 40%);
+    --brand-color-30: hsl(260, 95%, 30%);
+    --brand-color-20: hsl(260, 95%, 20%);
+    --brand-color-10: hsl(260, 95%, 10%);
+    
+    /* Near-black */
+    --brand-color-5: hsl(260, 95%, 5%);
+  
+    /* Near-white (cannot go above 100% lightness, so this is the lightest) */
+    --brand-color-100: hsl(260, 100%, 100%);
+
+        --color-start-dark: var(--brand-color-10); 
+        --color-mid-dark: var(--brand-color-20);   
+        --color-start-light: var(--brand-color-85); 
+        --color-mid-light: var(--brand-color-95);   
+      
+  }
