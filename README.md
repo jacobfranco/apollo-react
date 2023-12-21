@@ -4,7 +4,7 @@ The Apollo Web Frontend is the user interface for the Apollo platform, a combina
 
 ## Technologies Used
 
-- **React**
+- **React/Redux**
 
 - **Typescript** 
 
