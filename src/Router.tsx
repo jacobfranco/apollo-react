@@ -1,19 +1,22 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Search from './pages/Search';
-import Layout from './components/Layout';
+import Home from 'src/pages/Home';
+import Search from 'src/pages/Search';
+import LoginPage from 'src/pages/Login'; 
+import SignupPage from 'src/pages/Signup'; 
+import MainLayout from 'src/containers/MainLayout';
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          {/* Define other routes as needed */}
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* Routes using MainLayout */}
+        <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
+        {/* Routes for authentication */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
     </Router>
   );
 };
