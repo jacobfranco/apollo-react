@@ -1,28 +1,31 @@
 @font-face {
-    font-family: 'URWDIN';
-    src: url('src/assets/fonts/URWDIN-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'URWDIN';
-    src: url('src/assets/fonts/URWDIN-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'URWDIN';
-    src: url('src/assets/fonts/URWDIN-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'URWDIN';
-    src: url('src/assets/fonts/URWDIN-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-  }
-  
+  font-family: 'URWDIN';
+  src: url('src/assets/fonts/URWDIN-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'URWDIN';
+  src: url('src/assets/fonts/URWDIN-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'URWDIN';
+  src: url('src/assets/fonts/URWDIN-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'URWDIN';
+  src: url('src/assets/fonts/URWDIN-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}

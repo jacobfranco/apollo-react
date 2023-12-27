@@ -1,0 +1,20 @@
+/* src/styles/Button.css */
+
+.button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .button.primary {
+    background-color: blue; /* Your primary color */
+    color: white;
+  }
+  
+  .button.secondary {
+    background-color: gray; /* Your secondary color */
+    color: black;
+  }
+  

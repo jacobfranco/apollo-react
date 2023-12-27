@@ -31,5 +31,4 @@ body.light-mode .header {
 .logo {
   max-height: 2.5rem; /* Adjust this value to fit your header's height */
   width: auto; /* Maintain the aspect ratio */
-  max-width: 100%; /* Prevent the logo from exceeding the width of its container */
 }

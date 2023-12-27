@@ -1,11 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import 'src/styles/Theme.css'
-import 'src/styles/Fonts.css'
-import AppRouter from './Router.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux'; 
+import store from './store'; 
+import 'src/styles/Theme.css';
+import 'src/styles/Fonts.css';
+import AppRouter from './Router';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Create a root.
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+root.render(
   <React.StrictMode>
-    <AppRouter />
-  </React.StrictMode>,
-)
+    <Provider store={store}> {/* Wrap your app with Provider */}
+      <AppRouter />
+    </Provider>
+  </React.StrictMode>
+);

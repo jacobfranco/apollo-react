@@ -5,7 +5,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 4rem;
+  padding-top: 4.5rem;
+  padding-left: 0.5rem;
   box-sizing: border-box;
   font-family: 'URWDIN', sans-serif;
 }
@@ -17,15 +18,17 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: 100%;
+  width: calc(100% - 0.5rem);
   box-sizing: border-box;
   text-align: left;
 }
 
 .sidebar a:hover {
   background-color: var(--brand-color-20); /* Dark mode active/hover state */
+  border-radius: 5px;
 }
 
 body.light-mode .sidebar a:hover {
   background-color: var(--brand-color-95); /* Light mode active/hover state */
+  border-radius: 5px;
 }
