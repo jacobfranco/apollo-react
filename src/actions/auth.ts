@@ -31,3 +31,19 @@ export const logout = () => (dispatch: Dispatch) => {
     type: LOGOUT,
   });
 };
+
+// Mock Toggle Authentication Action
+export const toggleAuth = (isAuthenticated: boolean) => (dispatch: Dispatch) => {
+  if (isAuthenticated) {
+    // Mocking a user object for the sake of testing
+    const mockUser: User = { email: 'test@example.com', token: 'mockToken' };
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: mockUser
+    });
+  } else {
+    dispatch({
+      type: LOGOUT
+    });
+  }
+};
