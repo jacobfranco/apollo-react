@@ -1,34 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { logout } from 'src/actions/auth';
+import { toggleTheme } from 'src/actions/settings'
 import { AppState, useAppDispatch } from 'src/store';
-import Button from 'src/components/Button'; 
+import Button from 'src/components/Button';
 
 const ProfileDropdown: React.FC = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector((state: AppState) => state.auth);
   const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useSelector((state: AppState) => state.auth);
 
-  const handleLogin = () => {
-    navigate('/login');
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
   };
 
-  const handleSignup = () => {
-    navigate('/signup');
+  const handleToggleTheme = () => {
+    dispatch(toggleTheme());
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
     <div className="profile-dropdown">
       {isAuthenticated ? (
         <>
-          <img src={user?.profilePicture || 'defaultProfile.jpg'} alt="Profile" />
-          <Button onClick={() => dispatch(logout())} variant="primary">Logout</Button>
+          <img src={user?.profilePicture || 'defaultProfile.jpg'} alt="Profile" onClick={toggleDropdown} />
+          {dropdownOpen && (
+            <div className="dropdown-menu">
+              <button onClick={handleToggleTheme}>Toggle Dark Mode</button>
+              <button onClick={handleLogout}>Logout</button>
+            </div>
+          )}
         </>
       ) : (
         <>
-          <Button onClick={handleLogin} variant="secondary">Login</Button>
-          <Button onClick={handleSignup} variant="primary">Signup</Button>
+          <Button onClick={() => navigate('/login')} variant="secondary">Login</Button>
+          <Button onClick={() => navigate('/signup')} variant="primary">Signup</Button>
         </>
       )}
     </div>

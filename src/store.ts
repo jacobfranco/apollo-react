@@ -1,5 +1,3 @@
-// src/store.ts
-
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import rootReducer from './reducers';

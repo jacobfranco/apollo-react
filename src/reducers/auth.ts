@@ -1,3 +1,4 @@
+import { UnknownAction } from 'redux';
 import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT } from 'src/types/auth';
 import { User } from 'src/entities/User';
 
@@ -7,19 +8,13 @@ interface AuthState {
   error: string | null;
 }
 
-// Extending the Action type to allow any action
-interface AuthAction {
-  type: string;
-  payload?: User | string;
-}
-
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   error: null
 };
 
-const authReducer = (state = initialState, action: AuthAction): AuthState => {
+const authReducer = (state = initialState, action: UnknownAction): AuthState => {
   switch (action.type) {
     case LOGIN_SUCCESS:
       return {
