@@ -9,6 +9,7 @@ const DefaultPage: React.FC = () => {
 
   const handleToggleAuth = () => {
     dispatch(toggleAuth(true)); // Set to true for mock authentication
+    navigate('/home');
   };
 
   const handleLogin = () => {

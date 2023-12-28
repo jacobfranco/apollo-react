@@ -1,43 +1,35 @@
 .profile-dropdown {
-    position: relative; /* Changed from absolute to relative */
-    top: 0; /* Align with the header */
-    right: 0;
-    background-color: var(--brand-color-10); /* Dark mode background */
-    border-radius: 4px;
-    padding: 1em;
-    display: none; /* Hide by default */
-  }
+  position: relative;
+  align-self: stretch;
+  margin-right: 2rem;
+}
 
-  .dropdown-menu {
-    position: absolute;
-    right: 0;
-    background-color: white; /* Or any color you prefer */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 100;
-  }
-  
-  .dropdown-menu button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-  }
-  
-  .dropdown-menu button:hover {
-    background-color: #f5f5f5;
-  }
-  
-  .header:hover .profile-dropdown,
-  .header:focus-within .profile-dropdown {
-    display: block;
-  }
+.profile-picture {
+  cursor: pointer;
+  height: 100%;
+}
 
-  body.light-mode .profile-dropdown {
-    background-color: var(--brand-color-85); /* Light mode background */
-  }
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--brand-color-10);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.dropdown-menu button {
+  all: unset;
+  padding: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: var(--brand-color-10);
+}

@@ -11,8 +11,8 @@ const Header: React.FC = () => {
           <img src="src/assets/logo.png" alt="Logo" className="logo" />
         </a>
         <SearchBar />
+        <ProfileDropdown />
       </div>
-      <ProfileDropdown />
     </header>
   );
 };

@@ -4,11 +4,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'src/store';
 import { toggleTheme } from 'src/actions/settings'; // Import the toggleTheme action
 import Home from 'src/pages/Home';
-import Search from 'src/pages/Search';
-import LoginPage from 'src/pages/Login';
-import SignupPage from 'src/pages/Signup';
-import DefaultPage from 'src/pages/Default';
+import Browse from 'src/pages/Browse';
+import Notifications from 'src/pages/Notifications';
+import Messages from 'src/pages/Messages'
+import Profile from 'src/pages/Profile'
+import Settings from 'src/pages/Settings'
+import Login from 'src/pages/Login';
+import Signup from 'src/pages/Signup';
+import Default from 'src/pages/Default';
 import MainLayout from 'src/containers/MainLayout';
+
 
 const AppRouter: React.FC = () => {
   const isAuthenticated = useSelector((state: AppState) => state.auth.isAuthenticated);
@@ -44,20 +49,29 @@ const AppRouter: React.FC = () => {
         {isAuthenticated ? (
           <>
             {/* Authenticated Routes */}
-            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-            <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
-            {/* Redirect to Home if trying to access login/signup */}
+            <Route path="/home" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/browse" element={<MainLayout><Browse /></MainLayout>} />
+            <Route path="/notifications" element={<MainLayout><Notifications /></MainLayout>} />
+            <Route path="/messages" element={<MainLayout><Messages /></MainLayout>} />
+            <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+            <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
+            {/* Redirect to Default if trying to access login/signup */}
             <Route path="/login" element={<Navigate replace to="/" />} />
             <Route path="/signup" element={<Navigate replace to="/" />} />
           </>
         ) : (
           <>
             {/* Public Routes */}
-            <Route path="/" element={<DefaultPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/" element={<Default />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             {/* Redirect to DefaultPage if trying to access authenticated routes */}
+            <Route path="/home" element={<Navigate replace to="/" />} />
             <Route path="/search" element={<Navigate replace to="/" />} />
+            <Route path="/notifications" element={<Navigate replace to="/" />} />
+            <Route path="/messages" element={<Navigate replace to="/" />} />
+            <Route path="/profile" element={<Navigate replace to="/" />} />
+            <Route path="/settings" element={<Navigate replace to="/" />} />
           </>
         )}
       </Routes>

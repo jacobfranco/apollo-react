@@ -13,6 +13,7 @@
     border: none;
     background-color: var(--brand-color-20); /* Dark mode input background */
     color: white;
+    font-family: 'URWDIN', sans-serif;
   }
 
   body.light-mode .search-bar input[type="search"] {
