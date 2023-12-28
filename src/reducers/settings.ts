@@ -6,16 +6,18 @@ interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  darkMode: false, // Or true, based on your default theme
+  darkMode: false,
 };
 
 const settingsReducer = (state = initialState, action: UnknownAction): SettingsState => {
   switch (action.type) {
-    case TOGGLE_THEME:
+    case TOGGLE_THEME: {
+      const isDarkMode = typeof action.payload === 'boolean' ? action.payload : !state.darkMode;
       return {
         ...state,
-        darkMode: !state.darkMode,
+        darkMode: isDarkMode,
       };
+    }
     default:
       return state;
   }

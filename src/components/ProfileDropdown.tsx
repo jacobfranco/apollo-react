@@ -11,13 +11,16 @@ const ProfileDropdown: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useSelector((state: AppState) => state.auth);
+  const darkMode = useSelector((state: AppState) => state.settings.darkMode);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
   const handleToggleTheme = () => {
-    dispatch(toggleTheme());
+    const newDarkMode = !darkMode;
+    dispatch(toggleTheme(newDarkMode));
+    localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
   };
 
   const handleLogout = () => {
