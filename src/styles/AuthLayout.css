@@ -1,8 +1,17 @@
-.auth-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
-  
+.layout-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.auth-content {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4rem;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}

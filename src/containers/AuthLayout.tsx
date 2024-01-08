@@ -1,5 +1,6 @@
 import React from 'react';
 import 'src/styles/AuthLayout.css';
+import { Background } from 'src/components'
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -7,9 +8,12 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="auth-layout">
+    <div className="layout-container">
+    <Background />
+    <div className="auth-content">
       {children}
     </div>
+  </div>
   );
 };
 
