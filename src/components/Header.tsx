@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import ProfileDropdown from './ProfileDropdown';
-import 'src/styles/Header.css';
+import 'src/styles/components/Header.css';
 
 const Header: React.FC = () => {
   return (

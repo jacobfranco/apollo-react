@@ -1,0 +1,22 @@
+.button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'URWDIN', sans-serif;
+  }
+  
+  .button.primary {
+    background-color: var(--brand-color);
+    border-radius: 5px;
+    color: white;
+  }
+  
+  .button.secondary {
+    background-color: transparent;
+    border: 2px solid var(--brand-color);
+    border-radius: 5px;
+    color: white; 
+  }
+  

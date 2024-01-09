@@ -3,7 +3,7 @@ import Background from 'src/components/Background'; // Import the Background com
 import Header from 'src/components/Header';
 import Sidebar from 'src/components/Sidebar';
 import SidePanel from 'src/components/SidePanel';
-import 'src/styles/MainLayout.css';
+import 'src/styles/layouts/MainLayout.css';
 
 interface LayoutProps {
   children: React.ReactNode;

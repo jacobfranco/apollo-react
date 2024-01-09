@@ -11,7 +11,7 @@ import Profile from 'src/pages/Profile'
 import Settings from 'src/pages/Settings'
 import Login from 'src/pages/Login';
 import Signup from 'src/pages/Signup';
-import Default from 'src/pages/Default';
+import Landing from 'src/pages/Landing';
 import MainLayout from 'src/containers/MainLayout';
 
 
@@ -62,7 +62,7 @@ const AppRouter: React.FC = () => {
         ) : (
           <>
             {/* Public Routes */}
-            <Route path="/" element={<Default />} />
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             {/* Redirect to DefaultPage if trying to access authenticated routes */}

@@ -1,5 +1,3 @@
-// src/components/Login.tsx
-
 import React, { useState } from 'react';
 import { useAppDispatch } from 'src/store'
 import { login } from 'src/actions/auth';

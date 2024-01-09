@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faEye, faBell, faEnvelope, faUser, faGear } from '@fortawesome/free-solid-svg-icons';
-import 'src/styles/Sidebar.css'; 
+import 'src/styles/components/Sidebar.css'; 
 
 const Sidebar: React.FC = () => {
   return (

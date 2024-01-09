@@ -1,0 +1,73 @@
+.landing-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .left-half {
+    flex: 1;
+    display: flex;
+    position: relative; 
+  }
+  
+  .logo {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 350px; 
+    max-height: 350px; 
+  }
+  
+  .right-half {
+    flex: 1;
+    padding: 20px;
+    padding-left: 50px; 
+    display: flex;
+  flex-direction: column; 
+  align-items: flex-start;
+  gap: 10px; 
+  }
+
+  h1 {
+    color: #ffffff;
+    font-family: 'URWDIN', sans-serif;
+    font-weight: bold;
+    font-size: 64px;
+    padding-top: 150px; /* originally 75, switch back later when more items are added */
+    margin: 0; 
+  }
+
+  h3 {
+    color: #ffffff;
+    font-family: 'URWDIN', sans-serif;
+    font-weight: bold;
+    font-size: 32px;
+    padding-bottom: 25px;
+    padding-top: 25px;
+    margin: 0; 
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    height: 100%;
+  }
+  
+  .button-container .button {
+    width: 300px;
+    height: 45px;
+    margin-bottom: 10px; 
+    font-weight: normal;
+    align-items: center;
+    padding-bottom: 5px;
+  }
+  
+  .button-container .button:last-child {
+    margin-bottom: 0; /* Removes bottom margin from the last button */
+  }
+  
+  

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux'; 
 import store from './store'; 
 import 'src/styles/Theme.css';
-import 'src/styles/Fonts.css';
+import 'src/styles/assets/Fonts.css';
 import AppRouter from './Router';
 
 // Create a root.

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout, toggleTheme } from 'src/actions';
 import { AppState, useAppDispatch } from 'src/store';
-import 'src/styles/ProfileDropdown.css';
+import 'src/styles/components/ProfileDropdown.css';
 
 const ProfileDropdown: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

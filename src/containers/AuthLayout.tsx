@@ -1,5 +1,5 @@
 import React from 'react';
-import 'src/styles/AuthLayout.css';
+import 'src/styles/layouts/AuthLayout.css';
 import { Background } from 'src/components'
 
 interface AuthLayoutProps {

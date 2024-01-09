@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppDispatch } from 'src/store';
-import { login } from '../actions/auth';
+import { login } from 'src/actions/auth';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState('');
