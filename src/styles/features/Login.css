@@ -1,0 +1,114 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 500px;
+    height: 500px;
+    background: var(--brand-color-5);
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'URWDIN', sans-serif;
+  }
+  
+  .login-form h2 {
+    font-size: 24px;
+    color: var(--brand-color);
+    margin-bottom: 20px;
+    font-weight: normal;
+    
+  }
+  
+  .login-form input {
+    width: 80%;
+    margin: 0;
+    height: 30px;
+    padding: 10px;
+    border: 1px solid var(--brand-color);
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    background: black;
+    font-family: 'URWDIN', sans-serif;
+  }
+  
+  .login-button {
+    width: 80%;
+    background-color: var(--brand-color);
+    color: var(--brand-color-5);
+    padding: 12px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .signup-prompt, .forgot-password {
+    color: white;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .input-container {
+    width: 80%;
+    position: relative;
+    margin: 0 auto;
+  }
+  
+  .input-container input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid var(--brand-color);
+    border-radius: 4px;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit; /* Ensuring the icon is visible */
+    font-size: 1em; /* Adjust size as needed */
+    color: white;
+    padding: 10px;
+  }
+
+.forgot-password {
+    color: var(--brand-color);
+    font-size: 14px;
+    align-self: flex-start;
+    margin-left: 10%;
+    padding-top: 10px;
+}
+
+.sign-up-link {
+    color: var(--brand-color);
+    text-decoration: none;
+}
+
+.big-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 3750px;
+    height: 100%;
+  }
+
+  .big-button-container .button {
+    width: 370px;
+    height: 45px;
+    margin-bottom: 10px; 
+    font-weight: normal;
+    align-items: center;
+    padding-bottom: 5px;
+  }
+  
+  .big-button-container .button:last-child {
+    margin-bottom: 0; /* Removes bottom margin from the last button */
+  }
+  

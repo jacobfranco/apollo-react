@@ -9,7 +9,7 @@
     position: relative; 
   }
   
-  .logo {
+  .left-half .logo {
     position: absolute;
     margin: auto;
     top: 0;
@@ -49,6 +49,15 @@
     margin: 0; 
   }
 
+  h4 {
+    color: #ffffff;
+    font-family: 'URWDIN', sans-serif;
+    font-weight: normal;
+    font-size: 20px;
+    padding-bottom: 15px;
+    margin: 0; 
+  }
+
   .button-container {
     display: flex;
     flex-direction: column;
@@ -60,10 +69,8 @@
   .button-container .button {
     width: 300px;
     height: 45px;
-    margin-bottom: 10px; 
     font-weight: normal;
     align-items: center;
-    padding-bottom: 5px;
   }
   
   .button-container .button:last-child {

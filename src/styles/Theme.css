@@ -26,7 +26,7 @@
 
     /* Background Gradient Colors */
     --color-start-dark: var(--brand-color-5); 
-    --color-mid-dark: var(--brand-color-10);   
+    --color-mid-dark: hsl(260, 52%, 12%); 
     --color-start-light: var(--brand-color-95); 
     --color-mid-light: var(--brand-color-100);   
       

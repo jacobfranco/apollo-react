@@ -9,8 +9,6 @@ import Notifications from 'src/pages/Notifications';
 import Messages from 'src/pages/Messages'
 import Profile from 'src/pages/Profile'
 import Settings from 'src/pages/Settings'
-import Login from 'src/pages/Login';
-import Signup from 'src/pages/Signup';
 import Landing from 'src/pages/Landing';
 import MainLayout from 'src/containers/MainLayout';
 
@@ -63,8 +61,6 @@ const AppRouter: React.FC = () => {
           <>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
             {/* Redirect to DefaultPage if trying to access authenticated routes */}
             <Route path="/home" element={<Navigate replace to="/" />} />
             <Route path="/search" element={<Navigate replace to="/" />} />

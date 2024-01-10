@@ -1,9 +1,9 @@
 export { default as Background } from './Background';
 export { default as Button } from './Button';
 export { default as Header } from './Header';
-export { default as Login } from './Login';
+export { default as Login } from '../features/Login';
 export { default as ProfileDropdown } from './ProfileDropdown';
 export { default as SearchBar } from './SearchBar';
 export { default as Sidebar } from './Sidebar';
 export { default as SidePanel } from './SidePanel';
-export { default as Signup } from './Signup';
+export { default as Signup } from '../features/Signup';

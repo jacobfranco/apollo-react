@@ -17,6 +17,6 @@
     background-color: transparent;
     border: 2px solid var(--brand-color);
     border-radius: 5px;
-    color: white; 
+    color: var(--brand-color);
   }
   

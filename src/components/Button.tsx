@@ -3,7 +3,7 @@ import 'src/styles/components/Button.css';
 
 interface ButtonProps {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick: ((event: React.FormEvent) => void) | (() => void);
   variant: 'primary' | 'secondary';
 }
 

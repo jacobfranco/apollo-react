@@ -1,12 +1,10 @@
-// path/filename: src/pages/LandingPage.tsx
-
 import React, { useState } from 'react';
 import 'src/styles/layouts/LandingLayout.css'; 
 import Background from 'src/components/Background'; 
 import Button from 'src/components/Button'; 
 import AuthModal from 'src/components/modals/AuthModal';
-import Login from 'src/components/Login';
-import Signup from 'src/components/Signup'; 
+import Login from 'src/features/Login';
+import Signup from 'src/features/Signup'; 
 
 const LandingPage: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -19,7 +17,7 @@ const LandingPage: React.FC = () => {
     <div className="landing-container">
       <Background />
       <div className="left-half">
-        <div className="logo">
+        <div className="big-logo">
         <img src="src/assets/big_logo.png" alt="Logo" className="logo" />
         </div>
       </div>
@@ -28,6 +26,9 @@ const LandingPage: React.FC = () => {
         <h3>Sign up today.</h3>
         <div className="button-container">
         <Button onClick={openSignupModal} variant={'primary'}>Create Account</Button>
+        </div>
+        <h4>Already have an account?</h4>
+        <div className="button-container">
         <Button onClick={openLoginModal} variant={'secondary'}>Sign In</Button>
         </div>
       </div>
