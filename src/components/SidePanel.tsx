@@ -4,7 +4,8 @@ import 'src/styles/components/SidePanel.css';
 const SidePanel: React.FC = () => {
   return (
     <div className="side-panel">
-      <h1>Side Panel</h1>
+      <br></br>
+      <h4>Side Panel</h4>
     </div>
   );
 };

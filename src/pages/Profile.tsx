@@ -3,7 +3,8 @@ import React from 'react';
 const Profile: React.FC = () => {
   return (
     <div>
-      <h1>Profile Page</h1>
+      <br></br>
+      <h4>Profile Page</h4>
     </div>
   );
 };

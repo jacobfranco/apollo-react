@@ -24,7 +24,7 @@
 }
 
 .sidebar a:hover {
-  background-color: var(--brand-color-20); /* Dark mode active/hover state */
+  background-color: var(--brand-color-10); /* Dark mode active/hover state */
   border-radius: 5px;
 }
 

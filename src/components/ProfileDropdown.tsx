@@ -17,7 +17,10 @@ const ProfileDropdown: React.FC = () => {
     dispatch(toggleTheme(!darkMode));
     localStorage.setItem('theme', !darkMode ? 'dark' : 'light');
   };
-  const handleLogout = () => dispatch(logout());
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/')
+  }
 
   return (
     <div className="profile-dropdown">

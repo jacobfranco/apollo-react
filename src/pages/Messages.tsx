@@ -3,7 +3,8 @@ import React from 'react';
 const Messages: React.FC = () => {
   return (
     <div>
-      <h1>Messages Page</h1>
+      <br></br>
+      <h4>Messages Page</h4>
     </div>
   );
 };
