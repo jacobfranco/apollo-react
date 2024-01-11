@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toggleAuth } from 'src/actions/auth';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/hooks';
 import { Button } from 'src/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';

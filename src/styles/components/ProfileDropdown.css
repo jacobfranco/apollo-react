@@ -28,6 +28,7 @@
   padding: 0.5rem;
   text-align: left;
   cursor: pointer;
+  color: white;
 }
 
 .dropdown-menu button:hover {

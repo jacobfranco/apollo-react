@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/hooks';
 import { login } from 'src/actions/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';

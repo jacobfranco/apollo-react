@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/hooks'
+import { RootState } from 'src/store';
 import { toggleTheme } from 'src/actions/settings'; // Import the toggleTheme action
 import Home from 'src/pages/Home';
 import Browse from 'src/pages/Browse';
@@ -14,9 +14,9 @@ import MainLayout from 'src/containers/MainLayout';
 
 
 const AppRouter: React.FC = () => {
-  const isAuthenticated = useSelector((state: AppState) => state.auth.isAuthenticated);
-  const darkMode = useSelector((state: AppState) => state.settings.darkMode); 
-  const dispatch = useDispatch();
+  const isAuthenticated = useAppSelector((state: RootState) => state.auth.isAuthenticated);
+  const darkMode = useAppSelector((state: RootState) => state.settings.darkMode); 
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');

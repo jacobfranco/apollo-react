@@ -1,3 +1,4 @@
+import React from 'react';
 import{ ReactNode, FC } from 'react';
 import 'src/styles/components/AuthModal.css'; 
 

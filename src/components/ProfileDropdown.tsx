@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout, toggleTheme } from 'src/actions';
-import { AppState, useAppDispatch } from 'src/store';
+import { RootState } from 'src/store';
+import { useAppDispatch } from 'src/hooks'
 import 'src/styles/components/ProfileDropdown.css';
 
 const ProfileDropdown: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isAuthenticated, user } = useSelector((state: AppState) => state.auth);
-  const darkMode = useSelector((state: AppState) => state.settings.darkMode);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const darkMode = useSelector((state: RootState) => state.settings.darkMode);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const handleToggleTheme = () => {
