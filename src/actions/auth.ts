@@ -1,49 +1,70 @@
-import { Dispatch } from 'redux';
-import { User } from 'src/entities/User';
-import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT } from 'src/types/auth';
-import { mockLogin } from 'src/api/mockApi';
+import { AppDispatch, RootState } from "src/store";
 
-// Mock login function
-export const login = (email: string, password: string) => async (dispatch: Dispatch) => {
-    try {
-      const user: User = await mockLogin(email, password); // Using mock API call
-      dispatch({
-        type: LOGIN_SUCCESS,
-        payload: user
+import { createAccount } from 'src/actions/accounts';
+import { startOnboarding } from 'src/actions/onboarding';
+import { createApp } from 'src/actions/apps';
+import { obtainOAuthToken } from 'src/actions/oauth';
+
+export const AUTH_APP_CREATED    = 'AUTH_APP_CREATED';
+export const AUTH_APP_AUTHORIZED = 'AUTH_APP_AUTHORIZED';
+export const AUTH_LOGGED_IN      = 'AUTH_LOGGED_IN';
+export const AUTH_LOGGED_OUT     = 'AUTH_LOGGED_OUT';
+
+
+export const register = (params: Record<string, any>) =>
+  (dispatch: AppDispatch) => {
+    params.fullname = params.username;
+
+    return dispatch(createAppAndToken())
+      .then(() => dispatch(createAccount(params)))
+      .then(({ token }: { token: Record<string, string | number> }) => {
+        dispatch(startOnboarding());
+        return dispatch(authLoggedIn(token));
       });
-    } catch (error) {
-      let errorMessage = 'An unknown error occurred';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
-      dispatch({
-        type: LOGIN_FAIL,
-        payload: errorMessage
-      });
-    }
   };
+
+  const createAppAndToken = () =>
+  (dispatch: AppDispatch) =>
+    dispatch(getAuthApp()).then(() =>
+      dispatch(createAppToken()),
+    );
+
+    const getAuthApp = () =>
+  (dispatch: AppDispatch) => {
+      return dispatch(createAuthApp());
+  };
+
+  const createAuthApp = () => (dispatch: AppDispatch) => {
+    const params = {
+      client_name:   'Apollo', 
+      redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes:        'read write', // Define scopes as needed
+      website:       'http://yoapollo.com', 
+    };
   
+    return dispatch(createApp(params)).then((app: Record<string, string>) =>
+      dispatch({ type: AUTH_APP_CREATED, app }),
+    );
+  };
 
-// Logout action
-export const logout = () => (dispatch: Dispatch) => {
-  dispatch({
-    type: LOGOUT,
-  });
-};
+  const createAppToken = () => (dispatch: AppDispatch, getState: () => RootState) => {
+    const app = getState().auth.app;
+  
+    const params = {
+      client_id:     app.client_id!,
+      client_secret: app.client_secret!,
+      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
+      grant_type:    'client_credentials',
+      scope:         'read write', // Define scopes as needed
+    };
+  
+    return dispatch(obtainOAuthToken(params)).then((token: Record<string, string | number>) =>
+      dispatch({ type: AUTH_APP_AUTHORIZED, app, token }),
+    );
+  };
 
-// Mock Toggle Authentication Action
-export const toggleAuth = (isAuthenticated: boolean) => (dispatch: Dispatch) => {
-  if (isAuthenticated) {
-    // Mocking a user object for the sake of testing
-    const mockUser: User = { email: 'test@example.com', token: 'mockToken' };
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: mockUser
-    });
-  } else {
-    dispatch({
-      type: LOGOUT
-    });
-  }
-};
+    export const authLoggedIn = (token: Record<string, string | number>) =>
+  (dispatch: AppDispatch) => {
+    dispatch({ type: AUTH_LOGGED_IN, token });
+    return token;
+  };

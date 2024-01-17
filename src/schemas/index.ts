@@ -1,0 +1,1 @@
+export { accountSchema, type Account } from './account';
