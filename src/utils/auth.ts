@@ -1,4 +1,4 @@
-import { selectAccount } from "src/selectors";
+import { selectAccount, selectOwnAccount } from "src/selectors";
 import { RootState } from "src/store";
 
 export const validId = (id: any) => typeof id === 'string' && id !== 'null' && id !== 'undefined';
@@ -34,3 +34,5 @@ export const parseBaseURL = (url: any) => {
       return '';
     }
   };
+
+  export const getLoggedInAccount = (state: RootState) => selectOwnAccount(state);

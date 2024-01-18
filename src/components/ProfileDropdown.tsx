@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logout, toggleTheme } from 'src/actions';
+import { toggleTheme } from 'src/actions/settings';
+import { logOut } from 'src/actions/auth'
 import { RootState } from 'src/store';
 import { useAppDispatch } from 'src/hooks'
 import 'src/styles/components/ProfileDropdown.css';
@@ -19,7 +20,7 @@ const ProfileDropdown: React.FC = () => {
     localStorage.setItem('theme', !darkMode ? 'dark' : 'light');
   };
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logOut());
     navigate('/')
   }
 
