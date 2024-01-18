@@ -1,56 +1,52 @@
 import React, { useState } from 'react';
-import { useAppDispatch } from 'src/hooks';
-import { login } from 'src/actions/auth';
+import { AxiosError } from 'axios'
+import { FormattedMessage } from 'react-intl';
+
+import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { logIn, verifyCredentials, switchAccount } from 'src/actions/auth';
+import { closeModal } from 'src/actions/modals'
+import { BigCard } from 'src/components/BigCard'
+import LoginForm from './LoginForm'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'src/components'
 import 'src/styles/features/Login.css';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
+  const me = useAppSelector((state) => state.me);
+  const token = new URLSearchParams(window.location.search).get('token');
+  const [isLoading, setIsLoading] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const getFormData = (form: HTMLFormElement) =>
+    Object.fromEntries(
+      Array.from(form).map((i: any) => [i.name, i.value]),
+    );
+
+  const handleSubmit: React.FormEventHandler = (event) => {
+    const { username, password } = getFormData(event.target as HTMLFormElement);
+    dispatch(logIn(username, password))
+      .then(({ access_token }) => dispatch(verifyCredentials(access_token as string)))
+      .then((account: { id: string }) => {
+        dispatch(closeModal());
+        if (typeof me === 'string') {
+          dispatch(switchAccount(account.id));
+        } else {
+          setShouldRedirect(true);
+        }
+      }).catch((error: AxiosError) => {
+        const data: any = error.response?.data;
+        setIsLoading(false);
+      });
+    setIsLoading(true);
     event.preventDefault();
-    dispatch(login(email, password));
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <h2>Sign in to Apollo</h2>
-      <div className="input-container">
-        <input 
-          type="email" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
-          placeholder="Email" 
-        />
-      </div>
-      <div className="input-container">
-        <input 
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <button 
-          type="button" 
-          className="toggle-password"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-        </button>
-      </div>
-      <a href="#" className="forgot-password">Forgot password?</a>
-      <br></br>
-      <div className="big-button-container">
-      <Button variant="primary" onClick={handleSubmit}>Log In</Button>
-      </div>
-      <p className="signup-prompt">Don't have an account? <a href="#" className="sign-up-link">Sign up</a></p>
-      <br></br>
-    </form>
+    return (
+    <BigCard title={<FormattedMessage id='login_form.header' defaultMessage='Sign In' />}>
+      <LoginForm handleSubmit={handleSubmit} isLoading={isLoading} />
+    </BigCard>
   );
 };
 

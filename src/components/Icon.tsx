@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Counter from 'src/components/Counter';
-
 import SvgIcon from 'src/components/SvgIcon';
 
 interface IIcon extends Pick<React.SVGAttributes<SVGAElement>, 'strokeWidth'> {

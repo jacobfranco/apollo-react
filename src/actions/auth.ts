@@ -1,18 +1,30 @@
-import { AppDispatch, RootState } from "src/store";
-
+import { AxiosError } from "axios";
 import { defineMessages } from 'react-intl';
+
+import { AppDispatch, RootState } from "src/store";
 import { createAccount } from 'src/actions/accounts';
 import { startOnboarding } from 'src/actions/onboarding';
+import { fetchMeSuccess, fetchMeFail } from 'src/actions/me';
 import { createApp } from 'src/actions/apps';
 import { obtainOAuthToken, revokeOAuthToken  } from 'src/actions/oauth';
-import { getLoggedInAccount } from 'src/utils/auth';
+import { getLoggedInAccount, parseBaseURL } from 'src/utils/auth';
 import { queryClient } from 'src/queries/client';
+import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
+
+import { baseClient } from "src/api";
+import { importFetchedAccount } from 'src/actions/importer';
+
+export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
 
 export const AUTH_APP_CREATED    = 'AUTH_APP_CREATED';
 export const AUTH_APP_AUTHORIZED = 'AUTH_APP_AUTHORIZED';
 export const AUTH_LOGGED_IN      = 'AUTH_LOGGED_IN';
 export const AUTH_LOGGED_OUT     = 'AUTH_LOGGED_OUT';
+
+export const VERIFY_CREDENTIALS_REQUEST = 'VERIFY_CREDENTIALS_REQUEST';
+export const VERIFY_CREDENTIALS_SUCCESS = 'VERIFY_CREDENTIALS_SUCCESS';
+export const VERIFY_CREDENTIALS_FAIL    = 'VERIFY_CREDENTIALS_FAIL';
 
 const noOp = () => new Promise(f => f(undefined));
 
@@ -34,6 +46,78 @@ export const register = (params: Record<string, any>) =>
         dispatch(startOnboarding());
         return dispatch(authLoggedIn(token));
       });
+  };
+
+  export const logIn = (username: string, password: string) =>
+  (dispatch: AppDispatch) => dispatch(getAuthApp()).then(() => {
+    return dispatch(createUserToken(username, password));
+  }).catch((error: AxiosError) => {
+    if ((error.response?.data as any)?.error === 'mfa_required') {
+      // If MFA is required, throw the error and handle it in the component.
+      throw error;
+    } else if ((error.response?.data as any)?.identifier === 'awaiting_approval') {
+      toast.error(messages.awaitingApproval);
+    } else {
+      // Return "wrong password" message.
+      toast.error(messages.invalidCredentials);
+    }
+    throw error;
+  })
+
+  export const verifyCredentials = (token: string, accountUrl?: string) => {
+    const baseURL = parseBaseURL(accountUrl);
+  
+    return (dispatch: AppDispatch, getState: () => RootState) => {
+      dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
+  
+      return baseClient(token, baseURL).get('/api/v1/accounts/verify_credentials').then(({ data: account }) => {
+        dispatch(importFetchedAccount(account));
+        dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
+        if (account.id === getState().me) dispatch(fetchMeSuccess(account));
+        return account;
+      }).catch(error => {
+        if (error?.response?.status === 403 && error?.response?.data?.id) {
+          // The user is waitlisted
+          const account = error.response.data;
+          dispatch(importFetchedAccount(account));
+          dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
+          if (account.id === getState().me) dispatch(fetchMeSuccess(account));
+          return account;
+        } else {
+          if (getState().me === null) dispatch(fetchMeFail(error));
+          dispatch({ type: VERIFY_CREDENTIALS_FAIL, token, error });
+          throw error;
+        }
+      });
+    };
+  };
+
+  export const switchAccount = (accountId: string, background = false) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const account = selectAccount(getState(), accountId);
+    // Clear all stored cache from React Query
+    queryClient.invalidateQueries();
+    queryClient.clear();
+
+    return dispatch({ type: SWITCH_ACCOUNT, account, background });
+  };
+
+  const createUserToken = (username: string, password: string) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const app = getState().auth.app;
+
+    const params = {
+      client_id:     app.client_id!,
+      client_secret: app.client_secret!,
+      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
+      grant_type:    'password',
+      username:      username,
+      password:      password,
+      scope:         'read write',
+    };
+
+    return dispatch(obtainOAuthToken(params))
+      .then((token: Record<string, string | number>) => dispatch(authLoggedIn(token)));
   };
 
   const createAppAndToken = () =>
