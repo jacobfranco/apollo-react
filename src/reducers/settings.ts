@@ -1,26 +1,23 @@
-import { UnknownAction } from 'redux';
-import { TOGGLE_THEME } from 'src/types/settings';
+import { Map as ImmutableMap, fromJS } from 'immutable'
+import { AnyAction } from 'redux';
 
-interface SettingsState {
-  darkMode: boolean;
-}
+import { ME_FETCH_SUCCESS } from 'src/actions/me';
 
-const initialState: SettingsState = {
-  darkMode: false,
+import type { APIEntity } from 'src/types/entities';
+
+type State = ImmutableMap<string, any>;
+
+const importSettings = (state: State, account: APIEntity) => {
+  account = fromJS(account);
+  const prefs = account.getIn(['settings_store'], ImmutableMap());
+  return state.merge(prefs) as State;
 };
 
-const settingsReducer = (state = initialState, action: UnknownAction): SettingsState => {
+export default function settings(state: State = ImmutableMap<string, any>({ saved: true }), action: AnyAction): State {
   switch (action.type) {
-    case TOGGLE_THEME: {
-      const isDarkMode = typeof action.payload === 'boolean' ? action.payload : !state.darkMode;
-      return {
-        ...state,
-        darkMode: isDarkMode,
-      };
-    }
+    case ME_FETCH_SUCCESS:
+      return importSettings(state, action.me);
     default:
       return state;
   }
-};
-
-export default settingsReducer;
+}

@@ -5,13 +5,17 @@ import { AUTH_LOGGED_OUT } from 'src/actions/auth';
 import * as BuildConfig from 'src/build-config';
 import entities from 'src/entity-store/reducer'
 
+import apollo from './apollo'
 import auth from './auth'
 import me from './me'
+import settings from './settings'
 
 const reducers = {
+  apollo,
   auth,
   entities,
-  me
+  me,
+  settings
 };
 
 // Build a default state from all reducers: it has the key and `undefined`
