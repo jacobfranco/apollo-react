@@ -27,5 +27,6 @@ const getLocale = (state: RootState, fallback = 'en') => {
 };
 
 export {
+  getSettings,
   getLocale
 }

@@ -12,7 +12,7 @@ import { queryClient } from 'src/queries/client';
 import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
 
-import { baseClient } from "src/api";
+import api, { baseClient } from "src/api";
 import { importFetchedAccount } from 'src/actions/importer';
 
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
@@ -200,4 +200,10 @@ export const register = (params: Record<string, any>) =>
 
         toast.success(messages.loggedOut);
       });
+  };
+
+  // TODO: Adjust api endpoint - get rid of pleroma
+  export const fetchCaptcha = () =>
+  (_dispatch: AppDispatch, getState: () => RootState) => {
+    return api(getState).get('/api/pleroma/captcha');
   };

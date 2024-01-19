@@ -16,5 +16,6 @@ export { default as SidePanel } from './SidePanel';
 export { default as Stack } from './Stack'
 export { default as SvgIcon } from './SvgIcon'
 export { default as Text } from './Text'
+export { default as Textarea } from './Textarea'
 export { default as Toast } from './Toast'
 export { default as Tooltip } from './Tooltip'
