@@ -35,4 +35,8 @@ export const parseBaseURL = (url: any) => {
     }
   };
 
+  export const isLoggedIn = (getState: () => RootState) => {
+    return validId(getState().me);
+  };
+
   export const getLoggedInAccount = (state: RootState) => selectOwnAccount(state);

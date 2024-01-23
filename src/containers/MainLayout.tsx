@@ -1,6 +1,5 @@
 import React from 'react';
 import Background from 'src/components/Background'; // Import the Background component
-import Header from 'src/components/Header';
 import Sidebar from 'src/components/Sidebar';
 import SidePanel from 'src/components/SidePanel';
 import 'src/styles/layouts/MainLayout.css';
@@ -15,7 +14,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Background />
       <Sidebar />
       <div className="main-content">
-        <Header />
         {children}
       </div>
       <SidePanel />
