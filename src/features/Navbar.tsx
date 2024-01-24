@@ -9,7 +9,7 @@ import { Avatar, Button, Form, HStack, IconButton, Input, SiteLogo, Tooltip } fr
 import Search from 'src/features/compose/components/Search';
 import { useAppDispatch, useOwnAccount, useRegistrationStatus } from 'src/hooks';
 
-import ProfileDropdown from './profile-dropdown';
+import ProfileDropdown from 'src/features/ProfileDropdown';
 
 import type { AxiosError } from 'axios';
 

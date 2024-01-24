@@ -13,7 +13,6 @@ export { default as Icon } from './Icon'
 export { default as IconButton } from './IconButton'
 export { default as Input } from './Input'
 export { default as Portal } from './Portal'
-export { default as ProfileDropdown } from './ProfileDropdown';
 export { default as RelativeTimestamp } from './RelativeTimestamp'
 export { default as SearchBar } from './SearchBar';
 export { default as Sidebar } from './Sidebar';

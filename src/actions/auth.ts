@@ -207,3 +207,15 @@ export const register = (params: Record<string, any>) =>
   (_dispatch: AppDispatch, getState: () => RootState) => {
     return api(getState).get('/api/pleroma/captcha');
   };
+
+  export const fetchOwnAccounts = () =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+    return state.auth.users.forEach((user) => {
+      const account = selectAccount(state, user.id);
+      if (!account) {
+        dispatch(verifyCredentials(user.access_token, user.url))
+          .catch(() => console.warn(`Failed to load account: ${user.url}`));
+      }
+    });
+  };
