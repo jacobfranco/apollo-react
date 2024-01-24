@@ -1,10 +1,16 @@
 import { Map as ImmutableMap } from 'immutable'
 import { AnyAction } from 'redux';
-import type { Status } from 'src/schemas/status'
+import { normalizeStatus } from 'src/normalizers';
 
-export interface ReducerStatus extends Status {} // TODO: Maybe fix ?
+type StatusRecord = ReturnType<typeof normalizeStatus>;
 
 type State = ImmutableMap<string, ReducerStatus>;
+
+export interface ReducerStatus extends StatusRecord {
+    repost: string | null;
+    poll: string | null;
+    quote: string | null;
+  }
 
 const initialState: State = ImmutableMap();
 

@@ -1,0 +1,72 @@
+// TODO: Implement everything that this touches
+
+import { accountSchema } from 'src/schemas';
+import { 
+    Map as ImmutableMap, 
+    Record as ImmutableRecord,
+    fromJS } from 'immutable'
+
+import type { Account, EmbeddedEntity } from 'src/types/entities';
+import { maybeFromJS } from 'src/utils/normalizers';
+
+const parseAccount = (status: ImmutableMap<string, any>) => {
+    try {
+      const account = accountSchema.parse(maybeFromJS(status.get('account')));
+      return status.set('account', account);
+    } catch (_e) {
+      return status.set('account', null);
+    }
+  };
+
+export const StatusRecord = ImmutableRecord({
+    account: null as unknown as Account,
+    bookmarked: false,
+    content: '',
+    created_at: '',
+    dislikes_count: 0,
+    disliked: false,
+    edited_at: null as string | null,
+    favourited: false,
+    favourites_count: 0,
+    // group: null as Group | null, TODO: Implement Group
+    in_reply_to_account_id: null as string | null,
+    in_reply_to_id: null as string | null,
+    id: '',
+    language: null as string | null,
+    // media_attachments: ImmutableList<Attachment>(), TODO: Implement Attachments
+    // mentions: ImmutableList<Mention>(), TODO: Implement Mentions
+    muted: false,
+    pinned: false,
+    // poll: null as EmbeddedEntity<Poll>, TODO: Implement Poll
+    quote: null as EmbeddedEntity<any>,
+    quotes_count: 0,
+    // reactions: null as ImmutableList<EmojiReaction> | null,
+    repost: null as EmbeddedEntity<any>,
+    reposted: false,
+    repost_count: 0,
+    replies_count: 0,
+    sensitive: false,
+    spoiler_text: '',
+    // tags: ImmutableList<ImmutableMap<string, any>>(), TODO: Implement tags
+    uri: '',
+    url: '',
+    // visibility: 'public' as StatusVisibility, TODO: Implement visiblity
+    zapped: false,
+  
+    // Internal fields
+    contentHtml: '',
+    expectsCard: false,
+    hidden: false,
+    search_index: '',
+    showFiltered: true,
+    spoilerHtml: '',
+    translation: null as ImmutableMap<string, string> | null,
+  });
+
+export const normalizeStatus = (status: Record<string, any>) => {
+    return StatusRecord(
+      ImmutableMap(fromJS(status)).withMutations(status => { 
+        parseAccount(status);
+      }),
+    );
+  };
