@@ -11,7 +11,7 @@ import { MenuDivider } from 'src/components';
 import { useAppDispatch, useAppSelector, useClickOutside } from 'src/hooks';
 import { makeGetAccount } from 'src/selectors';
 
-import ThemeToggle from './theme-toggle';
+import ThemeToggle from 'src/features/ThemeToggle';
 
 import type { Account as AccountEntity } from 'src/types/entities';
 

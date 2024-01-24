@@ -285,7 +285,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
           src={src}
           onClick={handleClick}
           onKeyPress={handleKeyPress}
-          ref={refs.setReference}
+          // ref={refs.setReference} TODO: Maybe fix ?
         />
       )}
 

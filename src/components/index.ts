@@ -12,9 +12,11 @@ export { default as HStack } from './HStack'
 export { default as Icon } from './Icon'
 export { default as IconButton } from './IconButton'
 export { default as Input } from './Input'
+export { Menu, MenuButton, MenuDivider, MenuItem, MenuItems, MenuLink, MenuList } from './Menu';
 export { default as Portal } from './Portal'
 export { default as RelativeTimestamp } from './RelativeTimestamp'
 export { default as SearchBar } from './SearchBar';
+export { default as Select } from './Select'
 export { default as Sidebar } from './Sidebar';
 export { default as SidePanel } from './SidePanel';
 export { default as SiteLogo } from './SiteLogo'
