@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import {
   changeSearch,
@@ -49,8 +49,7 @@ const Search = (props: ISearch) => {
   } = props;
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const history = useHistory();
   const intl = useIntl();
 
   const value = useAppSelector((state) => state.search.value);
@@ -83,7 +82,7 @@ const Search = (props: ISearch) => {
       dispatch(setSearchAccount(null));
       dispatch(submitSearch());
 
-      navigate('/search');
+    history.push('/search');
     } else {
       dispatch(submitSearch());
     }
@@ -138,7 +137,7 @@ const Search = (props: ISearch) => {
 
   useEffect(() => {
     return () => {
-      const newPath = location.pathname;
+      const newPath = history.location.pathname;
       const shouldPersistSearch = !!newPath.match(/@.+\/posts\/[a-zA-Z0-9]+/g)
         || !!newPath.match(/\/tags\/.+/g);
 

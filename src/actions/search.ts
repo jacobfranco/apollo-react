@@ -16,6 +16,8 @@ const SEARCH_FETCH_FAIL    = 'SEARCH_FETCH_FAIL';
 
 const SEARCH_ACCOUNT_SET = 'SEARCH_ACCOUNT_SET';
 
+const SEARCH_FILTER_SET = 'SEARCH_FILTER_SET';
+
 const changeSearch = (value: string) =>
   (dispatch: AppDispatch) => {
     // If backspaced all the way, clear the search
@@ -111,6 +113,17 @@ const submitSearch = (filter?: SearchFilter) =>
     accountId,
   });
 
+  const setFilter = (filterType: SearchFilter) =>
+  (dispatch: AppDispatch) => {
+    dispatch(submitSearch(filterType));
+
+    dispatch({
+      type: SEARCH_FILTER_SET,
+      path: ['search', 'filter'],
+      value: filterType,
+    });
+  };
+
   export {
     SEARCH_CHANGE,
     SEARCH_CLEAR,
@@ -120,6 +133,7 @@ const submitSearch = (filter?: SearchFilter) =>
     SEARCH_FETCH_SUCCESS,
     SEARCH_FETCH_FAIL,
     SEARCH_ACCOUNT_SET,
+    SEARCH_FILTER_SET,
     changeSearch,
     clearSearch,
     clearSearchResults,
@@ -129,4 +143,5 @@ const submitSearch = (filter?: SearchFilter) =>
     fetchSearchFail,
     showSearch,
     setSearchAccount,
+    setFilter,
   };

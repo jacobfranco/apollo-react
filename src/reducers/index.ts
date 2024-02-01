@@ -7,23 +7,33 @@ import entities from 'src/entity-store/reducer'
 
 import apollo from './apollo'
 import auth from './auth'
+import chats from './chats'
+import compose from './compose'
+import conversations from './conversations'
 import dropdown_menu from './dropdown-menu'
 import me from './me'
+import polls from './polls'
 import relationships from './relationships'
 import search from './search'
 import settings from './settings'
 import statuses from './statuses'
+import trends from './trends'
 
 const reducers = {
   apollo,
   auth,
+  chats,
+  compose,
+  conversations,
   dropdown_menu,
   entities,
   me,
+  polls
   relationships,
   search,
   settings,
-  statuses
+  statuses,
+  trends
 };
 
 // Build a default state from all reducers: it has the key and `undefined`

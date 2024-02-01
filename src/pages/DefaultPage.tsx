@@ -8,7 +8,8 @@ import {
 } from 'src/features/AsyncComponents';
 import { useAppSelector } from 'src/hooks';
 
-import { Layout, LinkFooter } from 'src/components';
+import { Layout } from 'src/components';
+import LinkFooter from 'src/features/LinkFooter'
 
 interface IDefaultPage {
   children: React.ReactNode;

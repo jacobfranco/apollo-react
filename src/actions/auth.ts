@@ -11,6 +11,7 @@ import { getLoggedInAccount, parseBaseURL } from 'src/utils/auth';
 import { queryClient } from 'src/queries/client';
 import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
+import KVStore from 'src/storage/kv-store';
 
 import api, { baseClient } from "src/api";
 import { importFetchedAccount } from 'src/actions/importer';
@@ -25,6 +26,10 @@ export const AUTH_LOGGED_OUT     = 'AUTH_LOGGED_OUT';
 export const VERIFY_CREDENTIALS_REQUEST = 'VERIFY_CREDENTIALS_REQUEST';
 export const VERIFY_CREDENTIALS_SUCCESS = 'VERIFY_CREDENTIALS_SUCCESS';
 export const VERIFY_CREDENTIALS_FAIL    = 'VERIFY_CREDENTIALS_FAIL';
+
+export const AUTH_ACCOUNT_REMEMBER_REQUEST = 'AUTH_ACCOUNT_REMEMBER_REQUEST';
+export const AUTH_ACCOUNT_REMEMBER_SUCCESS = 'AUTH_ACCOUNT_REMEMBER_SUCCESS';
+export const AUTH_ACCOUNT_REMEMBER_FAIL    = 'AUTH_ACCOUNT_REMEMBER_FAIL';
 
 const noOp = () => new Promise(f => f(undefined));
 
@@ -217,5 +222,22 @@ export const register = (params: Record<string, any>) =>
         dispatch(verifyCredentials(user.access_token, user.url))
           .catch(() => console.warn(`Failed to load account: ${user.url}`));
       }
+    });
+  };
+
+  export const loadCredentials = (token: string, accountUrl: string) =>
+  (dispatch: AppDispatch) => dispatch(rememberAuthAccount(accountUrl))
+    .finally(() => dispatch(verifyCredentials(token, accountUrl)));
+
+    export const rememberAuthAccount = (accountUrl: string) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
+    return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
+      dispatch(importFetchedAccount(account));
+      dispatch({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
+      if (account.id === getState().me) dispatch(fetchMeSuccess(account));
+      return account;
+    }).catch(error => {
+      dispatch({ type: AUTH_ACCOUNT_REMEMBER_FAIL, error, accountUrl, skipAlert: true });
     });
   };

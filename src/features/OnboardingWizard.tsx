@@ -11,7 +11,6 @@ import BioStep from './steps/bio-step';
 import CompletedStep from './steps/completed-step';
 import CoverPhotoSelectionStep from './steps/cover-photo-selection-step';
 import DisplayNameStep from './steps/display-name-step';
-import FediverseStep from './steps/fediverse-step';
 import SuggestedAccountsStep from './steps/suggested-accounts-step';
 
 const OnboardingWizard = () => {

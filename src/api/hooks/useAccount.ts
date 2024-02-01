@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { Entities } from 'src/entity-store/entities';
 import { useEntity } from 'src/entity-store/hooks';
@@ -14,7 +14,7 @@ interface UseAccountOpts {
 
 function useAccount(accountId?: string, opts: UseAccountOpts = {}) {
   const api = useApi();
-  const navigate = useNavigate();
+  const history = useHistory();
   const { me } = useLoggedIn();
   const { withRelationship } = opts;
 
@@ -39,7 +39,7 @@ function useAccount(accountId?: string, opts: UseAccountOpts = {}) {
 
   useEffect(() => {
     if (isUnauthorized) {
-      navigate('/login');
+      history.push('/login');
     }
   }, [isUnauthorized]);
 

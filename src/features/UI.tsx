@@ -79,8 +79,8 @@ import {
   // CreateApp,
   // SettingsStore,
   // TestTimeline,
-  LogoutPage,
-  AuthTokenList,
+  Logout,
+  // AuthTokenList,
   // ThemeEditor,
   // Quotes,
   // ServiceWorkerInfo,
@@ -131,7 +131,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
     <Switch>
 
       <WrappedRoute path='/email-confirmation' page={EmptyPage} component={EmailConfirmation} publicRoute exact />
-      <WrappedRoute path='/logout' page={EmptyPage} component={LogoutPage} publicRoute exact />
+      <WrappedRoute path='/logout' page={EmptyPage} component={Logout} publicRoute exact />
 
       {isLoggedIn ? (
         <WrappedRoute path='/' exact page={HomePage} component={HomeTimeline} content={children} />

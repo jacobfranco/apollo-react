@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { Counter, Icon } from 'src/components';
 
@@ -25,7 +25,7 @@ interface IDropdownMenuItem {
 }
 
 const DropdownMenuItem = ({ index, item, onClick }: IDropdownMenuItem) => {
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const itemRef = useRef<HTMLAnchorElement>(null);
 
@@ -37,7 +37,7 @@ const DropdownMenuItem = ({ index, item, onClick }: IDropdownMenuItem) => {
 
     if (item.to) {
       event.preventDefault();
-      navigate(item.to);
+      history.push(item.to);
     } else if (typeof item.action === 'function') {
       event.preventDefault();
       item.action(event);

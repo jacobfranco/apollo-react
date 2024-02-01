@@ -5,11 +5,14 @@ import { AppDispatch, RootState } from 'src/store';
 import type { APIEntity } from 'src/types/entities';
 import { getAuthUserId, getAuthUserUrl } from 'src/utils/auth';
 import { loadCredentials } from 'src/actions/auth';
+import { importFetchedAccount } from './importer';
 
 const ME_FETCH_REQUEST = 'ME_FETCH_REQUEST' as const;
 const ME_FETCH_SUCCESS = 'ME_FETCH_SUCCESS' as const;
 const ME_FETCH_FAIL    = 'ME_FETCH_FAIL' as const;
 const ME_FETCH_SKIP    = 'ME_FETCH_SKIP' as const;
+
+const ME_PATCH_SUCCESS = 'ME_PATCH_SUCCESS' as const;
 
 const noOp = () => new Promise(f => f(undefined));
 
@@ -61,13 +64,31 @@ const fetchMeSuccess = (account: Account) => {
     skipAlert: true,
   });
 
+  interface MePatchSuccessAction {
+    type: typeof ME_PATCH_SUCCESS;
+    me: APIEntity;
+  }
+
+  const patchMeSuccess = (me: APIEntity) =>
+  (dispatch: AppDispatch) => {
+    const action: MePatchSuccessAction = {
+      type: ME_PATCH_SUCCESS,
+      me,
+    };
+
+    dispatch(importFetchedAccount(me));
+    dispatch(action);
+  };
+
   export {
     ME_FETCH_REQUEST,
     ME_FETCH_SUCCESS,
     ME_FETCH_FAIL,
     ME_FETCH_SKIP,
+    ME_PATCH_SUCCESS,
     fetchMe,
     fetchMeRequest,
     fetchMeSuccess,
     fetchMeFail,
+    patchMeSuccess,
   };

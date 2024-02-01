@@ -3,7 +3,7 @@ import { Map as ImmutableMap } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useState, useRef, useCallback } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { accountLookup } from 'src/actions/accounts';
@@ -38,7 +38,7 @@ interface IRegistrationForm {
 /** Allows the user to sign up for the website. */
 const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
   const intl = useIntl();
-  const navigate = useNavigate();
+  const history = useHistory();
   const dispatch = useAppDispatch();
 
   const settings = useSettings();
@@ -138,7 +138,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
       return launchModal();
     } else {
       return dispatch(verifyCredentials(access_token)).then(() => {
-        navigate('/');
+        history.push('/');
       });
     }
   };

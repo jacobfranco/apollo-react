@@ -1,3 +1,28 @@
+import camelCase from 'lodash/camelCase';
+import startCase from 'lodash/startCase';
+
+type Errors = {
+  [key: string]: string[];
+}
+
+const toSentence = (arr: string[]) => arr
+  .reduce(
+    (prev, curr, i) => prev + curr + (i === arr.length - 2 ? ' and ' : ', '),
+    '',
+  )
+  .slice(0, -2);
+
+
+const buildErrorMessage = (errors: Errors) => {
+  const individualErrors = Object.keys(errors).map(
+    (attribute) => `${startCase(camelCase(attribute))} ${toSentence(
+      errors[attribute],
+    )}`,
+  );
+
+  return toSentence(individualErrors);
+};
+
 const httpErrorMessages: { code: number; name: string; description: string }[] = [
     {
       code: 100,
@@ -176,6 +201,11 @@ const httpErrorMessages: { code: number; name: string; description: string }[] =
     },
   ];
 
-  export {
-    httpErrorMessages
-  }
+/** Whether the error is caused by a JS chunk failing to load. */
+function isNetworkError(error: unknown): boolean {
+  return error instanceof Error
+    && error.name === 'TypeError'
+    && error.message.startsWith('Failed to fetch dynamically imported module: ');
+}
+
+export { buildErrorMessage, httpErrorMessages, isNetworkError };

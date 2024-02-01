@@ -2,7 +2,7 @@ import { offset, Placement, useFloating, flip, arrow, shift } from '@floating-ui
 import clsx from 'clsx';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { closeDropdownMenu as closeDropdownMenuRedux, openDropdownMenu } from 'src/actions/dropdown-menu';
 import { closeModal, openModal } from 'src/actions/modals';
@@ -47,7 +47,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
   } = props;
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -161,7 +161,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
     if (typeof action === 'function') {
       action(event);
     } else if (to) {
-      navigate(to);
+      history.push(to);
     }
   };
 

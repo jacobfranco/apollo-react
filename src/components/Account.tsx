@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import ActionButton from 'src/features/ActionButton';
 import { useAppSelector } from 'src/hooks';

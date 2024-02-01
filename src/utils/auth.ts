@@ -1,5 +1,6 @@
 import { selectAccount, selectOwnAccount } from "src/selectors";
 import { RootState } from "src/store";
+import { List as ImmutableList } from 'immutable'
 
 export const validId = (id: any) => typeof id === 'string' && id !== 'null' && id !== 'undefined';
 
@@ -40,3 +41,21 @@ export const parseBaseURL = (url: any) => {
   };
 
   export const getLoggedInAccount = (state: RootState) => selectOwnAccount(state);
+
+  export const getAuthUserId = (state: RootState) => {
+    const me = state.auth.me;
+  
+    return ImmutableList([
+      state.auth.users.get(me!)?.id,
+      me,
+    ].filter(id => id)).find(validId);
+  };
+  
+  export const getAuthUserUrl = (state: RootState) => {
+    const me = state.auth.me;
+  
+    return ImmutableList([
+      state.auth.users.get(me!)?.url,
+      me,
+    ].filter(url => url)).find(isURL);
+  };

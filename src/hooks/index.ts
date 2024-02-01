@@ -3,6 +3,9 @@ export { useApolloConfig } from './useApolloConfig'
 export { useAppDispatch } from './useAppDispatch';
 export { useAppSelector } from './useAppSelector';
 export { useClickOutside } from './useClickOutside'
+export { useCompose } from './useCompose'
+export { useDebounce } from './useDebounce'
+export { useDraggedFiles } from './useDraggedFiles'
 export { useLoading } from './useLoading'
 export { useLocale } from './useLocale'
 export { useLoggedIn } from './useLoggedIn'

@@ -1,6 +1,8 @@
 import { Account as SchemaAccount } from 'src/schemas';
 import { 
-    StatusRecord 
+    HistoryRecord,
+    StatusRecord,
+    TagRecord,
 } from 'src/normalizers'
 
 import {
@@ -8,6 +10,9 @@ import {
 } from 'immutable'
 
 import type { LegacyMap } from 'src/utils/legacy';
+
+type History = ReturnType<typeof HistoryRecord>;
+type Tag = ReturnType<typeof TagRecord>;
 
 
 type Account = SchemaAccount & LegacyMap;
@@ -25,7 +30,9 @@ export {
     Account,
     APIEntity,
     EmbeddedEntity,
-    Status
+    History,
+    Status,
+    Tag
 }
 
 export type {
