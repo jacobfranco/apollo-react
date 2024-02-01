@@ -1,4 +1,5 @@
 export { useApi } from './useApi'
+export { useApolloConfig } from './useApolloConfig'
 export { useAppDispatch } from './useAppDispatch';
 export { useAppSelector } from './useAppSelector';
 export { useClickOutside } from './useClickOutside'

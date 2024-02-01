@@ -1,19 +1,41 @@
+import './polyfills';
+
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux'; 
-import { store } from './store'; 
-import 'src/styles/tailwind.css';
-import 'src/styles/Theme.css';
-import 'src/styles/assets/Fonts.css';
-import AppRouter from './Router';
+import { createRoot } from 'react-dom/client';
 
-// Create a root.
-const root = ReactDOM.createRoot(document.getElementById('root')!);
+import * as BuildConfig from 'src/build-config';
+import Apollo from 'src/init/Apollo';
+import { printConsoleWarning } from 'src/utils/console';
 
-root.render(
-  <React.StrictMode>
-    <Provider store={store}> {/* Wrap your app with Provider */}
-      <AppRouter />
-    </Provider>
-  </React.StrictMode>
-);
+import '@fontsource/inter/200.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/900.css';
+import '@fontsource/roboto-mono/400.css';
+import 'line-awesome/dist/font-awesome-line-awesome/css/all.css';
+import 'react-datepicker/dist/react-datepicker.css';
+
+import './iframe';
+import './styles/i18n/arabic.css';
+import './styles/i18n/javanese.css';
+import './styles/application.scss';
+import './styles/tailwind.css';
+
+import ready from './ready';
+import { registerSW, lockSW } from './utils/sw';
+
+if (BuildConfig.NODE_ENV === 'production') {
+  printConsoleWarning();
+  registerSW('/sw.js');
+  lockSW();
+}
+
+ready(() => {
+  const container = document.getElementById('soapbox') as HTMLElement;
+  const root = createRoot(container);
+
+  root.render(<Apollo />);
+});

@@ -13,6 +13,14 @@ type OnboardingStartAction = {
   
   export type OnboardingActions = OnboardingStartAction | OnboardingEndAction
 
+  const checkOnboardingStatus = () => (dispatch: React.Dispatch<OnboardingActions>) => {
+    const needsOnboarding = localStorage.getItem(ONBOARDING_LOCAL_STORAGE_KEY) === '1';
+  
+    if (needsOnboarding) {
+      dispatch({ type: ONBOARDING_START });
+    }
+  };
+
 const startOnboarding = () => (dispatch: React.Dispatch<OnboardingActions>) => {
     localStorage.setItem(ONBOARDING_LOCAL_STORAGE_KEY, '1');
     dispatch({ type: ONBOARDING_START });
@@ -22,4 +30,5 @@ const startOnboarding = () => (dispatch: React.Dispatch<OnboardingActions>) => {
     ONBOARDING_END,
     ONBOARDING_START,
     startOnboarding,
+    checkOnboardingStatus
   };

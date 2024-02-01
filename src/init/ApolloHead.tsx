@@ -1,0 +1,61 @@
+import clsx from 'clsx';
+import React, { useEffect } from 'react';
+
+import {
+  useSettings,
+  useApolloConfig,
+  useTheme,
+  useLocale,
+} from 'src/hooks';
+import { normalizeApolloConfig } from 'src/normalizers';
+// import { startSentry } from 'src/sentry';
+import { generateThemeCss } from 'src/utils/theme';
+
+const Helmet = React.lazy(() => import('src/components/Helmet'));
+
+interface IApolloHead {
+  children: React.ReactNode;
+}
+
+/** Injects metadata into site head with Helmet. */
+const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
+  const { locale, direction } = useLocale();
+  const settings = useSettings();
+  const apolloConfig = useApolloConfig();
+
+  const demo = !!settings.get('demo');
+  const darkMode = useTheme() === 'dark';
+  const themeCss = generateThemeCss(demo ? normalizeApolloConfig({ brandColor: '#A981FC' }) : apolloConfig);
+  // const dsn = apolloConfig.sentryDsn; TODO: Implement sentry
+
+  const bodyClass = clsx('h-full bg-white text-base dark:bg-gray-800', {
+    'no-reduce-motion': !settings.get('reduceMotion'),
+    'underline-links': settings.get('underlineLinks'),
+    'demetricator': settings.get('demetricator'),
+  });
+
+  /*  TODO: Implement sentry
+  useEffect(() => {
+    if (dsn) {
+      startSentry(dsn).catch(console.error);
+    }
+  }, [dsn]);
+
+  */
+
+  return (
+    <>
+      <Helmet>
+        <html lang={locale} className={clsx('h-full', { dark: darkMode })} />
+        <body className={bodyClass} dir={direction} />
+        {themeCss && <style id='theme' type='text/css'>{`:root{${themeCss}}`}</style>}
+        {darkMode && <style type='text/css'>{':root { color-scheme: dark; }'}</style>}
+        <meta name='theme-color' content={apolloConfig.brandColor} />
+      </Helmet>
+
+      {children}
+    </>
+  );
+};
+
+export default ApolloHead;

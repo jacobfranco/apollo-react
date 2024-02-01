@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,
@@ -23,7 +23,9 @@
     ],
     "types": [
       "vite/client",
-      "vite-plugin-compile-time/client"
+      "vitest/globals",
+      "vite-plugin-compile-time/client",
+      "@webbtc/webln-types"
     ]
   }
 }

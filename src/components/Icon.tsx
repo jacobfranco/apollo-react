@@ -1,9 +1,8 @@
 import React from 'react';
 
-import Counter from 'src/components/Counter';
-import SvgIcon from 'src/components/SvgIcon';
+import { Counter, SvgIcon } from 'src/components';
 
-interface IIcon extends Pick<React.SVGAttributes<SVGAElement>, 'strokeWidth'> {
+export interface IIcon extends Pick<React.SVGAttributes<SVGAElement>, 'strokeWidth'> {
   /** Class name for the <svg> element. */
   className?: string;
   /** Number to display a counter over the icon. */

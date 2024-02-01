@@ -2,13 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Apollo</title>
-    <link rel="preload" href="src/assets/logo.png" as="image" />
+    <!--server-generated-meta-->
+    <script type="module" src="./src/main.tsx"></script>
+    <%- snippets %>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="theme-mode-light no-reduce-motion">
+    <div id="soapbox" class="h-full">
+      <div class="loading-indicator-wrapper">
+        <div class="loading-indicator">
+          <div class="loading-indicator__container">
+            <div class="loading-indicator__figure"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <noscript>To use this website, please enable JavaScript.</noscript>
   </body>
 </html>

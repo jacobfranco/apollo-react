@@ -7,10 +7,6 @@ import { logIn, verifyCredentials, switchAccount } from 'src/actions/auth';
 import { closeModal } from 'src/actions/modals'
 import { BigCard } from 'src/components/BigCard'
 import LoginForm from './LoginForm'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { Button } from 'src/components'
-import 'src/styles/features/Login.css';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
