@@ -22,7 +22,7 @@ import { useAppDispatch } from 'src/hooks';
 
 import { useNodes } from './nodes';
 import AutosuggestPlugin from './plugins/autosuggest-plugin';
-import FocusPlugin from './plugins/focus-plugin';
+import FocusPlugin from './plugins/FocusPlugin';
 import RefPlugin from './plugins/ref-plugin';
 import StatePlugin from './plugins/state-plugin';
 import SubmitPlugin from './plugins/submit-plugin';

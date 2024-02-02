@@ -7,7 +7,6 @@ import entities from 'src/entity-store/reducer'
 
 import apollo from './apollo'
 import auth from './auth'
-import chats from './chats'
 import compose from './compose'
 import conversations from './conversations'
 import dropdown_menu from './dropdown-menu'
@@ -22,7 +21,6 @@ import trends from './trends'
 const reducers = {
   apollo,
   auth,
-  chats,
   compose,
   conversations,
   dropdown_menu,

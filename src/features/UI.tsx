@@ -29,7 +29,7 @@ import LandingPage from 'src/pages/LandingPage';
 // import ProfilePage from 'src/pages/ProfilePage'; TODO: Later
 // import SearchPage from 'src/pages/SearchPage'; TODO: Fully implement search
 // import StatusPage from 'src/pages/StatusPage'; TODO: Fully implement statuses
-import { getVapidKey } from 'src/utils/auth';
+// import { getVapidKey } from 'src/utils/auth';
 
 import Navbar from './Navbar';
 import {
@@ -62,7 +62,7 @@ import {
   // ApolloConfig,
   // MfaForm,
   // ChatIndex,
-  ChatWidget,
+  // ChatWidget,
   // ServerInfo,
   // Dashboard,
   // ModerationLog,
@@ -110,7 +110,7 @@ import {
   RegisterInvite,
   LandingTimeline,
 } from './AsyncComponents';
-import GlobalHotkeys from './util/global-hotkeys';
+import GlobalHotkeys from './GlobalHotkeys';
 import { WrappedRoute } from 'src/utils/react-router-helpers';
 
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
@@ -280,7 +280,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   const node = useRef<HTMLDivElement | null>(null);
   const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
-  const vapidKey = useAppSelector(state => getVapidKey(state));
+  // const vapidKey = useAppSelector(state => getVapidKey(state));
 
   const dropdownMenuIsOpen = useAppSelector(state => state.dropdown_menu.isOpen);
 
@@ -367,9 +367,11 @@ const UI: React.FC<IUI> = ({ children }) => {
     // dispatch(fetchCustomEmojis());
   }, [!!account]);
 
+  /*  TODO: Implement push notifications
   useEffect(() => {
-    // dispatch(registerPushNotifications());
+   dispatch(registerPushNotifications());
   }, [vapidKey]);
+*/
 
   const shouldHideFAB = (): boolean => {
     const path = location.pathname;
@@ -422,7 +424,7 @@ const UI: React.FC<IUI> = ({ children }) => {
           {me && (
             <div className='hidden xl:block'>
               <Suspense fallback={<div className='fixed bottom-0 z-[99] flex h-16 w-96 animate-pulse flex-col rounded-t-lg bg-white shadow-3xl ltr:right-5 rtl:left-5 dark:bg-gray-900' />}>
-                <ChatWidget />
+                {/* TODO: Implement Chats <ChatWidget /> */}
               </Suspense>
             </div>
           )}
