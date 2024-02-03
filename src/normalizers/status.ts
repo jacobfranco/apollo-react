@@ -1,13 +1,16 @@
-// TODO: Implement everything that this touches
+// TODO: Fix this 
 
 import { accountSchema } from 'src/schemas';
 import { 
     Map as ImmutableMap, 
     Record as ImmutableRecord,
+    List as ImmutableList,
     fromJS } from 'immutable'
 
-import type { Account, EmbeddedEntity } from 'src/types/entities';
+import type { Account, EmbeddedEntity, Group } from 'src/types/entities';
 import { maybeFromJS } from 'src/utils/normalizers';
+
+export type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'self' | 'group';
 
 const parseAccount = (status: ImmutableMap<string, any>) => {
     try {
@@ -26,9 +29,10 @@ export const StatusRecord = ImmutableRecord({
     dislikes_count: 0,
     disliked: false,
     edited_at: null as string | null,
-    favourited: false,
-    favourites_count: 0,
-    // group: null as Group | null, TODO: Implement Group
+    liked: false,
+    likes_count: 0,
+    filtered: ImmutableList<string>(),
+    group: null as Group | null, 
     in_reply_to_account_id: null as string | null,
     in_reply_to_id: null as string | null,
     id: '',
@@ -50,7 +54,7 @@ export const StatusRecord = ImmutableRecord({
     // tags: ImmutableList<ImmutableMap<string, any>>(), TODO: Implement tags
     uri: '',
     url: '',
-    // visibility: 'public' as StatusVisibility, TODO: Implement visiblity
+    visibility: 'public' as StatusVisibility, 
     zapped: false,
   
     // Internal fields

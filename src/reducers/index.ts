@@ -10,13 +10,22 @@ import auth from './auth'
 import compose from './compose'
 import conversations from './conversations'
 import dropdown_menu from './dropdown-menu'
+import filters from './filters'
+import group_memberships from './group-memberships';
+import group_relationships from './group-relationships';
+import groups from './groups';
 import me from './me'
+import notifications from './notifications'
+import pending_statuses from './pending-statuses'
 import polls from './polls'
 import relationships from './relationships'
 import search from './search'
 import settings from './settings'
+import sidebar from './sidebar'
 import statuses from './statuses'
+import timelines from './timelines'
 import trends from './trends'
+import user_lists from './user_lists'
 
 const reducers = {
   apollo,
@@ -25,13 +34,22 @@ const reducers = {
   conversations,
   dropdown_menu,
   entities,
+  filters,
+  groups,
+  group_memberships,
+  group_relationships,
   me,
-  polls
+  notifications,
+  pending_statuses,
+  polls,
   relationships,
   search,
   settings,
+  sidebar,
   statuses,
-  trends
+  timelines,
+  trends,
+  user_lists
 };
 
 // Build a default state from all reducers: it has the key and `undefined`

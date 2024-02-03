@@ -21,11 +21,11 @@ import { FormattedMessage } from 'react-intl';
 import { useAppDispatch } from 'src/hooks';
 
 import { useNodes } from './nodes';
-import AutosuggestPlugin from './plugins/autosuggest-plugin';
+import AutosuggestPlugin from './plugins/AutosuggestPlugin';
 import FocusPlugin from './plugins/FocusPlugin';
-import RefPlugin from './plugins/ref-plugin';
-import StatePlugin from './plugins/state-plugin';
-import SubmitPlugin from './plugins/submit-plugin';
+import RefPlugin from './plugins/RefPlugin';
+import StatePlugin from './plugins/StatePlugin';
+import SubmitPlugin from './plugins/SubmitPlugin';
 
 const LINK_MATCHERS = [
   createLinkMatcherWithRegExp(

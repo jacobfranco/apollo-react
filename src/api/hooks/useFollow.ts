@@ -6,7 +6,7 @@ import { useApi } from 'src/hooks/useApi';
 import { relationshipSchema } from 'src/schemas';
 
 interface FollowOpts {
-  reblogs?: boolean;
+  reposts?: boolean;
   notify?: boolean;
   languages?: string[];
 }

@@ -4,7 +4,7 @@ import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'src/actions/compose';
-import { toggleFavourite, toggleReblog } from 'src/actions/interactions';
+import { toggleLike, toggleRepost } from 'src/actions/interactions';
 import { openModal } from 'src/actions/modals';
 import { toggleStatusHidden, unfilterStatus } from 'src/actions/statuses';
 import TranslateButton from 'src/components/translate-button';
@@ -30,7 +30,7 @@ import type { Status as StatusEntity } from 'src/types/entities';
 export type ScrollPosition = { height: number; top: number };
 
 const messages = defineMessages({
-  reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
+  reposted_by: { id: 'status.reposted_by', defaultMessage: '{name} reposted' },
 });
 
 export interface IStatus {
@@ -85,7 +85,7 @@ const Status: React.FC<IStatus> = (props) => {
   const [minHeight, setMinHeight] = useState(208);
 
   const actualStatus = getActualStatus(status);
-  const isReblog = status.repost && typeof status.repost === 'object';
+  const isRepost = status.repost && typeof status.repost === 'object';
   const statusUrl = `/@${actualStatus.account.acct}/posts/${actualStatus.id}`;
   const group = actualStatus.group;
 
@@ -149,17 +149,17 @@ const Status: React.FC<IStatus> = (props) => {
     dispatch(replyCompose(actualStatus));
   };
 
-  const handleHotkeyFavourite = (): void => {
-    toggleFavourite(actualStatus);
+  const handleHotkeyLike = (): void => {
+    toggleLike(actualStatus);
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent): void => {
-    const modalReblog = () => dispatch(toggleReblog(actualStatus));
+    const modalRepost = () => dispatch(toggleRepost(actualStatus));
     const boostModal = settings.get('boostModal');
     if ((e && e.shiftKey) || !boostModal) {
-      modalReblog();
+      modalRepost();
     } else {
-      dispatch(openModal('BOOST', { status: actualStatus, onReblog: modalReblog }));
+      dispatch(openModal('BOOST', { status: actualStatus, onRepost: modalRepost }));
     }
   };
 
@@ -208,14 +208,14 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const renderStatusInfo = () => {
-    if (isReblog && showGroup && group) {
+    if (isRepost && showGroup && group) {
       return (
         <StatusInfo
           avatarSize={avatarSize}
           icon={<Icon src={require('@tabler/icons/repeat.svg')} className='h-4 w-4 text-green-600' />}
           text={
             <FormattedMessage
-              id='status.reblogged_by_with_group'
+              id='status.reposted_by_with_group'
               defaultMessage='{name} reposted from {group}'
               values={{
                 name: (
@@ -248,14 +248,14 @@ const Status: React.FC<IStatus> = (props) => {
           }
         />
       );
-    } else if (isReblog) {
+    } else if (isRepost) {
       return (
         <StatusInfo
           avatarSize={avatarSize}
           icon={<Icon src={require('@tabler/icons/repeat.svg')} className='h-4 w-4 text-green-600' />}
           text={
             <FormattedMessage
-              id='status.reblogged_by'
+              id='status.reposted_by'
               defaultMessage='{name} reposted'
               values={{
                 name: (
@@ -346,10 +346,10 @@ const Status: React.FC<IStatus> = (props) => {
     );
   }
 
-  let rebloggedByText;
-  if (status.reblog && typeof status.reblog === 'object') {
-    rebloggedByText = intl.formatMessage(
-      messages.reblogged_by,
+  let repostedByText;
+  if (status.repost && typeof status.repost === 'object') {
+    repostedByText = intl.formatMessage(
+      messages.reposted_by,
       { name: status.account.acct },
     );
   }
@@ -370,7 +370,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handlers = muted ? undefined : {
     reply: handleHotkeyReply,
-    favourite: handleHotkeyFavourite,
+    like: handleHotkeyLike,
     boost: handleHotkeyBoost,
     mention: handleHotkeyMention,
     open: handleHotkeyOpen,
@@ -403,7 +403,7 @@ const Status: React.FC<IStatus> = (props) => {
         className={clsx('status cursor-pointer', { focusable })}
         tabIndex={focusable && !muted ? 0 : undefined}
         data-featured={featured ? 'true' : null}
-        aria-label={textForScreenReader(intl, actualStatus, rebloggedByText)}
+        aria-label={textForScreenReader(intl, actualStatus, repostedByText)}
         ref={node}
         onClick={handleClick}
         role='link'

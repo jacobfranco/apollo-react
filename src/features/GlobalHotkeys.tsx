@@ -16,7 +16,7 @@ const keyMap = {
   search: ['s', '/'],
   forceNew: 'option+n',
   reply: 'r',
-  favourite: 'f',
+  like: 'l',
   react: 'e',
   boost: 'b',
   mention: 'm',
@@ -27,7 +27,7 @@ const keyMap = {
   back: 'backspace',
   goToHome: 'g h',
   goToNotifications: 'g n',
-  goToFavourites: 'g f',
+  goToLikes: 'g l',
   goToPinned: 'g p',
   goToProfile: 'g u',
   goToBlocked: 'g b',
@@ -110,9 +110,9 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
     history.push('/notifications');
   };
 
-  const handleHotkeyGoToFavourites = () => {
+  const handleHotkeyGoToLikes = () => {
     if (!account) return;
-    history.push(`/@${account.username}/favorites`);
+    history.push(`/@${account.username}/likes`);
   };
 
   const handleHotkeyGoToPinned = () => {
@@ -147,7 +147,7 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
     back: handleHotkeyBack,
     goToHome: handleHotkeyGoToHome,
     goToNotifications: handleHotkeyGoToNotifications,
-    goToFavourites: handleHotkeyGoToFavourites,
+    goToLikes: handleHotkeyGoToLikes,
     goToPinned: handleHotkeyGoToPinned,
     goToProfile: handleHotkeyGoToProfile,
     goToBlocked: handleHotkeyGoToBlocked,

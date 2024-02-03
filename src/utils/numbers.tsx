@@ -1,8 +1,12 @@
 import React from 'react'
+import z from 'zod'
 import { FormattedNumber } from 'react-intl';
 
 /** Check if a value is REALLY a number. */
 export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value);
+
+/** The input is a number and is not NaN. */
+export const realNumberSchema = z.coerce.number().refine(n => !isNaN(n));
 
 const roundDown = (num: number) => {
   if (num >= 100 && num < 1000) {

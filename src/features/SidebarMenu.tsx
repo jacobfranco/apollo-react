@@ -10,7 +10,7 @@ import { closeSidebar } from 'src/actions/sidebar';
 import { useAccount } from 'src/api/hooks';
 import Account from 'src/components/Account';
 import { Stack, Divider, HStack, Icon, IconButton, Text } from 'src/components';
-import ProfileStats from 'src/features/ui/components/profile-stats';
+import ProfileStats from './ProfileStats';
 import { useAppDispatch, useAppSelector, useGroupsPath } from 'src/hooks';
 import { makeGetOtherAccounts } from 'src/selectors';
 

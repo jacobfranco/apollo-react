@@ -1,6 +1,7 @@
 import { Resolve } from 'src/utils/types';
 import { z } from 'zod';
 import {accountSchema } from './account'
+import { groupSchema } from './group';
 
 // TODO: Implement schemas for content, group, attachment, mention, tag
 const statusSchema = z.object({
@@ -10,7 +11,7 @@ const statusSchema = z.object({
   created_at: z.date(),
   liked: z.boolean(),
   likes_count: z.number(),
-  // group: groupSchema.nullable(), // Assuming groupSchema is defined elsewhere
+  group: groupSchema.nullable(), 
   in_reply_to_account_id: z.string().nullable(),
   in_reply_to_id: z.string().nullable(),
   id: z.string(),
@@ -30,6 +31,7 @@ const statusSchema = z.object({
   // tags: z.array(tagSchema), // Assuming tagSchema is defined elsewhere
   uri: z.string().url(),
   url: z.string().url(),
+  visibility: z.string().catch('public'),
 });
 
 type Status = Resolve<z.infer<typeof statusSchema>>;

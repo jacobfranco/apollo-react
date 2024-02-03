@@ -99,11 +99,11 @@ const importFetchedStatus = (status: APIEntity, idempotencyKey?: string) =>
     // Skip broken statuses
     if (isBroken(status)) return;
 
-    if (status.reblog?.id) {
-      dispatch(importFetchedStatus(status.reblog));
+    if (status.repost?.id) {
+      dispatch(importFetchedStatus(status.repost));
     }
 
-    // TODO: Removed pleroma and fediberd quotes and reblogs, so make sure that works still
+    // TODO: Removed pleroma and fediberd quotes and reposts, so make sure that works still
 
     if (status.poll?.id) {
       dispatch(importFetchedPoll(status.poll));
@@ -126,7 +126,7 @@ const isBroken = (status: APIEntity) => {
     if (!status.account.id) return true;
     // Skip broken reposts
     // https://gitlab.com/soapbox-pub/rebased/-/issues/28
-    if (status.reblog && !status.reblog.account.id) return true;
+    if (status.repost && !status.repost.account.id) return true;
     return false;
   } catch (e) {
     return true;
@@ -146,8 +146,8 @@ const importFetchedStatuses = (statuses: APIEntity[]) =>
       normalStatuses.push(status);
       accounts.push(status.account);
 
-      if (status.reblog?.id) {
-        processStatus(status.reblog);
+      if (status.repost?.id) {
+        processStatus(status.repost);
       }
 
       if (status.poll?.id) {

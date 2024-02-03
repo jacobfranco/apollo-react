@@ -23,6 +23,7 @@ export { default as Input } from './Input'
 export { default as LandingGradient } from './LandingGradient'
 export { default as Layout } from './Layout'
 export { default as LoadingScreen } from './LoadingScreen'
+export { default as Mention } from './Mention'
 export { Menu, MenuButton, MenuDivider, MenuItem, MenuItems, MenuLink, MenuList } from './Menu';
 export { default as Portal } from './Portal'
 export { default as RelativeTimestamp } from './RelativeTimestamp'

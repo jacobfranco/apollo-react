@@ -1,5 +1,8 @@
 import { Account as SchemaAccount } from 'src/schemas';
 import { 
+    FilterRecord,
+    FilterKeywordRecord,
+    FilterStatusRecord,
     HistoryRecord,
     StatusRecord,
     TagRecord,
@@ -11,6 +14,9 @@ import {
 
 import type { LegacyMap } from 'src/utils/legacy';
 
+type Filter = ReturnType<typeof FilterRecord>;
+type FilterKeyword = ReturnType<typeof FilterKeywordRecord>;
+type FilterStatus = ReturnType<typeof FilterStatusRecord>;
 type History = ReturnType<typeof HistoryRecord>;
 type Tag = ReturnType<typeof TagRecord>;
 
@@ -30,11 +36,17 @@ export {
     Account,
     APIEntity,
     EmbeddedEntity,
+    Filter,
+    FilterKeyword,
+    FilterStatus,
     History,
     Status,
     Tag
 }
 
 export type {
+    Group,
+  GroupMember,
+  GroupRelationship,
     Relationship
 } from 'src/schemas'
