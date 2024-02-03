@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
 import { cancelReplyCompose } from 'src/actions/compose';
-import { cancelEventCompose } from 'src/actions/events';
 import { closeModal } from 'src/actions/modals';
 import { cancelReport } from 'src/actions/reports';
 

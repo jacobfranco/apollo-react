@@ -13,7 +13,7 @@ const messages = defineMessages({
 });
 
 interface IProfileStats {
-  account: Pick<Account, 'acct' | 'followers_count' | 'following_count'> | undefined;
+  account: Pick<Account, 'acct' | 'followersCount' | 'followingCount'> | undefined;
   onClickHandler?: React.MouseEventHandler;
 }
 
@@ -27,10 +27,10 @@ const ProfileStats: React.FC<IProfileStats> = ({ account, onClickHandler }) => {
 
   return (
     <HStack alignItems='center' space={3}>
-      <NavLink to={`/@${account.acct}/followers`} onClick={onClickHandler} title={intl.formatNumber(account.followers_count)} className='hover:underline'>
+      <NavLink to={`/@${account.acct}/followers`} onClick={onClickHandler} title={intl.formatNumber(account.followersCount)} className='hover:underline'>
         <HStack alignItems='center' space={1}>
           <Text theme='primary' weight='bold' size='sm'>
-            {shortNumberFormat(account.followers_count)}
+            {shortNumberFormat(account.followersCount)}
           </Text>
           <Text weight='bold' size='sm'>
             {intl.formatMessage(messages.followers)}
@@ -38,10 +38,10 @@ const ProfileStats: React.FC<IProfileStats> = ({ account, onClickHandler }) => {
         </HStack>
       </NavLink>
 
-      <NavLink to={`/@${account.acct}/following`} onClick={onClickHandler} title={intl.formatNumber(account.following_count)} className='hover:underline'>
+      <NavLink to={`/@${account.acct}/following`} onClick={onClickHandler} title={intl.formatNumber(account.followingCount)} className='hover:underline'>
         <HStack alignItems='center' space={1}>
           <Text theme='primary' weight='bold' size='sm'>
-            {shortNumberFormat(account.following_count)}
+            {shortNumberFormat(account.followingCount)}
           </Text>
           <Text weight='bold' size='sm'>
             {intl.formatMessage(messages.follows)}

@@ -268,15 +268,6 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                       onClick={onClose}
                     />
 
-                  {account.admin && (
-                    <SidebarLink
-                      to='/soapbox/config'
-                      icon={require('@tabler/icons/settings.svg')}
-                      text={intl.formatMessage(messages.soapboxConfig)}
-                      onClick={onClose}
-                    />
-                  )}
-
                   <Divider />
 
                   <SidebarLink

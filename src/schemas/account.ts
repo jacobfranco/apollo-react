@@ -16,6 +16,7 @@ const accountSchema = z.object({
     id: z.string(),
     lastStatusAt: z.string().optional(),
     location: z.string().optional(),
+    locked: z.boolean().catch(false),
     mute_expires_at: z.union([
       z.string(),
       z.null(),
