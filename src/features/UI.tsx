@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector, useOwnAccount, useApolloConfig, useDrag
 // import ChatsPage from 'src/pages/ChatsPage';
 import DefaultPage from 'src/pages/DefaultPage';
 import EmptyPage from 'src/pages/EmptyPage';
-// import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups
+// import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
 // import GroupsPage from 'src/pages/GroupsPage';
 // import GroupsPendingPage from 'src/pages/GroupsPendingPage';
 import HomePage from 'src/pages/HomePage';

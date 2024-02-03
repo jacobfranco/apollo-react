@@ -7,7 +7,7 @@ import {
     List as ImmutableList,
     fromJS } from 'immutable'
 
-import type { Account, EmbeddedEntity, Group } from 'src/types/entities';
+import type { Account, EmbeddedEntity, Group, Mention } from 'src/types/entities';
 import { maybeFromJS } from 'src/utils/normalizers';
 
 export type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'self' | 'group';
@@ -38,7 +38,7 @@ export const StatusRecord = ImmutableRecord({
     id: '',
     language: null as string | null,
     // media_attachments: ImmutableList<Attachment>(), TODO: Implement Attachments
-    // mentions: ImmutableList<Mention>(), TODO: Implement Mentions
+    mentions: ImmutableList<Mention>(), 
     muted: false,
     pinned: false,
     // poll: null as EmbeddedEntity<Poll>, TODO: Implement Poll
@@ -51,7 +51,7 @@ export const StatusRecord = ImmutableRecord({
     replies_count: 0,
     sensitive: false,
     spoiler_text: '',
-    // tags: ImmutableList<ImmutableMap<string, any>>(), TODO: Implement tags
+    tags: ImmutableList<ImmutableMap<string, any>>(), 
     uri: '',
     url: '',
     visibility: 'public' as StatusVisibility, 

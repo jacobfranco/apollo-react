@@ -14,21 +14,19 @@ import {
   } from 'src/actions/search';
 import { APIEntity } from 'src/types/entities';
 
-  const ResultsRecord = ImmutableRecord({ // TODO: Implement statuses, groups, and tags
+  const ResultsRecord = ImmutableRecord({ 
     accounts: ImmutableOrderedSet<string>(),
-    /*
     statuses: ImmutableOrderedSet<string>(),
     groups: ImmutableOrderedSet<string>(),
     hashtags: ImmutableOrderedSet<Tag>(), // it's a list of maps
-    */
     accountsHasMore: false,
-    // statusesHasMore: false,
-   // groupsHasMore: false,
-   // hashtagsHasMore: false,
+    statusesHasMore: false,
+    groupsHasMore: false,
+    hashtagsHasMore: false,
     accountsLoaded: false,
-    // statusesLoaded: false,
-    // groupsLoaded: false,
-    // hashtagsLoaded: false,
+    statusesLoaded: false,
+    groupsLoaded: false,
+    hashtagsLoaded: false,
   });
 
   const ReducerRecord = ImmutableRecord({
@@ -44,28 +42,28 @@ import { APIEntity } from 'src/types/entities';
 
   type State = ReturnType<typeof ReducerRecord>;
   type APIEntities = Array<APIEntity>;
-export type SearchFilter = 'accounts' | 'statuses' | 'groups' | 'hashtags'; // TODO: Implement statuses, groups, and hashtags
+export type SearchFilter = 'accounts' | 'statuses' | 'groups' | 'hashtags'; 
 
 const toIds = (items: APIEntities = []) => {
     return ImmutableOrderedSet(items.map(item => item.id));
   };
 
-const importResults = (state: State, results: APIEntity, searchTerm: string, searchType: SearchFilter, next: string | null) => { // TODO: Implement statuses, groups, and hashtags
+const importResults = (state: State, results: APIEntity, searchTerm: string, searchType: SearchFilter, next: string | null) => { 
     return state.withMutations(state => {
       if (state.value === searchTerm && state.filter === searchType) {
         state.set('results', ResultsRecord({
           accounts: toIds(results.accounts),
-          // statuses: toIds(results.statuses),
-          // groups: toIds(results.groups),
-         //  hashtags: ImmutableOrderedSet(results.hashtags.map(normalizeTag)), // it's a list of records
+          statuses: toIds(results.statuses),
+          groups: toIds(results.groups),
+          hashtags: ImmutableOrderedSet(results.hashtags.map(normalizeTag)), // it's a list of records
           accountsHasMore: results.accounts.length >= 20,
-          // statusesHasMore: results.statuses.length >= 20,
-          // groupsHasMore: results.groups?.length >= 20,
-          // hashtagsHasMore: results.hashtags.length >= 20,
+          statusesHasMore: results.statuses.length >= 20,
+          groupsHasMore: results.groups?.length >= 20,
+          hashtagsHasMore: results.hashtags.length >= 20,
           accountsLoaded: true,
-          // statusesLoaded: true,
-          // groupsLoaded: true,
-          // hashtagsLoaded: true,
+          statusesLoaded: true,
+          groupsLoaded: true,
+          hashtagsLoaded: true,
         }));
   
         state.set('submitted', true);

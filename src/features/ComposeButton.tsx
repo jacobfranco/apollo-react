@@ -41,8 +41,7 @@ const HomeComposeButton = () => {
   );
 };
 
-/*
-const GroupComposeButton = () => { TODO: Implement groups
+const GroupComposeButton = () => { 
   const dispatch = useAppDispatch();
   const match = useRouteMatch<{ groupSlug: string }>('/group/:groupSlug');
   const { entity: group } = useGroupLookup(match?.params.groupSlug || '');
@@ -69,6 +68,5 @@ const GroupComposeButton = () => { TODO: Implement groups
     </Button>
   );
 };
-*/
 
 export default ComposeButton;

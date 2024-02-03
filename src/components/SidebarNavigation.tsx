@@ -4,7 +4,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Stack } from 'src/components';
 import { useStatContext } from 'src/contexts/stat-context';
 import ComposeButton from 'src/features/ComposeButton';
-import { useAppSelector, /* useGroupsPath,*/ useOwnAccount, useSettings } from 'src/hooks'; // TODO: Implement groups
+import { useAppSelector, useGroupsPath, useOwnAccount, useSettings } from 'src/hooks';
 
 import DropdownMenu, { Menu } from './dropdown-menu';
 import SidebarNavigationLink from './SidebarNavigationLink';
@@ -24,12 +24,11 @@ const SidebarNavigation = () => {
 
   const settings = useSettings();
   const { account } = useOwnAccount();
-  // const groupsPath = useGroupsPath();  TODO: Implement groups
+  const groupsPath = useGroupsPath(); 
 
-  const notificationCount = 0;  // TODO: remove, this is dummy notification count 
-
-/* TODO: Implement notifications, follow requests, and admin
   const notificationCount = useAppSelector((state) => state.notifications.unread);
+
+/* TODO: Implement follow requests and admin
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
   const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
 */ 
@@ -123,13 +122,11 @@ const SidebarNavigation = () => {
 
             {renderMessagesLink() /* TODO: Maybe just replace with the component defined in the function */ }
 
-            { /* TODO: Implement groups
               <SidebarNavigationLink
                 to={groupsPath}
                 icon={require('@tabler/icons/circles.svg')}
                 text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />} 
               />
-              */}
 
             <SidebarNavigationLink
               to={`/@${account.acct}`} // TODO: Maybe replace with id ? idk the deal with acct yet

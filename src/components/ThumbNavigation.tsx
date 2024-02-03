@@ -3,19 +3,18 @@ import { FormattedMessage } from 'react-intl';
 
 import ThumbNavigationLink from 'src/components/ThumbNavigationLink';
 import { useStatContext } from 'src/contexts/stat-context';
-import { useAppSelector, /* useGroupsPath,*/ useOwnAccount } from 'src/hooks'; //TODO: Implement groups
+import { useAppSelector, useGroupsPath, useOwnAccount } from 'src/hooks';
 
 const ThumbNavigation: React.FC = (): JSX.Element => {
   const { account } = useOwnAccount();
-  // const groupsPath = useGroupsPath();
+  const groupsPath = useGroupsPath();
 
   const { unreadChatsCount } = useStatContext();
 
-  const notificationCount = 0;  // TODO: Dummy init, remove later
+  const notificationCount = useAppSelector((state) => state.notifications.unread);
   const dashboardCount = 0; // TODO: Dummy init, remove later
 
-  /* TODO: Implement notifications and admin
-  const notificationCount = useAppSelector((state) => state.notifications.unread);
+  /* TODO: Implement admin
   const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
 */ 
   /** Conditionally render the supported messages link */
@@ -57,14 +56,12 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
         exact
       />
 
-      {/*  TODO: Implement groups
         <ThumbNavigationLink
           src={require('@tabler/icons/circles.svg')}
           text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
           to={groupsPath}
           exact
         />
-      */ }
 
       <ThumbNavigationLink
         src={require('@tabler/icons/search.svg')}

@@ -3,9 +3,9 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 
-// import { groupComposeModal } from 'soapbox/actions/compose'; TODO: Implement groups
+import { groupComposeModal } from 'src/actions/compose';
 import { openModal } from 'src/actions/modals';
-// mport { useGroupLookup } from 'soapbox/api/hooks';
+import { useGroupLookup } from 'src/api/hooks';
 import { Avatar, HStack, Icon } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 
@@ -18,7 +18,7 @@ const FloatingActionButton: React.FC = () => {
   const location = useLocation();
 
   if (location.pathname.startsWith('/group/')) {
-    return // <GroupFAB />; TODO: Implement groups
+    return  <GroupFAB />;
   }
 
   return <HomeFAB />;
@@ -49,7 +49,6 @@ const HomeFAB: React.FC = () => {
   );
 };
 
-/* TODO: Implmement groups
 const GroupFAB: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
@@ -82,6 +81,5 @@ const GroupFAB: React.FC = () => {
     </button>
   );
 };
-*/ 
 
 export default FloatingActionButton;

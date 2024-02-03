@@ -6,7 +6,7 @@ import { useEntity } from 'src/entity-store/hooks';
 import { useLoggedIn, useApi } from 'src/hooks';
 import { type Account, accountSchema } from 'src/schemas';
 
-import { useRelationship } from './useRelationship'; // TODO: Implement Relationships
+import { useRelationship } from './useRelationship'; 
 
 interface UseAccountOpts {
   withRelationship?: boolean;

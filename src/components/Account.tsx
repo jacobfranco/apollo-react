@@ -20,7 +20,7 @@ import {
     VerificationBadge 
 } from 'src/components';
 
-// import type { StatusApprovalStatus } from 'soapbox/normalizers/status';
+import type { StatusApprovalStatus } from 'src/normalizers/status';
 import type { Account as AccountSchema } from 'src/schemas';
 
 interface IInstanceFavicon {
@@ -221,7 +221,7 @@ const Account = ({
                   </>
                 ) : null}
 
-                { /* TODO: Implement approval Status approvalStatus && ['pending', 'rejected'].includes(approvalStatus) && ( 
+                {approvalStatus && ['pending', 'rejected'].includes(approvalStatus) && ( 
                   <>
                     <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
@@ -231,7 +231,7 @@ const Account = ({
                         : <FormattedMessage id='status.approval.rejected' defaultMessage='Rejected' />}
                     </Text>
                   </>
-                ) */ }
+                )}
 
                 {showEdit ? (
                   <>

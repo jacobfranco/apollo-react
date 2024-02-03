@@ -5,7 +5,6 @@ import { useStatContext } from 'src/contexts/stat-context';
 import { useAppSelector, useSettings } from 'src/hooks';
 import { RootState } from 'src/store';
 
-/* TODO: Implement Notifications
 const getNotifTotals = (state: RootState): number => {
   const notifications = state.notifications.unread || 0;
   const reports = state.admin.openReports.count();
@@ -13,21 +12,19 @@ const getNotifTotals = (state: RootState): number => {
   return notifications + reports + approvals;
 };
 
-*/
-
 interface IHelmet {
   children: React.ReactNode;
 }
 
 const Helmet: React.FC<IHelmet> = ({ children }) => {
   const { unreadChatsCount } = useStatContext();
-  // const unreadCount = useAppSelector((state) => getNotifTotals(state) + unreadChatsCount);
+  const unreadCount = useAppSelector((state) => getNotifTotals(state); // + unreadChatsCount); TODO: Implement chats
   const demetricator = useSettings().get('demetricator');
 
-  // const hasUnreadNotifications = React.useMemo(() => !(unreadCount < 1 || demetricator), [unreadCount, demetricator]);
+  const hasUnreadNotifications = React.useMemo(() => !(unreadCount < 1 || demetricator), [unreadCount, demetricator]);
 
   const addCounter = (string: string) => {
-    // return hasUnreadNotifications ? `(${unreadCount}) ${string}` : string;
+    return hasUnreadNotifications ? `(${unreadCount}) ${string}` : string;
   };
 
   return (

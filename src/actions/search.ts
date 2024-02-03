@@ -3,7 +3,7 @@ import { AppDispatch, RootState } from 'src/store'
 
 import type { SearchFilter } from 'src/reducers/search';
 import { APIEntity } from 'src/types/entities';
-import { importFetchedAccounts } from './importer';
+import { importFetchedAccounts, importFetchedStatuses } from './importer';
 
 const SEARCH_CHANGE = 'SEARCH_CHANGE';
 const SEARCH_CLEAR = 'SEARCH_CLEAR';
@@ -71,16 +71,14 @@ const submitSearch = (filter?: SearchFilter) =>
       if (response.data.accounts) {
         dispatch(importFetchedAccounts(response.data.accounts));
       }
-      /* TODO: Implement statuses
       if (response.data.statuses) {
         dispatch(importFetchedStatuses(response.data.statuses));
       }
-      */
 
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(fetchSearchSuccess(response.data, value, type, next ? next.uri : null));
-      // dispatch(fetchRelationships(response.data.accounts.map((item: APIEntity) => item.id))); // TODO: Implement relationships
+      dispatch(fetchRelationships(response.data.accounts.map((item: APIEntity) => item.id)));
     }).catch(error => {
       dispatch(fetchSearchFail(error));
     });
