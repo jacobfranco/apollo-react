@@ -3,7 +3,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { expandHomeTimeline } from 'src/actions/timelines';
-import PullToRefresh from 'src/components/pull-to-refresh';
+import PullToRefresh from 'src/components/PullToRefresh';
 import { Stack, Text } from 'src/components';
 import { Column } from 'src/components/Column'
 import Timeline from 'src/features/Timeline';

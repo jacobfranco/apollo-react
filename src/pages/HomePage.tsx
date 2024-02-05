@@ -15,8 +15,7 @@ import {
 } from 'src/features/AsyncComponents';
 import { useAppSelector, useOwnAccount, useDraggedFiles, useAppDispatch } from 'src/hooks';
 
-import { Avatar, HStack, Layout } from 'src/components';
-import { Card, CardBody } from 'src/components/Card'
+import { Avatar, HStack, Layout, Card, CardBody } from 'src/components';
 import ComposeForm from '../features/compose/components/ComposeForm';
 
 interface IHomePage {

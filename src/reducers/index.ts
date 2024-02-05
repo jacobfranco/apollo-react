@@ -23,6 +23,7 @@ import search from './search'
 import settings from './settings'
 import sidebar from './sidebar'
 import statuses from './statuses'
+import suggestions from './suggestions'
 import timelines from './timelines'
 import trends from './trends'
 import user_lists from './user_lists'
@@ -47,6 +48,7 @@ const reducers = {
   settings,
   sidebar,
   statuses,
+  suggestions,
   timelines,
   trends,
   user_lists

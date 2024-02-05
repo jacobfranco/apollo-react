@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { Spinner } from 'src/components';
-import { Card, CardBody } from 'src/components/Card'
+import { Spinner, Card, CardBody } from 'src/components';
 
 const ColumnLoading = () => (
   <Card variant='rounded'>

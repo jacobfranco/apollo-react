@@ -2,7 +2,8 @@ import { createSelector } from 'reselect';
 
 import { 
   List as ImmutableList,
-  OrderedSet as ImmutableOrderedSet
+  OrderedSet as ImmutableOrderedSet,
+  Map as ImmutableMap
  } from 'immutable'
 
 import { RootState } from "src/store";
@@ -12,6 +13,8 @@ import type { Account, Filter as FilterEntity, Status } from 'src/types/entities
 import { EntityStore } from 'src/entity-store/types';
 import { validId } from 'src/utils/auth';
 import type { ContextType } from 'src/normalizers/filter';
+import { shouldFilter } from 'src/utils/timelines';
+import { getSettings } from 'src/actions/settings';
 
 export function selectAccount(state: RootState, accountId: string) {
     return state.entities[Entities.ACCOUNTS]?.store[accountId] as AccountSchema | undefined;
@@ -61,7 +64,7 @@ export function selectAccount(state: RootState, accountId: string) {
         (state: RootState) => state.me,
       ],
   
-      (statusBase, statusRepost, username, filters, me, features) => {
+      (statusBase, statusRepost, username, filters, me) => {
         if (!statusBase) return null;
         const { account } = statusBase;
         const accountUsername = account.acct;
@@ -74,7 +77,7 @@ export function selectAccount(state: RootState, accountId: string) {
         return statusBase.withMutations((map: Status) => {
           map.set('repost', statusRepost || null);
   
-          if ((features.filters) && account.id !== me) {
+          if ( account.id !== me) {
             const filtered = checkFiltered(statusRepost?.search_index || statusBase.search_index, filters);
   
             map.set('filtered', filtered);
@@ -170,3 +173,17 @@ const checkFiltered = (index: string, filters: ImmutableList<FilterEntity>) =>
       }).join('|'),
     ).join('|'), 'i');
   };
+
+  type ColumnQuery = { type: string; prefix?: string };
+
+  export const makeGetStatusIds = () => createSelector([
+    (state: RootState, { type, prefix }: ColumnQuery) => getSettings(state).get(prefix || type, ImmutableMap()),
+    (state: RootState, { type }: ColumnQuery) => state.timelines.get(type)?.items || ImmutableOrderedSet(),
+    (state: RootState) => state.statuses,
+  ], (columnSettings: any, statusIds: ImmutableOrderedSet<string>, statuses) => {
+    return statusIds.filter((id: string) => {
+      const status = statuses.get(id);
+      if (!status) return true;
+      return !shouldFilter(status, columnSettings);
+    });
+  });

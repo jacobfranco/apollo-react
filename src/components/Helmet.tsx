@@ -18,7 +18,7 @@ interface IHelmet {
 
 const Helmet: React.FC<IHelmet> = ({ children }) => {
   const { unreadChatsCount } = useStatContext();
-  const unreadCount = useAppSelector((state) => getNotifTotals(state); // + unreadChatsCount); TODO: Implement chats
+  const unreadCount = useAppSelector((state) => getNotifTotals(state)); // + unreadChatsCount); TODO: Implement chats
   const demetricator = useSettings().get('demetricator');
 
   const hasUnreadNotifications = React.useMemo(() => !(unreadCount < 1 || demetricator), [unreadCount, demetricator]);

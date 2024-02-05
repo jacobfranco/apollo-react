@@ -6,8 +6,7 @@ import ReactSwipeableViews from 'react-swipeable-views';
 import { createSelector } from 'reselect';
 
 import { addReaction as addReactionAction, removeReaction as removeReactionAction } from 'src/actions/announcements';
-import { HStack, Widget } from 'src/components';
-import { Card } from 'src/components/Card'
+import { HStack, Widget, Card } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 import Announcement from './announcement';
