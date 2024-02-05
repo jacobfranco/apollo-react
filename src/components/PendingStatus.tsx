@@ -1,11 +1,8 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Account, StatusContent, Card, HStack, Stack } from 'src/components';
-import StatusReplyMentions from 'soapbox/components/status-reply-mentions';
-import PlaceholderCard from 'soapbox/features/placeholder/components/placeholder-card';
-import PlaceholderMediaGallery from 'soapbox/features/placeholder/components/placeholder-media-gallery';
-import QuotedStatus from 'soapbox/features/status/containers/quoted-status-container';
+import { Account, StatusContent, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery } from 'src/components';
+import QuotedStatus from 'src/features/status/containers/quoted-status-container';
 import { useAppSelector } from 'src/hooks';
 
 import { buildStatus } from '../util/pending-status-builder';

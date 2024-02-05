@@ -54,5 +54,6 @@ export type {
   GroupMember,
   GroupRelationship,
   Poll,
-    Relationship
+  PollOption,
+  Relationship
 } from 'src/schemas'
