@@ -7,7 +7,7 @@ import {
     List as ImmutableList,
     fromJS } from 'immutable'
 
-import type { Account, EmbeddedEntity, Group, Mention } from 'src/types/entities';
+import type { Account, Attachment, EmbeddedEntity, Group, Mention, Poll } from 'src/types/entities';
 import { maybeFromJS } from 'src/utils/normalizers';
 
 export type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'self' | 'group';
@@ -37,11 +37,11 @@ export const StatusRecord = ImmutableRecord({
     in_reply_to_id: null as string | null,
     id: '',
     language: null as string | null,
-    // media_attachments: ImmutableList<Attachment>(), TODO: Implement Attachments
+    media_attachments: ImmutableList<Attachment>(), 
     mentions: ImmutableList<Mention>(), 
     muted: false,
     pinned: false,
-    // poll: null as EmbeddedEntity<Poll>, TODO: Implement Poll
+    poll: null as EmbeddedEntity<Poll>,
     quote: null as EmbeddedEntity<any>,
     quotes_count: 0,
     // reactions: null as ImmutableList<EmojiReaction> | null,

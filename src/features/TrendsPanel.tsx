@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { setFilter } from 'src/actions/search';
 import Hashtag from 'src/components/Hashtag';
-import { Text, Widget } from 'src/components';
-import PlaceholderSidebarTrends from 'src/components/PlaceholderSidebarTrends';
+import { Text, Widget, PlaceholderSidebarTrends } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 import useTrends from 'src/queries/trends';
 

@@ -1,9 +1,11 @@
 import { Account as SchemaAccount } from 'src/schemas';
 import { 
+    AttachmentRecord,
     FilterRecord,
     FilterKeywordRecord,
     FilterStatusRecord,
     HistoryRecord,
+    MentionRecord,
     StatusRecord,
     TagRecord,
 } from 'src/normalizers'
@@ -14,12 +16,13 @@ import {
 
 import type { LegacyMap } from 'src/utils/legacy';
 
+type Attachment = ReturnType<typeof AttachmentRecord>;
 type Filter = ReturnType<typeof FilterRecord>;
 type FilterKeyword = ReturnType<typeof FilterKeywordRecord>;
 type FilterStatus = ReturnType<typeof FilterStatusRecord>;
 type History = ReturnType<typeof HistoryRecord>;
+type Mention = ReturnType<typeof MentionRecord>;
 type Tag = ReturnType<typeof TagRecord>;
-
 
 type Account = SchemaAccount & LegacyMap;
 
@@ -35,11 +38,13 @@ type EmbeddedEntity<T extends object> = null | string | ReturnType<ImmutableReco
 export {
     Account,
     APIEntity,
+    Attachment,
     EmbeddedEntity,
     Filter,
     FilterKeyword,
     FilterStatus,
     History,
+    Mention,
     Status,
     Tag
 }
@@ -48,5 +53,6 @@ export type {
     Group,
   GroupMember,
   GroupRelationship,
+  Poll,
     Relationship
 } from 'src/schemas'

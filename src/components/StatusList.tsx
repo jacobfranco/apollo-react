@@ -3,15 +3,13 @@ import debounce from 'lodash/debounce';
 import React, { useRef, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { LoadGap, ScrollableList }from 'src/components';
+import { LoadGap, ScrollableList, PlaceholderStatus, PendingStatus }from 'src/components';
 import StatusContainer from 'src/containers/StatusContainer';
-import FeedSuggestions from 'src/features/feed-suggestions/feed-suggestions';
-import PlaceholderStatus from 'src/features/placeholder/components/placeholder-status';
-import PendingStatus from 'src/features/ui/components/pending-status';
+import FeedSuggestions from 'src/features/FeedSuggestions';
 
 import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import type { VirtuosoHandle } from 'react-virtuoso';
-import type { IScrollableList } from 'src/components/scrollable-list';
+import type { IScrollableList } from 'src/components/ScrollableList';
 
 interface IStatusList extends Omit<IScrollableList, 'onLoadMore' | 'children'> {
   /** Unique key to preserve the scroll position when navigating back. */

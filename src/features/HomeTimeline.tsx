@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import { expandHomeTimeline } from 'src/actions/timelines';
 import PullToRefresh from 'src/components/PullToRefresh';

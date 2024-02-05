@@ -2,9 +2,8 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Text, Widget } from 'src/components';
+import { Text, Widget, PlaceholderSidebarSuggestions } from 'src/components';
 import AccountContainer from 'src/containers/AccountContainer';
-import PlaceholderSidebarSuggestions from 'src/components/PlaceholderSidebarSuggestions';
 import { useDismissSuggestion, useSuggestions } from 'src/queries/suggestions';
 
 import type { Account as AccountEntity } from 'src/types/entities';
