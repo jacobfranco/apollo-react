@@ -20,6 +20,6 @@ export const StatusHoverCard = lazy(() => import('./StatusHoverCard'));
 export const Logout = lazy(() => import('./Logout'));
 export const PasswordReset = lazy(() => import('./PasswordReset'));
 export const PasswordResetConfirm = lazy(() => import('./PasswordResetConfirm'));
-export const RegisterInvite = lazy(() => import('./SignupInvite'));
+export const SignupInvite = lazy(() => import('./SignupInvite'));
 export const LandingTimeline = lazy(() => import('./LandingTimeline'));
 export const ComposeEditor = lazy(() => import('./compose/editor'));
