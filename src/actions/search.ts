@@ -3,6 +3,7 @@ import { AppDispatch, RootState } from 'src/store'
 
 import type { SearchFilter } from 'src/reducers/search';
 import { APIEntity } from 'src/types/entities';
+import { fetchRelationships } from './accounts';
 import { importFetchedAccounts, importFetchedStatuses } from './importer';
 
 const SEARCH_CHANGE = 'SEARCH_CHANGE';

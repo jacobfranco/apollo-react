@@ -21,7 +21,7 @@ import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
 import type { AutoSuggestion } from 'src/components/AutosuggestInput';
-import type { Emoji } from 'src/features/emoji';
+// import type { Emoji } from 'src/features/emoji';
 import type { Account, Group } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
 import type { APIEntity, Status, Tag } from 'src/types/entities';
@@ -592,15 +592,15 @@ interface ComposeSuggestionsReadyAction {
   type: typeof COMPOSE_SUGGESTIONS_READY;
   id: string;
   token: string;
-  emojis?: Emoji[];
+  // emojis?: Emoji[];
   accounts?: APIEntity[];
 }
 
-const readyComposeSuggestionsEmojis = (composeId: string, token: string, emojis: Emoji[]) => ({
+const readyComposeSuggestionsEmojis = (composeId: string, token: string, /* emojis: Emoji[] */) => ({
   type: COMPOSE_SUGGESTIONS_READY,
   id: composeId,
   token,
-  emojis,
+  // emojis,
 });
 
 const readyComposeSuggestionsAccounts = (composeId: string, token: string, accounts: APIEntity[]) => ({
@@ -623,12 +623,13 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
   (dispatch: AppDispatch, getState: () => RootState) => {
     let completion = '', startPosition = position;
     // TODO: Implement emoji
+    /*
     if (typeof suggestion === 'object' && suggestion.id) {
       completion    = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
       startPosition = position - 1;
 
       dispatch(chooseEmoji(suggestion));
-    } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
+    } else  */  if (typeof suggestion === 'string' && suggestion[0] === '#') {
       completion    = suggestion;
       startPosition = position - 1;
     } else if (typeof suggestion === 'string') {
@@ -702,6 +703,7 @@ const changeComposeVisibility = (composeId: string, value: string) => ({
   value,
 });
 
+/* 
 const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, needsSpace: boolean) => ({
   type: COMPOSE_EMOJI_INSERT,
   id: composeId,
@@ -709,6 +711,7 @@ const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, n
   emoji,
   needsSpace,
 });
+*/
 
 const addPoll = (composeId: string) => ({
   type: COMPOSE_POLL_ADD,
@@ -869,7 +872,7 @@ type ComposeAction =
   | ReturnType<typeof changeComposeContentType>
   | ReturnType<typeof changeComposeSpoilerText>
   | ReturnType<typeof changeComposeVisibility>
-  | ReturnType<typeof insertEmojiCompose>
+  // | ReturnType<typeof insertEmojiCompose>
   | ReturnType<typeof addPoll>
   | ReturnType<typeof removePoll>
   | ReturnType<typeof addSchedule>
@@ -971,7 +974,7 @@ export {
   changeComposeContentType,
   changeComposeSpoilerText,
   changeComposeVisibility,
-  insertEmojiCompose,
+  // insertEmojiCompose,
   addPoll,
   removePoll,
   addSchedule,

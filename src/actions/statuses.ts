@@ -223,10 +223,9 @@ const fetchDescendants = (id: string) =>
     return response;
   };
 
+  // TODO: removed the paginated context false branch, investigate issues with that
 const fetchStatusWithContext = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
-
-    if (features.paginatedContext) {
       await dispatch(fetchStatus(id));
       const responses = await Promise.all([
         dispatch(fetchAncestors(id)),
@@ -242,13 +241,6 @@ const fetchStatusWithContext = (id: string) =>
 
       const next = getNextLink(responses[1]);
       return { next };
-    } else {
-      await Promise.all([
-        dispatch(fetchContext(id)),
-        dispatch(fetchStatus(id)),
-      ]);
-      return { next: undefined };
-    }
   };
 
 const muteStatus = (id: string) =>
