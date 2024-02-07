@@ -7,9 +7,10 @@ import {
     List as ImmutableList,
     fromJS } from 'immutable'
 
-import type { Account, Attachment, EmbeddedEntity, Group, Mention, Poll } from 'src/types/entities';
+import type { Account, Attachment, Card, EmbeddedEntity, Group, Mention, Poll } from 'src/types/entities';
 import { maybeFromJS } from 'src/utils/normalizers';
 
+export type StatusApprovalStatus = 'pending' | 'approval' | 'rejected';
 export type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'self' | 'group';
 
 const parseAccount = (status: ImmutableMap<string, any>) => {
@@ -24,6 +25,7 @@ const parseAccount = (status: ImmutableMap<string, any>) => {
 export const StatusRecord = ImmutableRecord({
     account: null as unknown as Account,
     bookmarked: false,
+    card: null as Card | null,
     content: '',
     created_at: '',
     dislikes_count: 0,

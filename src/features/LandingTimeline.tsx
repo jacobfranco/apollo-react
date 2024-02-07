@@ -3,19 +3,16 @@ import { FormattedMessage } from 'react-intl';
 
 import { expandCommunityTimeline } from 'src/actions/timelines';
 import { useCommunityStream } from 'src/api/hooks';
-import PullToRefresh from 'src/components/pull-to-refresh';
-import { Column } from 'src/components/Column';
+import { Column, PullToRefresh, SiteBanner } from 'src/components';
+import Timeline from 'src/features/Timeline'
 import { useAppSelector, useAppDispatch } from 'src/hooks';
 
 import AboutPage from '../about';
-import Timeline from '../ui/components/timeline';
-
-import { SiteBanner } from './components/site-banner';
 
 const LandingTimeline = () => {
   const dispatch = useAppDispatch();
 
-  const timelineEnabled = !instance.pleroma.metadata.restrict_unauthenticated.timelines.local;
+  const timelineEnabled = true;
   const next = useAppSelector(state => state.timelines.get('community')?.next);
 
   const timelineId = 'community';

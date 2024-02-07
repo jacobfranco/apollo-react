@@ -22,7 +22,7 @@ function useFollow() {
       Accounts: {
         [accountId]: (account) => ({
           ...account,
-          followers_count: account.followersCount + 1,
+          followers_count: account.followers_count + 1,
         }),
       },
       Relationships: {
@@ -39,7 +39,7 @@ function useFollow() {
       Accounts: {
         [accountId]: (account) => ({
           ...account,
-          followers_count: Math.max(0, account.followersCount - 1),
+          followers_count: Math.max(0, account.followers_count - 1),
         }),
       },
       Relationships: {

@@ -7,7 +7,7 @@ export const shouldFilter = (
   columnSettings: Collection<any, any>,
 ) => {
   const shows = ImmutableMap({
-    reblog: status.repost !== null,
+    repost: status.repost !== null,
     reply: status.in_reply_to_id !== null,
     direct: status.visibility === 'direct',
   });

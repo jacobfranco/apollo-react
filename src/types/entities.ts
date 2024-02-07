@@ -50,7 +50,8 @@ export {
 }
 
 export type {
-    Group,
+  Card,
+  Group,
   GroupMember,
   GroupRelationship,
   Poll,

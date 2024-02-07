@@ -39,7 +39,7 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
             <HStack alignItems='center' justifyContent='center' space={1}>
               <Text
                 weight='semibold'
-                dangerouslySetInnerHTML={{ __html: account.displayName /* TODO: Implement emoji and make this be displayNameHTML*/ }}
+                dangerouslySetInnerHTML={{ __html: account.display_name /* TODO: Implement emoji and make this be displayNameHTML*/ }}
                 truncate
                 align='center'
                 size='sm'

@@ -68,7 +68,7 @@ export interface IAccount {
   withLinkToProfile?: boolean;
   withRelationship?: boolean;
   showEdit?: boolean;
-  // approvalStatus?: StatusApprovalStatus;
+  approvalStatus?: StatusApprovalStatus;
   emoji?: string;
   emojiUrl?: string;
   note?: string;
@@ -94,7 +94,7 @@ const Account = ({
   withLinkToProfile = true,
   withRelationship = true,
   showEdit = false,
-  // approvalStatus,
+  approvalStatus,
   emoji,
   emojiUrl,
   note,
@@ -146,13 +146,13 @@ const Account = ({
   if (hidden) {
     return (
       <>
-        {account.displayName}
+        {account.display_name}
         {account.username}
       </>
     );
   }
 
-  if (withDate) timestamp = account.createdAt;
+  if (withDate) timestamp = account.created_at;
 
   const LinkEl: any = withLinkToProfile ? Link : 'div';
   const linkProps = withLinkToProfile ? {
@@ -192,7 +192,7 @@ const Account = ({
                     size='sm'
                     weight='semibold'
                     truncate
-                    dangerouslySetInnerHTML={{ __html: account.displayName }}
+                    dangerouslySetInnerHTML={{ __html: account.display_name }}
                   />
 
                   {account.verified && <VerificationBadge />}

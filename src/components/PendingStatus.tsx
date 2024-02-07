@@ -1,13 +1,11 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Account, StatusContent, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery } from 'src/components';
-import QuotedStatus from 'src/features/status/containers/quoted-status-container';
+import { Account, StatusContent, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery, PollPreview } from 'src/components';
+import QuotedStatus from 'src/containers/QuotedStatusContainer';
 import { useAppSelector } from 'src/hooks';
 
-import { buildStatus } from '../util/pending-status-builder';
-
-import PollPreview from './poll-preview';
+import { buildStatus } from 'src/utils/pending-status';
 
 import type { Status as StatusEntity } from 'src/types/entities';
 

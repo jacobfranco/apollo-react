@@ -23,3 +23,6 @@ export const PasswordResetConfirm = lazy(() => import('./PasswordResetConfirm'))
 export const SignupInvite = lazy(() => import('./SignupInvite'));
 export const LandingTimeline = lazy(() => import('./LandingTimeline'));
 export const ComposeEditor = lazy(() => import('./compose/editor'));
+export const MediaGallery = lazy(() => import('./MediaGallery'));
+export const Video = lazy(() => import('./Video'));
+export const Audio = lazy(() => import('./Audio'));
