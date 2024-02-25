@@ -7,7 +7,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Blurhash, Icon } from 'src/components';
 import { isPanoramic, isPortrait, minimumAspectRatio, maximumAspectRatio } from 'src/utils/media-aspect-ratio';
 
-import { isFullscreen, requestFullscreen, exitFullscreen } from '../ui/util/fullscreen';
+import { isFullscreen, requestFullscreen, exitFullscreen } from 'src/utils/fullscreen';
 
 const DEFAULT_HEIGHT = 300;
 

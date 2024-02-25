@@ -187,3 +187,5 @@ const checkFiltered = (index: string, filters: ImmutableList<FilterEntity>) =>
       return !shouldFilter(status, columnSettings);
     });
   });
+
+  export const accountIdsToAccts = (state: RootState, ids: string[]) => ids.map((id) => selectAccount(state, id)!.acct);

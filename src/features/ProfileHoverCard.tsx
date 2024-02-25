@@ -25,7 +25,7 @@ import type { AppDispatch } from 'src/store';
 
 const getBadges = (
   account?: Pick<Account, 'admin' | 'moderator'>,
-  patronUser?: Pick<PatronUser, 'is_patron'>,
+  // TODO: Prime user ? This was patron account so maybe go back through and replace all that
 ): JSX.Element[] => {
   const badges = [];
 
@@ -33,10 +33,6 @@ const getBadges = (
     badges.push(<Badge key='admin' slug='admin' title={<FormattedMessage id='account_moderation_modal.roles.admin' defaultMessage='Admin' />} />);
   } else if (account?.moderator) {
     badges.push(<Badge key='moderator' slug='moderator' title={<FormattedMessage id='account_moderation_modal.roles.moderator' defaultMessage='Moderator' />} />);
-  }
-
-  if (patronUser?.is_patron) {
-    badges.push(<Badge key='patron' slug='patron' title={<FormattedMessage id='account.patron' defaultMessage='Patron' />} />);
   }
 
   return badges;
@@ -116,7 +112,6 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
               badges={badges}
             />
 
-            {account.local ? (
               <HStack alignItems='center' space={0.5}>
                 <Icon
                   src={require('@tabler/icons/calendar.svg')}
@@ -131,7 +126,6 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
                   />
                 </Text>
               </HStack>
-            ) : null}
 
             {account.note.length > 0 && (
               <Text size='sm' dangerouslySetInnerHTML={accountBio} />

@@ -4,6 +4,9 @@ import { Helmet as ReactHelmet } from 'react-helmet';
 import { useStatContext } from 'src/contexts/stat-context';
 import { useAppSelector, useSettings } from 'src/hooks';
 import { RootState } from 'src/store';
+import FaviconService from 'src/utils/favicon-service';
+
+FaviconService.initFaviconService();
 
 const getNotifTotals = (state: RootState): number => {
   const notifications = state.notifications.unread || 0;
@@ -19,7 +22,7 @@ interface IHelmet {
 const Helmet: React.FC<IHelmet> = ({ children }) => {
   const { unreadChatsCount } = useStatContext();
   const unreadCount = useAppSelector((state) => getNotifTotals(state)); // + unreadChatsCount); TODO: Implement chats
-  const demetricator = useSettings().get('demetricator');
+  const { demetricator } = useSettings();
 
   const hasUnreadNotifications = React.useMemo(() => !(unreadCount < 1 || demetricator), [unreadCount, demetricator]);
 
@@ -27,9 +30,21 @@ const Helmet: React.FC<IHelmet> = ({ children }) => {
     return hasUnreadNotifications ? `(${unreadCount}) ${string}` : string;
   };
 
+  const updateFaviconBadge = () => {
+    if (hasUnreadNotifications) {
+      FaviconService.drawFaviconBadge();
+    } else {
+      FaviconService.clearFaviconBadge();
+    }
+  };
+
+  React.useEffect(() => {
+    updateFaviconBadge();
+  }, [unreadCount, demetricator]);
+
   return (
     <ReactHelmet
-      titleTemplate={addCounter(`%s | 'Apollo'}`)}
+      titleTemplate={addCounter("%s | Apollo")}
       defaultTitle={addCounter('Apollo')}
       defer={false}
     >

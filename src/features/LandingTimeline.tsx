@@ -7,34 +7,25 @@ import { Column, PullToRefresh, SiteBanner } from 'src/components';
 import Timeline from 'src/features/Timeline'
 import { useAppSelector, useAppDispatch } from 'src/hooks';
 
-import AboutPage from '../about';
-
 const LandingTimeline = () => {
   const dispatch = useAppDispatch();
 
-  const timelineEnabled = true;
   const next = useAppSelector(state => state.timelines.get('community')?.next);
 
   const timelineId = 'community';
 
   const handleLoadMore = (maxId: string) => {
-    if (timelineEnabled) {
       dispatch(expandCommunityTimeline({ url: next, maxId }));
-    }
   };
 
   const handleRefresh = async () => {
-    if (timelineEnabled) {
       return dispatch(expandCommunityTimeline());
-    }
   };
 
-  useCommunityStream({ enabled: timelineEnabled });
+  useCommunityStream({ enabled: true });
 
   useEffect(() => {
-    if (timelineEnabled) {
       dispatch(expandCommunityTimeline());
-    }
   }, []);
 
   return (
@@ -43,7 +34,6 @@ const LandingTimeline = () => {
         <SiteBanner />
       </div>
 
-      {timelineEnabled ? (
         <PullToRefresh onRefresh={handleRefresh}>
           <Timeline
             scrollKey={`${timelineId}_timeline`}
@@ -54,9 +44,7 @@ const LandingTimeline = () => {
             divideType='space'
           />
         </PullToRefresh>
-      ) : (
-        <AboutPage />
-      )}
+
     </Column>
   );
 };

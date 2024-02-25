@@ -1,7 +1,16 @@
 import React from 'react';
+import clsx from 'clsx';
+import InlineSVG from 'react-inlinesvg';
 
-import Icon, { IIcon } from 'src/components/Icon';
 import { Counter } from 'src/components/';
+
+// Using this implementation instead of the Icon component
+export interface IIcon extends React.HTMLAttributes<HTMLDivElement> {
+  src: string;
+  id?: string;
+  alt?: string;
+  className?: string;
+}
 
 interface IIconWithCounter extends React.HTMLAttributes<HTMLDivElement> {
   count: number;
@@ -9,6 +18,18 @@ interface IIconWithCounter extends React.HTMLAttributes<HTMLDivElement> {
   icon?: string;
   src?: string;
 }
+
+const Icon: React.FC<IIcon> = ({ src, alt, className, ...rest }) => {
+  return (
+    <div
+      className={clsx('svg-icon', className)}
+      {...rest}
+    >
+      <InlineSVG src={src} title={alt} loader={<></>} />
+    </div>
+  );
+};
+
 
 const IconWithCounter: React.FC<IIconWithCounter> = ({ icon, count, countMax, ...rest }) => {
   return (
@@ -23,5 +44,7 @@ const IconWithCounter: React.FC<IIconWithCounter> = ({ icon, count, countMax, ..
     </div>
   );
 };
+
+
 
 export default IconWithCounter;

@@ -2,31 +2,13 @@ import React, { useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import ActionButton from 'src/features/ActionButton';
+import { ActionButton, Badge, HoverRefWrapper, VerificationBadge, RelativeTimestamp } from 'src/components';
 import { useAppSelector } from 'src/hooks';
-import { getAcct } from 'src/utils/accounts';
 
-import {
-     Avatar, 
-     Badge, 
-     /* Emoji, */ 
-     HStack, 
-     HoverRefWrapper, 
-     Icon, 
-     IconButton, 
-     RelativeTimestamp,
-     Stack,
-    Text, 
-    VerificationBadge 
-} from 'src/components';
+import { Avatar, Emoji, HStack, Icon, IconButton, Stack, Text } from 'src/components';
 
 import type { StatusApprovalStatus } from 'src/normalizers/status';
 import type { Account as AccountSchema } from 'src/schemas';
-
-interface IInstanceFavicon {
-  account: AccountSchema;
-  disabled?: boolean;
-}
 
 const messages = defineMessages({
   bot: { id: 'account.badges.bot', defaultMessage: 'Bot' },
@@ -103,7 +85,7 @@ const Account = ({
   const actionRef = useRef<HTMLDivElement>(null);
 
   const me = useAppSelector((state) => state.me);
-  const username = useAppSelector((state) => account ? account.username : null);
+  const username = useAppSelector((state) => account.username);
 
   const handleAction = () => {
     onActionClick!(account);
@@ -171,13 +153,13 @@ const Account = ({
           >
             <LinkEl className='rounded-full' {...linkProps}>
               <Avatar src={account.avatar} size={avatarSize} />
-              { /* emoji && ( TODO: Implement Emoji
+              {emoji && (
                 <Emoji
                   className='absolute -right-1.5 bottom-0 h-5 w-5'
                   emoji={emoji}
                   src={emojiUrl}
                 />
-              ) */ }
+              )}
             </LinkEl>
           </ProfilePopper>
 
@@ -192,7 +174,7 @@ const Account = ({
                     size='sm'
                     weight='semibold'
                     truncate
-                    dangerouslySetInnerHTML={{ __html: account.display_name }}
+                    dangerouslySetInnerHTML={{ __html: account.display_name_html }}
                   />
 
                   {account.verified && <VerificationBadge />}
@@ -205,7 +187,6 @@ const Account = ({
             <Stack space={withAccountNote || note ? 1 : 0}>
               <HStack alignItems='center' space={1}>
                 <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
-
 
                 {(timestamp) ? (
                   <>
@@ -221,7 +202,7 @@ const Account = ({
                   </>
                 ) : null}
 
-                {approvalStatus && ['pending', 'rejected'].includes(approvalStatus) && ( 
+                {approvalStatus && ['pending', 'rejected'].includes(approvalStatus) && (
                   <>
                     <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
@@ -249,6 +230,21 @@ const Account = ({
                   </>
                 ) : null}
               </HStack>
+
+              {note ? (
+                <Text
+                  size='sm'
+                  className='mr-2'
+                >
+                  {note}
+                </Text>
+              ) : withAccountNote && (
+                <Text
+                  size='sm'
+                  dangerouslySetInnerHTML={{ __html: account.note_emojified }}
+                  className='mr-2 rtl:ml-2 rtl:mr-0'
+                />
+              )}
             </Stack>
           </div>
         </HStack>

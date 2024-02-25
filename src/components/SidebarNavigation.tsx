@@ -22,21 +22,18 @@ const SidebarNavigation = () => {
   const intl = useIntl();
   const { unreadChatsCount } = useStatContext();
 
-  const settings = useSettings();
+  const { isDeveloper } = useSettings();
   const { account } = useOwnAccount();
   const groupsPath = useGroupsPath(); 
 
   const notificationCount = useAppSelector((state) => state.notifications.unread);
 
-/* TODO: Implement follow requests and admin
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
   const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
-*/ 
   const makeMenu = (): Menu => {
     const menu: Menu = [];
 
     if (account) {
-        /* // TODO: Implement account locking, bookmarks, and developer* 
       if ( followRequestsCount > 0) {  
         menu.push({
           to: '/follow_requests',
@@ -53,14 +50,13 @@ const SidebarNavigation = () => {
         });
 
 
-      if (settings.get('isDeveloper')) {
-        menu.push({
-          to: '/developers',
-          icon: require('@tabler/icons/code.svg'),
-          text: intl.formatMessage(messages.developers),
-        });
+        if (isDeveloper) {
+          menu.push({
+            to: '/developers',
+            icon: require('@tabler/icons/code.svg'),
+            text: intl.formatMessage(messages.developers),
+          });
       }
-      */
     }
 
     return menu;
@@ -140,14 +136,14 @@ const SidebarNavigation = () => {
               text={<FormattedMessage id='tabs_bar.settings' defaultMessage='Settings' />}
             />
 
-            {/* account.staff && (  TODO: Implement staff/admin/moderator/etc.  
+            {account.staff && (  
               <SidebarNavigationLink
-                to='/soapbox/admin'  
+                to='/apollo/admin'  
                 icon={require('@tabler/icons/dashboard.svg')}
                 count={dashboardCount}
                 text={<FormattedMessage id='tabs_bar.dashboard' defaultMessage='Dashboard' />}
               />
-            ) */}
+            )}
           </>
         )}
 

@@ -1,5 +1,8 @@
 export { AccountRecord, normalizeAccount } from './account';
+export { AdminAccountRecord, normalizeAdminAccount } from './admin-account';
+export { AdminReportRecord, normalizeAdminReport } from './admin-report';
 export { AttachmentRecord, normalizeAttachment } from './attachment'
+export { EmojiRecord, normalizeEmoji } from './emoji';
 export { FilterRecord, normalizeFilter } from './filter';
 export { FilterKeywordRecord, normalizeFilterKeyword } from './filter-keyword';
 export { FilterStatusRecord, normalizeFilterStatus } from './filter-status';

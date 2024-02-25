@@ -10,13 +10,12 @@ import {
   fromJS,
 } from 'immutable';
 
-/* TODO: Implement Emoji
 import emojify from 'src/features/emoji';
 import { normalizeEmoji } from 'src/normalizers/emoji';
 import { unescapeHTML } from 'src/utils/html';
-import { makeEmojiMap } from 'src/utils/normalizers';
-*/ 
-import type { /* Emoji, */ GroupRelationship } from 'src/types/entities';
+// import { makeEmojiMap } from 'src/utils/normalizers'; TODO: Maybe needed ?
+
+import type { Emoji, GroupRelationship } from 'src/types/entities';
 
 export const GroupRecord = ImmutableRecord({
   avatar: '',
@@ -25,7 +24,7 @@ export const GroupRecord = ImmutableRecord({
   deleted_at: null,
   display_name: '',
   domain: '',
-  // emojis: [] as Emoji[],
+  emojis: [] as Emoji[],
   group_visibility: '',
   header: '',
   header_static: '',
@@ -54,7 +53,7 @@ export const GroupRecord = ImmutableRecord({
 const normalizeAvatar = (group: ImmutableMap<string, any>) => {
   const avatar = group.get('avatar');
   const avatarStatic = group.get('avatar_static');
-  const missing = require('soapbox/assets/images/avatar-missing.png');
+  const missing = require('src/assets/images/avatar-missing.png');
 
   return group.withMutations(group => {
     group.set('avatar', avatar || avatarStatic || missing);
@@ -66,7 +65,7 @@ const normalizeAvatar = (group: ImmutableMap<string, any>) => {
 const normalizeHeader = (group: ImmutableMap<string, any>) => {
   const header = group.get('header');
   const headerStatic = group.get('header_static');
-  const missing = require('soapbox/assets/images/header-missing.png');
+  const missing = require('src/assets/images/header-missing.png');
 
   return group.withMutations(group => {
     group.set('header', header || headerStatic || missing);
@@ -74,12 +73,11 @@ const normalizeHeader = (group: ImmutableMap<string, any>) => {
   });
 };
 
-/** Normalize emojis 
+/** Normalize emojis */
 const normalizeEmojis = (entity: ImmutableMap<string, any>) => {
   const emojis = entity.get('emojis', ImmutableList()).map(normalizeEmoji);
   return entity.set('emojis', emojis.toArray());
 };
-*/
 
 /** Set display name from username, if applicable */
 const fixDisplayName = (group: ImmutableMap<string, any>) => {
@@ -87,15 +85,15 @@ const fixDisplayName = (group: ImmutableMap<string, any>) => {
   return group.set('display_name', displayName.trim().length === 0 ? group.get('username') : displayName);
 };
 
-/** Emojification, etc 
+/** Emojification, etc */
 const addInternalFields = (group: ImmutableMap<string, any>) => {
-  const emojiMap = makeEmojiMap(group.get('emojis'));
+  // const emojiMap = makeEmojiMap(group.get('emojis'));
 
   return group.withMutations((group: ImmutableMap<string, any>) => {
     // Emojify group properties
     group.merge({
-      display_name_html: emojify(escapeTextContentForBrowser(group.get('display_name')), emojiMap),
-      note_emojified: emojify(group.get('note', ''), emojiMap),
+      display_name_html: emojify(escapeTextContentForBrowser(group.get('display_name'))),
+      note_emojified: emojify(group.get('note', '')),
       note_plain: unescapeHTML(group.get('note', '')),
     });
 
@@ -103,17 +101,14 @@ const addInternalFields = (group: ImmutableMap<string, any>) => {
     group.update('fields', ImmutableList(), fields => {
       return fields.map((field: ImmutableMap<string, any>) => {
         return field.merge({
-          name_emojified: emojify(escapeTextContentForBrowser(field.get('name')), emojiMap),
-          value_emojified: emojify(field.get('value'), emojiMap),
+          name_emojified: emojify(escapeTextContentForBrowser(field.get('name'))),
+          value_emojified: emojify(field.get('value')),
           value_plain: unescapeHTML(field.get('value')),
         });
       });
     });
   });
 };
-*/
-
-// TODO: Maybe remove these fields if they're not necessary
 
 const getDomainFromURL = (group: ImmutableMap<string, any>): string => {
   try {
@@ -157,14 +152,14 @@ const fixNote = (group: ImmutableMap<string, any>) => {
 export const normalizeGroup = (group: Record<string, any>) => {
   return GroupRecord(
     ImmutableMap(fromJS(group)).withMutations(group => {
-      // normalizeEmojis(group);
+      normalizeEmojis(group);
       normalizeAvatar(group);
       normalizeHeader(group);
       normalizeFqn(group);
       normalizeLocked(group);
       fixDisplayName(group);
       fixNote(group);
-      // addInternalFields(group);
+      addInternalFields(group);
     }),
   );
 };

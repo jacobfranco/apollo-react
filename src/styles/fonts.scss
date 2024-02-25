@@ -1,0 +1,46 @@
+@use 'sass:math';
+
+// TYPEOGRAPHY MIXINS
+
+// Use these mixins to define font-size and line-height
+// html and body declaration allows developer to pass px value as argument
+// Rendered css will default to "rem" and fall back to "px" for unsupported browsers
+@mixin font-size($size) {
+  $rem: math.div($size, 10);
+  $px: $size;
+  font-size: #{$px + 'px'};
+  font-size: #{$rem + 'rem'};
+}
+
+@font-face {
+    font-family: 'URWDIN';
+    src: url('src/assets/fonts/URWDIN-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'URWDIN';
+    src: url('src/assets/fonts/URWDIN-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'URWDIN';
+    src: url('src/assets/fonts/URWDIN-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'URWDIN';
+    src: url('src/assets/fonts/URWDIN-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  

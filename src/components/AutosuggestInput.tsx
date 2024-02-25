@@ -3,16 +3,15 @@ import { List as ImmutableList } from 'immutable';
 import React from 'react';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
-// import AutosuggestEmoji from 'soapbox/components/autosuggest-emoji';
-import { Icon, Input, Portal }from 'src/components';
+import { AutosuggestEmoji, Icon, Input, Portal }from 'src/components';
 import AutosuggestAccount from 'src/features/compose/components/AutosuggestAccount';
 import { textAtCursorMatchesToken } from 'src/utils/suggestions';
 
 import type { Menu, MenuItem } from 'src/components/dropdown-menu';
 import type { InputThemes } from 'src/components/Input';
-// import type { Emoji } from 'src/features/emoji';
+import type { Emoji } from 'src/features/emoji';
 
-export type AutoSuggestion = string /* | Emoji */; //TODO: Implement Emoji
+export type AutoSuggestion = string | Emoji ;
 
 export interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>, 'onChange' | 'onKeyUp' | 'onKeyDown'> {
   value: string;
@@ -181,8 +180,8 @@ export default class AutosuggestInput extends ImmutablePureComponent<IAutosugges
       inner = <RenderSuggestion id={suggestion} />;
       key = suggestion;
     } else if (typeof suggestion === 'object') {
-      // inner = <AutosuggestEmoji emoji={suggestion} />;
-      // key = suggestion.id;
+      inner = <AutosuggestEmoji emoji={suggestion} />;
+      key = suggestion.id;
     } else if (suggestion[0] === '#') {
       inner = suggestion;
       key = suggestion;

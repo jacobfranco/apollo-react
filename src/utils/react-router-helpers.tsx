@@ -38,7 +38,7 @@ type PageProps = {
     const history = useHistory();
   
     const { account } = useOwnAccount();
-    const settings = useSettings();
+    const { isDeveloper } = useSettings();
   
     const renderComponent = ({ match }: RouteComponentProps) => {
       if (Page) {
@@ -70,15 +70,15 @@ type PageProps = {
   
     const loginRedirect = () => {
       const actualUrl = encodeURIComponent(`${history.location.pathname}${history.location.search}`);
-      localStorage.setItem('soapbox:redirect_uri', actualUrl);
+      localStorage.setItem('apollo:redirect_uri', actualUrl);
       return <Redirect to='/login' />;
     };
   
     const authorized = [
       account || publicRoute,
-      developerOnly ? settings.get('isDeveloper') : true,
-      // staffOnly ? account && account.staff : true, TODO: Implement staff and admin
-      // adminOnly ? account && account.admin : true,
+      developerOnly ? isDeveloper : true,
+      staffOnly ? account && account.staff : true,
+      adminOnly ? account && account.admin : true,
     ].every(c => c);
   
     if (!authorized) {

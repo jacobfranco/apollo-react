@@ -4,8 +4,6 @@ import { Switch, useHistory, useLocation, Redirect } from 'react-router-dom';
 
 // import { fetchFollowRequests } from 'src/actions/accounts';
 // import { fetchReports, fetchUsers, fetchConfig } from 'src/actions/admin';
-// import { fetchAnnouncements } from 'src/actions/announcements';
-// import { fetchCustomEmojis } from 'src/actions/custom-emojis';
 // import { fetchFilters } from 'src/actions/filters';
 // import { fetchMarker } from 'src/actions/markers';
 // import { expandNotifications } from 'src/actions/notifications';
@@ -99,7 +97,6 @@ import {
   // ManageGroup,
   // GroupBlockedMembers,
   // GroupMembershipRequests,
-  // Announcements,
   // EditGroup,
   // FollowedTags,
   // AboutPage,
@@ -235,7 +232,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/soapbox/admin/log' staffOnly page={AdminPage} component={ModerationLog} content={children} exact />
       <WrappedRoute path='/soapbox/admin/users' staffOnly page={AdminPage} component={UserIndex} content={children} exact />
       <WrappedRoute path='/soapbox/admin/theme' staffOnly page={AdminPage} component={ThemeEditor} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/announcements' staffOnly page={AdminPage} component={Announcements} content={children} exact />
+    
       <WrappedRoute path='/info' page={EmptyPage} component={ServerInfo} content={children} />
 */}
 
@@ -314,7 +311,6 @@ const UI: React.FC<IUI> = ({ children }) => {
       .then(() => dispatch(fetchMarker(['notifications'])))
       .catch(console.error);
 
-    dispatch(fetchAnnouncements());
 
     if (account.staff) {
       dispatch(fetchReports({ resolved: false }));
@@ -364,7 +360,6 @@ const UI: React.FC<IUI> = ({ children }) => {
   // The user has logged in
   useEffect(() => {
     loadAccountData();
-    // dispatch(fetchCustomEmojis());
   }, [!!account]);
 
   /*  TODO: Implement push notifications

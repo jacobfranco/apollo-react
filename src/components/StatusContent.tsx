@@ -4,7 +4,7 @@ import React, { useState, useRef, useLayoutEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Icon, HashtagLink, Markup, Mention, Poll } from 'src/components';
-// import { onlyEmoji as isOnlyEmoji } from 'soapbox/utils/rich-content';
+import { onlyEmoji as isOnlyEmoji } from 'src/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
 
@@ -57,7 +57,6 @@ const StatusContent: React.FC<IStatusContent> = ({
     }
   };
 
-  /*  TODO: Implment emoji
   const maybeSetOnlyEmoji = (): void => {
     if (!node.current) return;
     const only = isOnlyEmoji(node.current, BIG_EMOJI_LIMIT, true);
@@ -66,11 +65,10 @@ const StatusContent: React.FC<IStatusContent> = ({
       setOnlyEmoji(only);
     }
   };
-  */
 
   useLayoutEffect(() => {
     maybeSetCollapsed();
-    // maybeSetOnlyEmoji();
+    maybeSetOnlyEmoji();
   });
 
   const parsedHtml = useMemo((): string => {

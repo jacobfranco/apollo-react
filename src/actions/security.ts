@@ -51,6 +51,8 @@ const resetPasswordConfirm = (password: string, token: string) =>
   (_dispatch: AppDispatch, getState: () => RootState) =>
     api(getState).get(`/api/v1/truth/email/confirm?confirmation_token=${token}`);
 
+    // TODO: Implement other functions as needed
+
   export {
     RESET_PASSWORD_REQUEST,
     RESET_PASSWORD_SUCCESS,

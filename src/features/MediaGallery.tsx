@@ -7,13 +7,13 @@ import { useSettings, useApolloConfig } from 'src/hooks';
 import { Attachment } from 'src/types/entities';
 import { truncateFilename } from 'src/utils/media';
 
-import { isIOS } from '../is-mobile';
-import { isPanoramic, isPortrait, isNonConformingRatio, minimumAspectRatio, maximumAspectRatio } from '../utils/media-aspect-ratio';
+import { isIOS } from 'src/is-mobile';
+import { isPanoramic, isPortrait, isNonConformingRatio, minimumAspectRatio, maximumAspectRatio } from 'src/utils/media-aspect-ratio';
 
 import type { Property } from 'csstype';
 import type { List as ImmutableList } from 'immutable';
 
-const Gameboy = React.lazy(() => import('./gameboy'));
+// const Gameboy = React.lazy(() => import('src/components/Gameboy')); TODO: Implement gameboy ?
 
 const ATTACHMENT_LIMIT = 4;
 const MAX_FILENAME_LENGTH = 45;
@@ -70,8 +70,7 @@ const Item: React.FC<IItem> = ({
   last,
   total,
 }) => {
-  const settings = useSettings();
-  const autoPlayGif = settings.get('autoPlayGif') === true;
+  const { autoPlayGif } = useSettings();
   const { mediaPreview } = useApolloConfig();
 
   const handleMouseEnter: React.MouseEventHandler<HTMLVideoElement> = ({ currentTarget: video }) => {
@@ -154,7 +153,7 @@ const Item: React.FC<IItem> = ({
         style={{ position, float, left, top, right, bottom, height, width: `${width}%` }}
       >
         <Suspense fallback={<div  className='media-gallery__item-thumbnail' />}>
-          <Gameboy className='media-gallery__item-thumbnail cursor-default' src={attachment.url} />
+          { <p>Gameboy impl. (TODO) </p>/* <Gameboy className='media-gallery__item-thumbnail cursor-default' src={attachment.url} /> */}
         </Suspense>
       </div>
     );

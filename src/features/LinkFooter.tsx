@@ -5,9 +5,8 @@ import { Link } from 'react-router-dom';
 
 import { logOut } from 'src/actions/auth';
 import { Text } from 'src/components';
-// import emojify from 'soapbox/features/emoji'; TODO: Implemment Emoji
-import { useOwnAccount, useAppDispatch } from 'src/hooks';
-import sourceCode from 'src/utils/code'; // TODO: Implement this
+import emojify from 'src/features/emoji';
+import { useOwnAccount, useAppDispatch, useApolloConfig } from 'src/hooks';
 
 interface IFooterLink {
   to: string;
@@ -28,6 +27,7 @@ const LinkFooter: React.FC = (): JSX.Element => {
   const { account } = useOwnAccount();
 
   const dispatch = useAppDispatch();
+  const apolloConfig = useApolloConfig();
 
   const onClickLogOut: React.EventHandler<React.MouseEvent> = (e) => {
     dispatch(logOut());
@@ -44,7 +44,7 @@ const LinkFooter: React.FC = (): JSX.Element => {
           <FooterLink to='/filters'><FormattedMessage id='navigation_bar.filters' defaultMessage='Filters' /></FooterLink>
           <FooterLink to='/followed_tags'><FormattedMessage id='navigation_bar.followed_tags' defaultMessage='Followed hashtags' /></FooterLink>
           {account.admin && (
-            <FooterLink to='/soapbox/config'><FormattedMessage id='navigation_bar.soapbox_config' defaultMessage='Soapbox config' /></FooterLink>
+            <FooterLink to='/apollo/config'><FormattedMessage id='navigation_bar.apollo_config' defaultMessage='apollo config' /></FooterLink>
           )}
           {account.locked && (
             <FooterLink to='/follow_requests'><FormattedMessage id='navigation_bar.follow_requests' defaultMessage='Follow requests' /></FooterLink>
@@ -54,22 +54,10 @@ const LinkFooter: React.FC = (): JSX.Element => {
       </div>
 
       <Text theme='muted' size='sm'>
-        {soapboxConfig.linkFooterMessage ? (
           <span
             className='inline-block align-middle'
-            dangerouslySetInnerHTML={{ __html: emojify(soapboxConfig.linkFooterMessage) }}
+            dangerouslySetInnerHTML={{ __html: emojify(apolloConfig.linkFooterMessage) }}
           />
-        ) : (
-          <FormattedMessage
-            id='getting_started.open_source_notice'
-            defaultMessage='{code_name} is open source software. You can contribute or report issues at {code_link} (v{code_version}).'
-            values={{
-              code_name: sourceCode.displayName,
-              code_link: <Text theme='subtle' tag='span'><a className='underline' href={sourceCode.url} rel='noopener' target='_blank'>{sourceCode.repository}</a></Text>,
-              code_version: sourceCode.version,
-            }}
-          />
-        )}
       </Text>
     </div>
   );

@@ -7,6 +7,8 @@ const getApolloConfig = createSelector((state: RootState) => state.apollo, (apol
   }
 );
 
+// TODO: Other stuff
+
 export {
     getApolloConfig
 }

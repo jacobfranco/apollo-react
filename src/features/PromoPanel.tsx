@@ -1,3 +1,4 @@
+/* TODO: Implement promo panel
 import React from 'react';
 
 import ForkAwesomeIcon from 'src/components/fork-awesome-icon';
@@ -30,3 +31,4 @@ const PromoPanel: React.FC = () => {
 };
 
 export default PromoPanel;
+*/

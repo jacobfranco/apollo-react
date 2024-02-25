@@ -36,10 +36,6 @@ const LIKES_FETCH_REQUEST = 'LIKES_FETCH_REQUEST';
 const LIKES_FETCH_SUCCESS = 'LIKES_FETCH_SUCCESS';
 const LIKES_FETCH_FAIL    = 'LIKES_FETCH_FAIL';
 
-const REACTIONS_FETCH_REQUEST = 'REACTIONS_FETCH_REQUEST';
-const REACTIONS_FETCH_SUCCESS = 'REACTIONS_FETCH_SUCCESS';
-const REACTIONS_FETCH_FAIL    = 'REACTIONS_FETCH_FAIL';
-
 const PIN_REQUEST = 'PIN_REQUEST';
 const PIN_SUCCESS = 'PIN_SUCCESS';
 const PIN_FAIL    = 'PIN_FAIL';
@@ -61,10 +57,6 @@ const LIKES_EXPAND_FAIL = 'LIKES_EXPAND_FAIL';
 
 const REPOSTS_EXPAND_SUCCESS = 'REPOSTS_EXPAND_SUCCESS';
 const REPOSTS_EXPAND_FAIL = 'REPOSTS_EXPAND_FAIL';
-
-const ZAP_REQUEST = 'ZAP_REQUEST';
-const ZAP_SUCCESS = 'ZAP_SUCCESS';
-const ZAP_FAIL    = 'ZAP_FAIL';
 
 const messages = defineMessages({
   bookmarkAdded: { id: 'status.bookmarked', defaultMessage: 'Bookmark added.' },
@@ -216,38 +208,6 @@ const unlikeSuccess = (status: StatusEntity) => ({
 
 const unlikeFail = (status: StatusEntity, error: unknown) => ({
   type: UNLIKE_FAIL,
-  status: status,
-  error: error,
-  skipLoading: true,
-});
-
-const zap = (status: StatusEntity, amount: number) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    dispatch(zapRequest(status));
-
-    api(getState).post(`/api/v1/statuses/${status.id}/zap`, { amount }).then(function(response) {
-      dispatch(zapSuccess(status));
-    }).catch(function(error) {
-      dispatch(zapFail(status, error));
-    });
-  };
-
-const zapRequest = (status: StatusEntity) => ({
-  type: ZAP_REQUEST,
-  status: status,
-  skipLoading: true,
-});
-
-const zapSuccess = (status: StatusEntity) => ({
-  type: ZAP_SUCCESS,
-  status: status,
-  skipLoading: true,
-});
-
-const zapFail = (status: StatusEntity, error: unknown) => ({
-  type: ZAP_FAIL,
   status: status,
   error: error,
   skipLoading: true,
@@ -443,35 +403,6 @@ const expandLikesFail = (id: string, error: unknown) => ({
   error,
 });
 
-const fetchReactions = (id: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchReactionsRequest(id));
-
-    api(getState).get(`/api/v1/pleroma/statuses/${id}/reactions`).then(response => {
-      dispatch(importFetchedAccounts((response.data as APIEntity[]).map(({ accounts }) => accounts).flat()));
-      dispatch(fetchReactionsSuccess(id, response.data));
-    }).catch(error => {
-      dispatch(fetchReactionsFail(id, error));
-    });
-  };
-
-const fetchReactionsRequest = (id: string) => ({
-  type: REACTIONS_FETCH_REQUEST,
-  id,
-});
-
-const fetchReactionsSuccess = (id: string, reactions: APIEntity[]) => ({
-  type: REACTIONS_FETCH_SUCCESS,
-  id,
-  reactions,
-});
-
-const fetchReactionsFail = (id: string, error: unknown) => ({
-  type: REACTIONS_FETCH_FAIL,
-  id,
-  error,
-});
-
 const pin = (status: StatusEntity) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
@@ -580,9 +511,6 @@ export {
   LIKES_FETCH_REQUEST,
   LIKES_FETCH_SUCCESS,
   LIKES_FETCH_FAIL,
-  REACTIONS_FETCH_REQUEST,
-  REACTIONS_FETCH_SUCCESS,
-  REACTIONS_FETCH_FAIL,
   PIN_REQUEST,
   PIN_SUCCESS,
   PIN_FAIL,
@@ -599,8 +527,6 @@ export {
   LIKES_EXPAND_FAIL,
   REPOSTS_EXPAND_SUCCESS,
   REPOSTS_EXPAND_FAIL,
-  ZAP_REQUEST,
-  ZAP_FAIL,
   repost,
   unrepost,
   toggleRepost,
@@ -638,10 +564,6 @@ export {
   fetchLikesSuccess,
   fetchLikesFail,
   expandLikes,
-  fetchReactions,
-  fetchReactionsRequest,
-  fetchReactionsSuccess,
-  fetchReactionsFail,
   pin,
   pinRequest,
   pinSuccess,
@@ -653,5 +575,4 @@ export {
   togglePin,
   pinToGroup,
   unpinFromGroup,
-  zap,
 };

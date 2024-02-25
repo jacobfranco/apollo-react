@@ -1,18 +1,35 @@
 import { AnyAction } from 'redux';
+
 import { 
     Record as ImmutableRecord,
-    OrderedSet as ImmutableOrderedSet
+    OrderedSet as ImmutableOrderedSet,
+    fromJS
 } from 'immutable'
+
+import { normalizeTag } from 'src/normalizers';
+
 import {
-    SEARCH_CHANGE,
-    SEARCH_CLEAR,
-    SEARCH_FETCH_REQUEST,
-    SEARCH_FETCH_SUCCESS,
-    SEARCH_SHOW,
-    SEARCH_ACCOUNT_SET,
-    SEARCH_RESULTS_CLEAR,
-  } from 'src/actions/search';
-import { APIEntity } from 'src/types/entities';
+  COMPOSE_MENTION,
+  COMPOSE_REPLY,
+  COMPOSE_DIRECT,
+  COMPOSE_QUOTE,
+} from 'src/actions/compose';
+
+import {
+  SEARCH_CHANGE,
+  SEARCH_CLEAR,
+  SEARCH_FETCH_REQUEST,
+  SEARCH_FETCH_SUCCESS,
+  SEARCH_SHOW,
+  SEARCH_FILTER_SET,
+  SEARCH_EXPAND_REQUEST,
+  SEARCH_EXPAND_SUCCESS,
+  SEARCH_ACCOUNT_SET,
+  SEARCH_RESULTS_CLEAR,
+} from 'src/actions/search';
+
+
+import { APIEntity, Tag } from 'src/types/entities';
 
   const ResultsRecord = ImmutableRecord({ 
     accounts: ImmutableOrderedSet<string>(),
@@ -72,6 +89,25 @@ const importResults = (state: State, results: APIEntity, searchTerm: string, sea
     });
   };
 
+  const paginateResults = (state: State, searchType: SearchFilter, results: APIEntity, searchTerm: string, next: string | null) => {
+    return state.withMutations(state => {
+      if (state.value === searchTerm) {
+        state.setIn(['results', `${searchType}HasMore`], results[searchType].length >= 20);
+        state.setIn(['results', `${searchType}Loaded`], true);
+        state.set('next', next);
+        state.updateIn(['results', searchType], items => {
+          const data = results[searchType];
+          // Hashtags are a list of maps. Others are IDs.
+          if (searchType === 'hashtags') {
+            return (items as ImmutableOrderedSet<string>).concat((fromJS(data) as Record<string, any>).map(normalizeTag));
+          } else {
+            return (items as ImmutableOrderedSet<string>).concat(toIds(data));
+          }
+        });
+      }
+    });
+  };
+
 const handleSubmitted = (state: State, value: string) => {
     return state.withMutations(state => {
       state.set('results', ResultsRecord());
@@ -80,7 +116,7 @@ const handleSubmitted = (state: State, value: string) => {
     });
   };
 
-export default function search(state = ReducerRecord(), action: AnyAction) {
+  export default function search(state = ReducerRecord(), action: AnyAction) {
     switch (action.type) {
       case SEARCH_CHANGE:
         return state.set('value', action.value);
@@ -95,10 +131,21 @@ export default function search(state = ReducerRecord(), action: AnyAction) {
         });
       case SEARCH_SHOW:
         return state.set('hidden', false);
+      case COMPOSE_REPLY:
+      case COMPOSE_MENTION:
+      case COMPOSE_DIRECT:
+      case COMPOSE_QUOTE:
+        return state.set('hidden', true);
       case SEARCH_FETCH_REQUEST:
         return handleSubmitted(state, action.value);
       case SEARCH_FETCH_SUCCESS:
         return importResults(state, action.results, action.searchTerm, action.searchType, action.next);
+      case SEARCH_FILTER_SET:
+        return state.set('filter', action.value);
+      case SEARCH_EXPAND_REQUEST:
+        return state.setIn(['results', `${action.searchType}Loaded`], false);
+      case SEARCH_EXPAND_SUCCESS:
+        return paginateResults(state, action.searchType, action.results, action.searchTerm, action.next);
       case SEARCH_ACCOUNT_SET:
         if (!action.accountId) return state.merge({
           results: ResultsRecord(),

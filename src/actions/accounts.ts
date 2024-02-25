@@ -1,5 +1,3 @@
-import { nip19 } from 'nostr-tools';
-
 import { importEntities } from 'src/entity-store/actions';
 import { Entities } from 'src/entity-store/entities';
 import { selectAccount } from 'src/selectors';

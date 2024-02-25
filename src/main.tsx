@@ -34,7 +34,7 @@ if (BuildConfig.NODE_ENV === 'production') {
 }
 
 ready(() => {
-  const container = document.getElementById('soapbox') as HTMLElement;
+  const container = document.getElementById('apollo') as HTMLElement;
   const root = createRoot(container);
 
   root.render(<Apollo />);

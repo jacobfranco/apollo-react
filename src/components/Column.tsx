@@ -64,7 +64,7 @@ export interface IColumn {
 /** A backdrop for the main section of the UI. */
 const Column: React.FC<IColumn> = React.forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>): JSX.Element => {
   const { backHref, children, label, transparent = false, withHeader = true, className, bodyClassName, action, size } = props;
-  const soapboxConfig = useApolloConfig();
+  const apolloConfig = useApolloConfig();
   const [isScrolled, setIsScrolled] = useState(false);
 
   const handleScroll = useCallback(throttle(() => {
@@ -84,11 +84,11 @@ const Column: React.FC<IColumn> = React.forwardRef((props, ref: React.ForwardedR
       <Helmet>
         <title>{label}</title>
 
-        {soapboxConfig.appleAppId && (
+        {apolloConfig.appleAppId && (
           <meta
             data-react-helmet='true'
             name='apple-itunes-app'
-            content={`app-id=${soapboxConfig.appleAppId}, app-argument=${location.href}`}
+            content={`app-id=${apolloConfig.appleAppId}, app-argument=${location.href}`}
           />
         )}
       </Helmet>

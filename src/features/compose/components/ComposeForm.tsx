@@ -15,33 +15,33 @@ import {
 } from 'src/actions/compose';
 import AutosuggestInput, { AutoSuggestion } from 'src/components/AutosuggestInput';
 import { Button, HStack, Stack } from 'src/components';
-// import EmojiPickerDropdown from 'soapbox/features/emoji/containers/emoji-picker-dropdown-container'; TODO: Implement emoji
+import EmojiPickerDropdown from 'src/containers/EmojiPickerDropdownContainer';
 import { ComposeEditor } from 'src/features/AsyncComponents';
 import { useAppDispatch, useAppSelector, useCompose, useDraggedFiles, usePrevious } from 'src/hooks';
 
-import QuotedStatusContainer from '../containers/quoted-status-container';
-import ReplyIndicatorContainer from '../containers/reply-indicator-container';
-import UploadButtonContainer from '../containers/upload-button-container';
-import WarningContainer from '../containers/warning-container';
-import { $createEmojiNode } from '../editor/nodes/emoji-node';
-import { countableText } from '../util/counter';
+import QuotedStatusContainer from 'src/containers/ComposeQuotedStatusContainer';
+import ReplyIndicatorContainer from 'src/containers/ReplyIndicatorContainer';
+import UploadButtonContainer from 'src/containers/UploadButtonContainer';
+import WarningContainer from 'src/containers/WarningContainer';
+import { $createEmojiNode } from '../editor/nodes/EmojiNode';
+import { countableText } from 'src/utils/counter';
 
-import MarkdownButton from './markdown-button';
-import PollButton from './poll-button';
-import PollForm from './polls/poll-form';
-import PrivacyDropdown from './privacy-dropdown';
-import ReplyGroupIndicator from './reply-group-indicator';
-import ReplyMentions from './reply-mentions';
-import ScheduleButton from './schedule-button';
-import ScheduleForm from './schedule-form';
-import SpoilerButton from './spoiler-button';
-import SpoilerInput from './spoiler-input';
-import TextCharacterCounter from './text-character-counter';
-import UploadForm from './upload-form';
-import VisualCharacterCounter from './visual-character-counter';
-import Warning from './warning';
+import MarkdownButton from './MarkdownButton';
+import PollButton from './PollButton';
+import PollForm from './PollForm';
+import PrivacyDropdown from './PrivacyDropdown';
+import ReplyGroupIndicator from './ReplyGroupIndicator';
+import ReplyMentions from './ReplyMentions';
+import ScheduleButton from './ScheduleButton';
+import ScheduleForm from './ScheduleForm';
+import SpoilerButton from './SpoilerButton';
+import SpoilerInput from './SpoilerInput';
+import TextCharacterCounter from './TextCharacterCounter';
+import UploadForm from './UploadForm';
+import VisualCharacterCounter from './VisualCharacterCounter';
+import Warning from './Warning';
 
-// import type { Emoji } from 'soapbox/features/emoji'; TODO: Implement emoji
+import type { Emoji } from 'src/features/emoji';
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What\'s on your mind?' },
@@ -71,7 +71,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const compose = useCompose(id);
   const showSearch = useAppSelector((state) => state.search.submitted && !state.search.hidden);
-  const maxTootChars = 300; // TODO: Change max characters
+  const maxTootChars = 360 // TODO: Change max characters when you figure it out
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
 
   const {
@@ -196,11 +196,12 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const renderButtons = useCallback(() => (
     <HStack alignItems='center' space={2}>
-      <EmojiPickerDropdown onPickEmoji={handleEmojiPick} condensed={shouldCondense} />
+      <UploadButtonContainer composeId={id} />
+      {<EmojiPickerDropdown onPickEmoji={handleEmojiPick} condensed={shouldCondense} />}
       <PollButton composeId={id} />
       {!group && !groupId && <PrivacyDropdown composeId={id} />}
       <ScheduleButton composeId={id} />
-     <SpoilerButton composeId={id} />
+      <SpoilerButton composeId={id} />
       <MarkdownButton composeId={id} />
     </HStack>
   ), [id]);

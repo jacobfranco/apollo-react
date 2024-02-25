@@ -6,12 +6,7 @@ import { endOnboarding } from 'src/actions/onboarding';
 import { HStack, LandingGradient } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 
-import AvatarSelectionStep from './steps/avatar-selection-step';
-import BioStep from './steps/bio-step';
-import CompletedStep from './steps/completed-step';
-import CoverPhotoSelectionStep from './steps/cover-photo-selection-step';
-import DisplayNameStep from './steps/display-name-step';
-import SuggestedAccountsStep from './steps/suggested-accounts-step';
+import { AvatarSelectionStep, BioStep, CompletedStep, CoverPhotoSelectionStep, DisplayNameStep, SuggestedAccountsStep } from './onboarding';
 
 const OnboardingWizard = () => {
   const dispatch = useAppDispatch();

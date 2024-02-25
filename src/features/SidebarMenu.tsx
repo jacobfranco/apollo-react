@@ -27,7 +27,7 @@ const messages = defineMessages({
   mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Mutes' },
   filters: { id: 'navigation_bar.filters', defaultMessage: 'Filters' },
   followedTags: { id: 'navigation_bar.followed_tags', defaultMessage: 'Followed hashtags' },
-  soapboxConfig: { id: 'navigation_bar.soapbox_config', defaultMessage: 'Soapbox config' },
+  apolloConfig: { id: 'navigation_bar.apollo_config', defaultMessage: 'Apollo config' },
   accountMigration: { id: 'navigation_bar.account_migration', defaultMessage: 'Move account' },
   accountAliases: { id: 'navigation_bar.account_aliases', defaultMessage: 'Account aliases' },
   logout: { id: 'navigation_bar.logout', defaultMessage: 'Logout' },

@@ -9,9 +9,8 @@ import {
   WhoToFollowPanel,
   TrendsPanel,
   SignUpPanel,
-  PromoPanel,
+  // PromoPanel, TODO: Implement
   CtaBanner,
-  AnnouncementsPanel,
 } from 'src/features/AsyncComponents';
 import { useAppSelector, useOwnAccount, useDraggedFiles, useAppDispatch } from 'src/hooks';
 
@@ -81,16 +80,15 @@ const HomePage: React.FC<IHomePage> = ({ children }) => {
         {!me && (
           <SignUpPanel />
         )}
-        {me && (
-          <AnnouncementsPanel />
-        )}
         
          <TrendsPanel limit={5} />
         
+        {  /* TODO: Implement promo panel
         <PromoPanel />
         {me && (
           <WhoToFollowPanel limit={3} />
         )}
+        */}
         <LinkFooter />
       </Layout.Aside>
     </>

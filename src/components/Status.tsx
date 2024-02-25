@@ -7,22 +7,14 @@ import { mentionCompose, replyCompose } from 'src/actions/compose';
 import { toggleLike, toggleRepost } from 'src/actions/interactions';
 import { openModal } from 'src/actions/modals';
 import { toggleStatusHidden, unfilterStatus } from 'src/actions/statuses';
-import TranslateButton from 'src/components/translate-button';
-import AccountContainer from 'src/containers/account-container';
-import QuotedStatus from 'src/features/status/containers/quoted-status-container';
-import { HotKeys } from 'src/features/ui/components/hotkeys';
+import AccountContainer from 'src/containers/AccountContainer';
+import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
+import { HotKeys } from 'src/features/Hotkeys';
 import { useAppDispatch, useSettings } from 'src/hooks';
 import { defaultMediaVisibility, textForScreenReader, getActualStatus } from 'src/utils/status';
 
-import EventPreview from './event-preview';
-import StatusActionBar from './status-action-bar';
-import StatusContent from './status-content';
-import StatusMedia from './status-media';
-import StatusReplyMentions from './status-reply-mentions';
-import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
-import StatusInfo from './statuses/status-info';
-import Tombstone from './tombstone';
-import { Card, Icon, Stack, Text } from './ui';
+import { Card, Icon, Stack, Text, TranslateButton, StatusActionBar, StatusContent, 
+  StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo } from 'src/components';
 
 import type { Status as StatusEntity } from 'src/types/entities';
 
@@ -75,8 +67,7 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
-  const settings = useSettings();
-  const displayMedia = settings.get('displayMedia') as string;
+  const { displayMedia, boostModal } = useSettings();
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
   const overlay = useRef<HTMLDivElement>(null);
@@ -154,12 +145,11 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent): void => {
-    const modalRepost = () => dispatch(toggleRepost(actualStatus));
-    const boostModal = settings.get('boostModal');
+    const modalReblog = () => dispatch(toggleRepost(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
-      modalRepost();
+      modalReblog();
     } else {
-      dispatch(openModal('BOOST', { status: actualStatus, onRepost: modalRepost }));
+      dispatch(openModal('BOOST', { status: actualStatus, onReblog: modalReblog }));
     }
   };
 
@@ -227,7 +217,7 @@ const Status: React.FC<IStatus> = (props) => {
                       <strong
                         className='text-gray-800 dark:text-gray-200'
                         dangerouslySetInnerHTML={{
-                          __html: status.account.display_name_html,
+                          __html: status.account.display_name,
                         }}
                       />
                     </bdi>
@@ -264,7 +254,7 @@ const Status: React.FC<IStatus> = (props) => {
                       <strong
                         className='text-gray-800 dark:text-gray-200'
                         dangerouslySetInnerHTML={{
-                          __html: status.account.display_name_html,
+                          __html: status.account.display_name,
                         }}
                       />
                     </bdi>
@@ -357,15 +347,7 @@ const Status: React.FC<IStatus> = (props) => {
   let quote;
 
   if (actualStatus.quote) {
-    if (actualStatus.pleroma.get('quote_visible', true) === false) {
-      quote = (
-        <div className='quoted-status-tombstone'>
-          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
       quote = <QuotedStatus statusId={actualStatus.quote as string} />;
-    }
   }
 
   const handlers = muted ? undefined : {
@@ -385,17 +367,6 @@ const Status: React.FC<IStatus> = (props) => {
 
   const isUnderReview = actualStatus.visibility === 'self';
   const isSensitive = actualStatus.hidden;
-  const isSoftDeleted = status.tombstone?.reason === 'deleted';
-
-  if (isSoftDeleted) {
-    return (
-      <Tombstone
-        id={status.id}
-        onMoveUp={(id) => onMoveUp ? onMoveUp(id) : null}
-        onMoveDown={(id) => onMoveDown ? onMoveDown(id) : null}
-      />
-    );
-  }
 
   return (
     <HotKeys handlers={handlers} data-testid='status'>
@@ -450,7 +421,6 @@ const Status: React.FC<IStatus> = (props) => {
                 />
               )}
 
-              {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
                 <Stack space={4}>
                   <StatusContent
                     status={actualStatus}
@@ -475,7 +445,6 @@ const Status: React.FC<IStatus> = (props) => {
                     </Stack>
                   )}
                 </Stack>
-              )}
             </Stack>
 
             {(!hideActionBar && !isUnderReview) && (

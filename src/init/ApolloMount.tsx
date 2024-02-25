@@ -6,7 +6,8 @@ import { CompatRouter } from 'react-router-dom-v5-compat';
 import { ScrollContext } from 'react-router-scroll-4';
 
 import * as BuildConfig from 'src/build-config';
-import { LoadingScreen, /* SiteErrorBoundary */ } from 'src/components'; // TODO: Implement SiteErrorBoundary
+import LoadingScreen from 'src/components/LoadingScreen';
+import SiteErrorBoundary from 'src/components/SiteErrorBoundary';
 import {
   ModalContainer,
   OnboardingWizard,
@@ -37,11 +38,11 @@ const ApolloMount = () => {
 
   // @ts-ignore: I don't actually know what these should be, lol
   const shouldUpdateScroll = (prevRouterProps, { location }) => {
-    return !(location.state?.soapboxModalKey && location.state?.soapboxModalKey !== prevRouterProps?.location?.state?.soapboxModalKey);
+    return !(location.state?.apolloModalKey && location.state?.apolloModalKey !== prevRouterProps?.location?.state?.apolloModalKey);
   };
 
   return (
-    // <SiteErrorBoundary>
+    <SiteErrorBoundary>
       <BrowserRouter basename={BuildConfig.FE_SUBDIRECTORY}>
         <CompatRouter>
           <ScrollContext shouldUpdateScroll={shouldUpdateScroll}>
@@ -91,7 +92,7 @@ const ApolloMount = () => {
           </ScrollContext>
         </CompatRouter>
       </BrowserRouter>
-    // </SiteErrorBoundary>
+    </SiteErrorBoundary>
   );
 };
 

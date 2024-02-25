@@ -41,9 +41,8 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
-  const settings = useSettings();
+  const { locale } = useSettings();
 
-  const locale = settings.get('locale');
   const needsConfirmation = true;
   const supportsEmailList = true;
   const birthdayRequired = true;

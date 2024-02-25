@@ -1,23 +1,28 @@
-import api, { getLinks } from 'src/api';
-import { AppDispatch, RootState } from 'src/store'
+import api, { getLinks } from '../api';
 
-import type { SearchFilter } from 'src/reducers/search';
-import { APIEntity } from 'src/types/entities';
 import { fetchRelationships } from './accounts';
 import { importFetchedAccounts, importFetchedStatuses } from './importer';
 
-const SEARCH_CHANGE = 'SEARCH_CHANGE';
-const SEARCH_CLEAR = 'SEARCH_CLEAR';
-const SEARCH_SHOW = 'SEARCH_SHOW';
+import type { SearchFilter } from 'src/reducers/search';
+import type { AppDispatch, RootState } from 'src/store';
+import type { APIEntity } from 'src/types/entities';
+
+const SEARCH_CHANGE        = 'SEARCH_CHANGE';
+const SEARCH_CLEAR         = 'SEARCH_CLEAR';
+const SEARCH_SHOW          = 'SEARCH_SHOW';
 const SEARCH_RESULTS_CLEAR = 'SEARCH_RESULTS_CLEAR';
 
 const SEARCH_FETCH_REQUEST = 'SEARCH_FETCH_REQUEST';
 const SEARCH_FETCH_SUCCESS = 'SEARCH_FETCH_SUCCESS';
 const SEARCH_FETCH_FAIL    = 'SEARCH_FETCH_FAIL';
 
-const SEARCH_ACCOUNT_SET = 'SEARCH_ACCOUNT_SET';
-
 const SEARCH_FILTER_SET = 'SEARCH_FILTER_SET';
+
+const SEARCH_EXPAND_REQUEST = 'SEARCH_EXPAND_REQUEST';
+const SEARCH_EXPAND_SUCCESS = 'SEARCH_EXPAND_SUCCESS';
+const SEARCH_EXPAND_FAIL    = 'SEARCH_EXPAND_FAIL';
+
+const SEARCH_ACCOUNT_SET = 'SEARCH_ACCOUNT_SET';
 
 const changeSearch = (value: string) =>
   (dispatch: AppDispatch) => {
@@ -66,12 +71,13 @@ const submitSearch = (filter?: SearchFilter) =>
 
     if (accountId) params.account_id = accountId;
 
-    api(getState).get('/api/v2/search', { //TODO: get rid of v2 from api
+    api(getState).get('/api/v2/search', {
       params,
     }).then(response => {
       if (response.data.accounts) {
         dispatch(importFetchedAccounts(response.data.accounts));
       }
+
       if (response.data.statuses) {
         dispatch(importFetchedStatuses(response.data.statuses));
       }
@@ -85,34 +91,25 @@ const submitSearch = (filter?: SearchFilter) =>
     });
   };
 
-  const fetchSearchRequest = (value: string) => ({
-    type: SEARCH_FETCH_REQUEST,
-    value,
-  });
-  
-  const fetchSearchSuccess = (results: APIEntity[], searchTerm: string, searchType: SearchFilter, next: string | null) => ({
-    type: SEARCH_FETCH_SUCCESS,
-    results,
-    searchTerm,
-    searchType,
-    next,
-  });
-  
-  const fetchSearchFail = (error: unknown) => ({
-    type: SEARCH_FETCH_FAIL,
-    error,
-  });
+const fetchSearchRequest = (value: string) => ({
+  type: SEARCH_FETCH_REQUEST,
+  value,
+});
 
-  const showSearch = () => ({
-    type: SEARCH_SHOW,
-  });
-  
-  const setSearchAccount = (accountId: string | null) => ({
-    type: SEARCH_ACCOUNT_SET,
-    accountId,
-  });
+const fetchSearchSuccess = (results: APIEntity[], searchTerm: string, searchType: SearchFilter, next: string | null) => ({
+  type: SEARCH_FETCH_SUCCESS,
+  results,
+  searchTerm,
+  searchType,
+  next,
+});
 
-  const setFilter = (filterType: SearchFilter) =>
+const fetchSearchFail = (error: unknown) => ({
+  type: SEARCH_FETCH_FAIL,
+  error,
+});
+
+const setFilter = (filterType: SearchFilter) =>
   (dispatch: AppDispatch) => {
     dispatch(submitSearch(filterType));
 
@@ -123,24 +120,102 @@ const submitSearch = (filter?: SearchFilter) =>
     });
   };
 
-  export {
-    SEARCH_CHANGE,
-    SEARCH_CLEAR,
-    SEARCH_SHOW,
-    SEARCH_RESULTS_CLEAR,
-    SEARCH_FETCH_REQUEST,
-    SEARCH_FETCH_SUCCESS,
-    SEARCH_FETCH_FAIL,
-    SEARCH_ACCOUNT_SET,
-    SEARCH_FILTER_SET,
-    changeSearch,
-    clearSearch,
-    clearSearchResults,
-    submitSearch,
-    fetchSearchRequest,
-    fetchSearchSuccess,
-    fetchSearchFail,
-    showSearch,
-    setSearchAccount,
-    setFilter,
-  };
+const expandSearch = (type: SearchFilter) => (dispatch: AppDispatch, getState: () => RootState) => {
+  const value     = getState().search.value;
+  const offset    = getState().search.results[type].size;
+  const accountId = getState().search.accountId;
+
+  dispatch(expandSearchRequest(type));
+
+  let url = getState().search.next as string;
+  let params: Record<string, any> = {};
+
+  // if no URL was extracted from the Link header,
+  // fall back on querying with the offset
+  if (!url) {
+    url = '/api/v2/search';
+    params = {
+      q: value,
+      type,
+      offset,
+    };
+    if (accountId) params.account_id = accountId;
+  }
+
+  api(getState).get(url, {
+    params,
+  }).then(response => {
+    const data = response.data;
+
+    if (data.accounts) {
+      dispatch(importFetchedAccounts(data.accounts));
+    }
+
+    if (data.statuses) {
+      dispatch(importFetchedStatuses(data.statuses));
+    }
+
+    const next = getLinks(response).refs.find(link => link.rel === 'next');
+
+    dispatch(expandSearchSuccess(data, value, type, next ? next.uri : null));
+    dispatch(fetchRelationships(data.accounts.map((item: APIEntity) => item.id)));
+  }).catch(error => {
+    dispatch(expandSearchFail(error));
+  });
+};
+
+const expandSearchRequest = (searchType: SearchFilter) => ({
+  type: SEARCH_EXPAND_REQUEST,
+  searchType,
+});
+
+const expandSearchSuccess = (results: APIEntity[], searchTerm: string, searchType: SearchFilter, next: string | null) => ({
+  type: SEARCH_EXPAND_SUCCESS,
+  results,
+  searchTerm,
+  searchType,
+  next,
+});
+
+const expandSearchFail = (error: unknown) => ({
+  type: SEARCH_EXPAND_FAIL,
+  error,
+});
+
+const showSearch = () => ({
+  type: SEARCH_SHOW,
+});
+
+const setSearchAccount = (accountId: string | null) => ({
+  type: SEARCH_ACCOUNT_SET,
+  accountId,
+});
+
+export {
+  SEARCH_CHANGE,
+  SEARCH_CLEAR,
+  SEARCH_SHOW,
+  SEARCH_RESULTS_CLEAR,
+  SEARCH_FETCH_REQUEST,
+  SEARCH_FETCH_SUCCESS,
+  SEARCH_FETCH_FAIL,
+  SEARCH_FILTER_SET,
+  SEARCH_EXPAND_REQUEST,
+  SEARCH_EXPAND_SUCCESS,
+  SEARCH_EXPAND_FAIL,
+  SEARCH_ACCOUNT_SET,
+  changeSearch,
+  clearSearch,
+  clearSearchResults,
+  submitSearch,
+  fetchSearchRequest,
+  fetchSearchSuccess,
+  fetchSearchFail,
+  setFilter,
+  expandSearch,
+  expandSearchRequest,
+  expandSearchSuccess,
+  expandSearchFail,
+  showSearch,
+  setSearchAccount,
+};

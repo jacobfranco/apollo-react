@@ -67,7 +67,7 @@ const PollOptionText: React.FC<IPollOptionText> = ({ poll, option, index, active
             <Text
               theme='inherit'
               weight='medium'
-              dangerouslySetInnerHTML={{ __html: option} /* TODO: Maybe emojified? */}
+              dangerouslySetInnerHTML={{ __html: option.title_emojified }}
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
               <Text
                 theme='inherit'
                 weight='medium'
-                dangerouslySetInnerHTML={{ __html: option /* TODO: Maybe emojified */}}
+                dangerouslySetInnerHTML={{ __html: option.title_emojified }}
                 className='relative'
               />
             </div>

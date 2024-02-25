@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 
 import { openModal } from 'src/actions/modals';
-import { AttachmentThumbs, PreviewCard, PlaceholderCard, GroupLinkPreview } from 'src/components';
+import { AttachmentThumbs, GroupLinkPreview, PlaceholderCard, PreviewCard } from 'src/components';
 import { MediaGallery, Video, Audio } from 'src/features/AsyncComponents';
 import { useAppDispatch } from 'src/hooks';
 

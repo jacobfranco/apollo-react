@@ -12,14 +12,14 @@ const SiteLogo: React.FC<ISiteLogo> = ({ className, theme, ...rest }) => {
   if (theme === 'dark') darkMode = true;
   else if (theme === 'light') darkMode = false;
 
-  const soapboxLogo = darkMode
+  const apolloLogo = darkMode
     ? require('src/assets/logo.png')
     : require('src/assets/logo.png'); // TODO: change ?
 
   return (
     <img
       className={clsx('object-contain', className)}
-      src={soapboxLogo}
+      src={apolloLogo}
       {...rest}
     />
   );

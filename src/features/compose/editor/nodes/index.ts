@@ -7,7 +7,7 @@
 import { HashtagNode } from '@lexical/hashtag';
 import { AutoLinkNode } from '@lexical/link';
 
-// import { EmojiNode } from './emoji-node'; TODO: Implement emoji
+import { EmojiNode } from './EmojiNode'; 
 import { MentionNode } from './MentionNode'; 
 
 import type { Klass, LexicalNode } from 'lexical';
@@ -16,7 +16,7 @@ const useNodes = () => {
   const nodes: Array<Klass<LexicalNode>> = [
     AutoLinkNode,
     HashtagNode,
-    // EmojiNode,
+    EmojiNode,
     MentionNode,
   ];
 

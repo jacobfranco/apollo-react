@@ -3,14 +3,9 @@ import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 
 import emojify from 'src/features/emoji';
 import { normalizeStatus } from 'src/normalizers';
-import { simulateEmojiReact, simulateUnEmojiReact } from 'src/utils/emoji-reacts';
 import { stripCompatibilityFeatures, unescapeHTML } from 'src/utils/html';
-import { makeEmojiMap, normalizeId } from 'src/utils/normalizers';
+import { normalizeId } from 'src/utils/normalizers';
 
-import {
-  EMOJI_REACT_REQUEST,
-  UNEMOJI_REACT_REQUEST,
-} from '../actions/emoji-reacts';
 import { STATUS_IMPORT, STATUSES_IMPORT } from 'src/actions/importer';
 import {
   REPOST_REQUEST,
@@ -20,8 +15,6 @@ import {
   LIKE_REQUEST,
   UNLIKE_REQUEST,
   LIKE_FAIL,
-  ZAP_REQUEST,
-  ZAP_FAIL,
 } from 'src/actions/interactions';
 import {
   STATUS_CREATE_REQUEST,
@@ -106,21 +99,22 @@ export const calculateStatus = (
   } else {
     const spoilerText   = status.spoiler_text;
     const searchContent = buildSearchContent(status);
-    const emojiMap      = makeEmojiMap(status.emojis);
 
     return status.merge({
       search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-      contentHtml: stripCompatibilityFeatures(emojify(status.content, emojiMap)),
-      spoilerHtml: emojify(escapeTextContentForBrowser(spoilerText), emojiMap),
+      contentHtml: stripCompatibilityFeatures(emojify(status.content)),
+      spoilerHtml: emojify(escapeTextContentForBrowser(spoilerText)),
       hidden: expandSpoilers ? false : spoilerText.length > 0 || status.sensitive,
     });
   }
 };
 
+/*  TODO: Possibly fix/remove
 // Check whether a status is a quote by secondary characteristics
 const isQuote = (status: StatusRecord) => {
   return Boolean(status.pleroma.get('quote_url'));
 };
+*/ 
 
 // Preserve translation if an existing status already has it
 const fixTranslation = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
@@ -132,6 +126,7 @@ const fixTranslation = (status: StatusRecord, oldStatus?: StatusRecord): StatusR
   }
 };
 
+/* TODO: Possibly fix/remove
 // Preserve quote if an existing status already has it
 const fixQuote = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
   if (oldStatus && !status.quote && isQuote(status)) {
@@ -143,12 +138,14 @@ const fixQuote = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord 
   }
 };
 
+*/
+
 const fixStatus = (state: State, status: APIEntity, expandSpoilers: boolean): ReducerStatus => {
   const oldStatus = state.get(status.id);
 
   return normalizeStatus(status).withMutations(status => {
     fixTranslation(status, oldStatus);
-    fixQuote(status, oldStatus);
+    // fixQuote(status, oldStatus); TODO: Maybe fix/remove
     calculateStatus(status, oldStatus, expandSpoilers);
     minifyStatus(status);
   }) as ReducerStatus;
@@ -188,13 +185,19 @@ const decrementReplyCount = (state: State, { in_reply_to_id }: APIEntity) => {
   }
 };
 
-/** Simulate zap of status for optimistic interactions */
-const simulateZap = (state: State, statusId: string, zapped: boolean): State => {
+const simulateLike = (
+  state: State,
+  statusId: string,
+  liked: boolean,
+): State => {
   const status = state.get(statusId);
   if (!status) return state;
 
+  const delta = liked ? +1 : -1;
+
   const updatedStatus = status.merge({
-    zapped,
+    liked,
+    likes_count: Math.max(0, status.likes_count + delta),
   });
 
   return state.set(statusId, updatedStatus);
@@ -234,24 +237,8 @@ export default function statuses(state = initialState, action: AnyAction): State
       return simulateLike(state, action.status.id, true);
     case UNLIKE_REQUEST:
       return simulateLike(state, action.status.id, false);
-    case EMOJI_REACT_REQUEST:
-      return state
-        .updateIn(
-          [action.status.id, 'reactions'],
-          emojiReacts => simulateEmojiReact(emojiReacts as any, action.emoji, action.custom),
-        );
-    case UNEMOJI_REACT_REQUEST:
-      return state
-        .updateIn(
-          [action.status.id, 'reactions'],
-          emojiReacts => simulateUnEmojiReact(emojiReacts as any, action.emoji),
-        );
     case LIKE_FAIL:
       return state.get(action.status.id) === undefined ? state : state.setIn([action.status.id, 'liked'], false);
-    case ZAP_REQUEST:
-      return simulateZap(state, action.status.id, true);
-    case ZAP_FAIL:
-      return simulateZap(state, action.status.id, false);
     case REPOST_REQUEST:
       return state.setIn([action.status.id, 'reposted'], true);
     case REPOST_FAIL:

@@ -53,7 +53,6 @@ import {
     REPOSTS_EXPAND_SUCCESS,
     LIKES_FETCH_SUCCESS,
     LIKES_EXPAND_SUCCESS,
-    REACTIONS_FETCH_SUCCESS,
   } from 'src/actions/interactions';
   import {
     NOTIFICATIONS_UPDATE,
@@ -64,19 +63,6 @@ import {
   export const ListRecord = ImmutableRecord({
     next: null as string | null,
     items: ImmutableOrderedSet<string>(),
-    isLoading: false,
-  });
-  
-  export const ReactionRecord = ImmutableRecord({
-    accounts: ImmutableOrderedSet<string>(),
-    count: 0,
-    name: '',
-    url: null as string | null,
-  });
-  
-  const ReactionListRecord = ImmutableRecord({
-    next: null as string | null,
-    items: ImmutableOrderedSet<Reaction>(),
     isLoading: false,
   });
   
@@ -96,7 +82,6 @@ import {
     following: ImmutableMap<string, List>(),
     reposted_by: ImmutableMap<string, List>(),
     liked_by: ImmutableMap<string, List>(),
-    reactions: ImmutableMap<string, ReactionList>(),
     follow_requests: ListRecord(),
     blocks: ListRecord(),
     mutes: ListRecord(),
@@ -109,12 +94,10 @@ import {
   
   type State = ReturnType<typeof ReducerRecord>;
   export type List = ReturnType<typeof ListRecord>;
-  type Reaction = ReturnType<typeof ReactionRecord>;
-  type ReactionList = ReturnType<typeof ReactionListRecord>;
   type ParticipationRequest = ReturnType<typeof ParticipationRequestRecord>;
   type ParticipationRequestList = ReturnType<typeof ParticipationRequestListRecord>;
   type Items = ImmutableOrderedSet<string>;
-  type NestedListPath = ['followers' | 'following' | 'reposted_by' | 'liked_by' | 'reactions' | 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks', string];
+  type NestedListPath = ['followers' | 'following' | 'reposted_by' | 'liked_by' | 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks', string];
   type ListPath = ['follow_requests' | 'blocks' | 'mutes' | 'directory'];
   
   const normalizeList = (state: State, path: NestedListPath | ListPath, accounts: APIEntity[], next?: string | null) => {
@@ -163,13 +146,6 @@ import {
         return normalizeList(state, ['liked_by', action.id], action.accounts, action.next);
       case LIKES_EXPAND_SUCCESS:
         return appendToList(state, ['liked_by', action.id], action.accounts, action.next);
-      case REACTIONS_FETCH_SUCCESS:
-        return state.setIn(['reactions', action.id], ReactionListRecord({
-          items: ImmutableOrderedSet<Reaction>(action.reactions.map(({ accounts, ...reaction }: APIEntity) => ReactionRecord({
-            ...reaction,
-            accounts: ImmutableOrderedSet(accounts.map((account: APIEntity) => account.id)),
-          }))),
-        }));
       case NOTIFICATIONS_UPDATE:
         return action.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.notification) : state;
       case FOLLOW_REQUESTS_FETCH_SUCCESS:

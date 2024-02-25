@@ -1,6 +1,6 @@
 /**
  * Static: functions related to static files.
- * @module soapbox/utils/static
+ * @module src/utils/static
  */
 
 import { join } from 'path-browserify';

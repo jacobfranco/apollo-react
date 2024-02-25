@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 import { Account, StatusContent, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery, PollPreview } from 'src/components';
-import QuotedStatus from 'src/containers/QuotedStatusContainer';
+import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
 import { useAppSelector } from 'src/hooks';
 
 import { buildStatus } from 'src/utils/pending-status';

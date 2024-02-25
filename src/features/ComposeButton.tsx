@@ -2,25 +2,22 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 
-// import { groupComposeModal } from 'src/actions/compose'; 
+import { groupComposeModal } from 'src/actions/compose'; 
 import { openModal } from 'src/actions/modals';
-// import { useGroupLookup } from 'src/api/hooks'; 
+import { useGroupLookup } from 'src/api/hooks'; 
 import { Avatar, Button, HStack } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 
 const ComposeButton = () => {
   const location = useLocation();
-  // const isOnGroupPage = location.pathname.startsWith('/group/');
+  const isOnGroupPage = location.pathname.startsWith('/group/');
   const match = useRouteMatch<{ groupSlug: string }>('/group/:groupSlug');
-  // const { entity: group } = useGroupLookup(match?.params.groupSlug || '');
-  //const isGroupMember = !!group?.relationship?.member;
+  const { entity: group } = useGroupLookup(match?.params.groupSlug || '');
+  const isGroupMember = !!group?.relationship?.member;
 
-  /*
   if (isOnGroupPage && isGroupMember) {
     return <GroupComposeButton />;
   }
-
-  */
 
   return <HomeComposeButton />;
 };

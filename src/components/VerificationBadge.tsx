@@ -15,7 +15,7 @@ interface IVerificationBadge {
 const VerificationBadge: React.FC<IVerificationBadge> = ({ className }) => {
   const intl = useIntl();
 
-  const icon = require('soapbox/assets/icons/verified.svg'); // TODO: Add this in
+  const icon = require('src/assets/icons/verified.svg'); // TODO: Add this in
 
   // Render component based on file extension
   const Element = icon.endsWith('.svg') ? Icon : 'img';

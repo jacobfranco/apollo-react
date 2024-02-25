@@ -33,14 +33,14 @@ import React, {
 import ReactDOM from 'react-dom';
 
 import { clearComposeSuggestions, fetchComposeSuggestions } from 'src/actions/compose';
-// import { chooseEmoji } from 'soapbox/actions/emojis'; TODO: Implement emoji
-// import AutosuggestEmoji from 'soapbox/components/autosuggest-emoji';
+import { chooseEmoji } from 'src/actions/emojis'; 
+import { AutosuggestEmoji } from 'src/components';
 import { useAppDispatch, useCompose } from 'src/hooks';
 import { selectAccount } from 'src/selectors';
 import { textAtCursorMatchesToken } from 'src/utils/suggestions';
 
 import AutosuggestAccount from '../../components/AutosuggestAccount';
-// import { $createEmojiNode } from '../nodes/emoji-node';
+import { $createEmojiNode } from '../nodes/EmojiNode';
 import { $createMentionNode } from '../nodes/MentionNode';
 
 import type { AutoSuggestion } from 'src/components/AutosuggestInput';
@@ -321,10 +321,10 @@ const AutosuggestPlugin = ({
 
         if (typeof suggestion === 'object') {
           if (!suggestion.id) return;
-          // dispatch(chooseEmoji(suggestion)); TODO: Implement emoji
-          // replaceMatch($createEmojiNode(suggestion));
+          dispatch(chooseEmoji(suggestion));
+          replaceMatch($createEmojiNode(suggestion));
         } else if (suggestion[0] === '#') {
-          node.setTextContent(`${suggestion} `);
+          (node as TextNode).setTextContent(`${suggestion} `);
           node.select();
         } else {
           const account = selectAccount(getState(), suggestion)!;
@@ -361,7 +361,7 @@ const AutosuggestPlugin = ({
     let key: React.Key;
 
     if (typeof suggestion === 'object') {
-      inner = "" // <AutosuggestEmoji emoji={suggestion} />; TODO: Implement emoji, need to change for sure
+      inner = <AutosuggestEmoji emoji={suggestion} />; 
       key = suggestion.id;
     } else if (suggestion[0] === '#') {
       inner = suggestion;

@@ -7,13 +7,13 @@ import { useHistory } from 'react-router-dom';
 import { closeDropdownMenu as closeDropdownMenuRedux, openDropdownMenu } from 'src/actions/dropdown-menu';
 import { closeModal, openModal } from 'src/actions/modals';
 import { useAppDispatch } from 'src/hooks';
-import { isUserTouching } from 'src/is-mobile';
+import { userTouching } from 'src/is-mobile';
 
 import { IconButton, Portal } from 'src/components';
 
 import DropdownMenuItem, { MenuItem } from './DropdownMenuItem';
 
-import type { Status } from 'src/types/entities'; 
+import type { Status } from 'src/types/entities';
 
 export type Menu = Array<MenuItem | null>;
 
@@ -26,7 +26,7 @@ interface IDropdownMenu {
   onShiftClick?: React.EventHandler<React.MouseEvent | React.KeyboardEvent>;
   placement?: Placement;
   src?: string;
-  // status?: Status;
+  status?: Status;
   title?: string;
 }
 
@@ -52,8 +52,6 @@ const DropdownMenu = (props: IDropdownMenu) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const arrowRef = useRef<HTMLDivElement>(null);
-
-  const isOnMobile = isUserTouching();
 
   const { x, y, strategy, refs, middlewareData, placement } = useFloating<HTMLButtonElement>({
     placement: initialPlacement,
@@ -92,10 +90,10 @@ const DropdownMenu = (props: IDropdownMenu) => {
    * On mobile screens, let's replace the Popper dropdown with a Modal.
    */
   const handleOpen = () => {
-    if (isOnMobile) {
+    if (userTouching.matches) {
       dispatch(
         openModal('ACTIONS', {
-          // status: filteredProps.status,
+          status: filteredProps.status,
           actions: items,
           onClick: handleItemClick,
         }),
@@ -113,7 +111,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
   const handleClose = () => {
     (refs.reference.current as HTMLButtonElement)?.focus();
 
-    if (isOnMobile) {
+    if (userTouching.matches) {
       dispatch(closeModal('ACTIONS'));
     } else {
       closeDropdownMenu();
@@ -285,7 +283,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
           src={src}
           onClick={handleClick}
           onKeyPress={handleKeyPress}
-          // ref={refs.setReference} TODO: Maybe fix ?
+          ref={refs.setReference}
         />
       )}
 

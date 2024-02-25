@@ -49,12 +49,10 @@ import {
   COMPOSE_ADD_TO_MENTIONS,
   COMPOSE_REMOVE_FROM_MENTIONS,
   COMPOSE_SET_STATUS,
-  COMPOSE_EVENT_REPLY,
   COMPOSE_EDITOR_STATE_SET,
   COMPOSE_SET_GROUP_TIMELINE_VISIBLE,
   ComposeAction,
 } from '../actions/compose';
-import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from 'src/actions/events';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from 'src/actions/me';
 import { SETTING_CHANGE, FE_NAME, SettingsAction } from 'src/actions/settings';
 import { TIMELINE_DELETE, TimelineAction } from 'src/actions/timelines';
@@ -196,7 +194,7 @@ const updateSuggestionTags = (compose: Compose, token: string, tags: ImmutableLi
 
 const insertEmoji = (compose: Compose, position: number, emojiData: Emoji, needsSpace: boolean) => {
   const oldText = compose.text;
-  const emojiText = isNativeEmoji(emojiData) ? emojiData.native : emojiData.colons;
+  const emojiText = emojiData.native;
   const emoji = needsSpace ? ' ' + emojiText : emojiText;
 
   return compose.merge({
@@ -275,7 +273,7 @@ export const initialState: State = ImmutableMap({
   default: ReducerCompose({ idempotencyKey: uuid(), resetFileKey: getResetFileKey() }),
 });
 
-export default function compose(state = initialState, action: ComposeAction | EventsAction | MeAction | SettingsAction | TimelineAction) {
+export default function compose(state = initialState, action: ComposeAction | MeAction | SettingsAction | TimelineAction) {
   switch (action.type) {
     case COMPOSE_TYPE_CHANGE:
       return updateCompose(state, action.id, compose => compose.withMutations(map => {
@@ -307,8 +305,8 @@ export default function compose(state = initialState, action: ComposeAction | Ev
 
         map.set('group_id', action.status.getIn(['group', 'id']) as string);
         map.set('in_reply_to', action.status.get('id'));
-        map.set('to', action.explicitAddressing ? statusToMentionsArray(action.status, action.account) : ImmutableOrderedSet<string>());
-        map.set('text', !action.explicitAddressing ? statusToTextMentions(action.status, action.account) : '');
+        map.set('to', ImmutableOrderedSet<string>()); // TODO: Maybe wrong
+        map.set('text', statusToTextMentions(action.status, action.account)); // TODO: Maybe wrong
         map.set('privacy', privacyPreference(action.status.visibility, defaultCompose.privacy));
         map.set('focusDate', new Date());
         map.set('caretPosition', null);
@@ -319,12 +317,6 @@ export default function compose(state = initialState, action: ComposeAction | Ev
           map.set('sensitive', true);
           map.set('spoiler_text', action.status.spoiler_text);
         }
-      }));
-    case COMPOSE_EVENT_REPLY:
-      return updateCompose(state, action.id, compose => compose.withMutations(map => {
-        map.set('in_reply_to', action.status.get('id'));
-        map.set('to', statusToMentionsArray(action.status, action.account));
-        map.set('idempotencyKey', uuid());
       }));
     case COMPOSE_QUOTE:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
@@ -442,7 +434,7 @@ export default function compose(state = initialState, action: ComposeAction | Ev
           map.set('id', action.status.id);
         }
         map.set('text', action.rawText || unescapeHTML(expandMentions(action.status)));
-        map.set('to', action.explicitAddressing ? getExplicitMentions(action.status.account.id, action.status) : ImmutableOrderedSet<string>());
+        map.set('to', getExplicitMentions(action.status.account.id, action.status)); // TODO: Maybe wrong
         map.set('in_reply_to', action.status.get('in_reply_to_id'));
         map.set('privacy', action.status.get('visibility'));
         map.set('focusDate', new Date());
@@ -451,12 +443,7 @@ export default function compose(state = initialState, action: ComposeAction | Ev
         map.set('content_type', action.contentType || 'text/plain');
         map.set('quote', action.status.getIn(['quote', 'id']) as string);
         map.set('group_id', action.status.getIn(['group', 'id']) as string);
-
-        if (action.v?.software === PLEROMA && action.withRedraft && hasIntegerMediaIds(action.status.toJS() as any)) {
-          map.set('media_attachments', ImmutableList());
-        } else {
-          map.set('media_attachments', action.status.media_attachments);
-        }
+        map.set('media_attachments', action.status.media_attachments);
 
         if (action.status.get('spoiler_text').length > 0) {
           map.set('spoiler', true);
@@ -515,10 +502,6 @@ export default function compose(state = initialState, action: ComposeAction | Ev
       return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.id, compose => compose.set('editorState', action.editorState as string));
-    case EVENT_COMPOSE_CANCEL:
-      return updateCompose(state, 'event-compose-modal', compose => compose.set('text', ''));
-    case EVENT_FORM_SET:
-      return updateCompose(state, 'event-compose-modal', compose => compose.set('text', action.text));
     default:
       return state;
   }

@@ -1,0 +1,6 @@
+export { default as AvatarSelectionStep } from './AvatarSelectionStep'
+export { default as BioStep } from './BioStep'
+export { default as CompletedStep } from './CompletedStep'
+export { default as CoverPhotoSelectionStep } from './CoverPhotoSelectionStep'
+export { default as DisplayNameStep } from './DisplayNameStep'
+export { default as SuggestedAccountsStep } from './SuggestedAccountsStep'

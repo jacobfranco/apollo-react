@@ -84,6 +84,7 @@ const updateNotifications = (notification: APIEntity) =>
     }
   };
 
+  // TODO: Refactor pleroma stuff
 const updateNotificationsQueue = (notification: APIEntity, intlMessages: Record<string, string>, intlLocale: string, curPath: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!notification.type) return; // drop invalid notifications
@@ -288,13 +289,6 @@ const setFilter = (filterType: string) =>
     dispatch(saveSettings());
   };
 
-// Of course Markers don't work properly in Pleroma.
-// https://git.pleroma.social/pleroma/pleroma/-/issues/2769
-const markReadPleroma = (max_id: string | number) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    return api(getState).post('/api/v1/pleroma/notifications/read', { max_id });
-  };
-
 const markReadNotifications = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
@@ -339,6 +333,5 @@ export {
   clearNotifications,
   scrollTopNotifications,
   setFilter,
-  markReadPleroma,
   markReadNotifications,
 };

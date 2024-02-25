@@ -1,18 +1,19 @@
+// TODO: Completely redo
+
 import axios, { Canceler } from 'axios';
 import { List as ImmutableList } from 'immutable';
 import throttle from 'lodash/throttle';
 import { defineMessages, IntlShape } from 'react-intl';
 
 import api from 'src/api';
-// import { isNativeEmoji } from 'soapbox/features/emoji'; TODO: Implement emoji
-// import emojiSearch from 'soapbox/features/emoji/search';
+import emojiSearch from 'src/features/emoji/search';
 import { normalizeTag } from 'src/normalizers';
 import { selectAccount, selectOwnAccount } from 'src/selectors';
 import { tagHistory } from 'src/settings';
 import toast from 'src/toast';
 import { isLoggedIn } from 'src/utils/auth';
 
-// import { chooseEmoji } from './emojis';
+import { chooseEmoji } from './emojis';
 import { importFetchedAccounts } from './importer';
 import { uploadFile, updateMedia } from './media';
 import { openModal, closeModal } from './modals';
@@ -21,7 +22,7 @@ import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
 import type { AutoSuggestion } from 'src/components/AutosuggestInput';
-// import type { Emoji } from 'src/features/emoji';
+import type { Emoji } from 'src/features/emoji';
 import type { Account, Group } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
 import type { APIEntity, Status, Tag } from 'src/types/entities';
@@ -36,7 +37,6 @@ const COMPOSE_SUBMIT_REQUEST  = 'COMPOSE_SUBMIT_REQUEST' as const;
 const COMPOSE_SUBMIT_SUCCESS  = 'COMPOSE_SUBMIT_SUCCESS' as const;
 const COMPOSE_SUBMIT_FAIL     = 'COMPOSE_SUBMIT_FAIL' as const;
 const COMPOSE_REPLY           = 'COMPOSE_REPLY' as const;
-const COMPOSE_EVENT_REPLY     = 'COMPOSE_EVENT_REPLY' as const;
 const COMPOSE_REPLY_CANCEL    = 'COMPOSE_REPLY_CANCEL' as const;
 const COMPOSE_QUOTE           = 'COMPOSE_QUOTE' as const;
 const COMPOSE_QUOTE_CANCEL    = 'COMPOSE_QUOTE_CANCEL' as const;
@@ -192,7 +192,7 @@ const cancelQuoteCompose = () => ({
 });
 
 const groupComposeModal = (group: Group) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+  (dispatch: AppDispatch) => {
     const composeId = `group:${group.id}`;
 
     dispatch(groupCompose(composeId, group.id));
@@ -349,7 +349,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
 
     if (compose.privacy === 'group') {
       params.group_id = compose.group_id;
-      params.group_timeline_visible = compose.group_timeline_visible; // Truth Social - TODO: Remove ?
+      params.group_timeline_visible = compose.group_timeline_visible; // Truth Social
     }
 
     return dispatch(createStatus(params, idempotencyKey, statusId)).then(function(data) {
@@ -382,7 +382,7 @@ const submitComposeFail = (composeId: string, error: unknown) => ({
 const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-    const attachmentLimit = 4; // TODO: Change ?
+    const attachmentLimit = 4; // TODO: Maybe change
 
     const media  = getState().compose.get(composeId)?.media_attachments;
     const progress = new Array(files.length).fill(0);
@@ -528,15 +528,11 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
   });
 }, 200, { leading: true, trailing: true });
 
-/* TODO: Implement emojis
 const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
-  const state = getState();
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, state.custom_emojis);
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 });
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
-
-*/ 
 
 const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
   if (cancelFetchComposeSuggestions) {
@@ -549,36 +545,14 @@ const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => Root
 
     return dispatch(updateSuggestionTags(composeId, token, currentTrends));
 
-    /*   TODO: Unreachable because took out the if statement before.
-    This might be redundant.  Consider removing
-
-  api(getState).get('/api/v2/search', {
-    cancelToken: new CancelToken(cancel => {
-      cancelFetchComposeSuggestions = cancel;
-    }),
-    params: {
-      q: token.slice(1),
-      limit: 10,
-      type: 'hashtags',
-    },
-  }).then(response => {
-    dispatch(updateSuggestionTags(composeId, token, response.data?.hashtags.map(normalizeTag)));
-  }).catch(error => {
-    if (!isCancel(error)) {
-      toast.showAlertForError(error);
-    }
-  });
-  */
 };
 
 const fetchComposeSuggestions = (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     switch (token[0]) {
-        /*
       case ':':
         fetchComposeSuggestionsEmojis(dispatch, getState, composeId, token);
         break;
-        */
       case '#':
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);
         break;
@@ -592,15 +566,15 @@ interface ComposeSuggestionsReadyAction {
   type: typeof COMPOSE_SUGGESTIONS_READY;
   id: string;
   token: string;
-  // emojis?: Emoji[];
+  emojis?: Emoji[];
   accounts?: APIEntity[];
 }
 
-const readyComposeSuggestionsEmojis = (composeId: string, token: string, /* emojis: Emoji[] */) => ({
+const readyComposeSuggestionsEmojis = (composeId: string, token: string, emojis: Emoji[]) => ({
   type: COMPOSE_SUGGESTIONS_READY,
   id: composeId,
   token,
-  // emojis,
+  emojis,
 });
 
 const readyComposeSuggestionsAccounts = (composeId: string, token: string, accounts: APIEntity[]) => ({
@@ -622,14 +596,13 @@ interface ComposeSuggestionSelectAction {
 const selectComposeSuggestion = (composeId: string, position: number, token: string | null, suggestion: AutoSuggestion, path: Array<string | number>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     let completion = '', startPosition = position;
-    // TODO: Implement emoji
-    /*
+
     if (typeof suggestion === 'object' && suggestion.id) {
-      completion    = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
+      completion    = suggestion.native;
       startPosition = position - 1;
 
       dispatch(chooseEmoji(suggestion));
-    } else  */  if (typeof suggestion === 'string' && suggestion[0] === '#') {
+    } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
       completion    = suggestion;
       startPosition = position - 1;
     } else if (typeof suggestion === 'string') {
@@ -703,7 +676,6 @@ const changeComposeVisibility = (composeId: string, value: string) => ({
   value,
 });
 
-/* 
 const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, needsSpace: boolean) => ({
   type: COMPOSE_EMOJI_INSERT,
   id: composeId,
@@ -711,7 +683,6 @@ const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, n
   emoji,
   needsSpace,
 });
-*/
 
 const addPoll = (composeId: string) => ({
   type: COMPOSE_POLL_ADD,
@@ -814,26 +785,6 @@ const removeFromMentions = (composeId: string, accountId: string) =>
     return dispatch(action);
   };
 
-interface ComposeEventReplyAction {
-  type: typeof COMPOSE_EVENT_REPLY;
-  id: string;
-  status: Status;
-  account: Account;
-  explicitAddressing: boolean;
-}
-
-const eventDiscussionCompose = (composeId: string, status: Status) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState();
-
-    return dispatch({
-      type: COMPOSE_EVENT_REPLY,
-      id: composeId,
-      status: status,
-      account: selectOwnAccount(state),
-    });
-  };
-
 const setEditorState = (composeId: string, editorState: EditorState | string | null) => ({
   type: COMPOSE_EDITOR_STATE_SET,
   id: composeId,
@@ -872,7 +823,7 @@ type ComposeAction =
   | ReturnType<typeof changeComposeContentType>
   | ReturnType<typeof changeComposeSpoilerText>
   | ReturnType<typeof changeComposeVisibility>
-  // | ReturnType<typeof insertEmojiCompose>
+  | ReturnType<typeof insertEmojiCompose>
   | ReturnType<typeof addPoll>
   | ReturnType<typeof removePoll>
   | ReturnType<typeof addSchedule>
@@ -884,7 +835,6 @@ type ComposeAction =
   | ReturnType<typeof changePollSettings>
   | ComposeAddToMentionsAction
   | ComposeRemoveFromMentionsAction
-  | ComposeEventReplyAction
   | ReturnType<typeof setEditorState>
 
 export {
@@ -894,7 +844,6 @@ export {
   COMPOSE_SUBMIT_FAIL,
   COMPOSE_REPLY,
   COMPOSE_REPLY_CANCEL,
-  COMPOSE_EVENT_REPLY,
   COMPOSE_QUOTE,
   COMPOSE_QUOTE_CANCEL,
   COMPOSE_DIRECT,
@@ -974,7 +923,7 @@ export {
   changeComposeContentType,
   changeComposeSpoilerText,
   changeComposeVisibility,
-  // insertEmojiCompose,
+  insertEmojiCompose,
   addPoll,
   removePoll,
   addSchedule,
@@ -987,7 +936,6 @@ export {
   openComposeWithText,
   addToMentions,
   removeFromMentions,
-  eventDiscussionCompose,
   setEditorState,
   type ComposeAction,
 };

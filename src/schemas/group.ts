@@ -1,16 +1,13 @@
 import escapeTextContentForBrowser from 'escape-html';
 import z from 'zod';
 
+import { groupRelationshipSchema } from './group-relationship';
+import { groupTagSchema } from './group-tag';
 import emojify from 'src/features/emoji';
 import { unescapeHTML } from 'src/utils/html';
 
-import { customEmojiSchema } from './custom-emoji';
-import { groupRelationshipSchema } from './group-relationship';
-import { groupTagSchema } from './group-tag';
-import { filteredArray, makeCustomEmojiMap } from './utils';
-
-const avatarMissing = require('soapbox/assets/images/avatar-missing.png');
-const headerMissing = require('soapbox/assets/images/header-missing.png');
+const avatarMissing = require('src/assets/images/avatar-missing.png');
+const headerMissing = require('src/assets/images/header-missing.png');
 
 const groupSchema = z.object({
   avatar: z.string().catch(avatarMissing),
@@ -18,8 +15,6 @@ const groupSchema = z.object({
   created_at: z.string().datetime().catch(new Date().toUTCString()),
   deleted_at: z.string().datetime().or(z.null()).catch(null),
   display_name: z.string().catch(''),
-  domain: z.string().catch(''),
-  emojis: filteredArray(customEmojiSchema),
   group_visibility: z.string().catch(''), // TruthSocial
   header: z.string().catch(headerMissing),
   header_static: z.string().catch(''),
@@ -30,7 +25,7 @@ const groupSchema = z.object({
   owner: z.object({ id: z.string() }),
   note: z.string().transform(note => note === '<p></p>' ? '' : note).catch(''),
   relationship: groupRelationshipSchema.nullable().catch(null), // Dummy field to be overwritten later
-  slug: z.string().catch(''), // TruthSocial
+  slug: z.string().catch(''),
   source: z.object({
     note: z.string(),
   }).optional(), // TruthSocial
@@ -43,15 +38,15 @@ const groupSchema = z.object({
   group.header_static = group.header_static || group.header;
   group.locked = group.locked || group.group_visibility === 'members_only'; // TruthSocial
 
-  const customEmojiMap = makeCustomEmojiMap(group.emojis);
   return {
     ...group,
-    display_name_html: emojify(escapeTextContentForBrowser(group.display_name), customEmojiMap),
-    note_emojified: emojify(group.note, customEmojiMap),
+    display_name_html: emojify(escapeTextContentForBrowser(group.display_name)),
+    note_emojified: emojify(group.note),
     note_plain: group.source?.note || unescapeHTML(group.note),
   };
 });
 
 type Group = z.infer<typeof groupSchema>;
+
 
 export { groupSchema, type Group };

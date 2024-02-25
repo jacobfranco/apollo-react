@@ -1,10 +1,8 @@
 import escapeTextContentForBrowser from 'escape-html';
 import { z } from 'zod';
 
-// import emojify from 'soapbox/features/emoji'; TODO: Implement emoji
-
-// import { customEmojiSchema } from './custom-emoji';
-import { filteredArray /*makeCustomEmojiMap */ } from './utils';
+import emojify from 'src/features/emoji'; 
+import { filteredArray } from './utils';
 
 const pollOptionSchema = z.object({
   title: z.string().catch(''),
@@ -12,7 +10,6 @@ const pollOptionSchema = z.object({
 });
 
 const pollSchema = z.object({
-  // emojis: filteredArray(customEmojiSchema),
   expired: z.boolean().catch(false),
   expires_at: z.string().datetime().nullable().catch(null),
   id: z.string(),
@@ -26,14 +23,12 @@ const pollSchema = z.object({
     non_anonymous: z.boolean().catch(false),
   }).optional().catch(undefined),
 }).transform((poll) => {
-  /* const emojiMap = makeCustomEmojiMap(poll.emojis);
 
   const emojifiedOptions = poll.options.map((option) => ({
     ...option,
-    title_emojified: emojify(escapeTextContentForBrowser(option.title), emojiMap),
+    title_emojified: emojify(escapeTextContentForBrowser(option.title)),
   }));
 
-  */
 
   // If the user has votes, they have certainly voted.
   if (poll.own_votes?.length) {
@@ -42,7 +37,7 @@ const pollSchema = z.object({
 
   return {
     ...poll,
-    // options: emojifiedOptions,
+    options: emojifiedOptions,
   };
 });
 

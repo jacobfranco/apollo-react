@@ -1,8 +1,8 @@
-import { RootState } from 'src/store'
-
 import * as BuildConfig from 'src/build-config';
 import { selectOwnAccount } from 'src/selectors';
 import { isURL } from 'src/utils/auth';
+
+import type { RootState } from 'src/store';
 
 const getHost = (url: any): string => {
     try {
