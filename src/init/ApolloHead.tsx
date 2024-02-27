@@ -8,7 +8,7 @@ import {
   useLocale,
 } from 'src/hooks';
 import { normalizeApolloConfig } from 'src/normalizers';
-// import { startSentry } from 'soapbox/sentry'; TODO: Implement sentry
+import { startSentry } from 'src/sentry';
 import { generateThemeCss } from 'src/utils/theme';
 
 const Helmet = React.lazy(() => import('src/components/Helmet'));
@@ -25,7 +25,7 @@ const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
 
   const darkMode = useTheme() === 'dark';
   const themeCss = generateThemeCss(apolloConfig);
-  // const dsn = apolloConfig.sentryDsn;
+  const dsn = apolloConfig.sentryDsn;
 
   const bodyClass = clsx('h-full bg-white text-base dark:bg-gray-800', {
     'no-reduce-motion': !reduceMotion,
@@ -33,13 +33,11 @@ const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
     'demetricator': demetricator,
   });
 
-  /* TODO: Implement sentry
   useEffect(() => {
     if (dsn) {
       startSentry(dsn).catch(console.error);
     }
   }, [dsn]);
-*/ 
   return (
     <>
       <Helmet>

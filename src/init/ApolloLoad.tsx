@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IntlProvider } from 'react-intl';
 
 import { fetchMe } from 'src/actions/me';
-import { getApolloConfig } from 'src/actions/apollo';
-import { LoadingScreen } from 'src/components';
+import { loadApolloConfig } from 'src/actions/apollo';
+import LoadingScreen from 'src/components/LoadingScreen';
 import {
   useAppSelector,
   useAppDispatch,
@@ -19,7 +19,7 @@ const loadInitial = () => {
     // Await for authenticated fetch
     await dispatch(fetchMe());
     // Await for configuration
-    await dispatch(getApolloConfig(getState().apollo)); // TODO: Maybe need to change to loadApolloConfig
+    await dispatch(loadApolloConfig());
   };
 };
 

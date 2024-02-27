@@ -1,5 +1,5 @@
 import { selectAccount } from 'src/selectors';
-// import { setSentryAccount } from 'src/sentry'; TODO: Implement sentry
+import { setSentryAccount } from 'src/sentry'; 
 import KVStore from 'src/storage/kv-store';
 import { getAuthUserId, getAuthUserUrl } from 'src/utils/auth';
 
@@ -85,7 +85,7 @@ const fetchMeRequest = () => ({
 });
 
 const fetchMeSuccess = (account: Account) => {
-  // setSentryAccount(account);
+  setSentryAccount(account);
 
   return {
     type: ME_FETCH_SUCCESS,

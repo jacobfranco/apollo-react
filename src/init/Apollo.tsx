@@ -17,7 +17,7 @@ import ApolloMount from './ApolloMount';
 // Configure global functions for developers
 createGlobals(store);
 
-// Preload happens synchronously
+// Preload happens synchronously TODO: Implement with backend
 store.dispatch(preload() as any);
 
 // This happens synchronously

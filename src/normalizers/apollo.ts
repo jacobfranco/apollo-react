@@ -7,6 +7,8 @@ import {
   
   import { toTailwind } from 'src/utils/tailwind';
   import { generateAccent } from 'src/utils/theme';
+
+  import type { FooterItem } from 'src/types/apollo'
   
   const DEFAULT_COLORS = ImmutableMap<string, any>({
     success: ImmutableMap({
@@ -52,6 +54,9 @@ import {
     gdpr: false,
     gdprUrl: '',
     greentext: false,
+    navlinks: ImmutableMap({
+      homeFooter: ImmutableList<FooterItem>(),
+    }),
     verifiedIcon: '',
     verifiedCanEditName: false,
     displayFqn: true,
@@ -72,31 +77,43 @@ import {
     mediaPreview: false,
     sentryDsn: undefined as string | undefined,
   }, 'ApolloConfig');
+
+  export const FooterItemRecord = ImmutableRecord({
+    title: '',
+    url: '',
+  });
+  
   
   type ApolloConfigMap = ImmutableMap<string, any>;
-  
-  const normalizeBrandColor = (ApolloConfig: ApolloConfigMap): ApolloConfigMap => {
-    const brandColor = ApolloConfig.get('brandColor') || ApolloConfig.getIn(['colors', 'primary', '500']) || '';
-    return ApolloConfig.set('brandColor', brandColor);
+
+  const normalizeFooterLinks = (apolloConfig: ApolloConfigMap): ApolloConfigMap => {
+    const path = ['navlinks', 'homeFooter'];
+    const items = (apolloConfig.getIn(path, ImmutableList()) as ImmutableList<any>).map(FooterItemRecord);
+    return apolloConfig.setIn(path, items);
   };
   
-  const normalizeAccentColor = (ApolloConfig: ApolloConfigMap): ApolloConfigMap => {
-    const brandColor = ApolloConfig.get('brandColor');
+  const normalizeBrandColor = (apolloConfig: ApolloConfigMap): ApolloConfigMap => {
+    const brandColor = apolloConfig.get('brandColor') || apolloConfig.getIn(['colors', 'primary', '500']) || '';
+    return apolloConfig.set('brandColor', brandColor);
+  };
   
-    const accentColor = ApolloConfig.get('accentColor')
-      || ApolloConfig.getIn(['colors', 'accent', '500'])
+  const normalizeAccentColor = (apolloConfig: ApolloConfigMap): ApolloConfigMap => {
+    const brandColor = apolloConfig.get('brandColor');
+  
+    const accentColor = apolloConfig.get('accentColor')
+      || apolloConfig.getIn(['colors', 'accent', '500'])
       || (brandColor ? generateAccent(brandColor) : '');
   
-    return ApolloConfig.set('accentColor', accentColor);
+    return apolloConfig.set('accentColor', accentColor);
   };
   
-  const normalizeColors = (ApolloConfig: ApolloConfigMap): ApolloConfigMap => {
-    const colors = DEFAULT_COLORS.mergeDeep(ApolloConfig.get('colors'));
-    return toTailwind(ApolloConfig.set('colors', colors));
+  const normalizeColors = (apolloConfig: ApolloConfigMap): ApolloConfigMap => {
+    const colors = DEFAULT_COLORS.mergeDeep(apolloConfig.get('colors'));
+    return toTailwind(apolloConfig.set('colors', colors));
   };
   
-  const maybeAddMissingColors = (ApolloConfig: ApolloConfigMap): ApolloConfigMap => {
-    const colors = ApolloConfig.get('colors');
+  const maybeAddMissingColors = (apolloConfig: ApolloConfigMap): ApolloConfigMap => {
+    const colors = apolloConfig.get('colors');
   
     const missing = ImmutableMap({
       'gradient-start': colors.getIn(['primary', '500']),
@@ -104,16 +121,17 @@ import {
       'accent-blue': colors.getIn(['primary', '600']),
     });
   
-    return ApolloConfig.set('colors', missing.mergeDeep(colors));
+    return apolloConfig.set('colors', missing.mergeDeep(colors));
   };
   
-  export const normalizeApolloConfig = (ApolloConfig: Record<string, any>) => {
+  export const normalizeApolloConfig = (apolloConfig: Record<string, any>) => {
     return ApolloConfigRecord(
-      ImmutableMap(fromJS(ApolloConfig)).withMutations(ApolloConfig => {
-        normalizeBrandColor(ApolloConfig);
-        normalizeAccentColor(ApolloConfig);
-        normalizeColors(ApolloConfig);
-        maybeAddMissingColors(ApolloConfig);
+      ImmutableMap(fromJS(apolloConfig)).withMutations(apolloConfig => {
+        normalizeBrandColor(apolloConfig);
+        normalizeAccentColor(apolloConfig);
+        normalizeColors(apolloConfig);
+        maybeAddMissingColors(apolloConfig);
+        normalizeFooterLinks(apolloConfig);
       }),
     );
   };

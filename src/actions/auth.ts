@@ -13,6 +13,7 @@ import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
 import KVStore from 'src/storage/kv-store';
 import sourceCode from 'src/utils/code'
+import { unsetSentryAccount } from "src/sentry";
 
 import api, { baseClient } from "src/api";
 import { importFetchedAccount } from 'src/actions/importer';
@@ -201,6 +202,9 @@ export const register = (params: Record<string, any>) =>
         // Clear all stored cache from React Query
         queryClient.invalidateQueries();
         queryClient.clear();
+
+        // Clear account from sentry
+        unsetSentryAccount();
 
         dispatch({ type: AUTH_LOGGED_OUT, account });
 

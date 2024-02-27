@@ -59,3 +59,5 @@ export const parseBaseURL = (url: any) => {
       me,
     ].filter(url => url)).find(isURL);
   };
+
+  export const getMeUrl = (state: RootState) => selectOwnAccount(state)?.url;
