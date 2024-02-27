@@ -6,7 +6,7 @@ import { type Config } from 'tailwindcss';
 import { parseColorMatrix } from './tailwind/colors';
 
 const config: Config = {
-  content: ['./src/**/*.{html,js,ts,tsx}', './custom/instance/**/*.html', './index.html'],
+  content: ['./src/**/*.{html,js,ts,tsx}', './index.html'],
   darkMode: 'class',
   theme: {
     screens: {
