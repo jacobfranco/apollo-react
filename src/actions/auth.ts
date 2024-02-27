@@ -12,6 +12,7 @@ import { queryClient } from 'src/queries/client';
 import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
 import KVStore from 'src/storage/kv-store';
+import sourceCode from 'src/utils/code'
 
 import api, { baseClient } from "src/api";
 import { importFetchedAccount } from 'src/actions/importer';
@@ -138,10 +139,10 @@ export const register = (params: Record<string, any>) =>
 
   const createAuthApp = () => (dispatch: AppDispatch) => {
     const params = {
-      client_name:   'Apollo', 
+      client_name:   sourceCode.displayName, 
       redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
       scopes:        'read write', // Define scopes as needed
-      website:       'http://yoapollo.com', 
+      website:       sourceCode.homepage, 
     };
   
     return dispatch(createApp(params)).then((app: Record<string, string>) =>

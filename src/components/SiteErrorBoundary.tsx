@@ -8,6 +8,7 @@ import { useApolloConfig } from 'src/hooks';
 import { captureSentryException } from 'src/sentry';
 import KVStore from 'src/storage/kv-store';
 import { unregisterSW } from 'src/utils/sw';
+import sourceCode from 'src/utils/code';
 
 import SentryFeedbackForm from './SentryFeedbackForm';
 import SiteLogo from './SiteLogo';
@@ -104,7 +105,8 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
             </p>
 
             <Text theme='muted'>
-              <Text weight='medium' tag='span' theme='muted'>{'Apollo 0.1'}:</Text>
+              <Text weight='medium' tag='span' theme='muted'>{sourceCode.displayName}:</Text>
+              {' '}{sourceCode.version}
             </Text>
 
             <div className='mt-10'>

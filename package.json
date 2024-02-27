@@ -4,6 +4,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Apollo Web Frontend",
+  "homepage": "https://yoapollo.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacobfranco/apollo-react"
+  },
   "scripts": {
     "start": "npx vite serve",
     "dev": "${npm_execpath} run start",
