@@ -44,8 +44,8 @@ import {
     logo: '',
     logoDarkMode: null,
     banner: '',
-    brandColor: '#A981FC',
-    accentColor: '#A981FC',
+    brandColor: '',
+    accentColor: '',
     colors: ImmutableMap(),
     copyright: `© Apollo Fantasy Inc. ${new Date().getFullYear()}
   This software is distributed under the GNU Affero General Public License.

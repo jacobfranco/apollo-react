@@ -13,7 +13,8 @@ import {
 const initialState = ImmutableMap<string, any>();
 
 const fallbackState = ImmutableMap<string, any>({
-  brandColor: '#A981FC', // Brand
+  brandColor: '#a981fc', // Brand
+  accentColor: '#a981fc' // Accent
 });
 
 const persistApolloConfig = (apolloConfig: ImmutableMap<string, any>, host: string) => {
