@@ -8,8 +8,8 @@ import type { Store } from 'src/store';
 
 /** Add Soapbox globals to the window. */
 export const createGlobals = (store: Store) => {
-  const Soapbox = {
-    /** Become a developer with `Soapbox.isDeveloper()` */
+  const Apollo = {
+    /** Become a developer with `Apollo.isDeveloper()` */
     isDeveloper: (bool = true): boolean => {
       if (![true, false].includes(bool)) {
         throw `Invalid option ${bool}. Must be true or false.`;
@@ -19,5 +19,5 @@ export const createGlobals = (store: Store) => {
     },
   };
 
-  (window as any).Soapbox = Soapbox;
+  (window as any).Apollo = Apollo;
 };

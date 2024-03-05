@@ -26,15 +26,28 @@ const UI = React.lazy(() => import('src/features/UI'));
 
 /** Highest level node with the Redux store. */
 const ApolloMount = () => {
+  console.log('Rendering ApolloMount');
   useCachedLocationHandler();
 
   const { isLoggedIn } = useLoggedIn();
   const { account } = useOwnAccount();
   const apolloConfig = useApolloConfig();
 
+   // Log the values of isLoggedIn and account
+   console.log('isLoggedIn:', isLoggedIn);
+   console.log('account:', account);
+
   const needsOnboarding = useAppSelector(state => state.onboarding.needsOnboarding);
   const showOnboarding = account && needsOnboarding;
   const { redirectRootNoLogin, gdpr } = apolloConfig;
+
+   // Log the values of needsOnboarding and showOnboarding
+   console.log('needsOnboarding:', needsOnboarding);
+   console.log('showOnboarding:', showOnboarding);
+ 
+   // Log the values of redirectRootNoLogin and gdpr
+   console.log('redirectRootNoLogin:', redirectRootNoLogin);
+   console.log('gdpr:', gdpr);
 
   // @ts-ignore: I don't actually know what these should be, lol
   const shouldUpdateScroll = (prevRouterProps, { location }) => {

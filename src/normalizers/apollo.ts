@@ -44,10 +44,12 @@ import {
     logo: '',
     logoDarkMode: null,
     banner: '',
-    brandColor: '', // Empty
-    accentColor: '',
+    brandColor: '#A981FC',
+    accentColor: '#A981FC',
     colors: ImmutableMap(),
-    copyright: `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`,
+    copyright: `© Apollo Fantasy Inc. ${new Date().getFullYear()}
+  This software is distributed under the GNU Affero General Public License.
+  `,
     customCss: ImmutableList<string>(),
     defaultSettings: ImmutableMap<string, any>(),
     extensions: ImmutableMap(),
@@ -57,6 +59,14 @@ import {
     navlinks: ImmutableMap({
       homeFooter: ImmutableList<FooterItem>(),
     }),
+    allowedEmoji: ImmutableList<string>([
+      '👍',
+      '❤️',
+      '😆',
+      '😮',
+      '😢',
+      '😩',
+    ]),
     verifiedIcon: '',
     verifiedCanEditName: false,
     displayFqn: true,

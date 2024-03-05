@@ -25,6 +25,7 @@ const config: Config = {
       },
       fontFamily: {
         'sans': [
+          'URWDIN',
           'Soapbox i18n',
           'Inter',
           'ui-sans-serif',
@@ -47,6 +48,9 @@ const config: Config = {
           'ui-monospace',
           'mono',
         ],
+      },
+      borderRadius: {
+        '5px': '5px', 
       },
       spacing: {
         '4.5': '1.125rem',

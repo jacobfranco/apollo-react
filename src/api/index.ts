@@ -7,6 +7,8 @@ import { selectAccount } from 'src/selectors';
 import { RootState } from 'src/store';
 import { getAccessToken, getAppToken, isURL, parseBaseURL } from 'src/utils/auth';
 
+import type MockAdapter from 'axios-mock-adapter';
+
 export const getLinks = (response: AxiosResponse): LinkHeader => {
   return new LinkHeader(response.headers?.link);
 };
@@ -97,3 +99,7 @@ export default (getState: () => RootState, authType: string = 'user'): AxiosInst
 
   return baseClient(accessToken, baseURL, nostrSign);
 };
+
+// The Jest mock exports these, so they're needed for TypeScript.
+export const __stub = (_func: (mock: MockAdapter) => void) => 0;
+export const __clear = (): Function[] => [];

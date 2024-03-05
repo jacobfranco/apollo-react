@@ -107,6 +107,8 @@ const SidebarNavigation = () => {
           text={<FormattedMessage id='tabs_bar.search' defaultMessage='Search' />}
         />
 
+        {/* TODO: eSports Info Should be Visible without an account */}
+
         {account && (
           <>
             <SidebarNavigationLink

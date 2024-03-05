@@ -1,5 +1,5 @@
 import { selectAccount } from 'src/selectors';
-import { setSentryAccount } from 'src/sentry'; 
+import { setSentryAccount } from 'src/sentry';
 import KVStore from 'src/storage/kv-store';
 import { getAuthUserId, getAuthUserUrl } from 'src/utils/auth';
 

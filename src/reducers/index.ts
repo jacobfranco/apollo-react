@@ -41,7 +41,7 @@ import suggestions from './suggestions'
 import tags from './tags'
 import timelines from './timelines'
 import trends from './trends'
-import user_lists from './user_lists'
+import user_lists from './user-lists'
 
 const reducers = {
   admin_user_index,

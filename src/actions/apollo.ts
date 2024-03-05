@@ -60,7 +60,7 @@ const fetchApolloConfig = (host: string | null) =>
   const fetchApolloJson = (host: string | null) =>
   (dispatch: AppDispatch) =>
     staticClient.get('/instance/apollo.json').then(({ data }) => {
-      if (!isObject(data)) throw 'apolo.json failed';
+      if (!isObject(data)) throw 'apollo.json failed';
       dispatch(importApolloConfig(data, host));
       return data;
     }).catch(error => {
@@ -69,7 +69,7 @@ const fetchApolloConfig = (host: string | null) =>
 
     const importApolloConfig = (apolloConfig: APIEntity, host: string | null) => {
       if (!apolloConfig.brandColor) {
-        apolloConfig.brandColor = '#0482d8';
+        apolloConfig.brandColor = '#A981FC';
       }
       return {
         type: APOLLO_CONFIG_REQUEST_SUCCESS,
@@ -91,7 +91,7 @@ export {
   APOLLO_CONFIG_REMEMBER_REQUEST,
   APOLLO_CONFIG_REMEMBER_SUCCESS,
   APOLLO_CONFIG_REMEMBER_FAIL,
-    getApolloConfig,
+  getApolloConfig,
   rememberApolloConfig,
   fetchApolloConfig,
   loadApolloConfig,

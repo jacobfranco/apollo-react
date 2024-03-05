@@ -13,8 +13,8 @@ const SiteLogo: React.FC<ISiteLogo> = ({ className, theme, ...rest }) => {
   else if (theme === 'light') darkMode = false;
 
   const apolloLogo = darkMode
-    ? require('src/assets/logo.png')
-    : require('src/assets/logo.png'); // TODO: change ?
+    ? require('src/assets/big_logo.png')
+    : require('src/assets/big_logo.png'); // TODO: change ?
 
   return (
     <img

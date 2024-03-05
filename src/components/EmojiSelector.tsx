@@ -119,6 +119,15 @@ const EmojiSelector: React.FC<IEmojiSelector> = ({
           className={clsx('z-[999] flex w-max max-w-[100vw] flex-wrap space-x-3 rounded-full bg-white px-3 py-2.5 shadow-lg focus:outline-none dark:bg-gray-900 dark:ring-2 dark:ring-primary-700')}
         >
 
+          {Array.from(apolloConfig.allowedEmoji).map((emoji, i) => (
+            <EmojiButton
+              key={i}
+              emoji={emoji}
+              onClick={onReact}
+              tabIndex={visible ? 0 : -1}
+            />
+          ))}
+
           {all && (
             <IconButton
               className='text-gray-600 hover:text-gray-600 dark:hover:text-white'

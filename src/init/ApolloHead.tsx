@@ -7,7 +7,6 @@ import {
   useTheme,
   useLocale,
 } from 'src/hooks';
-import { normalizeApolloConfig } from 'src/normalizers';
 import { startSentry } from 'src/sentry';
 import { generateThemeCss } from 'src/utils/theme';
 
@@ -34,10 +33,13 @@ const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
   });
 
   useEffect(() => {
+    console.log('[ApolloHead] Component mounted.');
     if (dsn) {
       startSentry(dsn).catch(console.error);
     }
   }, [dsn]);
+
+  console.log('[ApolloHead] Rendering...');
   return (
     <>
       <Helmet>

@@ -16,10 +16,13 @@ import MESSAGES from 'src/messages';
 const loadInitial = () => {
   // @ts-ignore
   return async(dispatch, getState) => {
+    console.log('Loading initial data...');
     // Await for authenticated fetch
     await dispatch(fetchMe());
+    console.log('Fetched user data (me)');
     // Await for configuration
     await dispatch(loadApolloConfig());
+    console.log('Fetched Apollo configuration');
   };
 };
 
@@ -40,6 +43,13 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
   const [localeLoading, setLocaleLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  console.log('Current state values:', {
+    me,
+    account: account ? account : 'Account not loaded',
+    isLoaded,
+    localeLoading,
+    swUpdating,
+  });
   /** Whether to display a loading indicator. */
   const showLoading = [
     me === null,
@@ -49,22 +59,29 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
     swUpdating,
   ].some(Boolean);
 
+  console.log('Show loading screen:', showLoading);
+
   // Load the user's locale
   useEffect(() => {
     MESSAGES[locale]().then(messages => {
       setMessages(messages);
       setLocaleLoading(false);
-    }).catch(() => { });
+      console.log('Locale messages loaded');
+    }).catch(error => { 
+      console.error('Error loading locale messages:', error);
+    });
   }, [locale]);
 
-  // Load initial data from the API
-  useEffect(() => {
+   // Load initial data from the API
+   useEffect(() => {
     dispatch(loadInitial()).then(() => {
       setIsLoaded(true);
-    }).catch(() => {
-      setIsLoaded(true);
+      console.log('Initial data loading complete');
+    }).catch(error => {
+      console.error('Error loading initial data:', error);
+      setIsLoaded(true); // Consider handling this differently as it assumes loading is complete
     });
-  }, []);
+  }, [dispatch]);
 
   // intl is part of loading.
   // It's important nothing in here depends on intl.

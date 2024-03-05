@@ -2,15 +2,15 @@ import clsx from 'clsx';
 import React, { Suspense, useEffect, useRef } from 'react';
 import { Switch, useHistory, useLocation, Redirect } from 'react-router-dom';
 
-// import { fetchFollowRequests } from 'src/actions/accounts';
-// import { fetchReports, fetchUsers, fetchConfig } from 'src/actions/admin';
-// import { fetchFilters } from 'src/actions/filters';
-// import { fetchMarker } from 'src/actions/markers';
-// import { expandNotifications } from 'src/actions/notifications';
+import { fetchFollowRequests } from 'src/actions/accounts';
+import { fetchReports, fetchUsers, fetchConfig } from 'src/actions/admin';
+import { fetchFilters } from 'src/actions/filters';
+import { fetchMarker } from 'src/actions/markers';
+import { expandNotifications } from 'src/actions/notifications';
 // import { register as registerPushNotifications } from 'src/actions/push-notifications';
-// import { fetchScheduledStatuses } from 'src/actions/scheduled-statuses';
-// import { fetchSuggestionsForTimeline } from 'src/actions/suggestions';
-// import { expandHomeTimeline } from 'src/actions/timelines';
+import { fetchScheduledStatuses } from 'src/actions/scheduled-statuses';
+import { fetchSuggestionsForTimeline } from 'src/actions/suggestions';
+import { expandHomeTimeline } from 'src/actions/timelines';
 // import { useUserStream } from 'src/api/hooks';
 import { SidebarNavigation, ThumbNavigation, Layout, BackgroundShapes, FloatingActionButton } from 'src/components';
 import { useAppDispatch, useAppSelector, useOwnAccount, useApolloConfig, useDraggedFiles, useLoggedIn } from 'src/hooks';
@@ -112,7 +112,7 @@ import { WrappedRoute } from 'src/utils/react-router-helpers';
 
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
-// import 'src/components/status';
+import 'src/components/Status';
 
 interface ISwitchingColumnsArea {
   children: React.ReactNode;
@@ -300,8 +300,6 @@ const UI: React.FC<IUI> = ({ children }) => {
   const loadAccountData = () => {
     if (!account) return;
 
-    /* TODO: Implement all this stuff
-
     dispatch(expandHomeTimeline({}, () => {
       dispatch(fetchSuggestionsForTimeline());
     }));
@@ -329,7 +327,6 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     setTimeout(() => dispatch(fetchScheduledStatuses()), 900);
 
-    */
   };
 
   useEffect(() => {

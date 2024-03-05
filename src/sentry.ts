@@ -42,7 +42,7 @@ async function startSentry(dsn: string): Promise<void> {
     tracesSampleRate: .1,
   });
 
-  Sentry.setContext('soapbox', sourceCode);
+  Sentry.setContext('apollo', sourceCode);
 }
 
 /** Associate the account with Sentry events. */
