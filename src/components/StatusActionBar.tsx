@@ -32,8 +32,8 @@ const messages = defineMessages({
   blockAndReport: { id: 'confirmations.block.block_and_report', defaultMessage: 'Block & Report' },
   blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
-  cancel_repost_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Un-repost' },
-  cannot_repost: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be reposted' },
+  cancel_repost_private: { id: 'status.cancel_repost_private', defaultMessage: 'Un-repost' },
+  cannot_repost: { id: 'status.cannot_repost', defaultMessage: 'This post cannot be reposted' },
   chat: { id: 'status.chat', defaultMessage: 'Chat with @{name}' },
   copy: { id: 'status.copy', defaultMessage: 'Copy Link to Post' },
   deactivateUser: { id: 'admin.users.actions.deactivate_user', defaultMessage: 'Deactivate @{name}' },
@@ -586,14 +586,14 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const likeCount = status.likes_count;
 
   const menu = _makeMenu(publicStatus);
-  let reblogIcon = require('@tabler/icons/repeat.svg');
+  let repostIcon = require('@tabler/icons/repeat.svg');
   let replyTitle;
   let replyDisabled = false;
 
   if (status.visibility === 'direct') {
-    reblogIcon = require('@tabler/icons/mail.svg');
+    repostIcon = require('@tabler/icons/mail.svg');
   } else if (status.visibility === 'private') {
-    reblogIcon = require('@tabler/icons/lock.svg');
+    repostIcon = require('@tabler/icons/lock.svg');
   }
 
   if ((status.group as Group)?.membership_required && !groupRelationship?.member) {
@@ -611,9 +611,9 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     icon: require('@tabler/icons/quote.svg'),
   }];
 
-  const reblogButton = (
+  const repostButton = (
     <StatusActionButton
-      icon={reblogIcon}
+      icon={repostIcon}
       color='success'
       disabled={!publicStatus}
       title={!publicStatus ? intl.formatMessage(messages.cannot_repost) : intl.formatMessage(messages.repost)}
@@ -670,7 +670,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
             disabled={!publicStatus}
             onShiftClick={handleRepostClick}
           >
-            {reblogButton}
+            {repostButton}
           </DropdownMenu>
 
           <StatusActionButton

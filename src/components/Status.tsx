@@ -145,11 +145,11 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent): void => {
-    const modalReblog = () => dispatch(toggleRepost(actualStatus));
+    const modalRepost = () => dispatch(toggleRepost(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
-      modalReblog();
+      modalRepost();
     } else {
-      dispatch(openModal('BOOST', { status: actualStatus, onReblog: modalReblog }));
+      dispatch(openModal('BOOST', { status: actualStatus, onRepost: modalRepost }));
     }
   };
 

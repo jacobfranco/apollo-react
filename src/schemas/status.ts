@@ -53,7 +53,7 @@ const baseStatusSchema = z.object({
 });
 
 type BaseStatus = z.infer<typeof baseStatusSchema>;
-type TransformableStatus = Omit<BaseStatus, 'reblog' | 'quote' >
+type TransformableStatus = Omit<BaseStatus, 'repost' | 'quote' >
 
 /** Creates search index from the status. */
 const buildSearchIndex = (status: TransformableStatus): string => {
@@ -103,7 +103,7 @@ const embeddedStatusSchema = baseStatusSchema
 
 const statusSchema = baseStatusSchema.extend({
   quote: embeddedStatusSchema,
-  reblog: embeddedStatusSchema,
+  repost: embeddedStatusSchema,
 }).transform(({ ...status }) => {
   return {
     ...status,

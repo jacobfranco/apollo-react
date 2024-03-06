@@ -49,7 +49,7 @@ const HotkeysModal: React.FC<IHotkeysModal> = ({ onClose }) => {
             </tr>
             <tr>
               <TableCell><Hotkey>f</Hotkey></TableCell>
-              <TableCell><FormattedMessage id='keyboard_shortcuts.favourite' defaultMessage='to like' /></TableCell>
+              <TableCell><FormattedMessage id='keyboard_shortcuts.like' defaultMessage='to like' /></TableCell>
             </tr>
             <tr>
               <TableCell><Hotkey>b</Hotkey></TableCell>
@@ -127,7 +127,7 @@ const HotkeysModal: React.FC<IHotkeysModal> = ({ onClose }) => {
             </tr>
             <tr>
               <TableCell><Hotkey>g</Hotkey> + <Hotkey>f</Hotkey></TableCell>
-              <TableCell><FormattedMessage id='keyboard_shortcuts.favourites' defaultMessage='to open likes list' /></TableCell>
+              <TableCell><FormattedMessage id='keyboard_shortcuts.likes' defaultMessage='to open likes list' /></TableCell>
             </tr>
             <tr>
               <TableCell><Hotkey>g</Hotkey> + <Hotkey>p</Hotkey></TableCell>

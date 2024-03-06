@@ -61,7 +61,7 @@ const defaultSettings = ImmutableMap({
 
   home: ImmutableMap({
     shows: ImmutableMap({
-      reblog: true,
+      repost: true,
       reply: true,
       direct: false,
     }),

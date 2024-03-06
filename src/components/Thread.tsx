@@ -152,7 +152,7 @@ const Thread = (props: IThread) => {
         if ((e && e.shiftKey) || !boostModal) {
           handleModalRepost(status);
         } else {
-          dispatch(openModal('BOOST', { status, onReblog: handleModalRepost }));
+          dispatch(openModal('BOOST', { status, onRepost: handleModalRepost }));
         }
       }
     });
@@ -348,7 +348,7 @@ const Thread = (props: IThread) => {
           ref={statusRef}
           className='focusable relative'
           tabIndex={0}
-          // FIXME: no "reblogged by" text is added for the screen reader
+          // FIXME: no "reposted by" text is added for the screen reader
           aria-label={textForScreenReader(intl, status)}
         >
 

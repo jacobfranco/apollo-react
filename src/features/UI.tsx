@@ -43,7 +43,7 @@ import {
   // Notifications,
   // FollowRequests,
   // GenericNotFound,
-  // LikedStatuses, // changed from FavouritedStatuses
+  // LikedStatuses,
   // Blocks,
   // Mutes,
   // Filters,

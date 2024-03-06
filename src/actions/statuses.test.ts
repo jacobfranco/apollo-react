@@ -80,7 +80,7 @@ describe('deleteStatus()', () => {
             id: statusId,
             accountId: null,
             references: ImmutableMap({}),
-            reblogOf: null,
+            repostOf: null,
           },
         ];
         await store.dispatch(deleteStatus(statusId));
@@ -101,7 +101,7 @@ describe('deleteStatus()', () => {
             id: statusId,
             accountId: null,
             references: ImmutableMap({}),
-            reblogOf: null,
+            repostOf: null,
           },
           {
             type: 'COMPOSE_SET_STATUS',

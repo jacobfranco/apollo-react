@@ -39,7 +39,7 @@ const settingsSchema = z.object({
   }),
   home: coerceObject({
     shows: coerceObject({
-      reblog: z.boolean().catch(true),
+      repost: z.boolean().catch(true),
       reply: z.boolean().catch(true),
     }),
   }),

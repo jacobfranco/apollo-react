@@ -55,10 +55,10 @@ export default function reports(state: State = ReducerRecord(), action: AnyActio
         }
 
         if (state.new.account_id !== action.account.id) {
-          map.setIn(['new', 'status_ids'], action.status ? ImmutableSet([action.status.reblog?.id || action.status.id]) : ImmutableSet());
+          map.setIn(['new', 'status_ids'], action.status ? ImmutableSet([action.status.repost?.id || action.status.id]) : ImmutableSet());
           map.setIn(['new', 'comment'], '');
         } else if (action.status) {
-          map.updateIn(['new', 'status_ids'], set => (set as ImmutableSet<string>).add(action.status.reblog?.id || action.status.id));
+          map.updateIn(['new', 'status_ids'], set => (set as ImmutableSet<string>).add(action.status.repost?.id || action.status.id));
         }
       });
     case REPORT_STATUS_TOGGLE:
