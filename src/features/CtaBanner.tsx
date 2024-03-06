@@ -16,22 +16,22 @@ const CtaBanner = () => {
       <Banner theme='frosted'>
         <HStack alignItems='center' justifyContent='between'>
           <Stack>
-            <Text theme='primary' size='xl' weight='bold'>
-              <FormattedMessage id='signup_panel.title' defaultMessage='New to {site_title}?' values={{ site_title: 'Apollo' }} />
+            <Text size='lg' weight='bold'>
+              <FormattedMessage id='cta_banner.title' defaultMessage='Tap In' />
             </Text>
 
-            <Text theme='primary' weight='medium' className='opacity-90'>
-              <FormattedMessage id='signup_panel.subtitle' defaultMessage="Sign up now to discuss what's happening." />
+            <Text theme='muted' size='sm'>
+              <FormattedMessage id='cta_banner.subtitle' defaultMessage="From Elden Ring to Animal Crossing, we've got you covered" />
             </Text>
           </Stack>
 
           <HStack space={2} alignItems='center'>
             <Button theme='secondary' to='/login'>
-              <FormattedMessage id='account.login' defaultMessage='Log in' />
+              <FormattedMessage id='account.login' defaultMessage='Log In' />
             </Button>
 
             <Button theme='primary' to='/signup'>
-              <FormattedMessage id='account.register' defaultMessage='Sign up' />
+              <FormattedMessage id='account.register' defaultMessage='Sign Up' />
             </Button>
           </HStack>
         </HStack>
