@@ -14,7 +14,7 @@ import ProfileDropdown from 'src/features/ProfileDropdown';
 import type { AxiosError } from 'axios';
 
 const messages = defineMessages({
-  login: { id: 'navbar.login.action', defaultMessage: 'Log in' },
+  login: { id: 'navbar.login.action', defaultMessage: 'Log In' },
   username: { id: 'navbar.login.username.placeholder', defaultMessage: 'Email or username' },
   email: { id: 'navbar.login.email.placeholder', defaultMessage: 'E-mail address' },
   password: { id: 'navbar.login.password.label', defaultMessage: 'Password' },
@@ -72,7 +72,7 @@ const Navbar = () => {
             })}
           >
             <Link key='logo' to='/' data-preview-title-id='column.home' className='ml-4 flex shrink-0 items-center'>
-              <SiteLogo alt='Logo' className='h-5 w-auto cursor-pointer' />
+              <SiteLogo alt='Logo' className='h-10 w-auto cursor-pointer' />
               <span className='hidden'><FormattedMessage id='tabs_bar.home' defaultMessage='Home' /></span>
             </Link>
 
@@ -135,7 +135,7 @@ const Navbar = () => {
                 <div className='space-x-1.5 xl:hidden'> 
                   {(isOpen) && (
                     <Button theme='primary' to='/signup' size='sm'>
-                      <FormattedMessage id='account.register' defaultMessage='Sign up' />
+                      <FormattedMessage id='account.register' defaultMessage='Sign Up' />
                     </Button>
                   )}
                 </div>

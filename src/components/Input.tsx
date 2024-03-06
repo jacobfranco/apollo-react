@@ -85,13 +85,13 @@ const Input = React.forwardRef<HTMLInputElement, IInput>(
           {...filteredProps}
           type={revealed ? 'text' : type}
           ref={ref}
-          className={clsx('text-base placeholder:text-gray-600 dark:placeholder:text-gray-600', {
-            'block w-full sm:text-sm dark:ring-gray-800 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500':
+          className={clsx('text-base placeholder:text-primary-600 dark:placeholder:text-primary-600', {
+            'block w-full ring-1 ring-primary-300 dark:ring-primary-700 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500':
               ['normal', 'search'].includes(theme),
             'text-gray-900 dark:text-gray-100': !props.disabled,
             'text-gray-600': props.disabled,
-            'rounded-md bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-800': theme === 'normal',
-            'rounded-full bg-gray-200 border-gray-200 dark:bg-gray-800 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-900': theme === 'search',
+            'rounded-5px bg-white dark:bg-black border-gray-400 dark:border-gray-800': theme === 'normal',
+            'rounded-5px bg-gray-200 border-gray-200 dark:bg-gray-800 dark:border-gray-800 focus:bg-white dark:focus:bg-gray-900': theme === 'search',
             'pr-10 rtl:pl-10 rtl:pr-3': isPassword || append,
             'pl-8': typeof icon !== 'undefined',
             'pl-16': typeof prepend !== 'undefined',
