@@ -16,11 +16,11 @@ const CtaBanner = () => {
       <Banner theme='frosted'>
         <HStack alignItems='center' justifyContent='between'>
           <Stack>
-            <Text theme='white' size='xl' weight='bold'>
+            <Text theme='primary' size='xl' weight='bold'>
               <FormattedMessage id='signup_panel.title' defaultMessage='New to {site_title}?' values={{ site_title: 'Apollo' }} />
             </Text>
 
-            <Text theme='white' weight='medium' className='opacity-90'>
+            <Text theme='primary' weight='medium' className='opacity-90'>
               <FormattedMessage id='signup_panel.subtitle' defaultMessage="Sign up now to discuss what's happening." />
             </Text>
           </Stack>
@@ -30,7 +30,7 @@ const CtaBanner = () => {
               <FormattedMessage id='account.login' defaultMessage='Log in' />
             </Button>
 
-            <Button theme='accent' to='/signup'>
+            <Button theme='primary' to='/signup'>
               <FormattedMessage id='account.register' defaultMessage='Sign up' />
             </Button>
           </HStack>

@@ -52,7 +52,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='sticky top-0 z-50 bg-white shadow dark:bg-primary-900' ref={node} data-testid='navbar'>
+    <nav className='sticky top-0 z-50 bg-primary-100 shadow dark:bg-black' ref={node} data-testid='navbar'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
         <div className='relative flex h-12 justify-between lg:h-16'>
           {account && (
