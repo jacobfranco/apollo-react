@@ -1131,7 +1131,7 @@
   "password_reset.fields.email_placeholder": "E-mail address",
   "password_reset.fields.username_placeholder": "Email or Username",
   "password_reset.header": "Reset Password",
-  "password_reset.reset": "Reset password",
+  "password_reset.reset": "Reset Password",
   "patron.donate": "Donate",
   "patron.title": "Funding Goal",
   "pinned_accounts.title": "{name}’s choices",

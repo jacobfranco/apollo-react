@@ -71,7 +71,7 @@ const PasswordResetConfirm = () => {
 
         <FormActions>
           <Button type='submit' theme='primary' disabled={isLoading}>
-            <FormattedMessage id='password_reset.reset' defaultMessage='Reset password' />
+            <FormattedMessage id='password_reset.reset' defaultMessage='Reset Password' />
           </Button>
         </FormActions>
       </Form>

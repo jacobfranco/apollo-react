@@ -1,9 +1,9 @@
 .react-datepicker {
-    @apply dark:bg-gray-900 dark:border-gray-700 p-4 font-sans text-xs text-gray-900 dark:text-gray-300 border border-solid border-gray-200 rounded-lg;
+    @apply dark:bg-black dark:border-gray-700 p-4 font-sans text-xs text-gray-900 dark:text-primary-500 border border-solid border-gray-200 rounded-lg;
   }
   
   .react-datepicker__input-container > input {
-    @apply dark:bg-gray-900 dark:text-gray-100 block w-full sm:text-sm border-gray-400 dark:border-gray-800 rounded-md focus:ring-primary-500 focus:border-primary-500;
+    @apply dark:bg-black dark:text-white block w-full sm:text-sm border-gray-400 dark:border-gray-800 rounded-md focus:ring-primary-500 focus:border-primary-500;
   
     &.has-error {
       @apply text-red-600 border-red-600;
@@ -24,7 +24,7 @@
   }
   
   .react-datepicker__header {
-    @apply bg-white dark:bg-gray-900 border-b-0 py-1 px-0;
+    @apply bg-white dark:bg-black border-b-0 py-1 px-0;
   }
   
   .react-datepicker__current-month,
@@ -126,7 +126,7 @@
   .react-datepicker__year-text--selected,
   .react-datepicker__year-text--in-selecting-range,
   .react-datepicker__year-text--in-range {
-    @apply bg-primary-600 hover:bg-primary-700 dark:bg-gray-300 dark:hover:bg-gray-200 text-white dark:text-black rounded;
+    @apply bg-primary-600 hover:bg-primary-700 dark:bg-gray-500 dark:hover:bg-gray-200 text-white dark:text-black rounded;
   }
   
   .react-datepicker__day--keyboard-selected,
