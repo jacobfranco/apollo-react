@@ -28,6 +28,7 @@ const updateMedia = (mediaId: string, params: Record<string, any>) =>
     return api(getState).put(`/api/v1/media/${mediaId}`, params);
   };
 
+  // TODO: Consolidate
 const uploadMediaV1 = (data: FormData, onUploadProgress = noOp) =>
   (dispatch: any, getState: () => RootState) =>
     api(getState).post('/api/v1/media', data, {

@@ -138,6 +138,12 @@ export const register = (params: Record<string, any>) =>
       return dispatch(createAuthApp());
   };
 
+  /**
+ * Redux thunk action creator that initiates the creation of a new OAuth app for the Apollo API for authentication.
+ * Calls createApp with predefined parameters based on sourceCode object.
+ * Dispatches AUTH_APP_CREATED action with the created OAuth app details on success.
+ */
+
   const createAuthApp = () => (dispatch: AppDispatch) => {
     const params = {
       client_name:   sourceCode.displayName, 
