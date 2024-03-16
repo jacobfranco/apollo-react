@@ -226,13 +226,13 @@ const expandDirectTimeline = ({ url, maxId }: Record<string, any> = {}, done = n
   expandTimeline('direct', url || '/api/v1/timelines/direct', url ? {} : { max_id: maxId }, done);
 
 const expandAccountTimeline = (accountId: string, { url, maxId, withReplies }: Record<string, any> = {}) =>
-  expandTimeline(`account:${accountId}${withReplies ? ':with_replies' : ''}`, url || `/api/v1/accounts/${accountId}/statuses`, url ? {} : { exclude_replies: !withReplies, max_id: maxId, with_muted: true });
+  expandTimeline(`account:${accountId}${withReplies ? ':with_replies' : ''}`, url || `/api/accounts/${accountId}/statuses`, url ? {} : { exclude_replies: !withReplies, max_id: maxId, with_muted: true });
 
 const expandAccountFeaturedTimeline = (accountId: string) =>
-  expandTimeline(`account:${accountId}:pinned`, `/api/v1/accounts/${accountId}/statuses`, { pinned: true, with_muted: true });
+  expandTimeline(`account:${accountId}:pinned`, `/api/accounts/${accountId}/statuses`, { pinned: true, with_muted: true });
 
 const expandAccountMediaTimeline = (accountId: string | number, { url, maxId }: Record<string, any> = {}) =>
-  expandTimeline(`account:${accountId}:media`, url || `/api/v1/accounts/${accountId}/statuses`, url ? {} : { max_id: maxId, only_media: true, limit: 40, with_muted: true });
+  expandTimeline(`account:${accountId}:media`, url || `/api/accounts/${accountId}/statuses`, url ? {} : { max_id: maxId, only_media: true, limit: 40, with_muted: true });
 
 const expandListTimeline = (id: string, { url, maxId }: Record<string, any> = {}, done = noOp) =>
   expandTimeline(`list:${id}`, url || `/api/v1/timelines/list/${id}`, url ? {} : { max_id: maxId }, done);

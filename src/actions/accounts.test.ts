@@ -38,7 +38,7 @@ describe('createAccount()', () => {
       store = mockStore(state);
 
       __stub((mock) => {
-        mock.onPost('/api/v1/accounts').reply(200, { token: '123 ' });
+        mock.onPost('/api/accounts').reply(200, { token: '123 ' });
       });
     });
 
@@ -84,7 +84,7 @@ describe('fetchAccount()', () => {
       store = mockStore(state);
 
       __stub((mock) => {
-        mock.onGet(`/api/v1/accounts/${id}`).reply(200, account);
+        mock.onGet(`/api/accounts${id}`).reply(200, account);
       });
     });
 
@@ -104,7 +104,7 @@ describe('fetchAccount()', () => {
       store = mockStore(state);
 
       __stub((mock) => {
-        mock.onGet(`/api/v1/accounts/${id}`).reply(200, account);
+        mock.onGet(`/api/accounts${id}`).reply(200, account);
       });
     });
 
@@ -131,7 +131,7 @@ describe('fetchAccount()', () => {
       store = mockStore(state);
 
       __stub((mock) => {
-        mock.onGet(`/api/v1/accounts/${id}`).networkError();
+        mock.onGet(`/api/accounts${id}`).networkError();
       });
     });
 
@@ -181,7 +181,7 @@ describe('fetchAccountByUsername()', () => {
     store = mockStore(state);
 
     __stub((mock) => {
-      mock.onGet(`/api/v1/accounts/${id}`).reply(200, account);
+      mock.onGet(`/api/accounts${id}`).reply(200, account);
     });
   });
 
@@ -195,8 +195,8 @@ describe('fetchAccountByUsername()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${username}`).reply(200, account);
-          mock.onGet(`/api/v1/accounts/relationships?${[account.id].map(id => `id[]=${id}`).join('&')}`);
+          mock.onGet(`/api/accounts${username}`).reply(200, account);
+          mock.onGet(`/api/accountsrelationships?${[account.id].map(id => `id[]=${id}`).join('&')}`);
         });
       });
 
@@ -217,7 +217,7 @@ describe('fetchAccountByUsername()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${username}`).networkError();
+          mock.onGet(`/api/accounts${username}`).networkError();
         });
       });
 
@@ -250,7 +250,7 @@ describe('fetchAccountByUsername()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/accounts/lookup').reply(200, account);
+          mock.onGet('/api/accountslookup').reply(200, account);
         });
       });
 
@@ -272,7 +272,7 @@ describe('fetchAccountByUsername()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/accounts/lookup').networkError();
+          mock.onGet('/api/accountslookup').networkError();
         });
       });
 
@@ -306,7 +306,7 @@ describe('fetchAccountByUsername()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/accounts/search').reply(200, [account]);
+          mock.onGet('/api/accountssearch').reply(200, [account]);
         });
       });
 
@@ -332,7 +332,7 @@ describe('fetchAccountByUsername()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/accounts/search').networkError();
+          mock.onGet('/api/accountssearch').networkError();
         });
       });
 
@@ -387,7 +387,7 @@ describe('blockAccount()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/block`).reply(200, {});
+          mock.onPost(`/api/accounts${id}/block`).reply(200, {});
         });
       });
 
@@ -410,7 +410,7 @@ describe('blockAccount()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/block`).networkError();
+          mock.onPost(`/api/accounts${id}/block`).networkError();
         });
       });
 
@@ -454,7 +454,7 @@ describe('unblockAccount()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/unblock`).reply(200, {});
+          mock.onPost(`/api/accounts${id}/unblock`).reply(200, {});
         });
       });
 
@@ -476,7 +476,7 @@ describe('unblockAccount()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/unblock`).networkError();
+          mock.onPost(`/api/accounts${id}/unblock`).networkError();
         });
       });
 
@@ -520,7 +520,7 @@ describe('muteAccount()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/mute`).reply(200, {});
+          mock.onPost(`/api/accounts${id}/mute`).reply(200, {});
         });
       });
 
@@ -543,7 +543,7 @@ describe('muteAccount()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/mute`).networkError();
+          mock.onPost(`/api/accounts${id}/mute`).networkError();
         });
       });
 
@@ -587,7 +587,7 @@ describe('unmuteAccount()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/unmute`).reply(200, {});
+          mock.onPost(`/api/accounts${id}/unmute`).reply(200, {});
         });
       });
 
@@ -609,7 +609,7 @@ describe('unmuteAccount()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/unmute`).networkError();
+          mock.onPost(`/api/accounts${id}/unmute`).networkError();
         });
       });
 
@@ -653,7 +653,7 @@ describe('removeFromFollowers()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/remove_from_followers`).reply(200, {});
+          mock.onPost(`/api/accounts${id}/remove_from_followers`).reply(200, {});
         });
       });
 
@@ -675,7 +675,7 @@ describe('removeFromFollowers()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/accounts/${id}/remove_from_followers`).networkError();
+          mock.onPost(`/api/accounts${id}/remove_from_followers`).networkError();
         });
       });
 
@@ -705,8 +705,8 @@ describe('fetchFollowers()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${id}/followers`).reply(200, [], {
-            link: `<https://example.com/api/v1/accounts/${id}/followers?since_id=1>; rel='prev'`,
+          mock.onGet(`/api/accounts${id}/followers`).reply(200, [], {
+            link: `<https://example.com/api/accounts${id}/followers?since_id=1>; rel='prev'`,
           });
         });
       });
@@ -732,7 +732,7 @@ describe('fetchFollowers()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${id}/followers`).networkError();
+          mock.onGet(`/api/accounts${id}/followers`).networkError();
         });
       });
 
@@ -807,7 +807,7 @@ describe('expandFollowers()', () => {
       beforeEach(() => {
         __stub((mock) => {
           mock.onGet('next_url').reply(200, [], {
-            link: `<https://example.com/api/v1/accounts/${id}/followers?since_id=1>; rel='prev'`,
+            link: `<https://example.com/api/accounts${id}/followers?since_id=1>; rel='prev'`,
           });
         });
       });
@@ -863,8 +863,8 @@ describe('fetchFollowing()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${id}/following`).reply(200, [], {
-            link: `<https://example.com/api/v1/accounts/${id}/following?since_id=1>; rel='prev'`,
+          mock.onGet(`/api/accounts${id}/following`).reply(200, [], {
+            link: `<https://example.com/api/accounts${id}/following?since_id=1>; rel='prev'`,
           });
         });
       });
@@ -890,7 +890,7 @@ describe('fetchFollowing()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet(`/api/v1/accounts/${id}/following`).networkError();
+          mock.onGet(`/api/accounts${id}/following`).networkError();
         });
       });
 
@@ -965,7 +965,7 @@ describe('expandFollowing()', () => {
       beforeEach(() => {
         __stub((mock) => {
           mock.onGet('next_url').reply(200, [], {
-            link: `<https://example.com/api/v1/accounts/${id}/following?since_id=1>; rel='prev'`,
+            link: `<https://example.com/api/accounts${id}/following?since_id=1>; rel='prev'`,
           });
         });
       });
@@ -1058,7 +1058,7 @@ describe('fetchRelationships()', () => {
 
         __stub((mock) => {
           mock
-            .onGet(`/api/v1/accounts/relationships?${[id].map(id => `id[]=${id}`).join('&')}`)
+            .onGet(`/api/accountsrelationships?${[id].map(id => `id[]=${id}`).join('&')}`)
             .reply(200, []);
         });
       });
@@ -1083,7 +1083,7 @@ describe('fetchRelationships()', () => {
       beforeEach(() => {
         __stub((mock) => {
           mock
-            .onGet(`/api/v1/accounts/relationships?${[id].map(id => `id[]=${id}`).join('&')}`)
+            .onGet(`/api/accountsrelationships?${[id].map(id => `id[]=${id}`).join('&')}`)
             .networkError();
         });
       });

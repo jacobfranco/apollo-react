@@ -118,7 +118,7 @@ const createAccount = (params: Record<string, any>) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
 
     dispatch({ type: ACCOUNT_CREATE_REQUEST, params });
-    return api(getState, 'app').post('/api/v1/accounts', params, {
+    return api(getState, 'app').post('/api/accounts', params, {
       headers: undefined,
     }).then(({ data: token }) => {
       return dispatch({ type: ACCOUNT_CREATE_SUCCESS, params, token });
@@ -141,7 +141,7 @@ const fetchAccount = (id: string) =>
     dispatch(fetchAccountRequest(id));
 
     return api(getState)
-      .get(`/api/v1/accounts/${id}`)
+      .get(`/api/accounts${id}`)
       .then(response => {
         dispatch(importFetchedAccount(response.data));
         dispatch(fetchAccountSuccess(response.data));
@@ -154,7 +154,7 @@ const fetchAccount = (id: string) =>
   const fetchAccountByUsername = (username: string, history?: History) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     // Directly attempt to fetch account information by username
-    return api(getState).get(`/api/v1/accounts/${username}`).then(response => {
+    return api(getState).get(`/api/accounts${username}`).then(response => {
       // On success, dispatch necessary actions
       dispatch(fetchRelationships([response.data.id]));
       dispatch(importFetchedAccount(response.data));
@@ -193,7 +193,7 @@ const blockAccount = (id: string) =>
     dispatch(blockAccountRequest(id));
 
     return api(getState)
-      .post(`/api/v1/accounts/${id}/block`)
+      .post(`/api/accounts${id}/block`)
       .then(response => {
         dispatch(importEntities([response.data], Entities.RELATIONSHIPS));
         // Pass in entire statuses map so we can use it to filter stuff in different parts of the reducers
@@ -208,7 +208,7 @@ const unblockAccount = (id: string) =>
     dispatch(unblockAccountRequest(id));
 
     return api(getState)
-      .post(`/api/v1/accounts/${id}/unblock`)
+      .post(`/api/accounts${id}/unblock`)
       .then(response => {
         dispatch(importEntities([response.data], Entities.RELATIONSHIPS));
         return dispatch(unblockAccountSuccess(response.data));
@@ -262,7 +262,7 @@ const muteAccount = (id: string, notifications?: boolean, duration = 0) =>
     }
 
     return api(getState)
-      .post(`/api/v1/accounts/${id}/mute`, params)
+      .post(`/api/accounts${id}/mute`, params)
       .then(response => {
         dispatch(importEntities([response.data], Entities.RELATIONSHIPS));
         // Pass in entire statuses map so we can use it to filter stuff in different parts of the reducers
@@ -278,7 +278,7 @@ const unmuteAccount = (id: string) =>
     dispatch(unmuteAccountRequest(id));
 
     return api(getState)
-      .post(`/api/v1/accounts/${id}/unmute`)
+      .post(`/api/accounts${id}/unmute`)
       .then(response => {
         dispatch(importEntities([response.data], Entities.RELATIONSHIPS));
         return dispatch(unmuteAccountSuccess(response.data));
@@ -324,7 +324,7 @@ const removeFromFollowers = (id: string) =>
     dispatch(removeFromFollowersRequest(id));
 
     return api(getState)
-      .post(`/api/v1/accounts/${id}/remove_from_followers`)
+      .post(`/api/accounts${id}/remove_from_followers`)
       .then(response => dispatch(removeFromFollowersSuccess(response.data)))
       .catch(error => dispatch(removeFromFollowersFail(id, error)));
   };
@@ -350,7 +350,7 @@ const fetchFollowers = (id: string) =>
     dispatch(fetchFollowersRequest(id));
 
     return api(getState)
-      .get(`/api/v1/accounts/${id}/followers`)
+      .get(`/api/accounts${id}/followers`)
       .then(response => {
         const next = getLinks(response).refs.find(link => link.rel === 'next');
 
@@ -430,7 +430,7 @@ const fetchFollowing = (id: string) =>
     dispatch(fetchFollowingRequest(id));
 
     return api(getState)
-      .get(`/api/v1/accounts/${id}/following`)
+      .get(`/api/accounts${id}/following`)
       .then(response => {
         const next = getLinks(response).refs.find(link => link.rel === 'next');
 
@@ -519,7 +519,7 @@ const fetchRelationships = (accountIds: string[]) =>
     dispatch(fetchRelationshipsRequest(newAccountIds));
 
     return api(getState)
-      .get(`/api/v1/accounts/relationships?${newAccountIds.map(id => `id[]=${id}`).join('&')}`)
+      .get(`/api/accountsrelationships?${newAccountIds.map(id => `id[]=${id}`).join('&')}`)
       .then(response => {
         dispatch(importEntities(response.data, Entities.RELATIONSHIPS));
         dispatch(fetchRelationshipsSuccess(response.data));
@@ -675,7 +675,7 @@ const pinAccount = (id: string) =>
 
     dispatch(pinAccountRequest(id));
 
-    return api(getState).post(`/api/v1/accounts/${id}/pin`).then(response => {
+    return api(getState).post(`/api/accounts${id}/pin`).then(response => {
       dispatch(pinAccountSuccess(response.data));
     }).catch(error => {
       dispatch(pinAccountFail(error));
@@ -688,7 +688,7 @@ const unpinAccount = (id: string) =>
 
     dispatch(unpinAccountRequest(id));
 
-    return api(getState).post(`/api/v1/accounts/${id}/unpin`).then(response => {
+    return api(getState).post(`/api/accounts${id}/unpin`).then(response => {
       dispatch(unpinAccountSuccess(response.data));
     }).catch(error => {
       dispatch(unpinAccountFail(error));
@@ -769,7 +769,7 @@ const fetchPinnedAccountsFail = (id: string, error: unknown) => ({
 const accountSearch = (params: Record<string, any>, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ACCOUNT_SEARCH_REQUEST, params });
-    return api(getState).get('/api/v1/accounts/search', { params, signal }).then(({ data: accounts }) => {
+    return api(getState).get('/api/accountssearch', { params, signal }).then(({ data: accounts }) => {
       dispatch(importFetchedAccounts(accounts));
       dispatch({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
       return accounts;
@@ -782,7 +782,7 @@ const accountSearch = (params: Record<string, any>, signal?: AbortSignal) =>
 const accountLookup = (acct: string, cancelToken?: CancelToken) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ACCOUNT_LOOKUP_REQUEST, acct });
-    return api(getState).get('/api/v1/accounts/lookup', { params: { acct }, cancelToken }).then(({ data: account }) => {
+    return api(getState).get('/api/accountslookup', { params: { acct }, cancelToken }).then(({ data: account }) => {
       if (account && account.id) dispatch(importFetchedAccount(account));
       dispatch({ type: ACCOUNT_LOOKUP_SUCCESS, account });
       return account;

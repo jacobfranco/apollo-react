@@ -77,7 +77,7 @@ export const register = (params: Record<string, any>) =>
     return (dispatch: AppDispatch, getState: () => RootState) => {
       dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
   
-      return baseClient(token, baseURL).get('/api/v1/accounts/verify_credentials').then(({ data: account }) => {
+      return baseClient(token, baseURL).get('/api/accounts/verify_credentials').then(({ data: account }) => {
         dispatch(importFetchedAccount(account));
         dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
         if (account.id === getState().me) dispatch(fetchMeSuccess(account));

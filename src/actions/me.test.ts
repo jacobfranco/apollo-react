@@ -61,7 +61,7 @@ describe('fetchMe()', () => {
     describe('with a successful API response', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/accounts/verify_credentials').reply(200, {});
+          mock.onGet('/api/accounts/verify_credentials').reply(200, {});
         });
       });
 
@@ -97,7 +97,7 @@ describe('patchMe()', () => {
   describe('with a successful API response', () => {
     beforeEach(() => {
       __stub((mock) => {
-        mock.onPatch('/api/v1/accounts/update_credentials').reply(200, {});
+        mock.onPatch('/api/accountsupdate_credentials').reply(200, {});
       });
     });
 

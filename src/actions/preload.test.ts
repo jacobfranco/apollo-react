@@ -15,7 +15,7 @@ describe('preloadMastodon()', () => {
     const data = await import('src/__fixtures__/apollo_initial_state.json');
 
     __stub(mock => {
-      mock.onGet('/api/v1/accounts/verify_credentials')
+      mock.onGet('/api/accounts/verify_credentials')
         .reply(200, {});
     });
 

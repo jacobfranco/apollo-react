@@ -70,7 +70,7 @@ const patchMe = (params: Record<string, any>, isFormData = false) =>
     } : {};
 
     return api(getState)
-      .patch('/api/v1/accounts/update_credentials', params, { headers })
+      .patch('/api/accounts/update_credentials', params, { headers })
       .then(response => {
         persistAuthAccount(response.data, params);
         dispatch(patchMeSuccess(response.data));
