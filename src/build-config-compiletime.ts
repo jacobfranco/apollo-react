@@ -3,11 +3,13 @@ import trimEnd from 'lodash/trimEnd.js';
 
 const {
   NODE_ENV,
-  BACKEND_URL,
+  VITE_BACKEND_URL,
   FE_SUBDIRECTORY,
   FE_INSTANCE_SOURCE_DIR,
   SENTRY_DSN,
 } = process.env;
+
+console.log('BACKEND_URL from process.env:', VITE_BACKEND_URL)
 
 const sanitizeURL = (url: string | undefined = ''): string => {
   try {
@@ -23,7 +25,7 @@ const sanitizeBasename = (path: string | undefined = ''): string => {
 
 const env = {
   NODE_ENV: NODE_ENV || 'development',
-  BACKEND_URL: sanitizeURL(BACKEND_URL),
+  BACKEND_URL: sanitizeURL(VITE_BACKEND_URL),
   FE_SUBDIRECTORY: sanitizeBasename(FE_SUBDIRECTORY),
   FE_INSTANCE_SOURCE_DIR: FE_INSTANCE_SOURCE_DIR || 'instance',
   SENTRY_DSN,
