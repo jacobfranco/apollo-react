@@ -1,9 +1,5 @@
-import type { ApolloEnv } from './build-config-compiletime';
-
-export const {
-  NODE_ENV,
-  BACKEND_URL,
-  FE_SUBDIRECTORY,
-  FE_INSTANCE_SOURCE_DIR,
-  SENTRY_DSN,
-} = import.meta.compileTime<ApolloEnv>('./build-config-compiletime.ts');
+export const NODE_ENV = import.meta.env.NODE_ENV;
+export const FE_SUBDIRECTORY = '';
+export const FE_INSTANCE_SOURCE_DIR = '';
+export const SENTRY_DSN = '';
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
