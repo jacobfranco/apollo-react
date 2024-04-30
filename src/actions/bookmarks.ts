@@ -23,7 +23,7 @@ const fetchBookmarkedStatuses = () =>
 
     dispatch(fetchBookmarkedStatusesRequest());
 
-    return api(getState).get('/api/v1/bookmarks').then(response => {
+    return api(getState).get('/api/bookmarks').then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       return dispatch(fetchBookmarkedStatusesSuccess(response.data, next ? next.uri : null));

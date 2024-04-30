@@ -12,7 +12,7 @@ describe('fetchContext()', () => {
     const statuses = await import('src/__fixtures__/mitra-context.json');
 
     __stub(mock => {
-      mock.onGet('/api/v1/statuses/017ed505-5926-392f-256a-f86d5075df70/context')
+      mock.onGet('/api/statuses/017ed505-5926-392f-256a-f86d5075df70/context')
         .reply(200, statuses);
     });
 
@@ -64,7 +64,7 @@ describe('deleteStatus()', () => {
         status = await import('src/__fixtures__/pleroma-status-deleted.json');
 
         __stub((mock) => {
-          mock.onDelete(`/api/v1/statuses/${statusId}`).reply(200, status);
+          mock.onDelete(`/api/statuses/${statusId}`).reply(200, status);
         });
       });
 
@@ -132,7 +132,7 @@ describe('deleteStatus()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onDelete(`/api/v1/statuses/${statusId}`).networkError();
+          mock.onDelete(`/api/statuses/${statusId}`).networkError();
         });
       });
 

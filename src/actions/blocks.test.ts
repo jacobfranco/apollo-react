@@ -39,8 +39,8 @@ describe('fetchBlocks()', () => {
         const blocks = await import('src/__fixtures__/blocks.json');
 
         __stub((mock) => {
-          mock.onGet('/api/v1/blocks').reply(200, blocks, {
-            link: '<https://example.com/api/v1/blocks?since_id=1>; rel=\'prev\'',
+          mock.onGet('/api/blocks').reply(200, blocks, {
+            link: '<https://example.com/api/blocks?since_id=1>; rel=\'prev\'',
           });
         });
       });
@@ -66,7 +66,7 @@ describe('fetchBlocks()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/blocks').networkError();
+          mock.onGet('/api/blocks').networkError();
         });
       });
 
@@ -137,7 +137,7 @@ describe('expandBlocks()', () => {
 
           __stub((mock) => {
             mock.onGet('example').reply(200, blocks, {
-              link: '<https://example.com/api/v1/blocks?since_id=1>; rel=\'prev\'',
+              link: '<https://example.com/api/blocks?since_id=1>; rel=\'prev\'',
             });
           });
         });

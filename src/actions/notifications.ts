@@ -205,7 +205,7 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
 
     dispatch(expandNotificationsRequest(isLoadingMore));
 
-    return api(getState).get('/api/v1/notifications', { params }).then(response => {
+    return api(getState).get('/api/notifications', { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       const entries = (response.data as APIEntity[]).reduce((acc, item) => {
@@ -266,7 +266,7 @@ const clearNotifications = () =>
       type: NOTIFICATIONS_CLEAR,
     });
 
-    api(getState).post('/api/v1/notifications/clear');
+    api(getState).post('/api/notifications/clear');
   };
 
 const scrollTopNotifications = (top: boolean) =>

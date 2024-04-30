@@ -11,7 +11,7 @@ const fetchTrends = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchTrendsRequest());
 
-    api(getState).get('/api/v1/trends').then(response => {
+    api(getState).get('/api/trends').then(response => {
       dispatch(fetchTrendsSuccess(response.data));
     }).catch(error => dispatch(fetchTrendsFail(error)));
   };

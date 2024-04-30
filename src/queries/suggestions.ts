@@ -77,7 +77,7 @@ const useDismissSuggestion = () => {
   const api = useApi();
 
   return useMutation({
-    mutationFn: (accountId: string) => api.delete(`/api/v1/suggestions/${accountId}`),
+    mutationFn: (accountId: string) => api.delete(`/api/suggestions/${accountId}`),
     onMutate(accountId: string) {
       removePageItem(SuggestionKeys.suggestions, accountId, (o: any, n: any) => o.account === n);
     },

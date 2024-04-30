@@ -21,7 +21,7 @@ const fetchBlocks = () => (dispatch: AppDispatch, getState: () => RootState) => 
   dispatch(fetchBlocksRequest());
 
   return api(getState)
-    .get('/api/v1/blocks')
+    .get('/api/blocks')
     .then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedAccounts(response.data));

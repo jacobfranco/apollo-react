@@ -35,8 +35,8 @@ describe('fetchStatusQuotes()', () => {
       const quotes = await import('src/__fixtures__/status-quotes.json');
 
       __stub((mock) => {
-        mock.onGet(`/api/v1/pleroma/statuses/${statusId}/quotes`).reply(200, quotes, {
-          link: `<https://example.com/api/v1/pleroma/statuses/${statusId}/quotes?since_id=1>; rel='prev'`,
+        mock.onGet(`/api/pleroma/statuses/${statusId}/quotes`).reply(200, quotes, {
+          link: `<https://example.com/api/pleroma/statuses/${statusId}/quotes?since_id=1>; rel='prev'`,
         });
       });
     });
@@ -59,7 +59,7 @@ describe('fetchStatusQuotes()', () => {
   describe('with an unsuccessful API request', () => {
     beforeEach(() => {
       __stub((mock) => {
-        mock.onGet(`/api/v1/pleroma/statuses/${statusId}/quotes`).networkError();
+        mock.onGet(`/api/pleroma/statuses/${statusId}/quotes`).networkError();
       });
     });
 
@@ -108,7 +108,7 @@ describe('expandStatusQuotes()', () => {
 
         __stub((mock) => {
           mock.onGet('example').reply(200, quotes, {
-            link: `<https://example.com/api/v1/pleroma/statuses/${statusId}/quotes?since_id=1>; rel='prev'`,
+            link: `<https://example.com/api/pleroma/statuses/${statusId}/quotes?since_id=1>; rel='prev'`,
           });
         });
       });

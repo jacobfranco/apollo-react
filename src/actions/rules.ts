@@ -21,7 +21,7 @@ const fetchRules = () => (dispatch: React.Dispatch<RulesActions>, getState: () =
   dispatch({ type: RULES_FETCH_REQUEST });
 
   return api(getState)
-    .get('/api/v1/instance/rules')
+    .get('/api/instance/rules')
     .then((response) => dispatch({ type: RULES_FETCH_SUCCESS, payload: response.data }));
 };
 

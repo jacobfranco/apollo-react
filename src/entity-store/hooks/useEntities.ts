@@ -34,7 +34,7 @@ interface UseEntitiesOpts<TEntity extends Entity> {
 function useEntities<TEntity extends Entity>(
   /** Tells us where to find/store the entity in the cache. */
   expandedPath: ExpandedEntitiesPath,
-  /** API route to GET, eg `'/api/v1/notifications'`. If undefined, nothing will be fetched. */
+  /** API route to GET, eg `'/api/notifications'`. If undefined, nothing will be fetched. */
   entityFn: EntityFn<void>,
   /** Additional options for the hook. */
   opts: UseEntitiesOpts<TEntity> = {},

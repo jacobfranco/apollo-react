@@ -552,7 +552,7 @@ const fetchFollowRequests = () =>
     dispatch(fetchFollowRequestsRequest());
 
     return api(getState)
-      .get('/api/v1/follow_requests')
+      .get('/api/follow_requests')
       .then(response => {
         const next = getLinks(response).refs.find(link => link.rel === 'next');
         dispatch(importFetchedAccounts(response.data));
@@ -620,7 +620,7 @@ const authorizeFollowRequest = (id: string) =>
     dispatch(authorizeFollowRequestRequest(id));
 
     return api(getState)
-      .post(`/api/v1/follow_requests/${id}/authorize`)
+      .post(`/api/follow_requests/${id}/authorize`)
       .then(() => dispatch(authorizeFollowRequestSuccess(id)))
       .catch(error => dispatch(authorizeFollowRequestFail(id, error)));
   };
@@ -648,7 +648,7 @@ const rejectFollowRequest = (id: string) =>
     dispatch(rejectFollowRequestRequest(id));
 
     api(getState)
-      .post(`/api/v1/follow_requests/${id}/reject`)
+      .post(`/api/follow_requests/${id}/reject`)
       .then(() => dispatch(rejectFollowRequestSuccess(id)))
       .catch(error => dispatch(rejectFollowRequestFail(id, error)));
   };
@@ -740,7 +740,7 @@ const fetchPinnedAccounts = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchPinnedAccountsRequest(id));
 
-    api(getState).get(`/api/v1/pleroma/accounts/${id}/endorsements`).then(response => {
+    api(getState).get(`/api/pleroma/accounts/${id}/endorsements`).then(response => {
       dispatch(importFetchedAccounts(response.data));
       dispatch(fetchPinnedAccountsSuccess(id, response.data, null));
     }).catch(error => {

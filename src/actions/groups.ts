@@ -88,7 +88,7 @@ const GROUP_MEMBERSHIP_REQUEST_REJECT_FAIL    = 'GROUP_MEMBERSHIP_REQUEST_REJECT
 const deleteGroup = (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(deleteEntities([id], 'Group'));
 
-  return api(getState).delete(`/api/v1/groups/${id}`)
+  return api(getState).delete(`/api/groups/${id}`)
     .then(() => dispatch(deleteGroupSuccess(id)))
     .catch(err => dispatch(deleteGroupFail(id, err)));
 };
@@ -113,7 +113,7 @@ const fetchGroup = (id: string) => (dispatch: AppDispatch, getState: () => RootS
   dispatch(fetchGroupRelationships([id]));
   dispatch(fetchGroupRequest(id));
 
-  return api(getState).get(`/api/v1/groups/${id}`)
+  return api(getState).get(`/api/groups/${id}`)
     .then(({ data }) => {
       dispatch(importFetchedGroups([data]));
       dispatch(fetchGroupSuccess(data));
@@ -140,7 +140,7 @@ const fetchGroupFail = (id: string, error: unknown) => ({
 const fetchGroups = () => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(fetchGroupsRequest());
 
-  return api(getState).get('/api/v1/groups')
+  return api(getState).get('/api/groups')
     .then(({ data }) => {
       dispatch(importFetchedGroups(data));
       dispatch(fetchGroupsSuccess(data));
@@ -174,7 +174,7 @@ const fetchGroupRelationships = (groupIds: string[]) =>
 
     dispatch(fetchGroupRelationshipsRequest(newGroupIds));
 
-    return api(getState).get(`/api/v1/groups/relationships?${newGroupIds.map(id => `id[]=${id}`).join('&')}`).then(response => {
+    return api(getState).get(`/api/groups/relationships?${newGroupIds.map(id => `id[]=${id}`).join('&')}`).then(response => {
       dispatch(fetchGroupRelationshipsSuccess(response.data));
     }).catch(error => {
       dispatch(fetchGroupRelationshipsFail(error));
@@ -204,7 +204,7 @@ const groupKick = (groupId: string, accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(groupKickRequest(groupId, accountId));
 
-    return api(getState).post(`/api/v1/groups/${groupId}/kick`, { account_ids: [accountId] })
+    return api(getState).post(`/api/groups/${groupId}/kick`, { account_ids: [accountId] })
       .then(() => dispatch(groupKickSuccess(groupId, accountId)))
       .catch(err => dispatch(groupKickFail(groupId, accountId, err)));
   };
@@ -232,7 +232,7 @@ const fetchGroupBlocks = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchGroupBlocksRequest(id));
 
-    return api(getState).get(`/api/v1/groups/${id}/blocks`).then(response => {
+    return api(getState).get(`/api/groups/${id}/blocks`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedAccounts(response.data));
@@ -304,7 +304,7 @@ const groupBlock = (groupId: string, accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(groupBlockRequest(groupId, accountId));
 
-    return api(getState).post(`/api/v1/groups/${groupId}/blocks`, { account_ids: [accountId] })
+    return api(getState).post(`/api/groups/${groupId}/blocks`, { account_ids: [accountId] })
       .then(() => dispatch(groupBlockSuccess(groupId, accountId)))
       .catch(err => dispatch(groupBlockFail(groupId, accountId, err)));
   };
@@ -332,7 +332,7 @@ const groupUnblock = (groupId: string, accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(groupUnblockRequest(groupId, accountId));
 
-    return api(getState).delete(`/api/v1/groups/${groupId}/blocks?account_ids[]=${accountId}`)
+    return api(getState).delete(`/api/groups/${groupId}/blocks?account_ids[]=${accountId}`)
       .then(() => dispatch(groupUnblockSuccess(groupId, accountId)))
       .catch(err => dispatch(groupUnblockFail(groupId, accountId, err)));
   };
@@ -360,7 +360,7 @@ const groupPromoteAccount = (groupId: string, accountId: string, role: GroupRole
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(groupPromoteAccountRequest(groupId, accountId));
 
-    return api(getState).post(`/api/v1/groups/${groupId}/promote`, { account_ids: [accountId], role: role })
+    return api(getState).post(`/api/groups/${groupId}/promote`, { account_ids: [accountId], role: role })
       .then((response) => dispatch(groupPromoteAccountSuccess(groupId, accountId, response.data)))
       .catch(err => dispatch(groupPromoteAccountFail(groupId, accountId, err)));
   };
@@ -389,7 +389,7 @@ const groupDemoteAccount = (groupId: string, accountId: string, role: GroupRole)
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(groupDemoteAccountRequest(groupId, accountId));
 
-    return api(getState).post(`/api/v1/groups/${groupId}/demote`, { account_ids: [accountId], role: role })
+    return api(getState).post(`/api/groups/${groupId}/demote`, { account_ids: [accountId], role: role })
       .then((response) => dispatch(groupDemoteAccountSuccess(groupId, accountId, response.data)))
       .catch(err => dispatch(groupDemoteAccountFail(groupId, accountId, err)));
   };
@@ -418,7 +418,7 @@ const fetchGroupMemberships = (id: string, role: GroupRole) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchGroupMembershipsRequest(id, role));
 
-    return api(getState).get(`/api/v1/groups/${id}/memberships`, { params: { role } }).then(response => {
+    return api(getState).get(`/api/groups/${id}/memberships`, { params: { role } }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedAccounts(response.data.map((membership: APIEntity) => membership.account)));
@@ -496,7 +496,7 @@ const fetchGroupMembershipRequests = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchGroupMembershipRequestsRequest(id));
 
-    return api(getState).get(`/api/v1/groups/${id}/membership_requests`).then(response => {
+    return api(getState).get(`/api/groups/${id}/membership_requests`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedAccounts(response.data));
@@ -569,7 +569,7 @@ const authorizeGroupMembershipRequest = (groupId: string, accountId: string) =>
     dispatch(authorizeGroupMembershipRequestRequest(groupId, accountId));
 
     return api(getState)
-      .post(`/api/v1/groups/${groupId}/membership_requests/${accountId}/authorize`)
+      .post(`/api/groups/${groupId}/membership_requests/${accountId}/authorize`)
       .then(() => dispatch(authorizeGroupMembershipRequestSuccess(groupId, accountId)))
       .catch(error => dispatch(authorizeGroupMembershipRequestFail(groupId, accountId, error)));
   };
@@ -598,7 +598,7 @@ const rejectGroupMembershipRequest = (groupId: string, accountId: string) =>
     dispatch(rejectGroupMembershipRequestRequest(groupId, accountId));
 
     return api(getState)
-      .post(`/api/v1/groups/${groupId}/membership_requests/${accountId}/reject`)
+      .post(`/api/groups/${groupId}/membership_requests/${accountId}/reject`)
       .then(() => dispatch(rejectGroupMembershipRequestSuccess(groupId, accountId)))
       .catch(error => dispatch(rejectGroupMembershipRequestFail(groupId, accountId, error)));
   };

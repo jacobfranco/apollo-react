@@ -25,7 +25,7 @@ export const fetchStatusQuotes = (statusId: string) =>
       type: STATUS_QUOTES_FETCH_REQUEST,
     });
 
-    return api(getState).get(`/api/v1/pleroma/statuses/${statusId}/quotes`).then(response => {
+    return api(getState).get(`/api/pleroma/statuses/${statusId}/quotes`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       return dispatch({

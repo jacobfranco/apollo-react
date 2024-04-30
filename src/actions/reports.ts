@@ -63,7 +63,7 @@ const submitReport = () =>
     dispatch(submitReportRequest());
     const { reports } = getState();
 
-    return api(getState).post('/api/v1/reports', {
+    return api(getState).post('/api/reports', {
       account_id: reports.getIn(['new', 'account_id']),
       status_ids: reports.getIn(['new', 'status_ids']),
       message_ids: [reports.getIn(['new', 'chat_message', 'id'])].filter(Boolean),

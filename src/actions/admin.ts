@@ -84,7 +84,7 @@ const fetchConfig = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_CONFIG_FETCH_REQUEST });
     return api(getState)
-      .get('/api/v1/pleroma/admin/config')
+      .get('/api/pleroma/admin/config')
       .then(({ data }) => {
         dispatch({ type: ADMIN_CONFIG_FETCH_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
@@ -96,7 +96,7 @@ const updateConfig = (configs: Record<string, any>[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_CONFIG_UPDATE_REQUEST, configs });
     return api(getState)
-      .post('/api/v1/pleroma/admin/config', { configs })
+      .post('/api/pleroma/admin/config', { configs })
       .then(({ data }) => {
         dispatch({ type: ADMIN_CONFIG_UPDATE_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
@@ -121,7 +121,7 @@ const updateApolloConfig = (data: Record<string, any>) =>
 const fetchApolloReports = (params: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     api(getState)
-      .get('/api/v1/admin/reports', { params })
+      .get('/api/admin/reports', { params })
       .then(({ data: reports }) => {
         reports.forEach((report: APIEntity) => {
           dispatch(importFetchedAccount(report.account?.account));
@@ -143,7 +143,7 @@ const fetchReports = (params: Record<string, any> = {}) =>
 const patchApolloReports = (reports: { id: string; state: string }[]) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     Promise.all(reports.map(({ id, state }) => api(getState)
-      .post(`/api/v1/admin/reports/${id}/${state === 'resolved' ? 'reopen' : 'resolve'}`)
+      .post(`/api/admin/reports/${id}/${state === 'resolved' ? 'reopen' : 'resolve'}`)
       .then(() => {
         dispatch({ type: ADMIN_REPORTS_PATCH_SUCCESS, reports });
       }).catch(error => {
@@ -175,7 +175,7 @@ const fetchApolloUsers = (filters: string[], page: number, query: string | null 
     if (filters.includes('need_approval')) params.pending = true;
 
     return api(getState)
-      .get(next || '/api/v1/admin/accounts', { params })
+      .get(next || '/api/admin/accounts', { params })
       .then(({ data: accounts, ...response }) => {
         const next = getLinks(response as AxiosResponse<any, any>).refs.find(link => link.rel === 'next');
 
@@ -203,7 +203,7 @@ const deactivateApolloUsers = (accountIds: string[], reportId?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     Promise.all(accountIds.map(accountId => {
       api(getState)
-        .post(`/api/v1/admin/accounts/${accountId}/action`, {
+        .post(`/api/admin/accounts/${accountId}/action`, {
           type: 'disable',
           report_id: reportId,
         })
@@ -227,7 +227,7 @@ const deleteUsers = (accountIds: string[]) =>
     const nicknames = accountIdsToAccts(getState(), accountIds);
     dispatch({ type: ADMIN_USERS_DELETE_REQUEST, accountIds });
     return api(getState)
-      .delete('/api/v1/pleroma/admin/users', { data: { nicknames } })
+      .delete('/api/pleroma/admin/users', { data: { nicknames } })
       .then(({ data: nicknames }) => {
         dispatch({ type: ADMIN_USERS_DELETE_SUCCESS, nicknames, accountIds });
       }).catch(error => {
@@ -239,7 +239,7 @@ const approveApolloUsers = (accountIds: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     Promise.all(accountIds.map(accountId => {
       api(getState)
-        .post(`/api/v1/admin/accounts/${accountId}/approve`)
+        .post(`/api/admin/accounts/${accountId}/approve`)
         .then(({ data: user }) => {
           dispatch({ type: ADMIN_USERS_APPROVE_SUCCESS, users: [user], accountIds: [accountId] });
         }).catch(error => {
@@ -251,7 +251,7 @@ const approvePleromaUsers = (accountIds: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const nicknames = accountIdsToAccts(getState(), accountIds);
     return api(getState)
-      .patch('/api/v1/pleroma/admin/users/approve', { nicknames })
+      .patch('/api/pleroma/admin/users/approve', { nicknames })
       .then(({ data: { users } }) => {
         dispatch({ type: ADMIN_USERS_APPROVE_SUCCESS, users, accountIds });
       }).catch(error => {
@@ -272,7 +272,7 @@ const deleteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_STATUS_DELETE_REQUEST, id });
     return api(getState)
-      .delete(`/api/v1/pleroma/admin/statuses/${id}`)
+      .delete(`/api/pleroma/admin/statuses/${id}`)
       .then(() => {
         dispatch({ type: ADMIN_STATUS_DELETE_SUCCESS, id });
       }).catch(error => {
@@ -284,7 +284,7 @@ const toggleStatusSensitivity = (id: string, sensitive: boolean) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_REQUEST, id });
     return api(getState)
-      .put(`/api/v1/pleroma/admin/statuses/${id}`, { sensitive: !sensitive })
+      .put(`/api/pleroma/admin/statuses/${id}`, { sensitive: !sensitive })
       .then(() => {
         dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_SUCCESS, id });
       }).catch(error => {
@@ -296,7 +296,7 @@ const fetchModerationLog = (params?: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_LOG_FETCH_REQUEST });
     return api(getState)
-      .get('/api/v1/pleroma/admin/moderation_log', { params })
+      .get('/api/pleroma/admin/moderation_log', { params })
       .then(({ data }) => {
         dispatch({ type: ADMIN_LOG_FETCH_SUCCESS, items: data.items, total: data.total });
         return data;
@@ -310,7 +310,7 @@ const tagUsers = (accountIds: string[], tags: string[]) =>
     const nicknames = accountIdsToAccts(getState(), accountIds);
     dispatch({ type: ADMIN_USERS_TAG_REQUEST, accountIds, tags });
     return api(getState)
-      .put('/api/v1/pleroma/admin/users/tag', { nicknames, tags })
+      .put('/api/pleroma/admin/users/tag', { nicknames, tags })
       .then(() => {
         dispatch({ type: ADMIN_USERS_TAG_SUCCESS, accountIds, tags });
       }).catch(error => {
@@ -329,7 +329,7 @@ const untagUsers = (accountIds: string[], tags: string[]) =>
 
     dispatch({ type: ADMIN_USERS_UNTAG_REQUEST, accountIds, tags });
     return api(getState)
-      .delete('/api/v1/pleroma/admin/users/tag', { data: { nicknames, tags } })
+      .delete('/api/pleroma/admin/users/tag', { data: { nicknames, tags } })
       .then(() => {
         dispatch({ type: ADMIN_USERS_UNTAG_SUCCESS, accountIds, tags });
       }).catch(error => {
@@ -360,7 +360,7 @@ const addPermission = (accountIds: string[], permissionGroup: string) =>
     const nicknames = accountIdsToAccts(getState(), accountIds);
     dispatch({ type: ADMIN_ADD_PERMISSION_GROUP_REQUEST, accountIds, permissionGroup });
     return api(getState)
-      .post(`/api/v1/pleroma/admin/users/permission_group/${permissionGroup}`, { nicknames })
+      .post(`/api/pleroma/admin/users/permission_group/${permissionGroup}`, { nicknames })
       .then(({ data }) => {
         dispatch({ type: ADMIN_ADD_PERMISSION_GROUP_SUCCESS, accountIds, permissionGroup, data });
       }).catch(error => {
@@ -373,7 +373,7 @@ const removePermission = (accountIds: string[], permissionGroup: string) =>
     const nicknames = accountIdsToAccts(getState(), accountIds);
     dispatch({ type: ADMIN_REMOVE_PERMISSION_GROUP_REQUEST, accountIds, permissionGroup });
     return api(getState)
-      .delete(`/api/v1/pleroma/admin/users/permission_group/${permissionGroup}`, { data: { nicknames } })
+      .delete(`/api/pleroma/admin/users/permission_group/${permissionGroup}`, { data: { nicknames } })
       .then(({ data }) => {
         dispatch({ type: ADMIN_REMOVE_PERMISSION_GROUP_SUCCESS, accountIds, permissionGroup, data });
       }).catch(error => {

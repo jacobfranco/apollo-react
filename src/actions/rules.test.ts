@@ -8,7 +8,7 @@ describe('fetchRules()', () => {
     const rules = await import('src/__fixtures__/rules.json');
 
     __stub((mock) => {
-      mock.onGet('/api/v1/instance/rules').reply(200, rules);
+      mock.onGet('/api/instance/rules').reply(200, rules);
     });
 
     const store = mockStore(rootState);

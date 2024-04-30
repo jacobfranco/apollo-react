@@ -17,7 +17,7 @@ const vote = (pollId: string, choices: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(voteRequest());
 
-    api(getState).post(`/api/v1/polls/${pollId}/votes`, { choices })
+    api(getState).post(`/api/polls/${pollId}/votes`, { choices })
       .then(({ data }) => {
         dispatch(importFetchedPoll(data));
         dispatch(voteSuccess(data));
@@ -29,7 +29,7 @@ const fetchPoll = (pollId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchPollRequest());
 
-    api(getState).get(`/api/v1/polls/${pollId}`)
+    api(getState).get(`/api/polls/${pollId}`)
       .then(({ data }) => {
         dispatch(importFetchedPoll(data));
         dispatch(fetchPollSuccess(data));

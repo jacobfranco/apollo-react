@@ -9,7 +9,7 @@ function useGroupRelationships(listKey: string[], ids: string[]) {
 
   function fetchGroupRelationships(ids: string[]) {
     const q = ids.map((id) => `id[]=${id}`).join('&');
-    return api.get(`/api/v1/groups/relationships?${q}`);
+    return api.get(`/api/groups/relationships?${q}`);
   }
 
   const { entityMap: relationships, ...result } = useBatchedEntities<GroupRelationship>(

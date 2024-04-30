@@ -8,7 +8,7 @@ import { markReadNotifications } from './notifications';
 
 describe('markReadNotifications()', () => {
   it('fires off marker when top notification is newer than lastRead', async() => {
-    __stub((mock) => mock.onPost('/api/v1/markers').reply(200, {}));
+    __stub((mock) => mock.onPost('/api/markers').reply(200, {}));
 
     const items = ImmutableOrderedMap({
       '10': normalizeNotification({ id: '10' }),

@@ -5,7 +5,7 @@ import { type Group, groupRelationshipSchema } from 'src/schemas';
 function useUnmuteGroup(group?: Group) {
   const { createEntity, isSubmitting } = useEntityActions(
     [Entities.GROUP_RELATIONSHIPS, group?.id as string],
-    { post: `/api/v1/groups/${group?.id}/unmute` },
+    { post: `/api/groups/${group?.id}/unmute` },
     { schema: groupRelationshipSchema },
   );
 

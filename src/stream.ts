@@ -106,7 +106,7 @@ export default function getStream(
 ) {
   const params = [ `stream=${stream}` ];
 
-  const ws = new WebSocketClient(`${streamingAPIBaseURL}/api/v1/streaming/?${params.join('&')}`, accessToken as any);
+  const ws = new WebSocketClient(`${streamingAPIBaseURL}/api/streaming/?${params.join('&')}`, accessToken as any);
 
   ws.onopen      = connected;
   ws.onclose     = disconnected;

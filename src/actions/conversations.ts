@@ -37,7 +37,7 @@ const markConversationRead = (conversationId: string) => (dispatch: AppDispatch,
     id: conversationId,
   });
 
-  api(getState).post(`/api/v1/conversations/${conversationId}/read`);
+  api(getState).post(`/api/conversations/${conversationId}/read`);
 };
 
 const expandConversations = ({ maxId }: Record<string, any> = {}) => (dispatch: AppDispatch, getState: () => RootState) => {
@@ -53,7 +53,7 @@ const expandConversations = ({ maxId }: Record<string, any> = {}) => (dispatch: 
 
   const isLoadingRecent = !!params.since_id;
 
-  api(getState).get('/api/v1/conversations', { params })
+  api(getState).get('/api/conversations', { params })
     .then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 

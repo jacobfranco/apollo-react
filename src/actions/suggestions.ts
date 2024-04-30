@@ -77,7 +77,7 @@ const dismissSuggestion = (accountId: string) =>
       id: accountId,
     });
 
-    api(getState).delete(`/api/v1/suggestions/${accountId}`);
+    api(getState).delete(`/api/suggestions/${accountId}`);
   };
 
 export {

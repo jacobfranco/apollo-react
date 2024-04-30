@@ -38,7 +38,7 @@ const resetPasswordConfirm = (password: string, token: string) =>
     const params = { password, reset_password_token: token };
     dispatch({ type: RESET_PASSWORD_CONFIRM_REQUEST });
 
-    return api(getState).post('/api/v1/truth/password_reset/confirm', params).then(() => {
+    return api(getState).post('/api/truth/password_reset/confirm', params).then(() => {
       dispatch({ type: RESET_PASSWORD_CONFIRM_SUCCESS });
     }).catch(error => {
       dispatch({ type: RESET_PASSWORD_CONFIRM_FAIL, error });
@@ -49,7 +49,7 @@ const resetPasswordConfirm = (password: string, token: string) =>
   // TODO: Maybe refactor this because of truth social
   const confirmChangedEmail = (token: string) =>
   (_dispatch: AppDispatch, getState: () => RootState) =>
-    api(getState).get(`/api/v1/truth/email/confirm?confirmation_token=${token}`);
+    api(getState).get(`/api/truth/email/confirm?confirmation_token=${token}`);
 
     // TODO: Implement other functions as needed
 

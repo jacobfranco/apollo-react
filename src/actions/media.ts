@@ -20,18 +20,18 @@ const noOp = (e: any) => {};
 
 const fetchMedia = (mediaId: string) =>
   (dispatch: any, getState: () => RootState) => {
-    return api(getState).get(`/api/v1/media/${mediaId}`);
+    return api(getState).get(`/api/media/${mediaId}`);
   };
 
 const updateMedia = (mediaId: string, params: Record<string, any>) =>
   (dispatch: any, getState: () => RootState) => {
-    return api(getState).put(`/api/v1/media/${mediaId}`, params);
+    return api(getState).put(`/api/media/${mediaId}`, params);
   };
 
   // TODO: Consolidate
 const uploadMediaV1 = (data: FormData, onUploadProgress = noOp) =>
   (dispatch: any, getState: () => RootState) =>
-    api(getState).post('/api/v1/media', data, {
+    api(getState).post('/api/media', data, {
       onUploadProgress: onUploadProgress,
     });
 

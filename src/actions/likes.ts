@@ -33,7 +33,7 @@ const fetchLikedStatuses = () =>
 
     dispatch(fetchLikedStatusesRequest());
 
-    api(getState).get('/api/v1/likes').then(response => {
+    api(getState).get('/api/likes').then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       dispatch(fetchLikedStatusesSuccess(response.data, next ? next.uri : null));
@@ -106,7 +106,7 @@ const fetchAccountLikedStatuses = (accountId: string) =>
 
     dispatch(fetchAccountLikedStatusesRequest(accountId));
 
-    api(getState).get(`/api/v1/pleroma/accounts/${accountId}/likes`).then(response => {
+    api(getState).get(`/api/pleroma/accounts/${accountId}/likes`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       dispatch(fetchAccountLikedStatusesSuccess(accountId, response.data, next ? next.uri : null));

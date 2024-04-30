@@ -144,7 +144,7 @@ const handlePush = (event: PushEvent) => {
 
   // Placeholder until more information can be loaded
   event.waitUntil(
-    fetchFromApi(`/api/v1/notifications/${notification_id}`, 'get', access_token).then(notification => {
+    fetchFromApi(`/api/notifications/${notification_id}`, 'get', access_token).then(notification => {
       const options: ExtendedNotificationOptions = {
         title:     formatMessage(`notification.${notification.type}`, preferred_locale, { name: notification.account.display_name.length > 0 ? notification.account.display_name : notification.account.username }),
         body:      notification.status && htmlToPlainText(notification.status.content),
@@ -251,10 +251,10 @@ const handleNotificationClick = (event: NotificationEvent) => {
         resolve(expandNotification(event.notification));
       } else if (event.action === 'repost') {
         const { data } = event.notification;
-        resolve(fetchFromApi(`/api/v1/statuses/${data.id}/repost`, 'post', data.access_token).then(() => removeActionFromNotification(event.notification, 'repost')));
+        resolve(fetchFromApi(`/api/statuses/${data.id}/repost`, 'post', data.access_token).then(() => removeActionFromNotification(event.notification, 'repost')));
       } else if (event.action === 'like') {
         const { data } = event.notification;
-        resolve(fetchFromApi(`/api/v1/statuses/${data.id}/like`, 'post', data.access_token).then(() => removeActionFromNotification(event.notification, 'like')));
+        resolve(fetchFromApi(`/api/statuses/${data.id}/like`, 'post', data.access_token).then(() => removeActionFromNotification(event.notification, 'like')));
       } else {
         reject(`Unknown action: ${event.action}`);
       }

@@ -59,7 +59,7 @@ const createStatus = (params: Record<string, any>, idempotencyKey: string, statu
     dispatch({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
 
     return api(getState).request({
-      url: statusId === null ? '/api/v1/statuses' : `/api/v1/statuses/${statusId}`,
+      url: statusId === null ? '/api/statuses' : `/api/statuses/${statusId}`,
       method: statusId === null ? 'post' : 'put',
       data: params,
       headers: { 'Idempotency-Key': idempotencyKey },
@@ -77,7 +77,7 @@ const createStatus = (params: Record<string, any>, idempotencyKey: string, statu
         const delay = 1000;
 
         const poll = (retries = 5) => {
-          api(getState).get(`/api/v1/statuses/${status.id}`).then(response => {
+          api(getState).get(`/api/statuses/${status.id}`).then(response => {
             if (response.data?.card) {
               dispatch(importFetchedStatus(response.data));
             } else if (retries > 0 && response.status === 200) {
@@ -106,7 +106,7 @@ const editStatus = (id: string) => (dispatch: AppDispatch, getState: () => RootS
 
   dispatch({ type: STATUS_FETCH_SOURCE_REQUEST });
 
-  api(getState).get(`/api/v1/statuses/${id}/source`).then(response => {
+  api(getState).get(`/api/statuses/${id}/source`).then(response => {
     dispatch({ type: STATUS_FETCH_SOURCE_SUCCESS });
     dispatch(setComposeToStatus(status, response.data.text, response.data.spoiler_text, response.data.content_type, false));
     dispatch(openModal('COMPOSE'));
@@ -122,7 +122,7 @@ const fetchStatus = (id: string) => {
 
     dispatch({ type: STATUS_FETCH_REQUEST, id, skipLoading });
 
-    return api(getState).get(`/api/v1/statuses/${id}`).then(({ data: status }) => {
+    return api(getState).get(`/api/statuses/${id}`).then(({ data: status }) => {
       dispatch(importFetchedStatus(status));
       if (status.group) {
         dispatch(fetchGroupRelationships([status.group.id]));
@@ -148,7 +148,7 @@ const deleteStatus = (id: string, withRedraft = false) => {
     dispatch({ type: STATUS_DELETE_REQUEST, params: status });
 
     return api(getState)
-      .delete(`/api/v1/statuses/${id}`)
+      .delete(`/api/statuses/${id}`)
       .then(response => {
         dispatch({ type: STATUS_DELETE_SUCCESS, id });
         dispatch(deleteFromTimelines(id));
@@ -171,7 +171,7 @@ const fetchContext = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CONTEXT_FETCH_REQUEST, id });
 
-    return api(getState).get(`/api/v1/statuses/${id}/context`).then(({ data: context }) => {
+    return api(getState).get(`/api/statuses/${id}/context`).then(({ data: context }) => {
       if (Array.isArray(context)) {
         // Mitra: returns a list of statuses
         dispatch(importFetchedStatuses(context));
@@ -211,14 +211,14 @@ const fetchNext = (statusId: string, next: string) =>
 
 const fetchAncestors = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
-    const response = await api(getState).get(`/api/v1/statuses/${id}/context/ancestors`);
+    const response = await api(getState).get(`/api/statuses/${id}/context/ancestors`);
     dispatch(importFetchedStatuses(response.data));
     return response;
   };
 
 const fetchDescendants = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
-    const response = await api(getState).get(`/api/v1/statuses/${id}/context/descendants`);
+    const response = await api(getState).get(`/api/statuses/${id}/context/descendants`);
     dispatch(importFetchedStatuses(response.data));
     return response;
   };
@@ -248,7 +248,7 @@ const muteStatus = (id: string) =>
     if (!isLoggedIn(getState)) return;
 
     dispatch({ type: STATUS_MUTE_REQUEST, id });
-    api(getState).post(`/api/v1/statuses/${id}/mute`).then(() => {
+    api(getState).post(`/api/statuses/${id}/mute`).then(() => {
       dispatch({ type: STATUS_MUTE_SUCCESS, id });
     }).catch(error => {
       dispatch({ type: STATUS_MUTE_FAIL, id, error });
@@ -260,7 +260,7 @@ const unmuteStatus = (id: string) =>
     if (!isLoggedIn(getState)) return;
 
     dispatch({ type: STATUS_UNMUTE_REQUEST, id });
-    api(getState).post(`/api/v1/statuses/${id}/unmute`).then(() => {
+    api(getState).post(`/api/statuses/${id}/unmute`).then(() => {
       dispatch({ type: STATUS_UNMUTE_SUCCESS, id });
     }).catch(error => {
       dispatch({ type: STATUS_UNMUTE_FAIL, id, error });
@@ -309,7 +309,7 @@ const toggleStatusHidden = (status: Status) => {
 const translateStatus = (id: string, targetLanguage?: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch({ type: STATUS_TRANSLATE_REQUEST, id });
 
-  api(getState).post(`/api/v1/statuses/${id}/translate`, {
+  api(getState).post(`/api/statuses/${id}/translate`, {
     target_language: targetLanguage,
   }).then(response => {
     dispatch({

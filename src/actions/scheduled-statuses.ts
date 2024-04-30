@@ -25,7 +25,7 @@ const fetchScheduledStatuses = () =>
 
     dispatch(fetchScheduledStatusesRequest());
 
-    api(getState).get('/api/v1/scheduled_statuses').then(response => {
+    api(getState).get('/api/scheduled_statuses').then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(fetchScheduledStatusesSuccess(response.data, next ? next.uri : null));
     }).catch(error => {
@@ -36,7 +36,7 @@ const fetchScheduledStatuses = () =>
 const cancelScheduledStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: SCHEDULED_STATUS_CANCEL_REQUEST, id });
-    api(getState).delete(`/api/v1/scheduled_statuses/${id}`).then(({ data }) => {
+    api(getState).delete(`/api/scheduled_statuses/${id}`).then(({ data }) => {
       dispatch({ type: SCHEDULED_STATUS_CANCEL_SUCCESS, id, data });
     }).catch(error => {
       dispatch({ type: SCHEDULED_STATUS_CANCEL_FAIL, id, error });

@@ -70,7 +70,7 @@ const repost = (status: StatusEntity) =>
 
     dispatch(repostRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/repost`).then(function(response) {
+    api(getState).post(`/api/statuses/${status.id}/repost`).then(function(response) {
       // The repost API method returns a new status wrapped around the original. In this case we are only
       // interested in how the original is modified, hence passing it skipping the wrapper
       dispatch(importFetchedStatus(response.data.repost));
@@ -86,7 +86,7 @@ const unrepost = (status: StatusEntity) =>
 
     dispatch(unrepostRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/unrepost`).then(() => {
+    api(getState).post(`/api/statuses/${status.id}/unrepost`).then(() => {
       dispatch(unrepostSuccess(status));
     }).catch(error => {
       dispatch(unrepostFail(status, error));
@@ -146,7 +146,7 @@ const like = (status: StatusEntity) =>
 
     dispatch(likeRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/like`).then(function(response) {
+    api(getState).post(`/api/statuses/${status.id}/like`).then(function(response) {
       dispatch(likeSuccess(status));
     }).catch(function(error) {
       dispatch(likeFail(status, error));
@@ -159,7 +159,7 @@ const unlike = (status: StatusEntity) =>
 
     dispatch(unlikeRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/unlike`).then(() => {
+    api(getState).post(`/api/statuses/${status.id}/unlike`).then(() => {
       dispatch(unlikeSuccess(status));
     }).catch(error => {
       dispatch(unlikeFail(status, error));
@@ -217,7 +217,7 @@ const bookmark = (status: StatusEntity) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(bookmarkRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/bookmark`).then(function(response) {
+    api(getState).post(`/api/statuses/${status.id}/bookmark`).then(function(response) {
       dispatch(importFetchedStatus(response.data));
       dispatch(bookmarkSuccess(status, response.data));
       toast.success(messages.bookmarkAdded, {
@@ -233,7 +233,7 @@ const unbookmark = (status: StatusEntity) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(unbookmarkRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/unbookmark`).then(response => {
+    api(getState).post(`/api/statuses/${status.id}/unbookmark`).then(response => {
       dispatch(importFetchedStatus(response.data));
       dispatch(unbookmarkSuccess(status, response.data));
       toast.success(messages.bookmarkRemoved);
@@ -291,7 +291,7 @@ const fetchReposts = (id: string) =>
 
     dispatch(fetchRepostsRequest(id));
 
-    api(getState).get(`/api/v1/statuses/${id}/reposted_by`).then(response => {
+    api(getState).get(`/api/statuses/${id}/reposted_by`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedAccounts(response.data));
       dispatch(fetchRelationships(response.data.map((item: APIEntity) => item.id)));
@@ -350,7 +350,7 @@ const fetchLikes = (id: string) =>
 
     dispatch(fetchLikesRequest(id));
 
-    api(getState).get(`/api/v1/statuses/${id}/liked_by`).then(response => {
+    api(getState).get(`/api/statuses/${id}/liked_by`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedAccounts(response.data));
       dispatch(fetchRelationships(response.data.map((item: APIEntity) => item.id)));
@@ -409,7 +409,7 @@ const pin = (status: StatusEntity) =>
 
     dispatch(pinRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/pin`).then(response => {
+    api(getState).post(`/api/statuses/${status.id}/pin`).then(response => {
       dispatch(importFetchedStatus(response.data));
       dispatch(pinSuccess(status));
     }).catch(error => {
@@ -420,14 +420,14 @@ const pin = (status: StatusEntity) =>
 const pinToGroup = (status: StatusEntity, group: Group) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     return api(getState)
-      .post(`/api/v1/groups/${group.id}/statuses/${status.id}/pin`)
+      .post(`/api/groups/${group.id}/statuses/${status.id}/pin`)
       .then(() => dispatch(expandGroupFeaturedTimeline(group.id)));
   };
 
 const unpinFromGroup = (status: StatusEntity, group: Group) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     return api(getState)
-      .post(`/api/v1/groups/${group.id}/statuses/${status.id}/unpin`)
+      .post(`/api/groups/${group.id}/statuses/${status.id}/unpin`)
       .then(() => dispatch(expandGroupFeaturedTimeline(group.id)));
   };
 
@@ -456,7 +456,7 @@ const unpin = (status: StatusEntity) =>
 
     dispatch(unpinRequest(status));
 
-    api(getState).post(`/api/v1/statuses/${status.id}/unpin`).then(response => {
+    api(getState).post(`/api/statuses/${status.id}/unpin`).then(response => {
       dispatch(importFetchedStatus(response.data));
       dispatch(unpinSuccess(status));
     }).catch(error => {

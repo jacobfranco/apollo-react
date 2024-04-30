@@ -1132,8 +1132,8 @@ describe('fetchFollowRequests()', () => {
         store = mockStore(state);
 
         __stub((mock) => {
-          mock.onGet('/api/v1/follow_requests').reply(200, [], {
-            link: '<https://example.com/api/v1/follow_requests?since_id=1>; rel=\'prev\'',
+          mock.onGet('/api/follow_requests').reply(200, [], {
+            link: '<https://example.com/api/follow_requests?since_id=1>; rel=\'prev\'',
           });
         });
       });
@@ -1158,7 +1158,7 @@ describe('fetchFollowRequests()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onGet('/api/v1/follow_requests').networkError();
+          mock.onGet('/api/follow_requests').networkError();
         });
       });
 
@@ -1296,7 +1296,7 @@ describe('authorizeFollowRequest()', () => {
     describe('with a successful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/follow_requests/${id}/authorize`).reply(200);
+          mock.onPost(`/api/follow_requests/${id}/authorize`).reply(200);
         });
       });
 
@@ -1315,7 +1315,7 @@ describe('authorizeFollowRequest()', () => {
     describe('with an unsuccessful API request', () => {
       beforeEach(() => {
         __stub((mock) => {
-          mock.onPost(`/api/v1/follow_requests/${id}/authorize`).networkError();
+          mock.onPost(`/api/follow_requests/${id}/authorize`).networkError();
         });
       });
 
