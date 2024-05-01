@@ -519,7 +519,7 @@ const fetchRelationships = (accountIds: string[]) =>
     dispatch(fetchRelationshipsRequest(newAccountIds));
 
     return api(getState)
-      .get(`/api/accountsrelationships?${newAccountIds.map(id => `id[]=${id}`).join('&')}`)
+      .get(`/api/accounts/relationships?${newAccountIds.map(id => `id[]=${id}`).join('&')}`)
       .then(response => {
         dispatch(importEntities(response.data, Entities.RELATIONSHIPS));
         dispatch(fetchRelationshipsSuccess(response.data));
@@ -695,6 +695,7 @@ const unpinAccount = (id: string) =>
     });
   };
 
+  // TODO: Change api endpoint
 const updateNotificationSettings = (params: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: NOTIFICATION_SETTINGS_REQUEST, params });
@@ -769,7 +770,7 @@ const fetchPinnedAccountsFail = (id: string, error: unknown) => ({
 const accountSearch = (params: Record<string, any>, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ACCOUNT_SEARCH_REQUEST, params });
-    return api(getState).get('/api/accountssearch', { params, signal }).then(({ data: accounts }) => {
+    return api(getState).get('/api/accounts/search', { params, signal }).then(({ data: accounts }) => {
       dispatch(importFetchedAccounts(accounts));
       dispatch({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
       return accounts;
@@ -782,7 +783,7 @@ const accountSearch = (params: Record<string, any>, signal?: AbortSignal) =>
 const accountLookup = (acct: string, cancelToken?: CancelToken) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ACCOUNT_LOOKUP_REQUEST, acct });
-    return api(getState).get('/api/accountslookup', { params: { acct }, cancelToken }).then(({ data: account }) => {
+    return api(getState).get('/api/accounts/lookup', { params: { acct }, cancelToken }).then(({ data: account }) => {
       if (account && account.id) dispatch(importFetchedAccount(account));
       dispatch({ type: ACCOUNT_LOOKUP_SUCCESS, account });
       return account;

@@ -71,7 +71,7 @@ const submitSearch = (filter?: SearchFilter) =>
 
     if (accountId) params.account_id = accountId;
 
-    api(getState).get('/api/v2/search', {
+    api(getState).get('/api/search', {
       params,
     }).then(response => {
       if (response.data.accounts) {
@@ -133,7 +133,7 @@ const expandSearch = (type: SearchFilter) => (dispatch: AppDispatch, getState: (
   // if no URL was extracted from the Link header,
   // fall back on querying with the offset
   if (!url) {
-    url = '/api/v2/search';
+    url = '/api/search';
     params = {
       q: value,
       type,

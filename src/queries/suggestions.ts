@@ -31,7 +31,7 @@ const useSuggestions = () => {
   const dispatch = useAppDispatch();
 
   const getV2Suggestions = async (pageParam: PageParam): Promise<PaginatedResult<Result>> => {
-    const endpoint = pageParam?.link || '/api/v2/suggestions';
+    const endpoint = pageParam?.link || '/api/suggestions';
     const response = await api.get<Suggestion[]>(endpoint);
     const hasMore = !!response.headers.link;
     const nextLink = getLinks(response).refs.find(link => link.rel === 'next')?.uri;
@@ -89,7 +89,7 @@ function useOnboardingSuggestions() {
   const dispatch = useAppDispatch();
 
   const getV2Suggestions = async (pageParam: any): Promise<{ data: Suggestion[]; link: string | undefined; hasMore: boolean }> => {
-    const link = pageParam?.link || '/api/v2/suggestions';
+    const link = pageParam?.link || '/api//suggestions';
     const response = await api.get<Suggestion[]>(link);
     const hasMore = !!response.headers.link;
     const nextLink = getLinks(response).refs.find(link => link.rel === 'next')?.uri;

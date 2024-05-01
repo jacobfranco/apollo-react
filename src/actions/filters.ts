@@ -43,7 +43,7 @@ const fetchFilters = (fromFiltersPage = false) =>
       });
   
       return api(getState)
-        .get('/api/v2/filters')
+        .get('/api/filters')
         .then(({ data }) => dispatch({
           type: FILTERS_FETCH_SUCCESS,
           filters: data,
@@ -65,7 +65,7 @@ const fetchFilter = (id: string) =>
       });
   
       return api(getState)
-        .get(`/api/v2/filters/${id}`)
+        .get(`/api/filters/${id}`)
         .then(({ data }) => dispatch({
           type: FILTER_FETCH_SUCCESS,
           filter: data,
@@ -82,7 +82,7 @@ const fetchFilter = (id: string) =>
 const createFilter = (title: string, expires_in: string | null, context: Array<string>, hide: boolean, keywords_attributes: FilterKeywords) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: FILTERS_CREATE_REQUEST });
-    return api(getState).post('/api/v2/filters', {
+    return api(getState).post('/api/filters', {
       title,
       context,
       filter_action: hide ? 'hide' : 'warn',
@@ -99,7 +99,7 @@ const createFilter = (title: string, expires_in: string | null, context: Array<s
 const updateFilter = (id: string, title: string, expires_in: string | null, context: Array<string>, hide: boolean, keywords_attributes: FilterKeywords) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: FILTERS_UPDATE_REQUEST });
-    return api(getState).patch(`/api/v2/filters/${id}`, {
+    return api(getState).patch(`/api/filters/${id}`, {
       title,
       context,
       filter_action: hide ? 'hide' : 'warn',
@@ -116,7 +116,7 @@ const updateFilter = (id: string, title: string, expires_in: string | null, cont
 const deleteFilter = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: FILTERS_DELETE_REQUEST });
-    return api(getState).delete(`/api/v2/filters/${id}`).then(response => {
+    return api(getState).delete(`/api/filters/${id}`).then(response => {
       dispatch({ type: FILTERS_DELETE_SUCCESS, filter: response.data });
       toast.success(messages.removed);
     }).catch(error => {

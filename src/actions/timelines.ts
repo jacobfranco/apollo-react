@@ -234,6 +234,7 @@ const expandAccountFeaturedTimeline = (accountId: string) =>
 const expandAccountMediaTimeline = (accountId: string | number, { url, maxId }: Record<string, any> = {}) =>
   expandTimeline(`account:${accountId}:media`, url || `/api/accounts/${accountId}/statuses`, url ? {} : { max_id: maxId, only_media: true, limit: 40, with_muted: true });
 
+// TODO: Remove
 const expandListTimeline = (id: string, { url, maxId }: Record<string, any> = {}, done = noOp) =>
   expandTimeline(`list:${id}`, url || `/api/timelines/list/${id}`, url ? {} : { max_id: maxId }, done);
 

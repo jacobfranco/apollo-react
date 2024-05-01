@@ -247,6 +247,7 @@ const approveApolloUsers = (accountIds: string[]) =>
         });
     }));
 
+    // TODO: Remove probably
 const approvePleromaUsers = (accountIds: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const nicknames = accountIdsToAccts(getState(), accountIds);
