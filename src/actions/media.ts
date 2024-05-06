@@ -28,23 +28,12 @@ const updateMedia = (mediaId: string, params: Record<string, any>) =>
     return api(getState).put(`/api/media/${mediaId}`, params);
   };
 
-  // TODO: Consolidate
-const uploadMediaV1 = (data: FormData, onUploadProgress = noOp) =>
+
+const uploadMedia = (data: FormData, onUploadProgress = noOp) =>
   (dispatch: any, getState: () => RootState) =>
     api(getState).post('/api/media', data, {
       onUploadProgress: onUploadProgress,
     });
-
-const uploadMediaV2 = (data: FormData, onUploadProgress = noOp) =>
-  (dispatch: any, getState: () => RootState) =>
-    api(getState).post('/api/v2/media', data, {
-      onUploadProgress: onUploadProgress,
-    });
-
-const uploadMedia = (data: FormData, onUploadProgress = noOp) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    return dispatch(uploadMediaV2(data, onUploadProgress));
-  };
 
 const uploadFile = (
   file: File,
@@ -116,8 +105,6 @@ const uploadFile = (
 export {
   fetchMedia,
   updateMedia,
-  uploadMediaV1,
-  uploadMediaV2,
   uploadMedia,
   uploadFile,
 };

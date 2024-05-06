@@ -43,6 +43,7 @@ const normalizeStatuses = (filter: ImmutableMap<string, any>) =>
     statuses.map(normalizeFilterStatus),
   );
 
+  // TODO: Fix v1 stuff
 export const normalizeFilter = (filter: Record<string, any>) =>
   FilterRecord(
     ImmutableMap(fromJS(filter)).withMutations(filter => {

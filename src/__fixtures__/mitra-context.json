@@ -22,11 +22,11 @@
     },
     "content": "<span class=\"h-card\"><a class=\"u-url mention\" href=\"https://mitra.social/users/silverpill\">@silverpill</a></span> sup!",
     "in_reply_to_id": null,
-    "reblog": null,
+    "repost": null,
     "visibility": "public",
     "replies_count": 1,
-    "favourites_count": 0,
-    "reblogs_count": 0,
+    "likes_count": 0,
+    "reposts_count": 0,
     "media_attachments": [],
     "mentions": [
       {
@@ -37,8 +37,8 @@
       }
     ],
     "tags": [],
-    "favourited": false,
-    "reblogged": false,
+    "liked": false,
+    "reposted": false,
     "ipfs_cid": null,
     "token_id": null,
     "token_tx_id": null
@@ -83,11 +83,11 @@
     },
     "content": "<span class=\"h-card\"><a class=\"u-url mention\" href=\"https://mitra.social/users/alex\">@alex</a></span> welcome",
     "in_reply_to_id": "017ed503-bc96-301a-e871-2c23b30ddd05",
-    "reblog": null,
+    "repost": null,
     "visibility": "public",
     "replies_count": 0,
-    "favourites_count": 1,
-    "reblogs_count": 0,
+    "likes_count": 1,
+    "reposts_count": 0,
     "media_attachments": [],
     "mentions": [
       {
@@ -98,8 +98,8 @@
       }
     ],
     "tags": [],
-    "favourited": true,
-    "reblogged": false,
+    "liked": true,
+    "reposted": false,
     "ipfs_cid": null,
     "token_id": null,
     "token_tx_id": null

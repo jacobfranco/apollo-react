@@ -145,8 +145,8 @@
       "alerts": {
         "follow": false,
         "follow_request": false,
-        "favourite": false,
-        "reblog": false,
+        "like": false,
+        "repost": false,
         "mention": false,
         "poll": false,
         "status": false
@@ -161,8 +161,8 @@
       "shows": {
         "follow": true,
         "follow_request": false,
-        "favourite": true,
-        "reblog": true,
+        "like": true,
+        "repost": true,
         "mention": true,
         "poll": true,
         "status": true
@@ -170,8 +170,8 @@
       "sounds": {
         "follow": true,
         "follow_request": false,
-        "favourite": true,
-        "reblog": true,
+        "like": true,
+        "repost": true,
         "mention": true,
         "poll": true,
         "status": true
@@ -216,7 +216,7 @@
     "introductionVersion": 20181216044202,
     "home": {
       "shows": {
-        "reblog": true,
+        "repost": true,
         "reply": true
       },
       "regex": {
