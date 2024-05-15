@@ -2,7 +2,8 @@ import { shift, useFloating, Placement, offset, OffsetOptions } from '@floating-
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 
-import { Emoji as EmojiComponent, HStack, IconButton } from 'src/components';
+import EmojiComponent from 'src/components/Emoji';
+import {HStack, IconButton }from 'src/components';
 import EmojiPickerDropdown from 'src/features/emoji/components/EmojiPickerDropdown';
 import { useClickOutside, useApolloConfig } from 'src/hooks';
 
@@ -73,7 +74,7 @@ const EmojiSelector: React.FC<IEmojiSelector> = ({
   };
 
   const handlePickEmoji = (emoji: Emoji) => {
-    onReact(emoji.native);
+    onReact(emoji.native, undefined);
   };
 
   useEffect(() => {
@@ -118,7 +119,6 @@ const EmojiSelector: React.FC<IEmojiSelector> = ({
         <HStack
           className={clsx('z-[999] flex w-max max-w-[100vw] flex-wrap space-x-3 rounded-full bg-white px-3 py-2.5 shadow-lg focus:outline-none dark:bg-gray-900 dark:ring-2 dark:ring-primary-700')}
         >
-
           {Array.from(apolloConfig.allowedEmoji).map((emoji, i) => (
             <EmojiButton
               key={i}
@@ -131,7 +131,7 @@ const EmojiSelector: React.FC<IEmojiSelector> = ({
           {all && (
             <IconButton
               className='text-gray-600 hover:text-gray-600 dark:hover:text-white'
-              src={require('@tabler/icons/dots.svg')}
+              src={require('@tabler/icons/outline/dots.svg')}
               onClick={handleExpand}
             />
           )}

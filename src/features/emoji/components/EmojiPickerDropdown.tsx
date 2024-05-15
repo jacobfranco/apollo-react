@@ -88,6 +88,7 @@ export const getFrequentlyUsedEmojis = createSelector([
   return emojis;
 });
 
+
 // Fixes render bug where popover has a delayed position update
 const RenderAfter = ({ children, update }: any) => {
   const [nextTick, setNextTick] = useState(false);
