@@ -15,10 +15,10 @@ The Apollo Web Frontend is the user interface for the Apollo platform, a combina
 To start the development server, run the following command:
 
 ```bash
-npm run dev
+yarn dev
 ```
 
-This will start the development server, and you can access your app in your browser at `http://localhost:5173`.
+This will start the development server, and you can access your app in your browser at `http://localhost:3036`.
 
 ## License
 
