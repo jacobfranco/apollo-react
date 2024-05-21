@@ -17,7 +17,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
   const renderMessagesLink = (): React.ReactNode => {
       return (
         <ThumbNavigationLink
-          src={require('@tabler/icons/messages.svg')}
+          src={require('@tabler/icons/outline/messages.svg')}
           text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
           to='/chats'
           exact
@@ -30,7 +30,8 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
     if (features.directTimeline || features.conversations) {
       return (
         <ThumbNavigationLink
-          src={require('@tabler/icons/mail.svg')}
+          src={require('@tabler/icons/outline/mail.svg')}
+          activeSrc={require('@tabler/icons/filled/mail.svg')}
           text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Messages' />}
           to='/messages'
           paths={['/messages', '/conversations']}
@@ -46,21 +47,23 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
   return (
     <div className='thumb-navigation'>
       <ThumbNavigationLink
-        src={require('@tabler/icons/home.svg')}
+        src={require('@tabler/icons/outline/home.svg')}
+        activeSrc={require('@tabler/icons/filled/home.svg')}
         text={<FormattedMessage id='navigation.home' defaultMessage='Home' />}
         to='/'
         exact
       />
 
         <ThumbNavigationLink
-          src={require('@tabler/icons/circles.svg')}
+          src={require('@tabler/icons/outline/circles.svg')}
+          activeSrc={require('@tabler/icons/filled/circles.svg')}
           text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
           to={groupsPath}
           exact
         />
 
       <ThumbNavigationLink
-        src={require('@tabler/icons/search.svg')}
+        src={require('@tabler/icons/outline/search.svg')}
         text={<FormattedMessage id='navigation.search' defaultMessage='Search' />}
         to='/search'
         exact
@@ -68,7 +71,8 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       {account && (
         <ThumbNavigationLink
-          src={require('@tabler/icons/bell.svg')}
+          src={require('@tabler/icons/outline/bell.svg')}
+          activeSrc={require('@tabler/icons/filled/bell.svg')}
           text={<FormattedMessage id='navigation.notifications' defaultMessage='Notifications' />}
           to='/notifications'
           exact
@@ -80,7 +84,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       {(account /* TODO: Implement staff && account.staff - take a look at this */) && (
         <ThumbNavigationLink
-          src={require('@tabler/icons/dashboard.svg')}
+          src={require('@tabler/icons/outline/dashboard.svg')}
           text={<FormattedMessage id='navigation.dashboard' defaultMessage='Dashboard' />}
           to='/apollo/admin'
           count={dashboardCount}

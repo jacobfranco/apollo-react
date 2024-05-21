@@ -6,6 +6,7 @@ import { Button, HStack, IconButton }from 'src/components';
 import { ButtonThemes } from 'src/styles/components/useButtonStyles';
 
 const messages = defineMessages({
+  back: { id: 'card.back.label', defaultMessage: 'Back' },
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
   confirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
 });
@@ -54,6 +55,7 @@ interface IModal {
   width?: keyof typeof widths;
   children?: React.ReactNode;
   className?: string;
+  onBack?: () => void;
 }
 
 /** Displays a modal dialog box. */
@@ -61,7 +63,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
   cancelAction,
   cancelText,
   children,
-  closeIcon = require('@tabler/icons/x.svg'),
+  closeIcon = require('@tabler/icons/outline/x.svg'),
   closePosition = 'right',
   confirmationAction,
   confirmationDisabled,
@@ -76,6 +78,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
   title,
   width = 'xl',
   className,
+  onBack,
 }, ref) => {
   const intl = useIntl();
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -100,6 +103,15 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
                 'flex-row-reverse': closePosition === 'left',
               })}
             >
+              {onBack && (
+                <IconButton
+                  src={require('@tabler/icons/outline/arrow-left.svg')}
+                  title={intl.formatMessage(messages.back)}
+                  onClick={onBack}
+                  className='text-gray-500 hover:text-gray-700 rtl:rotate-180 dark:text-gray-300 dark:hover:text-gray-200'
+                />
+              )}
+
               <h3 className='grow truncate text-lg font-bold leading-6 text-gray-900 dark:text-white'>
                 {title}
               </h3>

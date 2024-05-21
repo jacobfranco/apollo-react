@@ -38,7 +38,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/follow_requests',
           text: intl.formatMessage(messages.follow_requests),
-          icon: require('@tabler/icons/user-plus.svg'),
+          icon: require('@tabler/icons/outline/user-plus.svg'),
           count: followRequestsCount,
         });
       }
@@ -46,16 +46,16 @@ const SidebarNavigation = () => {
         menu.push({ 
           to: '/bookmarks',
           text: intl.formatMessage(messages.bookmarks),
-          icon: require('@tabler/icons/bookmark.svg'),
+          icon: require('@tabler/icons/outline/bookmark.svg'),
         });
 
 
-        if (isDeveloper) {
-          menu.push({
-            to: '/developers',
-            icon: require('@tabler/icons/code.svg'),
-            text: intl.formatMessage(messages.developers),
-          });
+      if (isDeveloper) {
+        menu.push({
+          to: '/developers',
+          icon: require('@tabler/icons/outline/code.svg'),
+          text: intl.formatMessage(messages.developers),
+        });
       }
     }
 
@@ -69,7 +69,7 @@ const SidebarNavigation = () => {
       return (
         <SidebarNavigationLink
           to='/chats'
-          icon={require('@tabler/icons/messages.svg')}
+          icon={require('@tabler/icons/outline/messages.svg')}
           count={unreadChatsCount}
           countMax={9}
           text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
@@ -81,7 +81,7 @@ const SidebarNavigation = () => {
       return (
         <SidebarNavigationLink
           to='/messages'
-          icon={require('@tabler/icons/mail.svg')}
+          icon={require('@tabler/icons/outline/mail.svg')}
           text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Messages' />}
         />
       );
@@ -97,13 +97,14 @@ const SidebarNavigation = () => {
       <Stack space={2}>
         <SidebarNavigationLink
           to='/'
-          icon={require('@tabler/icons/home.svg')}
+          icon={require('@tabler/icons/outline/home.svg')}
+          activeIcon={require('@tabler/icons/filled/home.svg')}
           text={<FormattedMessage id='tabs_bar.home' defaultMessage='Home' />}
         />
 
         <SidebarNavigationLink
           to='/search'
-          icon={require('@tabler/icons/search.svg')}
+          icon={require('@tabler/icons/outline/search.svg')}
           text={<FormattedMessage id='tabs_bar.search' defaultMessage='Search' />}
         />
 
@@ -113,7 +114,8 @@ const SidebarNavigation = () => {
           <>
             <SidebarNavigationLink
               to='/notifications'
-              icon={require('@tabler/icons/bell.svg')}
+              icon={require('@tabler/icons/outline/bell.svg')}
+              activeIcon={require('@tabler/icons/filled/bell.svg')}
               count={notificationCount}
               text={<FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' />}
             />
@@ -122,26 +124,29 @@ const SidebarNavigation = () => {
 
               <SidebarNavigationLink
                 to={groupsPath}
-                icon={require('@tabler/icons/circles.svg')}
-                text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />} 
+                icon={require('@tabler/icons/outline/circles.svg')}
+                activeIcon={require('@tabler/icons/filled/circles.svg')}
+                text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
               />
 
             <SidebarNavigationLink
-              to={`/@${account.acct}`} // TODO: Maybe replace with id ? idk the deal with acct yet
-              icon={require('@tabler/icons/user.svg')}
+              to={`/@${account.acct}`}
+              icon={require('@tabler/icons/outline/user.svg')}
+              activeIcon={require('@tabler/icons/filled/user.svg')}
               text={<FormattedMessage id='tabs_bar.profile' defaultMessage='Profile' />}
             />
 
             <SidebarNavigationLink
               to='/settings'
-              icon={require('@tabler/icons/settings.svg')}
+              icon={require('@tabler/icons/outline/settings.svg')}
+              activeIcon={require('@tabler/icons/filled/settings.svg')}
               text={<FormattedMessage id='tabs_bar.settings' defaultMessage='Settings' />}
             />
 
             {account.staff && (  
               <SidebarNavigationLink
                 to='/apollo/admin'  
-                icon={require('@tabler/icons/dashboard.svg')}
+                icon={require('@tabler/icons/outline/dashboard.svg')}
                 count={dashboardCount}
                 text={<FormattedMessage id='tabs_bar.dashboard' defaultMessage='Dashboard' />}
               />
@@ -154,7 +159,8 @@ const SidebarNavigation = () => {
             {(account || !restrictUnauth.timelines.local) && (
               <SidebarNavigationLink
                 to='/timeline/local'
-                icon={features.federating ? require('@tabler/icons/affiliate.svg') : require('@tabler/icons/world.svg')}
+                icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@tabler/icons/outline/world.svg')}
+                activeIcon={features.federating ? require('@tabler/icons/filled/affiliate.svg') : undefined}
                 text={features.federating ? <FormattedMessage id='tabs_bar.local' defaultMessage='Local' /> : <FormattedMessage id='tabs_bar.all' defaultMessage='All' />}
               />
             )}
@@ -162,7 +168,7 @@ const SidebarNavigation = () => {
             {(features.federating && (account || !restrictUnauth.timelines.federated)) && (
               <SidebarNavigationLink
                 to='/timeline/fediverse'
-                icon={require('@tabler/icons/topology-star-ring-3.svg')}
+                icon={require('@tabler/icons/outline/topology-star-ring-3.svg')}
                 text={<FormattedMessage id='tabs_bar.fediverse' defaultMessage='Fediverse' />}
               />
             )}
@@ -172,7 +178,7 @@ const SidebarNavigation = () => {
         {menu.length > 0 && (
           <DropdownMenu items={menu} placement='top'>
             <SidebarNavigationLink
-              icon={require('@tabler/icons/dots-circle-horizontal.svg')}
+              icon={require('@tabler/icons/outline/dots-circle-horizontal.svg')}
               text={<FormattedMessage id='tabs_bar.more' defaultMessage='More' />}
             />
           </DropdownMenu>

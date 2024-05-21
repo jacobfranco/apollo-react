@@ -60,7 +60,7 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
 
                 <div>
                   <Button
-                    icon={require('@tabler/icons/arrows-minimize.svg')}
+                    icon={require('@tabler/icons/outline/arrows-minimize.svg')}
                     theme='tertiary'
                     size='sm'
                     onClick={() => setShowAdditionalStatuses(false)}
@@ -71,7 +71,7 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
               </Stack>
             ) : (
               <Button
-                icon={require('@tabler/icons/plus.svg')}
+                icon={require('@tabler/icons/outline/plus.svg')}
                 theme='tertiary'
                 size='sm'
                 onClick={() => setShowAdditionalStatuses(true)}
