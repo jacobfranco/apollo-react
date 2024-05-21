@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import '@testing-library/jest-dom/vitest';
 
-import { __clear as clearApiMocks } from 'src/api/__mocks__';
+import { __clear as clearApiMocks } from '../api/__mocks__';
 
 // API mocking
 vi.mock('src/api');
