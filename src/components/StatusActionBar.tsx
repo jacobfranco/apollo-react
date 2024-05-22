@@ -26,7 +26,7 @@ import type { Group, Status } from 'src/types/entities';
 const messages = defineMessages({
   adminAccount: { id: 'status.admin_account', defaultMessage: 'Moderate @{name}' },
   admin_status: { id: 'status.admin_status', defaultMessage: 'Open this post in the moderation interface' },
-  block: { id: 'account.block', defaultMessage: 'Block @{name}' },
+  block: { id: 'account.block', defaultMessage: 'Block @t@{name}' },
   blocked: { id: 'group.group_mod_block.success', defaultMessage: '@{name} is banned' },
   blockAndReport: { id: 'confirmations.block.block_and_report', defaultMessage: 'Block & Report' },
   blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
@@ -660,7 +660,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
         >
           <StatusActionButton
             title={replyTitle}
-            icon={require('@tabler/icons/outline/message-circle-2.svg')}
+            icon={require('@tabler/icons/outline/message-circle.svg')}
             onClick={handleReplyClick}
             count={replyCount}
             text={withLabels ? intl.formatMessage(messages.reply) : undefined}
@@ -679,7 +679,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
 
         <StatusActionButton
           title={intl.formatMessage(messages.like)}
-          icon={require('@tabler/icons/heart.svg')}
+          icon={require('@tabler/icons/outline/heart.svg')}
           color='accent'
           filled
           onClick={handleLikeClick}
