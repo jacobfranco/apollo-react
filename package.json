@@ -32,7 +32,7 @@
     "not dead"
   ],
   "dependencies": {
-  "@akryum/flexsearch-es": "^0.7.32",
+    "@akryum/flexsearch-es": "^0.7.32",
     "@babel/plugin-transform-react-inline-elements": "^7.22.5",
     "@babel/plugin-transform-runtime": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
