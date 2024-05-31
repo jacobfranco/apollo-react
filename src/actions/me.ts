@@ -44,9 +44,12 @@ const fetchMe = () =>
     const state = getState();
     const token = getMeToken(state);
     const accountUrl = getMeUrl(state);
+    console.log("Fetch me -- token:  ", token)
+    console.log("Fetch me -- accountUrl: ", accountUrl)
 
     if (!token) {
       dispatch({ type: ME_FETCH_SKIP });
+      console.error("Fetch me -- no token available")
       return noOp();
     }
 
@@ -85,6 +88,7 @@ const fetchMeRequest = () => ({
 });
 
 const fetchMeSuccess = (account: Account) => {
+  console.log("Fetch me success -- account: ", account)
   setSentryAccount(account);
 
   return {

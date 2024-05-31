@@ -18,6 +18,7 @@ export function createApp(params?: Record<string, string>, baseURL?: string) {
       dispatch({ type: APP_CREATE_REQUEST, params });
       return baseClient(null, baseURL).post('/api/apps', params).then(({ data: app }) => {
         dispatch({ type: APP_CREATE_SUCCESS, params, app });
+        console.log("Creating app: ", app)
         return app as Record<string, string>;
       }).catch(error => {
         dispatch({ type: APP_CREATE_FAIL, params, error });

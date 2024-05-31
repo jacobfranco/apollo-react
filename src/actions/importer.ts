@@ -33,6 +33,7 @@ const importAccounts = (data: APIEntity[]) =>
     dispatch({ type: ACCOUNTS_IMPORT, accounts: data });
     try {
       const accounts = filteredArray(accountSchema).parse(data);
+      console.log("Import accounts: ", accounts)
       dispatch(importEntities(accounts, Entities.ACCOUNTS));
     } catch (e) {
       //
@@ -60,15 +61,20 @@ const importStatuses = (statuses: APIEntity[]) =>
 const importPolls = (polls: APIEntity[]) =>
   ({ type: POLLS_IMPORT, polls });
 
-const importFetchedAccount = (account: APIEntity) =>
-  importFetchedAccounts([account]);
+const importFetchedAccount = (account: APIEntity) => {
+  console.log('Importing fetched account:', account);
+  return importFetchedAccounts([account]);
+};
 
 const importFetchedAccounts = (accounts: APIEntity[], args = { should_refetch: false }) => {
   const { should_refetch } = args;
   const normalAccounts: APIEntity[] = [];
 
   const processAccount = (account: APIEntity) => {
-    if (!account.id) return;
+    if (!account.id) {
+      console.log('Account without ID, skipping:', account);
+      return;
+    }
 
     if (should_refetch) {
       account.should_refetch = true;
@@ -77,14 +83,18 @@ const importFetchedAccounts = (accounts: APIEntity[], args = { should_refetch: f
     normalAccounts.push(account);
 
     if (account.moved) {
+      console.log('Processing moved account:', account.moved);
       processAccount(account.moved);
     }
   };
 
+  console.log('Accounts before processing:', accounts);
   accounts.forEach(processAccount);
+  console.log('Normal accounts after processing:', normalAccounts);
 
   return importAccounts(normalAccounts);
 };
+
 
 const importFetchedGroup = (group: APIEntity) =>
   importFetchedGroups([group]);

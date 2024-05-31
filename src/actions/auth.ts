@@ -78,11 +78,13 @@ export const register = (params: Record<string, any>) =>
       dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
   
       return baseClient(token, baseURL).get('/api/accounts/verify_credentials').then(({ data: account }) => {
+        console.log('Verify credentials account fetched:', account);
         dispatch(importFetchedAccount(account));
         dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
         if (account.id === getState().me) dispatch(fetchMeSuccess(account));
         return account;
       }).catch(error => {
+        console.error('Error verifying credentials:', error);
         if (error?.response?.status === 403 && error?.response?.data?.id) {
           // The user is waitlisted
           const account = error.response.data;
@@ -123,6 +125,8 @@ export const register = (params: Record<string, any>) =>
       scope:         'read write',
     };
 
+    console.log("Creating user token.  Params: ", params)
+
     return dispatch(obtainOAuthToken(params))
       .then((token: Record<string, string | number>) => dispatch(authLoggedIn(token)));
   };
@@ -151,6 +155,8 @@ export const register = (params: Record<string, any>) =>
       scopes:        'read write', // Define scopes as needed
       website:       sourceCode.homepage, 
     };
+
+    console.log("Creating Auth App: ", params)
   
     return dispatch(createApp(params)).then((app: Record<string, string>) =>
       dispatch({ type: AUTH_APP_CREATED, app }),
@@ -176,6 +182,7 @@ export const register = (params: Record<string, any>) =>
     export const authLoggedIn = (token: Record<string, string | number>) =>
   (dispatch: AppDispatch) => {
     dispatch({ type: AUTH_LOGGED_IN, token });
+    console.log("Auth logged in: ", token)
     return token;
   };
 
@@ -237,13 +244,36 @@ export const register = (params: Record<string, any>) =>
   };
 
   export const loadCredentials = (token: string, accountUrl: string) =>
-  (dispatch: AppDispatch) => dispatch(rememberAuthAccount(accountUrl))
-    .finally(() => dispatch(verifyCredentials(token, accountUrl)));
+    (dispatch: AppDispatch) => {
+      console.log(`loadCredentials called with token: ${token}`);
+  
+      return dispatch(rememberAuthAccount(accountUrl))
+        .then(() => {
+          console.log('rememberAuthAccount successful');
+        })
+        .catch((error) => {
+          console.error('rememberAuthAccount error:', error);
+        })
+        .finally(() => {
+          console.log('verifyCredentials dispatching');
+          dispatch(verifyCredentials(token, accountUrl))
+            .then(() => {
+              console.log('verifyCredentials successful');
+            })
+            .catch((error) => {
+              console.error('verifyCredentials error:', error);
+            });
+        });
+    };
+  
 
     export const rememberAuthAccount = (accountUrl: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
+    console.log("Remember auth account, accountURL: ", accountUrl)
     dispatch({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
     return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
+      console.log("Remember auth account, KVStore: ", KVStore.getItemOrError(`authAccount:${accountUrl}`))
+      console.log("Remember auth account, importing fetched account")
       dispatch(importFetchedAccount(account));
       dispatch({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));

@@ -15,6 +15,7 @@ export const obtainOAuthToken = (params: Record<string, string | undefined>, bas
     dispatch({ type: OAUTH_TOKEN_CREATE_REQUEST, params });
     return baseClient(null, baseURL).post('/oauth/token', params).then(({ data: token }) => {
       dispatch({ type: OAUTH_TOKEN_CREATE_SUCCESS, params, token });
+      console.log("Obtaining OAuth Token: ", token)
       return token;
     }).catch(error => {
       dispatch({ type: OAUTH_TOKEN_CREATE_FAIL, params, error, skipAlert: true });

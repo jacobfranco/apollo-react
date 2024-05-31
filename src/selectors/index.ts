@@ -26,8 +26,22 @@ export function selectAccount(state: RootState, accountId: string) {
     }
   }
 
-  const getAccountBase         = (state: RootState, id: string) => state.entities[Entities.ACCOUNTS]?.store[id] as Account | undefined;
-  const getAccountRelationship = (state: RootState, id: string) => state.relationships.get(id); 
+  const getAccountBase = (state: RootState, id: string) => {
+    const accountStore = state.entities[Entities.ACCOUNTS]?.store;
+    const account = accountStore ? accountStore[id] : undefined;
+    console.log('getAccountBase:', { id, accountStore, account });
+    return account;
+  };
+  
+  const getAccountRelationship = (state: RootState, id: string) => {
+    const relationshipStore = state.relationships;
+    const relationship = relationshipStore ? relationshipStore.get(id) : undefined;
+    console.log('getAccountRelationship:', { id, relationshipStore, relationship });
+    return relationship;
+  };
+  
+  
+  
 
   const getAuthUserIds = createSelector([
     (state: RootState) => state.auth.users,
@@ -47,6 +61,7 @@ export function selectAccount(state: RootState, accountId: string) {
       getAccountBase,
       getAccountRelationship,
     ], (account, relationship) => {
+      console.log('makeGetAccount:', { account, relationship });
       if (!account) return null;
       return { ...account, relationship };
     });
