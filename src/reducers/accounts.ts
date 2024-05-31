@@ -49,9 +49,10 @@ type State = ImmutableMap<any, ReducerAccount>;
 
 const initialState: State = ImmutableMap();
 
+// TODO: Maybe remove
 const minifyAccount = (account: AccountRecord): ReducerAccount => {
   return account.mergeWith((o, n) => n || o, {
-    moved: normalizeId(account.getIn(['moved', 'id'])),
+    moved: normalizeId(account.getIn(['moved', 'id'])), // TODO: Maybe remove
   }) as ReducerAccount;
 };
 
@@ -200,10 +201,10 @@ const mergeAdminUser = (
   adminUser: ImmutableMap<string, any>,
 ) => {
   return account.withMutations(account => {
-    account.set('display_name', adminUser.get('display_name'));
+    account.set('display_name', adminUser.get('display_name')); // TODO: Maybe remove these
     account.set('avatar', adminUser.get('avatar'));
     account.set('avatar_static', adminUser.get('avatar'));
-    account.setIn(['pleroma', 'is_active'], adminUser.get('is_active'));
+    account.setIn(['pleroma', 'is_active'], adminUser.get('is_active')); // TODO: Remove these
     account.setIn(['pleroma', 'is_admin'], adminUser.getIn(['roles', 'admin']));
     account.setIn(['pleroma', 'is_moderator'], adminUser.getIn(['roles', 'moderator']));
     account.setIn(['pleroma', 'is_confirmed'], adminUser.get('is_confirmed'));

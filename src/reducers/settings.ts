@@ -9,7 +9,7 @@ type State = ImmutableMap<string, any>;
 
 const importSettings = (state: State, account: APIEntity) => {
   account = fromJS(account);
-  const prefs = account.getIn(['settings_store'], ImmutableMap());
+  const prefs = account.getIn(['settings_store'], ImmutableMap()); // TODO: Maybe remove
   return state.merge(prefs) as State;
 };
 

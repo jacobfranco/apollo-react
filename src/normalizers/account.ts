@@ -162,8 +162,8 @@ const addInternalFields = (account: ImmutableMap<string, any>) => {
 };
 
 const addStaffFields = (account: ImmutableMap<string, any>) => {
-  const admin = account.getIn(['pleroma', 'is_admin']) === true;
-  const moderator = account.getIn(['pleroma', 'is_moderator']) === true;
+  const admin = account.getIn(['pleroma', 'is_admin']) === true; // TODO: Remove
+  const moderator = account.getIn(['pleroma', 'is_moderator']) === true; // TODO: Remove
   const staff = admin || moderator;
 
   return account.merge({
@@ -174,7 +174,7 @@ const addStaffFields = (account: ImmutableMap<string, any>) => {
 };
 
 const normalizeDiscoverable = (account: ImmutableMap<string, any>) => {
-  const discoverable = Boolean(account.get('discoverable') || account.getIn(['source', 'pleroma', 'discoverable']));
+  const discoverable = Boolean(account.get('discoverable') || account.getIn(['source', 'pleroma', 'discoverable'])); // TODO: Remove
   return account.set('discoverable', discoverable);
 };
 

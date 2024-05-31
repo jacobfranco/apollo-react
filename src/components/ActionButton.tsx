@@ -22,7 +22,7 @@ const messages = defineMessages({
   edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
   mute: { id: 'account.mute', defaultMessage: 'Mute @{name}' },
-  remote_follow: { id: 'account.remote_follow', defaultMessage: 'Remote follow' },
+  remote_follow: { id: 'account.remote_follow', defaultMessage: 'Remote follow' }, // TODO: remove
   requested: { id: 'account.requested', defaultMessage: 'Awaiting approval. Click to cancel follow request' },
   requested_small: { id: 'account.requested_small', defaultMessage: 'Awaiting approval' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },

@@ -238,7 +238,7 @@ const getExplicitMentions = (me: string, status: Status) => {
 };
 
 const getAccountSettings = (account: ImmutableMap<string, any>) => {
-  return account.getIn(['pleroma', 'settings_store', FE_NAME], ImmutableMap()) as ImmutableMap<string, any>;
+  return account.getIn(['pleroma', 'settings_store', FE_NAME], ImmutableMap()) as ImmutableMap<string, any>; // TODO: Remove
 };
 
 const importAccount = (compose: Compose, account: APIEntity) => {
