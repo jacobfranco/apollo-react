@@ -21,7 +21,6 @@ const fieldSchema = z.object({
 
 // TODO: Just make this all one object
 const baseAccountSchema = z.object({
-  acct: z.string().catch(''),
   admin: z.boolean().catch(false),
   avatar: z.string().catch(avatarMissing),
   avatar_static: z.string().url().optional().catch(undefined),
@@ -32,12 +31,10 @@ const baseAccountSchema = z.object({
   fields: filteredArray(fieldSchema),
   followers_count: z.number().catch(0),
   following_count: z.number().catch(0),
-  fqn: z.string().optional().catch(undefined),
   header: z.string().url().catch(headerMissing),
   header_static: z.string().url().optional().catch(undefined),
   id: z.string(),
   last_status_at: z.string().datetime().optional().catch(undefined),
-  local: z.boolean().catch(false),
   location: z.string().optional().catch(undefined),
   locked: z.boolean().catch(false),
   moderator: z.boolean().catch(false),
@@ -48,16 +45,17 @@ const baseAccountSchema = z.object({
   ]).catch(null),
   note: contentSchema,
   relationship: relationshipSchema.optional().catch(undefined),
-  statuses_count: z.number().catch(0),
-  source: z.object({
+  // TODO: Maybe remove source
+  /* source: z.object({
     approved: z.boolean().catch(true),
     chats_onboarded: z.boolean().catch(true),
     fields: filteredArray(fieldSchema),
     note: z.string().catch(''),
     sms_verified: z.boolean().catch(false),
   }).optional().catch(undefined),
+  */
+  statuses_count: z.number().catch(0),
   suspended: z.boolean().catch(false),
-  uri: z.string().url().catch(''),
   url: z.string().url(),
   username: z.string().catch(''),
   verified: z.boolean().catch(false),

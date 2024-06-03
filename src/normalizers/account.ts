@@ -21,21 +21,19 @@ import type { Emoji, /* Field,*/ EmbeddedEntity, Relationship } from 'src/types/
 
 // https://docs.joinmastodon.org/entities/account/
 export const AccountRecord = ImmutableRecord({
-  accepts_chat_messages: false,
-  acct: '',
+  // accepts_chat_messages: false, TODO: Implement chats
   avatar: '',
   avatar_static: '',
   birthday: '',
   bot: false,
-  chats_onboarded: true,
+  // chats_onboarded: true, TODO: Implement chats
   created_at: '',
   discoverable: false,
   display_name: '',
-  emojis: ImmutableList<Emoji>(),
-  // fields: ImmutableList<Field>(),
+  // emojis: ImmutableList<Emoji>(),
+  fields: ImmutableList<Field>(),
   followers_count: 0,
   following_count: 0,
-  fqn: '',
   header: '',
   header_static: '',
   id: '',
@@ -45,9 +43,8 @@ export const AccountRecord = ImmutableRecord({
   moved: null as EmbeddedEntity<any>,
   mute_expires_at: null as string | null,
   note: '',
-  source: ImmutableMap<string, any>(),
+  // source: ImmutableMap<string, any>(), TODO: Maybe remove
   statuses_count: 0,
-  uri: '',
   url: '',
   username: '',
   website: '',
@@ -56,7 +53,6 @@ export const AccountRecord = ImmutableRecord({
   // Internal fields
   admin: false,
   display_name_html: '',
-  domain: '',
   moderator: false,
   note_emojified: '',
   note_plain: '',

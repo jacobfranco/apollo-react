@@ -51,7 +51,7 @@ async function setSentryAccount(account: Account): Promise<void> {
 
   Sentry.setUser({
     id: account.id,
-    username: account.acct,
+    username: account.username,
     url: account.url,
   });
 }

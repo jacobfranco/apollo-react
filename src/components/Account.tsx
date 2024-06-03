@@ -138,8 +138,8 @@ const Account = ({
 
   const LinkEl: any = withLinkToProfile ? Link : 'div';
   const linkProps = withLinkToProfile ? {
-    to: `/@${account.acct}`,
-    title: account.acct,
+    to: `/@${account.id}`,
+    title: account.id,
     onClick: (event: React.MouseEvent) => event.stopPropagation(),
   } : {};
 
