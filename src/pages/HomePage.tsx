@@ -35,8 +35,8 @@ const HomePage: React.FC<IHomePage> = ({ children }) => {
     dispatch(uploadCompose(composeId, files, intl));
   });
 
-  const acct = account ? account.acct : '';
-  const avatar = account ? account.avatar : '';
+  const id = account ? account.id : '';
+  const avatar = account ? account.avatar : ''; // TODO: Why isn't this working
 
   return (
     <>
@@ -52,7 +52,7 @@ const HomePage: React.FC<IHomePage> = ({ children }) => {
           >
             <CardBody>
               <HStack alignItems='start' space={4}>
-                <Link to={`/@${acct}`}>
+                <Link to={`/@${id}}`}>
                   <Avatar src={avatar} size={46} />
                 </Link>
 

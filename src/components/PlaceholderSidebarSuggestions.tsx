@@ -6,7 +6,7 @@ import { randomIntFromInterval, generateText } from 'src/utils/placeholder';
 
 export default ({ limit }: { limit: number }) => {
   const length = randomIntFromInterval(15, 3);
-  const acctLength = randomIntFromInterval(15, 3);
+  const acctLength = randomIntFromInterval(15, 3); // TODO: Maybe change
 
   return (
     <>

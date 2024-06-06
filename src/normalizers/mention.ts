@@ -10,7 +10,6 @@ import { normalizeAccount } from 'src/normalizers/account';
 // https://docs.joinmastodon.org/entities/mention/
 export const MentionRecord = ImmutableRecord({
   id: '',
-  acct: '',
   username: '',
   url: '',
 });

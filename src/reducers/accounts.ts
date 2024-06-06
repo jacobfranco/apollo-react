@@ -174,21 +174,20 @@ const removePermission = (
 const buildAccount = (adminUser: ImmutableMap<string, any>): AccountRecord => normalizeAccount({
   id: adminUser.get('id'),
   username: adminUser.get('nickname').split('@')[0],
-  acct: adminUser.get('nickname'),
   display_name: adminUser.get('display_name'),
   display_name_html: adminUser.get('display_name'),
   url: adminUser.get('url'),
   avatar: adminUser.get('avatar'),
   avatar_static: adminUser.get('avatar'),
   created_at: adminUser.get('created_at'),
-  pleroma: {
+  pleroma: { // TODO: Remove these ?
     is_active: adminUser.get('is_active'),
     is_confirmed: adminUser.get('is_confirmed'),
     is_admin: adminUser.getIn(['roles', 'admin']),
     is_moderator: adminUser.getIn(['roles', 'moderator']),
     tags: adminUser.get('tags'),
   },
-  source: {
+  source: { // TODO: Remove these ?
     pleroma: {
       actor_type: adminUser.get('actor_type'),
     },

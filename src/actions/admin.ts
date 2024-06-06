@@ -1,6 +1,5 @@
 import { fetchRelationships } from 'src/actions/accounts';
 import { importFetchedAccount, importFetchedAccounts, importFetchedStatuses } from 'src/actions/importer';
-import { accountIdsToAccts } from 'src/selectors';
 import { filterBadges, getTagDiff } from 'src/utils/badges';
 
 import api, { getLinks } from '../api';
@@ -222,19 +221,6 @@ const deactivateUsers = (accountIds: string[], reportId?: string) =>
     return dispatch(deactivateApolloUsers(accountIds, reportId));
   };
 
-const deleteUsers = (accountIds: string[]) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-    dispatch({ type: ADMIN_USERS_DELETE_REQUEST, accountIds });
-    return api(getState)
-      .delete('/api/pleroma/admin/users', { data: { nicknames } })
-      .then(({ data: nicknames }) => {
-        dispatch({ type: ADMIN_USERS_DELETE_SUCCESS, nicknames, accountIds });
-      }).catch(error => {
-        dispatch({ type: ADMIN_USERS_DELETE_FAIL, error, accountIds });
-      });
-  };
-
 const approveApolloUsers = (accountIds: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     Promise.all(accountIds.map(accountId => {
@@ -246,19 +232,6 @@ const approveApolloUsers = (accountIds: string[]) =>
           dispatch({ type: ADMIN_USERS_APPROVE_FAIL, error, accountIds: [accountId] });
         });
     }));
-
-    // TODO: Remove probably
-const approvePleromaUsers = (accountIds: string[]) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-    return api(getState)
-      .patch('/api/pleroma/admin/users/approve', { nicknames })
-      .then(({ data: { users } }) => {
-        dispatch({ type: ADMIN_USERS_APPROVE_SUCCESS, users, accountIds });
-      }).catch(error => {
-        dispatch({ type: ADMIN_USERS_APPROVE_FAIL, error, accountIds });
-      });
-  };
 
 const approveUsers = (accountIds: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -306,114 +279,6 @@ const fetchModerationLog = (params?: Record<string, any>) =>
       });
   };
 
-const tagUsers = (accountIds: string[], tags: string[]) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-    dispatch({ type: ADMIN_USERS_TAG_REQUEST, accountIds, tags });
-    return api(getState)
-      .put('/api/pleroma/admin/users/tag', { nicknames, tags })
-      .then(() => {
-        dispatch({ type: ADMIN_USERS_TAG_SUCCESS, accountIds, tags });
-      }).catch(error => {
-        dispatch({ type: ADMIN_USERS_TAG_FAIL, error, accountIds, tags });
-      });
-  };
-
-const untagUsers = (accountIds: string[], tags: string[]) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-
-    // Legacy: allow removing legacy 'donor' tags.
-    if (tags.includes('badge:donor')) {
-      tags = [...tags, 'donor'];
-    }
-
-    dispatch({ type: ADMIN_USERS_UNTAG_REQUEST, accountIds, tags });
-    return api(getState)
-      .delete('/api/pleroma/admin/users/tag', { data: { nicknames, tags } })
-      .then(() => {
-        dispatch({ type: ADMIN_USERS_UNTAG_SUCCESS, accountIds, tags });
-      }).catch(error => {
-        dispatch({ type: ADMIN_USERS_UNTAG_FAIL, error, accountIds, tags });
-      });
-  };
-
-/** Synchronizes user tags to the backend. */
-const setTags = (accountId: string, oldTags: string[], newTags: string[]) =>
-  async(dispatch: AppDispatch) => {
-    const diff = getTagDiff(oldTags, newTags);
-
-    await dispatch(tagUsers([accountId], diff.added));
-    await dispatch(untagUsers([accountId], diff.removed));
-  };
-
-/** Synchronizes badges to the backend. */
-const setBadges = (accountId: string, oldTags: string[], newTags: string[]) =>
-  (dispatch: AppDispatch) => {
-    const oldBadges = filterBadges(oldTags);
-    const newBadges = filterBadges(newTags);
-
-    return dispatch(setTags(accountId, oldBadges, newBadges));
-  };
-
-const addPermission = (accountIds: string[], permissionGroup: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-    dispatch({ type: ADMIN_ADD_PERMISSION_GROUP_REQUEST, accountIds, permissionGroup });
-    return api(getState)
-      .post(`/api/pleroma/admin/users/permission_group/${permissionGroup}`, { nicknames })
-      .then(({ data }) => {
-        dispatch({ type: ADMIN_ADD_PERMISSION_GROUP_SUCCESS, accountIds, permissionGroup, data });
-      }).catch(error => {
-        dispatch({ type: ADMIN_ADD_PERMISSION_GROUP_FAIL, error, accountIds, permissionGroup });
-      });
-  };
-
-const removePermission = (accountIds: string[], permissionGroup: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const nicknames = accountIdsToAccts(getState(), accountIds);
-    dispatch({ type: ADMIN_REMOVE_PERMISSION_GROUP_REQUEST, accountIds, permissionGroup });
-    return api(getState)
-      .delete(`/api/pleroma/admin/users/permission_group/${permissionGroup}`, { data: { nicknames } })
-      .then(({ data }) => {
-        dispatch({ type: ADMIN_REMOVE_PERMISSION_GROUP_SUCCESS, accountIds, permissionGroup, data });
-      }).catch(error => {
-        dispatch({ type: ADMIN_REMOVE_PERMISSION_GROUP_FAIL, error, accountIds, permissionGroup });
-      });
-  };
-
-const promoteToAdmin = (accountId: string) =>
-  (dispatch: AppDispatch) =>
-    Promise.all([
-      dispatch(addPermission([accountId], 'admin')),
-      dispatch(removePermission([accountId], 'moderator')),
-    ]);
-
-const promoteToModerator = (accountId: string) =>
-  (dispatch: AppDispatch) =>
-    Promise.all([
-      dispatch(removePermission([accountId], 'admin')),
-      dispatch(addPermission([accountId], 'moderator')),
-    ]);
-
-const demoteToUser = (accountId: string) =>
-  (dispatch: AppDispatch) =>
-    Promise.all([
-      dispatch(removePermission([accountId], 'admin')),
-      dispatch(removePermission([accountId], 'moderator')),
-    ]);
-
-const setRole = (accountId: string, role: 'user' | 'moderator' | 'admin') =>
-  (dispatch: AppDispatch) => {
-    switch (role) {
-      case 'user':
-        return dispatch(demoteToUser(accountId));
-      case 'moderator':
-        return dispatch(promoteToModerator(accountId));
-      case 'admin':
-        return dispatch(promoteToAdmin(accountId));
-    }
-  };
 
 const setUserIndexQuery = (query: string) => ({ type: ADMIN_USER_INDEX_QUERY_SET, query });
 
@@ -521,21 +386,10 @@ export {
   closeReports,
   fetchUsers,
   deactivateUsers,
-  deleteUsers,
   approveUsers,
   deleteStatus,
   toggleStatusSensitivity,
   fetchModerationLog,
-  tagUsers,
-  untagUsers,
-  setTags,
-  setBadges,
-  addPermission,
-  removePermission,
-  promoteToAdmin,
-  promoteToModerator,
-  demoteToUser,
-  setRole,
   setUserIndexQuery,
   fetchUserIndex,
   expandUserIndex,

@@ -45,7 +45,7 @@ const MuteModal = () => {
         <FormattedMessage
           id='confirmations.mute.heading'
           defaultMessage='Mute @{name}'
-          values={{ name: account.acct }}
+          values={{ name: account.username }}
         />
       }
       onClose={handleCancel}
@@ -59,7 +59,7 @@ const MuteModal = () => {
           <FormattedMessage
             id='confirmations.mute.message'
             defaultMessage='Are you sure you want to mute {name}?'
-            values={{ name: <strong className='break-words'>@{account.acct}</strong> }}
+            values={{ name: <strong className='break-words'>@{account.username}</strong> }}
           />
         </Text>
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { defineMessages, IntlShape } from 'react-intl';
 
 import { fetchAccountByUsername } from 'src/actions/accounts';
-import { deactivateUsers, deleteUsers, deleteStatus, toggleStatusSensitivity } from 'src/actions/admin';
+import { deactivateUsers, deleteStatus, toggleStatusSensitivity } from 'src/actions/admin';
 import { openModal } from 'src/actions/modals';
 import { OutlineBox, Stack, Text } from 'src/components';
 import AccountContainer from 'src/containers/AccountContainer';
@@ -71,46 +71,6 @@ const deactivateUserModal = (intl: IntlShape, accountId: string, afterConfirm = 
     }));
   };
 
-const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () => {}) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState();
-    const account = selectAccount(state, accountId)!;
-    const id = account.id;
-    const name = account.username;
-    const local = 'true' // TODO: Change this 
-
-    const message = (
-      <Stack space={4}>
-        <OutlineBox>
-          <AccountContainer id={accountId} hideActions />
-        </OutlineBox>
-
-        <Text>
-          {intl.formatMessage(messages.deleteUserPrompt, { id })}
-        </Text>
-      </Stack>
-    );
-
-    const confirm = intl.formatMessage(messages.deleteUserConfirm, { name });
-    const checkbox = local ? intl.formatMessage(messages.deleteLocalUserCheckbox) : false;
-
-    dispatch(openModal('CONFIRM', {
-      icon: require('@tabler/icons/outline/user-minus.svg'),
-      heading: intl.formatMessage(messages.deleteUserHeading, { id }),
-      message,
-      confirm,
-      checkbox,
-      onConfirm: () => {
-        dispatch(deleteUsers([accountId])).then(() => {
-          const message = intl.formatMessage(messages.userDeleted, { id });
-          dispatch(fetchAccountByUsername(id));
-          toast.success(message);
-          afterConfirm();
-        }).catch(() => {});
-      },
-    }));
-  };
-
 const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensitive: boolean, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -153,7 +113,6 @@ const deleteStatusModal = (intl: IntlShape, statusId: string, afterConfirm = () 
 
 export {
   deactivateUserModal,
-  deleteUserModal,
   toggleStatusSensitivityModal,
   deleteStatusModal,
 };

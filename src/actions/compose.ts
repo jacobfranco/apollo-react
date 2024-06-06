@@ -262,7 +262,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
   dispatch(submitComposeSuccess(composeId, { ...data }));
   toast.success(edit ? messages.editSuccess : messages.success, {
     actionLabel: messages.view,
-    actionLink: `/@${data.account.acct}/posts/${data.id}`,
+    actionLink: `/@${data.account.id}/posts/${data.id}`,
   });
 };
 
@@ -606,7 +606,7 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
       completion    = suggestion;
       startPosition = position - 1;
     } else if (typeof suggestion === 'string') {
-      completion    = selectAccount(getState(), suggestion)!.acct;
+      completion    = selectAccount(getState(), suggestion)!.id;
       startPosition = position;
     }
 
@@ -758,7 +758,7 @@ const addToMentions = (composeId: string, accountId: string) =>
     const action: ComposeAddToMentionsAction = {
       type: COMPOSE_ADD_TO_MENTIONS,
       id: composeId,
-      account: account.acct,
+      account: account.id,
     };
 
     return dispatch(action);
@@ -779,7 +779,7 @@ const removeFromMentions = (composeId: string, accountId: string) =>
     const action: ComposeRemoveFromMentionsAction = {
       type: COMPOSE_REMOVE_FROM_MENTIONS,
       id: composeId,
-      account: account.acct,
+      account: account.id,
     };
 
     return dispatch(action);

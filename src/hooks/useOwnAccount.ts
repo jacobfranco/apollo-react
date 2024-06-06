@@ -4,17 +4,21 @@ import { makeGetAccount } from 'src/selectors';
 
 import { useAppSelector } from './useAppSelector';
 
-/** Get the logged-in account from the store, if any. */
 export const useOwnAccount = () => {
   const getAccount = useCallback(makeGetAccount(), []);
 
   const account = useAppSelector((state) =>  {
     const { me } = state;
+    console.log('useOwnAccount - state.me:', me);
 
     if (typeof me === 'string') {
-      return getAccount(state, me);
+      const result = getAccount(state, me);
+      console.log('useOwnAccount - result:', result);
+      return result;
     }
+
+    return undefined;
   });
 
   return { account: account || undefined };
-};
+}; 

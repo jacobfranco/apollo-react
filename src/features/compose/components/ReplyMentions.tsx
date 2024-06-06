@@ -21,12 +21,6 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
   const to = compose.to;
   const { account } = useOwnAccount();
 
-  /* TODO: Can we take this out ? If we can't, then this entire file might be redundant
-  if (!features.explicitAddressing || !status || !to) {
-    return null;
-  }
-  */ 
-
   const parentTo = status && statusToMentionsAccountIdsArray(status, account!);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -52,15 +46,14 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
     );
   }
 
-  const accounts = to.slice(0, 2).map((acct: string) => {
-    const username = acct.split('@')[0];
+  const accounts = to.slice(0, 2).map((username: string) => {
     return (
       <span className='reply-mentions__account'>
         @{username}
       </span>
     );
   }).toArray();
-
+  
   if (to.size > 2) {
     accounts.push(
       <FormattedMessage id='reply_mentions.more' defaultMessage='{count} more' values={{ count: to.size - 2 }} />,

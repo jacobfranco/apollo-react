@@ -17,7 +17,7 @@ import { unescapeHTML } from 'src/utils/html';
 // import { makeEmojiMap } from 'src/utils/normalizers';  TODO: Implement
 
 // import type { PatronAccount } from 'src/reducers/patron';
-import type { Emoji, /* Field,*/ EmbeddedEntity, Relationship } from 'src/types/entities'; // TODO: Implement fields
+import type { Emoji, Field, EmbeddedEntity, Relationship } from 'src/types/entities'; // TODO: Implement fields
 
 // https://docs.joinmastodon.org/entities/account/
 export const AccountRecord = ImmutableRecord({
@@ -119,13 +119,6 @@ const normalizeVerified = (account: ImmutableMap<string, any>) => {
   });
 };
 
-/** Set username from acct, if applicable */
-const fixUsername = (account: ImmutableMap<string, any>) => {
-  const acct = account.get('acct') || '';
-  const username = account.get('username') || '';
-  return account.set('username', username || acct.split('@')[0]);
-};
-
 /** Set display name from username, if applicable */
 const fixDisplayName = (account: ImmutableMap<string, any>) => {
   const displayName = account.get('display_name') || '';
@@ -193,7 +186,6 @@ export const normalizeAccount = (account: Record<string, any>) => {
       normalizeVerified(account);
       normalizeDiscoverable(account);
       addStaffFields(account);
-      fixUsername(account);
       fixDisplayName(account);
       fixNote(account);
       addInternalFields(account);

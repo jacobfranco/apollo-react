@@ -1,10 +1,8 @@
 import React, { ChangeEventHandler, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { setBadges as saveBadges } from 'src/actions/admin';
-import { deactivateUserModal, deleteUserModal } from 'src/actions/moderation';
+import { deactivateUserModal } from 'src/actions/moderation';
 import { useAccount } from 'src/api/hooks';
-import { useSuggest, useVerify } from 'src/api/hooks';
 import Account from 'src/components/Account';
 import List, { ListItem } from 'src/components/List';
 import { Button, Text, HStack, MissingIndicator, Modal, OutlineBox, Stack, Toggle } from 'src/components';
@@ -12,16 +10,17 @@ import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 // import { getBadges } from 'src/utils/badges'; TODO: Implement
 
+// TODO: Butchered this file, need to reimplement
+
 import BadgeInput from 'src/components/BadgeInput';
-import StaffRolePicker from 'src/components/StaffRolePicker';
 
 const messages = defineMessages({
-  userVerified: { id: 'admin.users.user_verified_message', defaultMessage: '@{acct} was verified' },
-  userUnverified: { id: 'admin.users.user_unverified_message', defaultMessage: '@{acct} was unverified' },
-  setDonorSuccess: { id: 'admin.users.set_donor_message', defaultMessage: '@{acct} was set as a donor' },
-  removeDonorSuccess: { id: 'admin.users.remove_donor_message', defaultMessage: '@{acct} was removed as a donor' },
-  userSuggested: { id: 'admin.users.user_suggested_message', defaultMessage: '@{acct} was suggested' },
-  userUnsuggested: { id: 'admin.users.user_unsuggested_message', defaultMessage: '@{acct} was unsuggested' },
+  userVerified: { id: 'admin.users.user_verified_message', defaultMessage: '@{username} was verified' },
+  userUnverified: { id: 'admin.users.user_unverified_message', defaultMessage: '@{username} was unverified' },
+  setDonorSuccess: { id: 'admin.users.set_donor_message', defaultMessage: '@{username} was set as a donor' },
+  removeDonorSuccess: { id: 'admin.users.remove_donor_message', defaultMessage: '@{username} was removed as a donor' },
+  userSuggested: { id: 'admin.users.user_suggested_message', defaultMessage: '@{username} was suggested' },
+  userUnsuggested: { id: 'admin.users.user_unsuggested_message', defaultMessage: '@{username} was unsuggested' },
   badgesSaved: { id: 'admin.users.badges_saved_message', defaultMessage: 'Custom badges updated.' },
 });
 
@@ -37,8 +36,6 @@ const AccountModerationModal: React.FC<IAccountModerationModal> = ({ onClose, ac
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const { suggest, unsuggest } = useSuggest();
-  const { verify, unverify } = useVerify();
   const { account: ownAccount } = useOwnAccount();
   const { account } = useAccount(accountId);
 
@@ -55,34 +52,8 @@ const AccountModerationModal: React.FC<IAccountModerationModal> = ({ onClose, ac
     );
   }
 
-  const handleVerifiedChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const { checked } = e.target;
-
-    const message = checked ? messages.userVerified : messages.userUnverified;
-    const action = checked ? verify : unverify;
-
-    action([account.id], {
-      onSuccess: () => toast.success(intl.formatMessage(message, { acct: account.acct })),
-    });
-  };
-
-  const handleSuggestedChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const { checked } = e.target;
-
-    const message = checked ? messages.userSuggested : messages.userUnsuggested;
-    const action = checked ? suggest : unsuggest;
-
-    action([account.id], {
-      onSuccess: () => toast.success(intl.formatMessage(message, { acct: account.acct })),
-    });
-  };
-
   const handleDeactivate = () => {
     dispatch(deactivateUserModal(intl, account.id));
-  };
-
-  const handleDelete = () => {
-    dispatch(deleteUserModal(intl, account.id));
   };
 
   /*
@@ -95,7 +66,7 @@ const AccountModerationModal: React.FC<IAccountModerationModal> = ({ onClose, ac
 
   return (
     <Modal
-      title={<FormattedMessage id='account_moderation_modal.title' defaultMessage='Moderate @{acct}' values={{ acct: account.acct }} />}
+      title={<FormattedMessage id='account_moderation_modal.title' defaultMessage='Moderate @{username}' values={{ username: account.username }} />}
       onClose={handleClose}
     >
       <Stack space={4}>
@@ -109,50 +80,9 @@ const AccountModerationModal: React.FC<IAccountModerationModal> = ({ onClose, ac
         </OutlineBox>
 
         <List>
-          {(ownAccount.admin) && (
-            <ListItem label={<FormattedMessage id='account_moderation_modal.fields.account_role' defaultMessage='Staff level' />}>
-              <div className='w-auto'>
-                <StaffRolePicker account={account} />
-              </div>
-            </ListItem>
-          )}
-
-          <ListItem label={<FormattedMessage id='account_moderation_modal.fields.verified' defaultMessage='Verified account' />}>
-            <Toggle
-              checked={account.verified}
-              onChange={handleVerifiedChange}
-            />
-          </ListItem>
-
-            <ListItem label={<FormattedMessage id='account_moderation_modal.fields.suggested' defaultMessage='Suggested in people to follow' />}>
-              <Toggle
-                onChange={handleSuggestedChange}
-              />
-            </ListItem>
-
-{ /* 
-          <ListItem label={<FormattedMessage id='account_moderation_modal.fields.badges' defaultMessage='Custom badges' />}>
-            <div className='grow'>
-              <HStack className='w-full' alignItems='center' space={2}>
-                <BadgeInput badges={badges} onChange={setBadges} />
-                <Button onClick={handleSaveBadges}>
-                  <FormattedMessage id='save' defaultMessage='Save' />
-                </Button>
-              </HStack>
-            </div>
-          </ListItem>
-          */}   
-        </List>
-
-        <List>
           <ListItem
             label={<FormattedMessage id='account_moderation_modal.fields.deactivate' defaultMessage='Deactivate account' />}
             onClick={handleDeactivate}
-          />
-
-          <ListItem
-            label={<FormattedMessage id='account_moderation_modal.fields.delete' defaultMessage='Delete account' />}
-            onClick={handleDelete}
           />
         </List>
 

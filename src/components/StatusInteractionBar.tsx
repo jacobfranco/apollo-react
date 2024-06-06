@@ -42,7 +42,7 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
     e.preventDefault();
 
     if (!me) onOpenUnauthorizedModal();
-    else onOpenRepostsModal(account.acct, status.id);
+    else onOpenRepostsModal(account.id, status.id);
   };
 
   const getReposts = () => {
@@ -64,7 +64,7 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
   const getQuotes = () => {
     if (status.quotes_count) {
       return (
-        <InteractionCounter count={status.quotes_count} to={`/@${status.getIn(['account', 'acct'])}/posts/${status.id}/quotes`}>
+        <InteractionCounter count={status.quotes_count} to={`/@${status.getIn(['account', 'id'])}/posts/${status.id}/quotes`}>
           <FormattedMessage
             id='status.interactions.quotes'
             defaultMessage='{count, plural, one {Quote} other {Quotes}}'
@@ -81,7 +81,7 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
     e.preventDefault();
 
     if (!me) onOpenUnauthorizedModal();
-    else onOpenLikesModal(account.acct, status.id);
+    else onOpenLikesModal(account.id, status.id);
   };
 
   const getLikes = () => {

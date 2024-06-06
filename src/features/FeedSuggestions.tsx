@@ -25,14 +25,14 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
   return (
     <Stack space={3} className='w-52 shrink-0 rounded-md border border-solid border-gray-300 p-4 md:w-full md:shrink md:border-transparent md:p-0 dark:border-gray-800 dark:md:border-transparent'>
       <Link
-        to={`/@${account.acct}`}
-        title={account.acct}
+        to={`/@${account.id}`}
+        title={account.username}
       >
         <Stack space={3} className='mx-auto w-40 md:w-24'>
           <img
             src={account.avatar}
             className='mx-auto block h-16 w-16 min-w-[56px] rounded-full object-cover'
-            alt={account.acct}
+            alt={account.username}
           />
 
           <Stack>
@@ -49,7 +49,7 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
               {account.verified && <VerificationBadge />}
             </HStack>
 
-            <Text theme='muted' align='center' size='sm' truncate>@{account.acct}</Text>
+            <Text theme='muted' align='center' size='sm' truncate>@{account.username}</Text>
           </Stack>
         </Stack>
       </Link>

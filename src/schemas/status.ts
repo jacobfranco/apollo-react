@@ -58,7 +58,7 @@ type TransformableStatus = Omit<BaseStatus, 'repost' | 'quote' >
 /** Creates search index from the status. */
 const buildSearchIndex = (status: TransformableStatus): string => {
   const pollOptionTitles = status.poll ? status.poll.options.map(({ title }) => title) : [];
-  const mentionedUsernames = status.mentions.map(({ acct }) => `@${acct}`);
+  const mentionedUsernames = status.mentions.map(({ username }) => `@${username}`);
 
   const fields = [
     status.spoiler_text,

@@ -269,7 +269,7 @@ const ReportModal = ({ onClose }: IReportModal) => {
       case ReportableEntities.GROUP:
         return intl.formatMessage(messages.reportGroup);
       default:
-        return <FormattedMessage id='report.target' defaultMessage='Reporting {target}' values={{ target: <strong>@{account?.acct}</strong> }} />;
+        return <FormattedMessage id='report.target' defaultMessage='Reporting {target}' values={{ target: <strong>@{account?.username}</strong> }} />;
     }
   };
 

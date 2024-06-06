@@ -69,7 +69,6 @@ import {
     ]),
     verifiedIcon: '',
     verifiedCanEditName: false,
-    displayFqn: true,
     aboutPages: ImmutableMap<string, ImmutableMap<string, unknown>>(),
     authenticatedProfile: true,
     linkFooterMessage: '',

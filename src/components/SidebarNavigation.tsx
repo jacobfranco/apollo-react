@@ -130,7 +130,7 @@ const SidebarNavigation = () => {
               />
 
             <SidebarNavigationLink
-              to={`/@${account.acct}`}
+              to={`/@${account.id}`}
               icon={require('@tabler/icons/outline/user.svg')}
               activeIcon={require('@tabler/icons/filled/user.svg')}
               text={<FormattedMessage id='tabs_bar.profile' defaultMessage='Profile' />}

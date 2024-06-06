@@ -11,7 +11,7 @@ const getAccount = makeGetAccount();
 
 const buildMentions = (pendingStatus: PendingStatus) => {
   if (pendingStatus.in_reply_to_id) {
-    return ImmutableList(pendingStatus.to || []).map(acct => ImmutableMap({ acct }));
+    return ImmutableList(pendingStatus.to || []).map(id => ImmutableMap({ id }));
   } else {
     return ImmutableList();
   }

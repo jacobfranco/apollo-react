@@ -283,8 +283,8 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
 
     dispatch(openModal('CONFIRM', {
       icon: require('@tabler/icons/outline/ban.svg'),
-      heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
-      message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+      heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.username }} />,
+      message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.username}</strong> }} />,
       confirm: intl.formatMessage(messages.blockConfirm),
       onConfirm: () => dispatch(blockAccount(account.id)),
       secondary: intl.formatMessage(messages.blockAndReport),
@@ -296,7 +296,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   };
 
   const handleOpen: React.EventHandler<React.MouseEvent> = (e) => {
-    history.push(`/@${status.account.acct}/posts/${status.id}`);
+    history.push(`/@${status.account.id}/posts/${status.id}`);
   };
 
   /* TODO: Implement embed
@@ -360,7 +360,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
       onConfirm: () => {
         blockGroupMember({ account_ids: [status.account.id] }, {
           onSuccess() {
-            toast.success(intl.formatMessage(messages.blocked, { name: status.account.acct }));
+            toast.success(intl.formatMessage(messages.blocked, { name: status.account.username }));
           },
         });
       },

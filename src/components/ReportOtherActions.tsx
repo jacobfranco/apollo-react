@@ -98,7 +98,7 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
             />
 
             <Text theme='muted' tag='label' size='sm' htmlFor='report-block'>
-              <FormattedMessage id='report.block' defaultMessage='Block {target}' values={{ target: `@${account.acct}` }} />
+              <FormattedMessage id='report.block' defaultMessage='Block {target}' values={{ target: `@${account.id}` }} />
             </Text>
           </HStack>
         </FormGroup>

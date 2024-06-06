@@ -1,9 +1,5 @@
 import type { Account } from 'src/schemas';
 
-export const getAcct = (account: Pick<Account, 'fqn' | 'acct'>, displayFqn: boolean): string => (
-    displayFqn === true ? account.fqn ?? '' : account.acct ?? ''
-);
-
 /** Default header filenames */
 const DEFAULT_HEADERS: string[] = [
     require('src/assets/images/header-missing.png'), // TODO: Implement

@@ -4,6 +4,7 @@ import {
     // AdminReportRecord,
     AttachmentRecord,
     EmojiRecord,
+    FieldRecord,
     FilterRecord,
     FilterKeywordRecord,
     FilterStatusRecord,
@@ -22,6 +23,7 @@ import type { LegacyMap } from 'src/utils/legacy';
 
 type Attachment = ReturnType<typeof AttachmentRecord>;
 type Emoji = ReturnType<typeof EmojiRecord>;
+type Field = ReturnType<typeof FieldRecord>;
 type Filter = ReturnType<typeof FilterRecord>;
 type FilterKeyword = ReturnType<typeof FilterKeywordRecord>;
 type FilterStatus = ReturnType<typeof FilterStatusRecord>;
@@ -47,6 +49,7 @@ export {
     Attachment,
     EmbeddedEntity,
     Emoji,
+    Field,
     Filter,
     FilterKeyword,
     FilterStatus,

@@ -22,7 +22,7 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
     const account = status.account;
 
     dispatch(openModal('MENTIONS', {
-      username: account.acct,
+      username: account.username,
       statusId: status.id,
     }));
   };
@@ -51,7 +51,7 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
     const link = (
       <Link
         key={account.id}
-        to={`/@${account.acct}`}
+        to={`/@${account.id}`}
         className='reply-mentions__account max-w-[200px] truncate align-bottom'
         onClick={(e) => e.stopPropagation()}
       >

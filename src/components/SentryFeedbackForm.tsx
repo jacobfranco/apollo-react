@@ -26,7 +26,7 @@ const SentryFeedbackForm: React.FC<ISentryFeedbackForm> = ({ eventId }) => {
     setIsSubmitting(true);
 
     await captureSentryFeedback({
-      name: account?.acct,
+      name: account?.id,
       event_id: eventId,
       comments: feedback,
     }).catch(console.error);

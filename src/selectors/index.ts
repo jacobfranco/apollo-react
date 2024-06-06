@@ -26,20 +26,18 @@ export function selectAccount(state: RootState, accountId: string) {
     }
   }
 
-  const getAccountBase = (state: RootState, id: string) => {
-    const accountStore = state.entities[Entities.ACCOUNTS]?.store;
-    const account = accountStore ? accountStore[id] : undefined;
-    console.log('getAccountBase:', { id, accountStore, account });
+
+  const getAccountBase = (state: RootState, id: string): Account | undefined => {
+    const account = state.entities[Entities.ACCOUNTS]?.store[id] as Account | undefined;
+    console.log('getAccountBase:', { id, account });
     return account;
   };
   
   const getAccountRelationship = (state: RootState, id: string) => {
-    const relationshipStore = state.relationships;
-    const relationship = relationshipStore ? relationshipStore.get(id) : undefined;
-    console.log('getAccountRelationship:', { id, relationshipStore, relationship });
+    const relationship = state.relationships.get(id);
+    console.log('getAccountRelationship:', { id, relationship });
     return relationship;
   };
-  
   
   
 
@@ -82,7 +80,7 @@ export function selectAccount(state: RootState, accountId: string) {
       (statusBase, statusRepost, username, filters, me) => {
         if (!statusBase) return null;
         const { account } = statusBase;
-        const accountUsername = account.acct;
+        const accountUsername = account.username;
   
         // Must be owner of status if username exists.
         if (accountUsername !== username && username !== undefined) {
@@ -202,5 +200,3 @@ const checkFiltered = (index: string, filters: ImmutableList<FilterEntity>) =>
       return !shouldFilter(status, columnSettings);
     });
   });
-
-  export const accountIdsToAccts = (state: RootState, ids: string[]) => ids.map((id) => selectAccount(state, id)!.acct);

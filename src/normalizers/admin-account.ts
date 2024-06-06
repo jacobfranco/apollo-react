@@ -18,7 +18,6 @@ import {
     confirmed: false,
     created_at: new Date(),
     disabled: false,
-    domain: '',
     email: '',
     id: '',
     invite_request: null as string | null,

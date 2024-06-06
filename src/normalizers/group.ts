@@ -23,7 +23,6 @@ export const GroupRecord = ImmutableRecord({
   created_at: '',
   deleted_at: null,
   display_name: '',
-  domain: '',
   emojis: [] as Emoji[],
   group_visibility: '',
   header: '',
@@ -110,31 +109,6 @@ const addInternalFields = (group: ImmutableMap<string, any>) => {
   });
 };
 
-const getDomainFromURL = (group: ImmutableMap<string, any>): string => {
-  try {
-    const url = group.get('url');
-    return new URL(url).host;
-  } catch {
-    return '';
-  }
-};
-
-export const guessFqn = (group: ImmutableMap<string, any>): string => {
-  const acct = group.get('acct', '');
-  const [user, domain] = acct.split('@');
-
-  if (domain) {
-    return acct;
-  } else {
-    return [user, getDomainFromURL(group)].join('@');
-  }
-};
-
-const normalizeFqn = (group: ImmutableMap<string, any>) => {
-  const fqn = group.get('fqn') || guessFqn(group);
-  return group.set('fqn', fqn);
-};
-
 const normalizeLocked = (group: ImmutableMap<string, any>) => {
   const locked = group.get('locked') || group.get('group_visibility') === 'members_only';
   return group.set('locked', locked);
@@ -155,7 +129,6 @@ export const normalizeGroup = (group: Record<string, any>) => {
       normalizeEmojis(group);
       normalizeAvatar(group);
       normalizeHeader(group);
-      normalizeFqn(group);
       normalizeLocked(group);
       fixDisplayName(group);
       fixNote(group);

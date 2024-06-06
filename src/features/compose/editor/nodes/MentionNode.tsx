@@ -63,7 +63,7 @@ class MentionNode extends DecoratorNode<JSX.Element> {
   }
 
   getTextContent(): string {
-    return `@${this.__mention.acct}`;
+    return `@${this.__mention.username}`;
   }
 
   canInsertTextBefore(): boolean {

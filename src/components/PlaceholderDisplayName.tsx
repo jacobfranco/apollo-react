@@ -11,7 +11,7 @@ interface IPlaceholderDisplayName {
 /** Fake display name to show when data is loading. */
 const PlaceholderDisplayName: React.FC<IPlaceholderDisplayName> = ({ minLength, maxLength, withSuffix = true }) => {
   const length = randomIntFromInterval(maxLength, minLength);
-  const acctLength = randomIntFromInterval(maxLength, minLength);
+  const acctLength = randomIntFromInterval(maxLength, minLength); // TODO: Maybe change
 
   return (
     <div className='flex flex-col text-primary-50 dark:text-primary-800'>

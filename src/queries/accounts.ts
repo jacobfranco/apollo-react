@@ -6,8 +6,6 @@ import toast from 'src/toast';
 
 // TODO: Update to match what we want
 export type IAccount = {
-  acct: string;
-  avatar: string;
   avatar_static: string;
   bot: boolean;
   created_at: string;

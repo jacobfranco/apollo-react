@@ -11,6 +11,7 @@ import {
   useLocale,
 } from 'src/hooks';
 import MESSAGES from 'src/messages';
+import { Entities } from 'src/entity-store/entities';
 
 /** Load initial data from the backend */
 const loadInitial = () => {
@@ -42,6 +43,15 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
   const [messages, setMessages] = useState<Record<string, string>>({});
   const [localeLoading, setLocaleLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Log the initial state values directly inside the component
+  const initialStateValues = useAppSelector(state => ({
+    entities: state.entities,
+    relationships: state.relationships,
+    accounts: state.entities[Entities.ACCOUNTS]?.store,
+  }));
+  console.log('Initial state values:', initialStateValues);
+
 
   console.log('Current state values:', {
     me,

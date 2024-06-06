@@ -6,12 +6,12 @@ import { Tooltip } from 'src/components';
 import type { Mention as MentionEntity } from 'src/schemas';
 
 interface IMention {
-  mention: Pick<MentionEntity, 'acct' | 'username'>;
+  mention: Pick<MentionEntity, 'id' | 'username'>;
   disabled?: boolean;
 }
 
 /** Mention for display in post content and the composer. */
-const Mention: React.FC<IMention> = ({ mention: { acct, username }, disabled }) => {
+const Mention: React.FC<IMention> = ({ mention: { id, username }, disabled }) => {
   const handleClick: React.MouseEventHandler = (e) => {
     if (disabled) {
       e.preventDefault();
@@ -20,9 +20,9 @@ const Mention: React.FC<IMention> = ({ mention: { acct, username }, disabled }) 
   };
 
   return (
-    <Tooltip text={`@${acct}`}>
+    <Tooltip text={`@${id}`}>
       <Link
-        to={`/@${acct}`}
+        to={`/@${id}`}
         className='text-primary-600 hover:underline dark:text-accent-blue'
         onClick={handleClick}
         dir='ltr'

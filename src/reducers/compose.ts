@@ -112,23 +112,23 @@ type Compose = ReturnType<typeof ReducerCompose>;
 type Poll = ReturnType<typeof PollRecord>;
 
 const statusToTextMentions = (status: Status, account: Account) => {
-  const author = status.getIn(['account', 'acct']);
-  const mentions = status.get('mentions')?.map((m) => m.acct) || [];
+  const author = status.getIn(['account', 'id']);
+  const mentions = status.get('mentions')?.map((m) => m.id) || [];
 
   return ImmutableOrderedSet([author])
     .concat(mentions)
-    .delete(account.acct)
+    .delete(account.id)
     .map(m => `@${m} `)
     .join('');
 };
 
 export const statusToMentionsArray = (status: Status, account: Account) => {
-  const author = status.getIn(['account', 'acct']) as string;
-  const mentions = status.get('mentions')?.map((m) => m.acct) || [];
+  const author = status.getIn(['account', 'id']) as string;
+  const mentions = status.get('mentions')?.map((m) => m.id) || [];
 
   return ImmutableOrderedSet<string>([author])
     .concat(mentions)
-    .delete(account.acct) as ImmutableOrderedSet<string>;
+    .delete(account.id) as ImmutableOrderedSet<string>;
 };
 
 export const statusToMentionsAccountIdsArray = (status: StatusEntity, account: Account) => {
@@ -220,7 +220,7 @@ const expandMentions = (status: Status) => {
 
   status.get('mentions').forEach((mention) => {
     const node = fragment.querySelector(`a[href="${mention.get('url')}"]`);
-    if (node) node.textContent = `@${mention.get('acct')}`;
+    if (node) node.textContent = `@${mention.get('id')}`;
   });
 
   return fragment.innerHTML;
@@ -232,7 +232,7 @@ const getExplicitMentions = (me: string, status: Status) => {
   const mentions = status
     .get('mentions')
     .filter((mention) => !(fragment.querySelector(`a[href="${mention.url}"]`) || mention.id === me))
-    .map((m) => m.acct);
+    .map((m) => m.id);
 
   return ImmutableOrderedSet<string>(mentions);
 };
@@ -320,7 +320,7 @@ export default function compose(state = initialState, action: ComposeAction | Me
       }));
     case COMPOSE_QUOTE:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
-        const author = action.status.getIn(['account', 'acct']) as string;
+        const author = action.status.getIn(['account', 'id']) as string;
         const defaultCompose = state.get('default')!;
 
         map.set('quote', action.status.get('id'));
@@ -375,14 +375,14 @@ export default function compose(state = initialState, action: ComposeAction | Me
       return updateCompose(state, action.id, compose => compose.set('progress', Math.round((action.loaded / action.total) * 100)));
     case COMPOSE_MENTION:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
-        map.update('text', text => [text.trim(), `@${action.account.acct} `].filter((str) => str.length !== 0).join(' '));
+        map.update('text', text => [text.trim(), `@${action.account.id} `].filter((str) => str.length !== 0).join(' '));
         map.set('focusDate', new Date());
         map.set('caretPosition', null);
         map.set('idempotencyKey', uuid());
       }));
     case COMPOSE_DIRECT:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
-        map.update('text', text => [text.trim(), `@${action.account.acct} `].filter((str) => str.length !== 0).join(' '));
+        map.update('text', text => [text.trim(), `@${action.account.id} `].filter((str) => str.length !== 0).join(' '));
         map.set('privacy', 'direct');
         map.set('focusDate', new Date());
         map.set('caretPosition', null);

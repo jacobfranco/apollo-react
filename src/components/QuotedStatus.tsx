@@ -47,7 +47,7 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
     const account = status.account;
 
     if (!compose && e.button === 0) {
-      const statusUrl = `/@${account.acct}/posts/${status.id}`;
+      const statusUrl = `/@${account.id}/posts/${status.id}`;
       if (!(e.ctrlKey || e.metaKey)) {
         history.push(statusUrl);
       } else {

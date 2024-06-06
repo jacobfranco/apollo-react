@@ -23,7 +23,6 @@ const messages = defineMessages({
   profile: { id: 'account.profile', defaultMessage: 'Profile' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocks' },
-  domainBlocks: { id: 'navigation_bar.domain_blocks', defaultMessage: 'Domain blocks' },
   mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Mutes' },
   filters: { id: 'navigation_bar.filters', defaultMessage: 'Filters' },
   followedTags: { id: 'navigation_bar.followed_tags', defaultMessage: 'Followed hashtags' },
@@ -169,7 +168,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
           <div className='relative h-full w-full overflow-auto overflow-y-scroll'>
             <div className='p-4'>
               <Stack space={4}>
-                <Link to={`/@${account.acct}`} onClick={onClose}>
+                <Link to={`/@${account.id}`} onClick={onClose}>
                   <Account account={account} showProfileHoverCard={false} withLinkToProfile={false} />
                 </Link>
 
@@ -182,7 +181,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   <Divider />
 
                   <SidebarLink
-                    to={`/@${account.acct}`}
+                    to={`/@${account.id}`}
                     icon={require('@tabler/icons/outline/user.svg')}
                     text={intl.formatMessage(messages.profile)}
                     onClick={onClose}

@@ -18,7 +18,7 @@ import type { Account as AccountEntity } from 'src/types/entities';
 const messages = defineMessages({
   add: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
   theme: { id: 'profile_dropdown.theme', defaultMessage: 'Theme' },
-  logout: { id: 'profile_dropdown.logout', defaultMessage: 'Log out @{acct}' },
+  logout: { id: 'profile_dropdown.logout', defaultMessage: 'Log out @{username}' },
 });
 
 interface IProfileDropdown {
@@ -68,7 +68,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   const menu: IMenuItem[] = useMemo(() => {
     const menu: IMenuItem[] = [];
 
-    menu.push({ text: renderAccount(account), to: `/@${account.acct}` });
+    menu.push({ text: renderAccount(account), to: `/@${account.username}` });
 
     otherAccounts.forEach((otherAccount: AccountEntity) => {
       if (otherAccount && otherAccount.id !== account.id) {
@@ -90,7 +90,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
     });
 
     menu.push({
-      text: intl.formatMessage(messages.logout, { acct: account.acct }),
+      text: intl.formatMessage(messages.logout, { username: account.username }),
       to: '/logout',
       action: handleLogOut,
       icon: require('@tabler/icons/outline/logout.svg'),
