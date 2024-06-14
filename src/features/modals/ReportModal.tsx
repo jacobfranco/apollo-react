@@ -38,13 +38,11 @@ const reportSteps = {
     TWO: OtherActionsStep,
     THREE: ConfirmationStep,
   },
-  /* TODO: Implement chats
   [ReportableEntities.CHAT_MESSAGE]: {
     ONE: ReasonStep,
     TWO: OtherActionsStep,
     THREE: ConfirmationStep,
   },
-  */ 
   [ReportableEntities.STATUS]: {
     ONE: ReasonStep,
     TWO: OtherActionsStep,

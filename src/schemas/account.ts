@@ -21,10 +21,12 @@ const fieldSchema = z.object({
 
 // TODO: Just make this all one object
 const baseAccountSchema = z.object({
+  accepts_chat_messages: z.boolean().catch(false),
   admin: z.boolean().catch(false),
   avatar: z.string().catch(avatarMissing),
   avatar_static: z.string().url().optional().catch(undefined),
   bot: z.boolean().catch(false),
+  chats_onboarded: z.boolean().catch(true),
   created_at: z.string().datetime().catch(new Date().toUTCString()),
   discoverable: z.boolean().catch(false),
   display_name: z.string().catch(''),
@@ -48,7 +50,6 @@ const baseAccountSchema = z.object({
   // TODO: Maybe remove source
   /* source: z.object({
     approved: z.boolean().catch(true),
-    chats_onboarded: z.boolean().catch(true),
     fields: filteredArray(fieldSchema),
     note: z.string().catch(''),
     sms_verified: z.boolean().catch(false),

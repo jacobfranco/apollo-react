@@ -21,12 +21,12 @@ import type { Emoji, Field, EmbeddedEntity, Relationship } from 'src/types/entit
 
 // https://docs.joinmastodon.org/entities/account/
 export const AccountRecord = ImmutableRecord({
-  // accepts_chat_messages: false, TODO: Implement chats
+  accepts_chat_messages: false,
   avatar: '',
   avatar_static: '',
   birthday: '',
   bot: false,
-  // chats_onboarded: true, TODO: Implement chats
+  chats_onboarded: true,
   created_at: '',
   discoverable: false,
   display_name: '',

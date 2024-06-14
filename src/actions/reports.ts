@@ -22,7 +22,7 @@ const REPORT_RULE_CHANGE    = 'REPORT_RULE_CHANGE';
 
 enum ReportableEntities {
   ACCOUNT = 'ACCOUNT',
-  CHAT_MESSAGE = 'CHAT_MESSAGE', 
+  CHAT_MESSAGE = 'CHAT_MESSAGE',
   GROUP = 'GROUP',
   STATUS = 'STATUS'
 }
@@ -41,7 +41,7 @@ const initReport = (entityType: ReportableEntities, account: Account, entities?:
     entityType,
     account,
     status,
-    // chatMessage,
+    chatMessage,
     group,
   });
 
@@ -63,7 +63,7 @@ const submitReport = () =>
     dispatch(submitReportRequest());
     const { reports } = getState();
 
-    return api(getState).post('/api/reports', {
+    return api(getState).post('/api/v1/reports', {
       account_id: reports.getIn(['new', 'account_id']),
       status_ids: reports.getIn(['new', 'status_ids']),
       message_ids: [reports.getIn(['new', 'chat_message', 'id'])].filter(Boolean),

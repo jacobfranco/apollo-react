@@ -83,7 +83,7 @@ const ChatPageSettings = () => {
           </List>
         </CardBody>
 
-        <Button type='submit' theme='primary' disabled={updateCredentials.isLoading}>
+        <Button type='submit' theme='primary' disabled={updateCredentials.isPending}>
           {intl.formatMessage(messages.submit)}
         </Button>
       </Form>
