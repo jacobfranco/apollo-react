@@ -9,6 +9,7 @@ import admin_user_index from './admin-user-index'
 import admin from './admin'
 import apollo from './apollo'
 import auth from './auth'
+import chats from './chats'
 import compose from './compose'
 import contexts from './contexts'
 import conversations from './conversations'
@@ -40,6 +41,7 @@ import statuses from './statuses'
 import suggestions from './suggestions'
 import tags from './tags'
 import timelines from './timelines'
+import trending_statuses from './trending-statuses'
 import trends from './trends'
 import user_lists from './user-lists'
 
@@ -48,6 +50,7 @@ const reducers = {
   admin,
   apollo,
   auth,
+  chats,
   compose,
   contexts,
   conversations,
@@ -80,6 +83,7 @@ const reducers = {
   suggestions,
   tags,
   timelines,
+  trending_statuses,
   trends,
   user_lists
 };

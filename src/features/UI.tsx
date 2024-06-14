@@ -15,7 +15,7 @@ import { expandHomeTimeline } from 'src/actions/timelines';
 import { SidebarNavigation, ThumbNavigation, Layout, BackgroundShapes, FloatingActionButton } from 'src/components';
 import { useAppDispatch, useAppSelector, useOwnAccount, useApolloConfig, useDraggedFiles, useLoggedIn } from 'src/hooks';
 // import AdminPage from 'src/pages/AdminPage'; TODO: Implement Admin
-// import ChatsPage from 'src/pages/ChatsPage';
+import ChatsPage from 'src/pages/ChatsPage';
 import DefaultPage from 'src/pages/DefaultPage';
 import EmptyPage from 'src/pages/EmptyPage';
 // import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
@@ -25,13 +25,13 @@ import HomePage from 'src/pages/HomePage';
 import LandingPage from 'src/pages/LandingPage';
 // import ManageGroupsPage from 'src/pages/ManageGroupsPage'; TODO: Implement groups
 // import ProfilePage from 'src/pages/ProfilePage'; TODO: Later
-// import SearchPage from 'src/pages/SearchPage'; TODO: Fully implement search
-// import StatusPage from 'src/pages/StatusPage'; TODO: Fully implement statuses
+import SearchPage from 'src/pages/SearchPage';
+import StatusPage from 'src/pages/StatusPage';
 // import { getVapidKey } from 'src/utils/auth';
 
 import Navbar from './Navbar';
 import {
-  // Status,
+  Status,
   // AccountTimeline,
   // AccountGallery,
   HomeTimeline,
@@ -39,18 +39,18 @@ import {
   // Following,
   // DirectTimeline,
   // Conversations,
-  // HashtagTimeline,
-  // Notifications,
-  // FollowRequests,
+  HashtagTimeline,
+  Notifications,
+  FollowRequests,
   // GenericNotFound,
   // LikedStatuses,
-  // Blocks,
-  // Mutes,
-  // Filters,
-  // EditFilter,
+  Blocks,
+  Mutes,
+  Filters,
+  EditFilter,
  // PinnedStatuses,
-  // Search,
-  // Bookmarks,
+  Search,
+  Bookmarks,
   // Settings,
   // EditProfile,
   // EditEmail,
@@ -59,19 +59,19 @@ import {
   // DeleteAccount,
   // ApolloConfig,
   // MfaForm,
-  // ChatIndex,
+  ChatIndex,
   // ChatWidget,
   // ServerInfo,
   // Dashboard,
   // ModerationLog,
-  // ScheduledStatuses,
+  ScheduledStatuses,
   // UserIndex,
-  // FollowRecommendations,
+  FollowRecommendations,
   SidebarMenu,
   ProfileHoverCard,
   StatusHoverCard,
   // Share,
-  // NewStatus,
+  NewStatus,
   // IntentionalError,
   // Developers,
   // CreateApp,
@@ -98,7 +98,7 @@ import {
   // GroupBlockedMembers,
   // GroupMembershipRequests,
   // EditGroup,
-  // FollowedTags,
+  FollowedTags,
   // AboutPage,
   Signup,
   Login,
@@ -147,7 +147,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/messages' page={DefaultPage} component={Conversations} content={children} />
     */}
 
-  {/* 
       <WrappedRoute path='/tags/:id' publicRoute page={DefaultPage} component={HashtagTimeline} content={children} />
 
       <WrappedRoute path='/bookmarks' page={DefaultPage} component={Bookmarks} content={children} />
@@ -169,7 +168,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
        <WrappedRoute path='/filters/:id' page={DefaultPage} component={EditFilter} content={children} />
        <WrappedRoute path='/filters' page={DefaultPage} component={Filters} content={children} />
       <WrappedRoute path='/followed_tags' page={DefaultPage} component={FollowedTags} content={children} />
-  */}
 
       { /* 
       <WrappedRoute path='/@:username' publicRoute exact component={AccountTimeline} page={ProfilePage} content={children} />
@@ -206,11 +204,9 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
 
   */}
 
-  { /* 
       <WrappedRoute path='/statuses/new' page={DefaultPage} component={NewStatus} content={children} exact />
       <WrappedRoute path='/statuses/:statusId' exact page={StatusPage} component={Status} content={children} />
       <WrappedRoute path='/scheduled_statuses' page={DefaultPage} component={ScheduledStatuses} content={children} />
-*/}
 
 {/*}
 

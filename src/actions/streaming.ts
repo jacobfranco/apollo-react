@@ -3,11 +3,11 @@ import { importEntities } from 'src/entity-store/actions';
 import { Entities } from 'src/entity-store/entities';
 import { selectEntity } from 'src/entity-store/selectors';
 import messages from 'src/messages';
-// import { ChatKeys, IChat, isLastMessage } from 'src/queries/chats';  TODO: Implement chats
+import { ChatKeys, IChat, isLastMessage } from 'src/queries/chats'; 
 import { queryClient } from 'src/queries/client';
-// import { getUnreadChatsCount, updateChatListItem, updateChatMessage } from 'src/utils/chats';
+import { getUnreadChatsCount, updateChatListItem, updateChatMessage } from 'src/utils/chats';
 import { removePageItem } from 'src/utils/queries';
-// import { play, soundCache } from 'src/utils/sounds';
+import { play, soundCache } from 'src/utils/sounds';
 
 import { connectStream } from 'src/stream';
 
@@ -17,7 +17,7 @@ import { MARKER_FETCH_SUCCESS } from 'src/actions/markers';
 import { updateNotificationsQueue } from 'src/actions/notifications';
 import { updateStatus } from 'src/actions/statuses';
 import {
-  // deleteFromTimelines,
+  deleteFromTimelines,
   connectTimeline,
   disconnectTimeline,
   processTimelineUpdate,
@@ -26,9 +26,8 @@ import {
 import type { IStatContext } from 'src/contexts/stat-context';
 import type { Relationship } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity, /* Chat */} from 'src/types/entities';
+import type { APIEntity, Chat} from 'src/types/entities';
 
-/* TODO: Implement chats
 const STREAMING_CHAT_UPDATE = 'STREAMING_CHAT_UPDATE';
 
 const removeChatMessage = (payload: string) => {
@@ -61,8 +60,6 @@ const updateChatQuery = (chat: IChat) => {
   };
   queryClient.setQueryData<Chat>(ChatKeys.chat(chat.id), newChat as any);
 };
-
-*/
 
 interface TimelineStreamOpts {
   statContext?: IStatContext;
@@ -121,8 +118,7 @@ const connectTimelineStream = (
         case 'filters_changed':
           dispatch(fetchFilters());
           break;
-        /* TODO: Implement chats
-        case 'chat_message.created': // TruthSocial
+        case 'chat_message.created': 
           dispatch((_dispatch: AppDispatch, getState: () => RootState) => {
             const chat = JSON.parse(data.payload);
             const me = getState().me;
@@ -142,10 +138,10 @@ const connectTimelineStream = (
             }
           });
           break;
-        case 'chat_message.deleted': // TruthSocial
+        case 'chat_message.deleted': 
           removeChatMessage(data.payload);
           break;
-        case 'chat_message.read': // TruthSocial
+        case 'chat_message.read': 
           dispatch((_dispatch: AppDispatch, getState: () => RootState) => {
             const chat = JSON.parse(data.payload);
             const me = getState().me;
@@ -155,10 +151,9 @@ const connectTimelineStream = (
             }
           });
           break;
-        case 'chat_message.reaction': // TruthSocial
+        case 'chat_message.reaction': 
           updateChatMessage(JSON.parse(data.payload));
           break;
-          */
         case 'pleroma:follow_relationships_update':
           dispatch(updateFollowRelationships(JSON.parse(data.payload)));
           break;
@@ -215,7 +210,7 @@ function updateFollowRelationships(update: FollowUpdate) {
 }
 
 export {
-  // STREAMING_CHAT_UPDATE,
+  STREAMING_CHAT_UPDATE,
   connectTimelineStream,
   type TimelineStreamOpts,
 };

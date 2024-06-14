@@ -28,3 +28,10 @@ export const stripCompatibilityFeatures = (html: string): string => {
   return node.innerHTML;
 };
   
+/** Convert HTML to plaintext. */
+// https://stackoverflow.com/a/822486
+export const stripHTML = (html: string) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};

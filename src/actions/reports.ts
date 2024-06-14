@@ -4,7 +4,7 @@ import { openModal } from './modals';
 
 import type { Account } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
-import type { /* ChatMessage,*/ Group, Status } from 'src/types/entities';
+import type { ChatMessage, Group, Status } from 'src/types/entities';
 
 const REPORT_INIT   = 'REPORT_INIT';
 const REPORT_CANCEL = 'REPORT_CANCEL';
@@ -22,19 +22,19 @@ const REPORT_RULE_CHANGE    = 'REPORT_RULE_CHANGE';
 
 enum ReportableEntities {
   ACCOUNT = 'ACCOUNT',
-  // CHAT_MESSAGE = 'CHAT_MESSAGE', TODO: Implement
+  CHAT_MESSAGE = 'CHAT_MESSAGE', 
   GROUP = 'GROUP',
   STATUS = 'STATUS'
 }
 
 type ReportedEntity = {
   status?: Status;
-  // chatMessage?: ChatMessage;
+  chatMessage?: ChatMessage;
   group?: Group;
 }
 
 const initReport = (entityType: ReportableEntities, account: Account, entities?: ReportedEntity) => (dispatch: AppDispatch) => {
-  const { status, /*chatMessage, */ group } = entities || {};
+  const { status, chatMessage, group } = entities || {};
 
   dispatch({
     type: REPORT_INIT,

@@ -9,12 +9,14 @@ import {
 import { RootState } from "src/store";
 import type { Account as AccountSchema } from 'src/schemas';
 import { Entities } from 'src/entity-store/entities';
-import type { Account, Filter as FilterEntity, Status } from 'src/types/entities';
+import type { Account, Filter as FilterEntity, Notification, Status } from 'src/types/entities';
 import { EntityStore } from 'src/entity-store/types';
 import { validId } from 'src/utils/auth';
 import type { ContextType } from 'src/normalizers/filter';
 import { shouldFilter } from 'src/utils/timelines';
 import { getSettings } from 'src/actions/settings';
+
+const normalizeId = (id: any): string => typeof id === 'string' ? id : '';
 
 export function selectAccount(state: RootState, accountId: string) {
     return state.entities[Entities.ACCOUNTS]?.store[accountId] as AccountSchema | undefined;
@@ -200,3 +202,21 @@ const checkFiltered = (index: string, filters: ImmutableList<FilterEntity>) =>
       return !shouldFilter(status, columnSettings);
     });
   });
+
+  export const makeGetNotification = () => {
+    return createSelector([
+      (_state: RootState, notification: Notification) => notification,
+      (state: RootState, notification: Notification) => selectAccount(state, normalizeId(notification.account)),
+      (state: RootState, notification: Notification) => selectAccount(state, normalizeId(notification.target)),
+      (state: RootState, notification: Notification) => state.statuses.get(normalizeId(notification.status)),
+    ], (notification, account, target, status) => {
+      return notification.merge({
+        // @ts-ignore
+        account: account || null,
+        // @ts-ignore
+        target: target || null,
+        // @ts-ignore
+        status: status || null,
+      });
+    });
+  };

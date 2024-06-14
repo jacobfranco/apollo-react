@@ -4,8 +4,9 @@ import { patchMeSuccess } from 'src/actions/me';
 import { useApi, useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 
-// TODO: Update to match what we want
+// TODO: Update to what we need
 export type IAccount = {
+  avatar: string;
   avatar_static: string;
   bot: boolean;
   created_at: string;
@@ -39,7 +40,7 @@ const useUpdateCredentials = () => {
   const dispatch = useAppDispatch();
 
   return useMutation({
-    mutationFn: (data: UpdateCredentialsData) => api.patch('/api/accounts/update_credentials', data),
+    mutationFn: (data: UpdateCredentialsData) => api.patch('/api/v1/accounts/update_credentials', data),
     onMutate(variables) {
       const cachedAccount = account;
       dispatch(patchMeSuccess({ ...account, ...variables }));

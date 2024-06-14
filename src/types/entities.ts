@@ -3,6 +3,8 @@ import {
     // AdminAccountRecord,
     // AdminReportRecord,
     AttachmentRecord,
+    ChatRecord,
+    ChatMessageRecord,
     EmojiRecord,
     FieldRecord,
     FilterRecord,
@@ -22,6 +24,8 @@ import {
 import type { LegacyMap } from 'src/utils/legacy';
 
 type Attachment = ReturnType<typeof AttachmentRecord>;
+type Chat = ReturnType<typeof ChatRecord>;
+type ChatMessage = ReturnType<typeof ChatMessageRecord>;
 type Emoji = ReturnType<typeof EmojiRecord>;
 type Field = ReturnType<typeof FieldRecord>;
 type Filter = ReturnType<typeof FilterRecord>;
@@ -47,6 +51,8 @@ export {
     Account,
     APIEntity,
     Attachment,
+    Chat,
+    ChatMessage,
     EmbeddedEntity,
     Emoji,
     Field,
@@ -62,6 +68,7 @@ export {
 
 export type {
   Card,
+  EmojiReaction,
   Group,
   GroupMember,
   GroupRelationship,

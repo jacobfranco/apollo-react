@@ -5,7 +5,8 @@ import { Virtuoso, Components, VirtuosoProps, VirtuosoHandle, ListRange, IndexLo
 
 import { useSettings } from 'src/hooks';
 
-import { Spinner, LoadMore, Card } from 'src/components';
+import LoadMore from './LoadMore';
+import { Card, Spinner } from 'src/components';
 
 /** Custom Viruoso component context. */
 type Context = {
@@ -70,6 +71,8 @@ interface IScrollableList extends VirtuosoProps<any, any> {
   onRefresh?: () => Promise<any>;
   /** Extra class names on the Virtuoso element. */
   className?: string;
+  /** Extra class names on the list element. */
+  listClassName?: string;
   /** Class names on each item container. */
   itemClassName?: string;
   /** `id` attribute on the Virtuoso element. */
@@ -95,6 +98,7 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
   onScrollToTop,
   onLoadMore,
   className,
+  listClassName,
   itemClassName,
   id,
   hasMore,
@@ -108,7 +112,7 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
   const { autoloadMore } = useSettings();
 
   // Preserve scroll position
-  const scrollDataKey = `apollo:scrollData:${scrollKey}`;
+  const scrollDataKey = `soapbox:scrollData:${scrollKey}`;
   const scrollData: SavedScrollPosition | null = useMemo(() => JSON.parse(sessionStorage.getItem(scrollDataKey)!), [scrollDataKey]);
   const topIndex = useRef<number>(scrollData ? scrollData.index : 0);
   const topOffset = useRef<number>(scrollData ? scrollData.offset : 0);
@@ -225,7 +229,6 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
       ref={ref}
       id={id}
       useWindowScroll={useWindowScroll}
-      className={className}
       data={data}
       startReached={onScrollToTop}
       endReached={handleEndReached}
@@ -233,9 +236,10 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
       itemContent={renderItem}
       initialTopMostItemIndex={initialIndex}
       rangeChanged={handleRangeChange}
+      className={className}
       style={style}
       context={{
-        listClassName: className,
+        listClassName,
         itemClassName,
       }}
       components={{

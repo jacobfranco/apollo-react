@@ -8,6 +8,8 @@ export const isNumber = (value: unknown): value is number => typeof value === 'n
 /** The input is a number and is not NaN. */
 export const realNumberSchema = z.coerce.number().refine(n => !isNaN(n));
 
+export const secondsToDays = (seconds: number) => Math.floor(seconds / (3600 * 24));
+
 const roundDown = (num: number) => {
   if (num >= 100 && num < 1000) {
     num = Math.floor(num);
