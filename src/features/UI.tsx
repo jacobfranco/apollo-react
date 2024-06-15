@@ -37,8 +37,8 @@ import {
   HomeTimeline,
   // Followers,
   // Following,
-  // DirectTimeline,
-  // Conversations,
+  DirectTimeline,
+  Conversations,
   HashtagTimeline,
   Notifications,
   FollowRequests,
@@ -141,11 +141,9 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
         https://stackoverflow.com/a/68637108
       */}
 
-    {/* 
      <WrappedRoute path='/conversations' page={DefaultPage} component={Conversations} content={children} />
      <WrappedRoute path='/messages' page={DefaultPage} component={DirectTimeline} content={children} />
       <WrappedRoute path='/messages' page={DefaultPage} component={Conversations} content={children} />
-    */}
 
       <WrappedRoute path='/tags/:id' publicRoute page={DefaultPage} component={HashtagTimeline} content={children} />
 

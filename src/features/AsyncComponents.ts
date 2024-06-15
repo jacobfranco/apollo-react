@@ -58,3 +58,5 @@ export const FollowRecommendations = lazy(() => import('./FollowRecommendations'
 export const NewStatus = lazy(() => import('./NewStatus'));
 export const FollowedTags = lazy(() => import('./FollowedTags'));
 export const SuggestedGroupsPanel = lazy(() => import('./SuggestedGroupsPanel'));
+export const DirectTimeline = lazy(() => import('./DirectTimeline'));
+export const Conversations = lazy(() => import('./Conversations'));
