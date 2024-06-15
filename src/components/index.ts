@@ -74,6 +74,7 @@ export { default as LoadingScreen } from './LoadingScreen'
 export { default as LoadMore } from './LoadMore'
 export { LogoText } from './LogoText'
 export { default as Markup } from './Markup'
+export { default as MediaItem } from './MediaItem'
 export { default as Mention } from './Mention'
 export { Menu, MenuButton, MenuDivider, MenuItem, MenuItems, MenuLink, MenuList } from './Menu';
 export { default as MissingIndicator } from './MissingIndicator'

@@ -5,6 +5,7 @@ export {
   useFollowers,
   useFollowing,
 } from './useAccountList';
+export { useAccountLookup } from './useAccountLookup'
 export { useBlockGroupMember } from './useBlockGroupMember'
 export { useCancelMembershipRequest } from './useCancelMembershipRequest'
 export { useCommunityStream } from './useCommunityStream'

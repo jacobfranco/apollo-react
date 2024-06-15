@@ -60,3 +60,4 @@ export const FollowedTags = lazy(() => import('./FollowedTags'));
 export const SuggestedGroupsPanel = lazy(() => import('./SuggestedGroupsPanel'));
 export const DirectTimeline = lazy(() => import('./DirectTimeline'));
 export const Conversations = lazy(() => import('./Conversations'));
+export const AccountGallery = lazy(() => import('./AccountGallery'));

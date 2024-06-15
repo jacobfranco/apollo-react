@@ -24,7 +24,7 @@ import EmptyPage from 'src/pages/EmptyPage';
 import HomePage from 'src/pages/HomePage';
 import LandingPage from 'src/pages/LandingPage';
 // import ManageGroupsPage from 'src/pages/ManageGroupsPage'; TODO: Implement groups
-// import ProfilePage from 'src/pages/ProfilePage'; TODO: Later
+import ProfilePage from 'src/pages/ProfilePage';
 import SearchPage from 'src/pages/SearchPage';
 import StatusPage from 'src/pages/StatusPage';
 // import { getVapidKey } from 'src/utils/auth';
@@ -32,23 +32,23 @@ import StatusPage from 'src/pages/StatusPage';
 import Navbar from './Navbar';
 import {
   Status,
-  // AccountTimeline,
-  // AccountGallery,
+  AccountTimeline,
+  AccountGallery,
   HomeTimeline,
-  // Followers,
-  // Following,
+  Followers,
+  Following,
   DirectTimeline,
   Conversations,
   HashtagTimeline,
   Notifications,
   FollowRequests,
   // GenericNotFound,
-  // LikedStatuses,
+  LikedStatuses,
   Blocks,
   Mutes,
   Filters,
   EditFilter,
- // PinnedStatuses,
+ PinnedStatuses,
   Search,
   Bookmarks,
   // Settings,
@@ -80,7 +80,7 @@ import {
   Logout,
   // AuthTokenList,
   // ThemeEditor,
-  // Quotes,
+  Quotes,
   // ServiceWorkerInfo,
   // GroupGallery,
  // Groups,
@@ -167,7 +167,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
        <WrappedRoute path='/filters' page={DefaultPage} component={Filters} content={children} />
       <WrappedRoute path='/followed_tags' page={DefaultPage} component={FollowedTags} content={children} />
 
-      { /* 
       <WrappedRoute path='/@:username' publicRoute exact component={AccountTimeline} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} component={AccountTimeline} page={ProfilePage} content={children} componentParams={{ withReplies: true }} />
       <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} component={Followers} page={ProfilePage} content={children} />
@@ -179,7 +178,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/@:username/posts/:statusId' publicRoute exact page={StatusPage} component={Status} content={children} />
       <WrappedRoute path='/@:username/posts/:statusId/quotes' publicRoute page={StatusPage} component={Quotes} content={children} />
       <Redirect from='/@:username/:statusId' to='/@:username/posts/:statusId' />
-    */}
 
 { /* 
      <WrappedRoute path='/groups' exact page={GroupsPage} component={Groups} content={children} />

@@ -220,3 +220,17 @@ const checkFiltered = (index: string, filters: ImmutableList<FilterEntity>) =>
       });
     });
   };
+
+  export const getAccountGallery = createSelector([
+    (state: RootState, id: string) => state.timelines.get(`account:${id}:media`)?.items || ImmutableOrderedSet<string>(),
+    (state: RootState) => state.statuses,
+  ], (statusIds, statuses) => {
+    return statusIds.reduce((medias: ImmutableList<any>, statusId: string) => {
+      const status = statuses.get(statusId);
+      if (!status) return medias;
+      if (status.repost) return medias;
+  
+      return medias.concat(
+        status.media_attachments.map(media => media.merge({ status, account: status.account })));
+    }, ImmutableList());
+  });
