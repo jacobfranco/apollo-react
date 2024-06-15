@@ -30,6 +30,8 @@ export {
   ComboboxOption,
   ComboboxOptionText,
 } from './Combobox';
+export { default as Conversation } from './Conversation'
+export { default as ConversationsList } from './ConversationsList'
 export { default as Counter } from './Counter'
 export { default as DetailedStatus } from './DetailedStatus'
 export { default as Divider } from './Divider'
