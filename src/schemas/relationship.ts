@@ -10,6 +10,7 @@ const relationshipSchema = z.object({ // TODO: Make more comprehensive
   muting_notifications: z.boolean().catch(false),
   notifying: z.boolean().catch(false),
   requested: z.boolean().catch(false),
+  showing_reposts: z.boolean().catch(false),
 });
 
 type Relationship = z.infer<typeof relationshipSchema>;

@@ -61,3 +61,7 @@ export const SuggestedGroupsPanel = lazy(() => import('./SuggestedGroupsPanel'))
 export const DirectTimeline = lazy(() => import('./DirectTimeline'));
 export const Conversations = lazy(() => import('./Conversations'));
 export const AccountGallery = lazy(() => import('./AccountGallery'));
+export const ProfileInfoPanel = lazy(() => import('./ProfileInfoPanel'));
+export const ProfileMediaPanel = lazy(() => import('./ProfileMediaPanel'));
+export const ProfileFieldsPanel = lazy(() => import('./ProfileFieldsPanel'));
+export const AccountTimeline = lazy(() => import('./AccountTimeline'));
