@@ -1,35 +1,48 @@
-import clsx from 'clsx';
-import React, { Suspense, useEffect, useRef } from 'react';
-import { Switch, useHistory, useLocation, Redirect } from 'react-router-dom';
+import clsx from "clsx";
+import React, { Suspense, useEffect, useRef } from "react";
+import { Switch, useHistory, useLocation, Redirect } from "react-router-dom";
 
-import { fetchFollowRequests } from 'src/actions/accounts';
-import { fetchReports, fetchUsers, fetchConfig } from 'src/actions/admin';
-import { fetchFilters } from 'src/actions/filters';
-import { fetchMarker } from 'src/actions/markers';
-import { expandNotifications } from 'src/actions/notifications';
+import { fetchFollowRequests } from "src/actions/accounts";
+import { fetchReports, fetchUsers, fetchConfig } from "src/actions/admin";
+import { fetchFilters } from "src/actions/filters";
+import { fetchMarker } from "src/actions/markers";
+import { expandNotifications } from "src/actions/notifications";
 // import { register as registerPushNotifications } from 'src/actions/push-notifications';
-import { fetchScheduledStatuses } from 'src/actions/scheduled-statuses';
-import { fetchSuggestionsForTimeline } from 'src/actions/suggestions';
-import { expandHomeTimeline } from 'src/actions/timelines';
+import { fetchScheduledStatuses } from "src/actions/scheduled-statuses";
+import { fetchSuggestionsForTimeline } from "src/actions/suggestions";
+import { expandHomeTimeline } from "src/actions/timelines";
 // import { useUserStream } from 'src/api/hooks';
-import { SidebarNavigation, ThumbNavigation, Layout, BackgroundShapes, FloatingActionButton } from 'src/components';
-import { useAppDispatch, useAppSelector, useOwnAccount, useApolloConfig, useDraggedFiles, useLoggedIn } from 'src/hooks';
+import {
+  SidebarNavigation,
+  ThumbNavigation,
+  Layout,
+  BackgroundShapes,
+  FloatingActionButton,
+} from "src/components";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useOwnAccount,
+  useApolloConfig,
+  useDraggedFiles,
+  useLoggedIn,
+} from "src/hooks";
 // import AdminPage from 'src/pages/AdminPage'; TODO: Implement Admin
-import ChatsPage from 'src/pages/ChatsPage';
-import DefaultPage from 'src/pages/DefaultPage';
-import EmptyPage from 'src/pages/EmptyPage';
+import ChatsPage from "src/pages/ChatsPage";
+import DefaultPage from "src/pages/DefaultPage";
+import EmptyPage from "src/pages/EmptyPage";
 // import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
 // import GroupsPage from 'src/pages/GroupsPage';
 // import GroupsPendingPage from 'src/pages/GroupsPendingPage';
-import HomePage from 'src/pages/HomePage';
-import LandingPage from 'src/pages/LandingPage';
+import HomePage from "src/pages/HomePage";
+import LandingPage from "src/pages/LandingPage";
 // import ManageGroupsPage from 'src/pages/ManageGroupsPage'; TODO: Implement groups
-import ProfilePage from 'src/pages/ProfilePage';
-import SearchPage from 'src/pages/SearchPage';
-import StatusPage from 'src/pages/StatusPage';
+import ProfilePage from "src/pages/ProfilePage";
+import SearchPage from "src/pages/SearchPage";
+import StatusPage from "src/pages/StatusPage";
 // import { getVapidKey } from 'src/utils/auth';
 
-import Navbar from './Navbar';
+import Navbar from "./Navbar";
 import {
   Status,
   AccountTimeline,
@@ -42,22 +55,22 @@ import {
   HashtagTimeline,
   Notifications,
   FollowRequests,
-  // GenericNotFound,
+  GenericNotFound,
   LikedStatuses,
   Blocks,
   Mutes,
   Filters,
   EditFilter,
- PinnedStatuses,
+  PinnedStatuses,
   Search,
   Bookmarks,
-  // Settings,
-  // EditProfile,
-  // EditEmail,
-  // EditPassword,
+  Settings,
+  EditProfile,
+  EditEmail,
+  EditPassword,
   EmailConfirmation,
-  // DeleteAccount,
-  // ApolloConfig,
+  DeleteAccount,
+  ApolloConfig,
   // MfaForm,
   ChatIndex,
   // ChatWidget,
@@ -78,17 +91,17 @@ import {
   // SettingsStore,
   // TestTimeline,
   Logout,
-  // AuthTokenList,
+  AuthTokenList,
   // ThemeEditor,
   Quotes,
   // ServiceWorkerInfo,
   // GroupGallery,
- // Groups,
+  // Groups,
   // GroupsDiscover,
   // GroupsPopular,
   // GroupsSuggested,
   // GroupsTag,
- // GroupsTags,
+  // GroupsTags,
   // PendingGroupRequests,
   // GroupMembers,
   // GroupTags,
@@ -106,19 +119,21 @@ import {
   PasswordResetConfirm,
   SignupInvite,
   LandingTimeline,
-} from './AsyncComponents';
-import GlobalHotkeys from './GlobalHotkeys';
-import { WrappedRoute } from 'src/utils/react-router-helpers';
+} from "./AsyncComponents";
+import GlobalHotkeys from "./GlobalHotkeys";
+import { WrappedRoute } from "src/utils/react-router-helpers";
 
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
-import 'src/components/Status';
+import "src/components/Status";
 
 interface ISwitchingColumnsArea {
   children: React.ReactNode;
 }
 
-const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => {
+const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
+  children,
+}) => {
   const { search } = useLocation();
   const { isLoggedIn } = useLoggedIn();
 
@@ -126,14 +141,38 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
 
   return (
     <Switch>
-
-      <WrappedRoute path='/email-confirmation' page={EmptyPage} component={EmailConfirmation} publicRoute exact />
-      <WrappedRoute path='/logout' page={EmptyPage} component={Logout} publicRoute exact />
+      <WrappedRoute
+        path="/email-confirmation"
+        page={EmptyPage}
+        component={EmailConfirmation}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/logout"
+        page={EmptyPage}
+        component={Logout}
+        publicRoute
+        exact
+      />
 
       {isLoggedIn ? (
-        <WrappedRoute path='/' exact page={HomePage} component={HomeTimeline} content={children} />
+        <WrappedRoute
+          path="/"
+          exact
+          page={HomePage}
+          component={HomeTimeline}
+          content={children}
+        />
       ) : (
-        <WrappedRoute path='/' exact page={LandingPage} component={LandingTimeline} content={children} publicRoute />
+        <WrappedRoute
+          path="/"
+          exact
+          page={LandingPage}
+          component={LandingTimeline}
+          content={children}
+          publicRoute
+        />
       )}
 
       {/*
@@ -141,45 +180,205 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
         https://stackoverflow.com/a/68637108
       */}
 
-     <WrappedRoute path='/conversations' page={DefaultPage} component={Conversations} content={children} />
-     <WrappedRoute path='/messages' page={DefaultPage} component={DirectTimeline} content={children} />
-      <WrappedRoute path='/messages' page={DefaultPage} component={Conversations} content={children} />
+      <WrappedRoute
+        path="/conversations"
+        page={DefaultPage}
+        component={Conversations}
+        content={children}
+      />
+      <WrappedRoute
+        path="/messages"
+        page={DefaultPage}
+        component={DirectTimeline}
+        content={children}
+      />
+      <WrappedRoute
+        path="/messages"
+        page={DefaultPage}
+        component={Conversations}
+        content={children}
+      />
 
-      <WrappedRoute path='/tags/:id' publicRoute page={DefaultPage} component={HashtagTimeline} content={children} />
+      <WrappedRoute
+        path="/tags/:id"
+        publicRoute
+        page={DefaultPage}
+        component={HashtagTimeline}
+        content={children}
+      />
 
-      <WrappedRoute path='/bookmarks' page={DefaultPage} component={Bookmarks} content={children} />
+      <WrappedRoute
+        path="/bookmarks"
+        page={DefaultPage}
+        component={Bookmarks}
+        content={children}
+      />
 
-      <WrappedRoute path='/notifications' page={DefaultPage} component={Notifications} content={children} />
+      <WrappedRoute
+        path="/notifications"
+        page={DefaultPage}
+        component={Notifications}
+        content={children}
+      />
 
-       <WrappedRoute path='/search' page={SearchPage} component={Search} content={children} publicRoute /> 
-      <WrappedRoute path='/suggestions' publicRoute page={DefaultPage} component={FollowRecommendations} content={children} />
+      <WrappedRoute
+        path="/search"
+        page={SearchPage}
+        component={Search}
+        content={children}
+        publicRoute
+      />
+      <WrappedRoute
+        path="/suggestions"
+        publicRoute
+        page={DefaultPage}
+        component={FollowRecommendations}
+        content={children}
+      />
 
-       <WrappedRoute path='/chats' exact page={ChatsPage} component={ChatIndex} content={children} />
-      <WrappedRoute path='/chats/new' page={ChatsPage} component={ChatIndex} content={children} />
-       <WrappedRoute path='/chats/settings' page={ChatsPage} component={ChatIndex} content={children} />
-       <WrappedRoute path='/chats/:chatId' page={ChatsPage} component={ChatIndex} content={children} />
+      <WrappedRoute
+        path="/chats"
+        exact
+        page={ChatsPage}
+        component={ChatIndex}
+        content={children}
+      />
+      <WrappedRoute
+        path="/chats/new"
+        page={ChatsPage}
+        component={ChatIndex}
+        content={children}
+      />
+      <WrappedRoute
+        path="/chats/settings"
+        page={ChatsPage}
+        component={ChatIndex}
+        content={children}
+      />
+      <WrappedRoute
+        path="/chats/:chatId"
+        page={ChatsPage}
+        component={ChatIndex}
+        content={children}
+      />
 
-      <WrappedRoute path='/follow_requests' page={DefaultPage} component={FollowRequests} content={children} />
-      <WrappedRoute path='/blocks' page={DefaultPage} component={Blocks} content={children} />
-      <WrappedRoute path='/mutes' page={DefaultPage} component={Mutes} content={children} />
-       <WrappedRoute path='/filters/new' page={DefaultPage} component={EditFilter} content={children} />
-       <WrappedRoute path='/filters/:id' page={DefaultPage} component={EditFilter} content={children} />
-       <WrappedRoute path='/filters' page={DefaultPage} component={Filters} content={children} />
-      <WrappedRoute path='/followed_tags' page={DefaultPage} component={FollowedTags} content={children} />
+      <WrappedRoute
+        path="/follow_requests"
+        page={DefaultPage}
+        component={FollowRequests}
+        content={children}
+      />
+      <WrappedRoute
+        path="/blocks"
+        page={DefaultPage}
+        component={Blocks}
+        content={children}
+      />
+      <WrappedRoute
+        path="/mutes"
+        page={DefaultPage}
+        component={Mutes}
+        content={children}
+      />
+      <WrappedRoute
+        path="/filters/new"
+        page={DefaultPage}
+        component={EditFilter}
+        content={children}
+      />
+      <WrappedRoute
+        path="/filters/:id"
+        page={DefaultPage}
+        component={EditFilter}
+        content={children}
+      />
+      <WrappedRoute
+        path="/filters"
+        page={DefaultPage}
+        component={Filters}
+        content={children}
+      />
+      <WrappedRoute
+        path="/followed_tags"
+        page={DefaultPage}
+        component={FollowedTags}
+        content={children}
+      />
 
-      <WrappedRoute path='/@:username' publicRoute exact component={AccountTimeline} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} component={AccountTimeline} page={ProfilePage} content={children} componentParams={{ withReplies: true }} />
-      <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} component={Followers} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/following' publicRoute={!authenticatedProfile} component={Following} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/media' publicRoute={!authenticatedProfile} component={AccountGallery} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/tagged/:tag' exact component={AccountTimeline} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/favorites' component={LikedStatuses} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/pins' component={PinnedStatuses} page={ProfilePage} content={children} />
-      <WrappedRoute path='/@:username/posts/:statusId' publicRoute exact page={StatusPage} component={Status} content={children} />
-      <WrappedRoute path='/@:username/posts/:statusId/quotes' publicRoute page={StatusPage} component={Quotes} content={children} />
-      <Redirect from='/@:username/:statusId' to='/@:username/posts/:statusId' />
+      <WrappedRoute
+        path="/@:username"
+        publicRoute
+        exact
+        component={AccountTimeline}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/with_replies"
+        publicRoute={!authenticatedProfile}
+        component={AccountTimeline}
+        page={ProfilePage}
+        content={children}
+        componentParams={{ withReplies: true }}
+      />
+      <WrappedRoute
+        path="/@:username/followers"
+        publicRoute={!authenticatedProfile}
+        component={Followers}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/following"
+        publicRoute={!authenticatedProfile}
+        component={Following}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/media"
+        publicRoute={!authenticatedProfile}
+        component={AccountGallery}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/tagged/:tag"
+        exact
+        component={AccountTimeline}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/favorites"
+        component={LikedStatuses}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/pins"
+        component={PinnedStatuses}
+        page={ProfilePage}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/posts/:statusId"
+        publicRoute
+        exact
+        page={StatusPage}
+        component={Status}
+        content={children}
+      />
+      <WrappedRoute
+        path="/@:username/posts/:statusId/quotes"
+        publicRoute
+        page={StatusPage}
+        component={Quotes}
+        content={children}
+      />
+      <Redirect from="/@:username/:statusId" to="/@:username/posts/:statusId" />
 
-{ /* 
+      {/* 
      <WrappedRoute path='/groups' exact page={GroupsPage} component={Groups} content={children} />
       <WrappedRoute path='/groups/discover' exact page={GroupsPage} component={GroupsDiscover} content={children} />
        <WrappedRoute path='/groups/popular' exact page={GroupsPendingPage} component={GroupsPopular} content={children} />
@@ -200,24 +399,73 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
 
   */}
 
-      <WrappedRoute path='/statuses/new' page={DefaultPage} component={NewStatus} content={children} exact />
-      <WrappedRoute path='/statuses/:statusId' exact page={StatusPage} component={Status} content={children} />
-      <WrappedRoute path='/scheduled_statuses' page={DefaultPage} component={ScheduledStatuses} content={children} />
+      <WrappedRoute
+        path="/statuses/new"
+        page={DefaultPage}
+        component={NewStatus}
+        content={children}
+        exact
+      />
+      <WrappedRoute
+        path="/statuses/:statusId"
+        exact
+        page={StatusPage}
+        component={Status}
+        content={children}
+      />
+      <WrappedRoute
+        path="/scheduled_statuses"
+        page={DefaultPage}
+        component={ScheduledStatuses}
+        content={children}
+      />
 
-{/*}
+      <WrappedRoute
+        path="/settings/profile"
+        page={DefaultPage}
+        component={EditProfile}
+        content={children}
+      />
+      <WrappedRoute
+        path="/settings/email"
+        page={DefaultPage}
+        component={EditEmail}
+        content={children}
+      />
+      <WrappedRoute
+        path="/settings/password"
+        page={DefaultPage}
+        component={EditPassword}
+        content={children}
+      />
+      <WrappedRoute
+        path="/settings/account"
+        page={DefaultPage}
+        component={DeleteAccount}
+        content={children}
+      />
+      {/* <WrappedRoute path='/settings/mfa' page={DefaultPage} component={MfaForm} exact /> */}
+      <WrappedRoute
+        path="/settings/tokens"
+        page={DefaultPage}
+        component={AuthTokenList}
+        content={children}
+      />
+      <WrappedRoute
+        path="/settings"
+        page={DefaultPage}
+        component={Settings}
+        content={children}
+      />
+      <WrappedRoute
+        path="/apollo/config"
+        adminOnly
+        page={DefaultPage}
+        component={ApolloConfig}
+        content={children}
+      />
 
-      <WrappedRoute path='/settings/profile' page={DefaultPage} component={EditProfile} content={children} />
-      <WrappedRoute path='/settings/email' page={DefaultPage} component={EditEmail} content={children} />
-      <WrappedRoute path='/settings/password' page={DefaultPage} component={EditPassword} content={children} />
-      <WrappedRoute path='/settings/account' page={DefaultPage} component={DeleteAccount} content={children} />
-      <WrappedRoute path='/settings/mfa' page={DefaultPage} component={MfaForm} exact />
-      <WrappedRoute path='/settings/tokens' page={DefaultPage} component={AuthTokenList} content={children} />
-      <WrappedRoute path='/settings' page={DefaultPage} component={Settings} content={children} />
-      <WrappedRoute path='/apollo/config' adminOnly page={DefaultPage} component={ApolloConfig} content={children} />
-
-*/}
-
-{/* 
+      {/* 
       <WrappedRoute path='/soapbox/admin' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
       <WrappedRoute path='/soapbox/admin/approval' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
       <WrappedRoute path='/soapbox/admin/reports' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
@@ -228,7 +476,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/info' page={EmptyPage} component={ServerInfo} content={children} />
 */}
 
-{/* 
+      {/* 
       <WrappedRoute path='/developers/apps/create' developerOnly page={DefaultPage} component={CreateApp} content={children} />
       <WrappedRoute path='/developers/settings_store' developerOnly page={DefaultPage} component={SettingsStore} content={children} />
       <WrappedRoute path='/developers/timeline' developerOnly page={DefaultPage} component={TestTimeline} content={children} />
@@ -244,17 +492,57 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
 
 */}
 
-      <WrappedRoute path='/signup' page={EmptyPage} component={Signup} publicRoute exact />
+      <WrappedRoute
+        path="/signup"
+        page={EmptyPage}
+        component={Signup}
+        publicRoute
+        exact
+      />
 
-      <WrappedRoute path='/login/add' page={DefaultPage} component={Login} publicRoute exact />
-      <WrappedRoute path='/login' page={DefaultPage} component={Login} publicRoute exact />
-      <WrappedRoute path='/reset-password' page={DefaultPage} component={PasswordReset} publicRoute exact />
-      <WrappedRoute path='/edit-password' page={DefaultPage} component={PasswordResetConfirm} publicRoute exact />
-      <WrappedRoute path='/invite/:token' page={DefaultPage} component={SignupInvite} publicRoute exact />
-      <Redirect from='/auth/password/new' to='/reset-password' />
-      <Redirect from='/auth/password/edit' to={`/edit-password${search}`} />
+      <WrappedRoute
+        path="/login/add"
+        page={DefaultPage}
+        component={Login}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/login"
+        page={DefaultPage}
+        component={Login}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/reset-password"
+        page={DefaultPage}
+        component={PasswordReset}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/edit-password"
+        page={DefaultPage}
+        component={PasswordResetConfirm}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/invite/:token"
+        page={DefaultPage}
+        component={SignupInvite}
+        publicRoute
+        exact
+      />
+      <Redirect from="/auth/password/new" to="/reset-password" />
+      <Redirect from="/auth/password/edit" to={`/edit-password${search}`} />
 
-      { /* <WrappedRoute page={EmptyPage} component={GenericNotFound} content={children} /> */}
+      <WrappedRoute
+        page={EmptyPage}
+        component={GenericNotFound}
+        content={children}
+      />
     </Switch>
   );
 };
@@ -267,19 +555,21 @@ const UI: React.FC<IUI> = ({ children }) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement | null>(null);
-  const me = useAppSelector(state => state.me);
+  const me = useAppSelector((state) => state.me);
   const { account } = useOwnAccount();
   // const vapidKey = useAppSelector(state => getVapidKey(state));
 
-  const dropdownMenuIsOpen = useAppSelector(state => state.dropdown_menu.isOpen);
+  const dropdownMenuIsOpen = useAppSelector(
+    (state) => state.dropdown_menu.isOpen
+  );
 
   const { isDragging } = useDraggedFiles(node);
 
   const handleServiceWorkerPostMessage = ({ data }: MessageEvent) => {
-    if (data.type === 'navigate') {
+    if (data.type === "navigate") {
       history.push(data.path);
     } else {
-      console.warn('Unknown message type:', data.type);
+      console.warn("Unknown message type:", data.type);
     }
   };
 
@@ -292,19 +582,20 @@ const UI: React.FC<IUI> = ({ children }) => {
   const loadAccountData = () => {
     if (!account) return;
 
-    dispatch(expandHomeTimeline({}, () => {
-      dispatch(fetchSuggestionsForTimeline());
-    }));
+    dispatch(
+      expandHomeTimeline({}, () => {
+        dispatch(fetchSuggestionsForTimeline());
+      })
+    );
 
     dispatch(expandNotifications())
       // @ts-ignore
-      .then(() => dispatch(fetchMarker(['notifications'])))
+      .then(() => dispatch(fetchMarker(["notifications"])))
       .catch(console.error);
-
 
     if (account.staff) {
       dispatch(fetchReports({ resolved: false }));
-      dispatch(fetchUsers(['local', 'need_approval']));
+      dispatch(fetchUsers(["local", "need_approval"]));
     }
 
     if (account.admin) {
@@ -318,29 +609,31 @@ const UI: React.FC<IUI> = ({ children }) => {
     }
 
     setTimeout(() => dispatch(fetchScheduledStatuses()), 900);
-
   };
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', handleServiceWorkerPostMessage);
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener(
+        "message",
+        handleServiceWorkerPostMessage
+      );
     }
 
-    if (window.Notification?.permission === 'default') {
+    if (window.Notification?.permission === "default") {
       window.setTimeout(() => Notification.requestPermission(), 120 * 1000);
     }
   }, []);
 
   useEffect(() => {
-    document.addEventListener('dragenter', handleDragEnter);
-    document.addEventListener('dragleave', handleDragLeave);
-    document.addEventListener('dragover', handleDragOver);
-    document.addEventListener('drop', handleDrop);
+    document.addEventListener("dragenter", handleDragEnter);
+    document.addEventListener("dragleave", handleDragLeave);
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("drop", handleDrop);
     return () => {
-      document.removeEventListener('dragenter', handleDragEnter);
-      document.removeEventListener('dragleave', handleDragLeave);
-      document.removeEventListener('dragover', handleDragOver);
-      document.removeEventListener('drop', handleDrop);
+      document.removeEventListener("dragenter", handleDragEnter);
+      document.removeEventListener("dragleave", handleDragLeave);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("drop", handleDrop);
     };
   }, []);
 
@@ -359,42 +652,45 @@ const UI: React.FC<IUI> = ({ children }) => {
 
   const shouldHideFAB = (): boolean => {
     const path = location.pathname;
-    return Boolean(path.match(/^\/posts\/|^\/search|^\/getting-started|^\/chats/));
+    return Boolean(
+      path.match(/^\/posts\/|^\/search|^\/getting-started|^\/chats/)
+    );
   };
 
   // Wait for login to succeed or fail
   if (me === null) return null;
 
   const style: React.CSSProperties = {
-    pointerEvents: dropdownMenuIsOpen ? 'none' : undefined,
+    pointerEvents: dropdownMenuIsOpen ? "none" : undefined,
   };
 
   return (
     <GlobalHotkeys node={node}>
       <div ref={node} style={style}>
         <div
-          className={clsx('pointer-events-none fixed z-[90] h-screen w-screen transition', {
-            'backdrop-blur': isDragging,
-          })}
+          className={clsx(
+            "pointer-events-none fixed z-[90] h-screen w-screen transition",
+            {
+              "backdrop-blur": isDragging,
+            }
+          )}
         />
 
         <BackgroundShapes />
 
-        <div className='z-10 flex flex-col'>
+        <div className="z-10 flex flex-col">
           <Navbar />
 
           <Layout>
             <Layout.Sidebar>
-             <SidebarNavigation />
+              <SidebarNavigation />
             </Layout.Sidebar>
 
-            <SwitchingColumnsArea>
-              {children}
-            </SwitchingColumnsArea>
+            <SwitchingColumnsArea>{children}</SwitchingColumnsArea>
           </Layout>
 
-          {(me && !shouldHideFAB()) && (
-            <div className='fixed bottom-24 right-4 z-40 transition-all lg:hidden rtl:left-4 rtl:right-auto'>
+          {me && !shouldHideFAB() && (
+            <div className="fixed bottom-24 right-4 z-40 transition-all lg:hidden rtl:left-4 rtl:right-auto">
               <FloatingActionButton />
             </div>
           )}
@@ -406,8 +702,12 @@ const UI: React.FC<IUI> = ({ children }) => {
           )}
 
           {me && (
-            <div className='hidden xl:block'>
-              <Suspense fallback={<div className='fixed bottom-0 z-[99] flex h-16 w-96 animate-pulse flex-col rounded-t-lg bg-white shadow-3xl ltr:right-5 rtl:left-5 dark:bg-gray-900' />}>
+            <div className="hidden xl:block">
+              <Suspense
+                fallback={
+                  <div className="fixed bottom-0 z-[99] flex h-16 w-96 animate-pulse flex-col rounded-t-lg bg-white shadow-3xl ltr:right-5 rtl:left-5 dark:bg-gray-900" />
+                }
+              >
                 {/* TODO: Implement Chats <ChatWidget /> */}
               </Suspense>
             </div>
