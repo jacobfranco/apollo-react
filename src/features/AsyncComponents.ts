@@ -65,3 +65,8 @@ export const ProfileInfoPanel = lazy(() => import('./ProfileInfoPanel'));
 export const ProfileMediaPanel = lazy(() => import('./ProfileMediaPanel'));
 export const ProfileFieldsPanel = lazy(() => import('./ProfileFieldsPanel'));
 export const AccountTimeline = lazy(() => import('./AccountTimeline'));
+export const Followers = lazy(() => import('./Followers'));
+export const Following = lazy(() => import('./Followers'));
+export const LikedStatuses = lazy(() => import('./LikedStatuses'));
+export const PinnedStatuses = lazy(() => import('./PinnedStatuses'));
+export const Quotes = lazy(() => import('./Quotes'));

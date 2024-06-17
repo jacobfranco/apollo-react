@@ -13,6 +13,8 @@ import { relationshipSchema } from './relationship';
 const avatarMissing = require('src/assets/images/avatar-missing.png');
 const headerMissing = require('src/assets/images/header-missing.png');
 
+const birthdaySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
 const fieldSchema = z.object({
   name: z.string(),
   value: z.string(),
@@ -25,9 +27,11 @@ const baseAccountSchema = z.object({
   admin: z.boolean().catch(false),
   avatar: z.string().catch(avatarMissing),
   avatar_static: z.string().url().optional().catch(undefined),
+  birthday: birthdaySchema.nullish().catch(undefined),
   bot: z.boolean().catch(false),
   chats_onboarded: z.boolean().catch(true),
   created_at: z.string().datetime().catch(new Date().toUTCString()),
+  deactivated: z.boolean().catch(false),
   discoverable: z.boolean().catch(false),
   display_name: z.string().catch(''),
   fields: filteredArray(fieldSchema),
