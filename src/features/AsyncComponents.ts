@@ -12,7 +12,7 @@ export const CtaBanner = lazy(() => import('./CtaBanner'));
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement
 export const HomeTimeline = lazy(() => import('./HomeTimeline'));
 export const EmailConfirmation = lazy(() => import('./EmailConfirmation'));
-// export const ChatWidget = lazy(() => import('./ChatWidget'));
+export const ChatWidget = lazy(() => import('./chats/components/ChatWidget'));
 export const SidebarMenu = lazy(() => import('./SidebarMenu'));
 export const ProfileHoverCard = lazy(() => import('./ProfileHoverCard'));
 export const StatusHoverCard = lazy(() => import('./StatusHoverCard'));
