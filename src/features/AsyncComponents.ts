@@ -9,7 +9,6 @@ export const TrendsPanel = lazy(() => import('./TrendsPanel'));
 export const WhoToFollowPanel = lazy(() => import('./WhoToFollowPanel'));
 export const SignUpPanel = lazy(() => import('./SignUpPanel'));
 export const CtaBanner = lazy(() => import('./CtaBanner'));
-// export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement
 export const HomeTimeline = lazy(() => import('./HomeTimeline'));
 export const EmailConfirmation = lazy(() => import('./EmailConfirmation'));
 export const ChatWidget = lazy(() => import('./chats/components/ChatWidget'));
@@ -76,5 +75,9 @@ export const EditProfile = lazy(() => import('./EditProfile'));
 export const EditEmail = lazy(() => import('./EditEmail'));
 export const EditPassword = lazy(() => import('./EditPassword'));
 export const DeleteAccount = lazy(() => import('./DeleteAccount'));
-// export const ApolloConfig = lazy(() => import('./ApolloConfig'));
 export const AuthTokenList = lazy(() => import('./AuthTokenList'));
+export const ServerInfo = lazy(() => import('./ServerInfo'));
+export const Share = lazy(() => import('./Share'));
+// export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
+// export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
+// export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement

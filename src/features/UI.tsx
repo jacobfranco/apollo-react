@@ -74,7 +74,7 @@ import {
   // MfaForm,
   ChatIndex,
   ChatWidget,
-  // ServerInfo,
+  ServerInfo,
   // Dashboard,
   // ModerationLog,
   ScheduledStatuses,
@@ -83,7 +83,7 @@ import {
   SidebarMenu,
   ProfileHoverCard,
   StatusHoverCard,
-  // Share,
+  Share,
   NewStatus,
   // IntentionalError,
   // Developers,
@@ -476,9 +476,17 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       <WrappedRoute path='/soapbox/admin/log' staffOnly page={AdminPage} component={ModerationLog} content={children} exact />
       <WrappedRoute path='/soapbox/admin/users' staffOnly page={AdminPage} component={UserIndex} content={children} exact />
       <WrappedRoute path='/soapbox/admin/theme' staffOnly page={AdminPage} component={ThemeEditor} content={children} exact />
+
+      <WrappedRoute path='/about/:slug?' page={DefaultPage} component={AboutPage} publicRoute exact />
     
-      <WrappedRoute path='/info' page={EmptyPage} component={ServerInfo} content={children} />
+      
 */}
+
+<WrappedRoute path='/info' page={EmptyPage} component={ServerInfo} content={children} />
+
+<WrappedRoute path='/share' page={DefaultPage} component={Share} content={children} exact />
+
+
 
       {/* 
       <WrappedRoute path='/developers/apps/create' developerOnly page={DefaultPage} component={CreateApp} content={children} />
@@ -488,11 +496,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       <WrappedRoute path='/developers' page={DefaultPage} component={Developers} content={children} />
       <WrappedRoute path='/error/network' developerOnly page={EmptyPage} component={lazy(() => Promise.reject(new TypeError('Failed to fetch dynamically imported module: TEST')))} content={children} />
       <WrappedRoute path='/error' developerOnly page={EmptyPage} component={IntentionalError} content={children} />
-
-
-      <WrappedRoute path='/share' page={DefaultPage} component={Share} content={children} exact />
-
-      <WrappedRoute path='/about/:slug?' page={DefaultPage} component={AboutPage} publicRoute exact />
 
 */}
 
