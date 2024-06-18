@@ -76,5 +76,5 @@ export const EditProfile = lazy(() => import('./EditProfile'));
 export const EditEmail = lazy(() => import('./EditEmail'));
 export const EditPassword = lazy(() => import('./EditPassword'));
 export const DeleteAccount = lazy(() => import('./DeleteAccount'));
-export const ApolloConfig = lazy(() => import('./ApolloConfig'));
+// export const ApolloConfig = lazy(() => import('./ApolloConfig'));
 export const AuthTokenList = lazy(() => import('./AuthTokenList'));

@@ -33,6 +33,7 @@ import reports from './reports'
 import rules from './rules'
 import scheduled_statuses from './scheduled-statuses'
 import search from './search'
+import security from './security'
 import sidebar from './sidebar'
 import status_hover_card from './status-hover-card'
 import settings from './settings'
@@ -75,6 +76,7 @@ const reducers = {
   rules,
   scheduled_statuses,
   search,
+  security,
   settings,
   sidebar,
   status_hover_card,

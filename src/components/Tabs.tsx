@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Counter } from 'src/components';
 
-import './tabs.css';
+import './Tabs.css';
 
 const HORIZONTAL_PADDING = 8;
 const AnimatedContext = React.createContext(null);

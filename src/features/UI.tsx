@@ -70,7 +70,7 @@ import {
   EditPassword,
   EmailConfirmation,
   DeleteAccount,
-  ApolloConfig,
+  // ApolloConfig,
   // MfaForm,
   ChatIndex,
   // ChatWidget,
@@ -457,6 +457,8 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         component={Settings}
         content={children}
       />
+
+      { /*  
       <WrappedRoute
         path="/apollo/config"
         adminOnly
@@ -464,6 +466,8 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         component={ApolloConfig}
         content={children}
       />
+
+    */}
 
       {/* 
       <WrappedRoute path='/soapbox/admin' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
