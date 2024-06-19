@@ -1,11 +1,10 @@
-// TODO: Completely redo
-
 import axios, { Canceler } from 'axios';
 import { List as ImmutableList } from 'immutable';
 import throttle from 'lodash/throttle';
 import { defineMessages, IntlShape } from 'react-intl';
 
 import api from 'src/api';
+import { isNativeEmoji } from 'src/features/emoji';
 import emojiSearch from 'src/features/emoji/search';
 import { normalizeTag } from 'src/normalizers';
 import { selectAccount, selectOwnAccount } from 'src/selectors';
@@ -87,6 +86,8 @@ const COMPOSE_REMOVE_FROM_MENTIONS = 'COMPOSE_REMOVE_FROM_MENTIONS' as const;
 const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS' as const;
 
 const COMPOSE_EDITOR_STATE_SET = 'COMPOSE_EDITOR_STATE_SET' as const;
+
+const COMPOSE_CHANGE_MEDIA_ORDER = 'COMPOSE_CHANGE_MEDIA_ORDER' as const;
 
 const messages = defineMessages({
   scheduleError: { id: 'compose.invalid_schedule', defaultMessage: 'You must schedule a post at least 5 minutes out.' },
@@ -192,7 +193,7 @@ const cancelQuoteCompose = () => ({
 });
 
 const groupComposeModal = (group: Group) =>
-  (dispatch: AppDispatch) => {
+  (dispatch: AppDispatch, getState: () => RootState) => {
     const composeId = `group:${group.id}`;
 
     dispatch(groupCompose(composeId, group.id));
@@ -262,7 +263,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
   dispatch(submitComposeSuccess(composeId, { ...data }));
   toast.success(edit ? messages.editSuccess : messages.success, {
     actionLabel: messages.view,
-    actionLink: `/@${data.account.id}/posts/${data.id}`,
+    actionLink: `/@${data.account.acct}/posts/${data.id}`,
   });
 };
 
@@ -322,7 +323,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       return;
     }
 
-    const mentions: string[] | null = status.match(/(?:^|\s)@([a-z\d_-]+(?:@[^@\s]+)?)/gi);
+    const mentions: string[] | null = status.match(/(?:^|\s)@([^@\s]+(?:@[^@\s]+)?)/gi);
 
     if (mentions) {
       to = to.union(mentions.map(mention => mention.trim().slice(1)));
@@ -509,7 +510,7 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
   if (cancelFetchComposeSuggestions) {
     cancelFetchComposeSuggestions(composeId);
   }
-  api(getState).get('/api/accounts/search', {
+  api(getState).get('/api/v1/accounts/search', {
     cancelToken: new CancelToken(cancel => {
       cancelFetchComposeSuggestions = cancel;
     }),
@@ -529,7 +530,8 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
 }, 200, { leading: true, trailing: true });
 
 const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 });
+  const state = getState();
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }); // TODO: Maybe change
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
@@ -545,6 +547,22 @@ const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => Root
 
     return dispatch(updateSuggestionTags(composeId, token, currentTrends));
 
+  api(getState).get('/api/v2/search', {
+    cancelToken: new CancelToken(cancel => {
+      cancelFetchComposeSuggestions = cancel;
+    }),
+    params: {
+      q: token.slice(1),
+      limit: 10,
+      type: 'hashtags',
+    },
+  }).then(response => {
+    dispatch(updateSuggestionTags(composeId, token, response.data?.hashtags.map(normalizeTag)));
+  }).catch(error => {
+    if (!isCancel(error)) {
+      toast.showAlertForError(error);
+    }
+  });
 };
 
 const fetchComposeSuggestions = (composeId: string, token: string) =>
@@ -785,10 +803,19 @@ const removeFromMentions = (composeId: string, accountId: string) =>
     return dispatch(action);
   };
 
+
+
 const setEditorState = (composeId: string, editorState: EditorState | string | null) => ({
   type: COMPOSE_EDITOR_STATE_SET,
   id: composeId,
   editorState: editorState,
+});
+
+const changeMediaOrder = (composeId: string, a: string, b: string) => ({
+  type: COMPOSE_CHANGE_MEDIA_ORDER,
+  id: composeId,
+  a,
+  b,
 });
 
 type ComposeAction =
@@ -836,6 +863,7 @@ type ComposeAction =
   | ComposeAddToMentionsAction
   | ComposeRemoveFromMentionsAction
   | ReturnType<typeof setEditorState>
+  | ReturnType<typeof changeMediaOrder>
 
 export {
   COMPOSE_CHANGE,
@@ -883,6 +911,7 @@ export {
   COMPOSE_SET_STATUS,
   COMPOSE_EDITOR_STATE_SET,
   COMPOSE_SET_GROUP_TIMELINE_VISIBLE,
+  COMPOSE_CHANGE_MEDIA_ORDER,
   setComposeToStatus,
   changeCompose,
   replyCompose,
@@ -937,5 +966,6 @@ export {
   addToMentions,
   removeFromMentions,
   setEditorState,
+  changeMediaOrder,
   type ComposeAction,
 };

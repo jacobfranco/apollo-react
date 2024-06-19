@@ -1,10 +1,8 @@
 import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, Record as ImmutableRecord, fromJS } from 'immutable';
 import { v4 as uuid } from 'uuid';
 
-import { isNativeEmoji } from 'src/features/emoji';
 import { Account } from 'src/schemas';
 import { tagHistory } from 'src/settings';
-import { hasIntegerMediaIds } from 'src/utils/status';
 
 import {
   COMPOSE_CHANGE,
