@@ -2,8 +2,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { setFilter } from 'src/actions/notifications';
-import { Icon, Item, Tabs } from 'src/components';
+import { Icon, Tabs } from 'src/components';
 import { useAppDispatch, useSettings } from 'src/hooks';
+
+import type { Item } from 'src/components/Tabs';
 
 const messages = defineMessages({
   all: { id: 'notifications.filter.all', defaultMessage: 'All' },
