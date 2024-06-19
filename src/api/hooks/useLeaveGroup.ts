@@ -11,7 +11,7 @@ function useLeaveGroup(group: Group) {
 
   const { createEntity, isSubmitting } = useEntityActions<GroupRelationship>(
     [Entities.GROUP_RELATIONSHIPS, group.id],
-    { post: `/api/v1/groups/${group.id}/leave` },
+    { post: `/api/groups/${group.id}/leave` },
     { schema: groupRelationshipSchema },
   );
 

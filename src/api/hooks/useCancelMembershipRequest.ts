@@ -10,7 +10,7 @@ function useCancelMembershipRequest(group: Group) {
 
   const { createEntity, isSubmitting } = useCreateEntity(
     [Entities.GROUP_RELATIONSHIPS],
-    () => api.post(`/api/v1/groups/${group.id}/membership_requests/${me?.id}/reject`),
+    () => api.post(`/api/groups/${group.id}/membership_requests/${me?.id}/reject`),
   );
 
   return {

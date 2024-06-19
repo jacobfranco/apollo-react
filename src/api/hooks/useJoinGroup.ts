@@ -11,7 +11,7 @@ function useJoinGroup(group: Group) {
 
   const { createEntity, isSubmitting } = useEntityActions<GroupRelationship>(
     [Entities.GROUP_RELATIONSHIPS, group.id],
-    { post: `/api/v1/groups/${group.id}/join` },
+    { post: `/api/groups/${group.id}/join` },
     { schema: groupRelationshipSchema },
   );
 

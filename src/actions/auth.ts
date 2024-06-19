@@ -228,7 +228,7 @@ export const register = (params: Record<string, any>) =>
   // TODO: Remove and remove all associated functionality
   export const fetchCaptcha = () =>
   (_dispatch: AppDispatch, getState: () => RootState) => {
-    return api(getState).get('/api/pleroma/captcha');
+    return api(getState).get('/api/captcha');
   };
 
   export const fetchOwnAccounts = () =>

@@ -10,7 +10,7 @@ function useSuggestedGroups() {
 
   const { entities, ...result } = useEntities<Group>(
     [Entities.GROUPS, 'suggested'],
-    () => api.get('/api/v1/truth/suggestions/groups'),
+    () => api.get('/api/truth/suggestions/groups'),
     {
       schema: groupSchema,
       enabled: true,

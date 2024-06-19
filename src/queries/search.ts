@@ -10,7 +10,7 @@ export default function useAccountSearch(q: string) {
 
   const getAccountSearch = async(q: string, pageParam: { link?: string }): Promise<PaginatedResult<Account>> => {
     const nextPageLink = pageParam?.link;
-    const uri = nextPageLink || '/api/v1/accounts/search';
+    const uri = nextPageLink || '/api/accounts/search';
 
     const response = await api.get(uri, {
       params: {

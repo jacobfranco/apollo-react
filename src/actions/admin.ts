@@ -83,7 +83,7 @@ const fetchConfig = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_CONFIG_FETCH_REQUEST });
     return api(getState)
-      .get('/api/pleroma/admin/config')
+      .get('/api/admin/config')
       .then(({ data }) => {
         dispatch({ type: ADMIN_CONFIG_FETCH_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
@@ -95,7 +95,7 @@ const updateConfig = (configs: Record<string, any>[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_CONFIG_UPDATE_REQUEST, configs });
     return api(getState)
-      .post('/api/pleroma/admin/config', { configs })
+      .post('/api/admin/config', { configs })
       .then(({ data }) => {
         dispatch({ type: ADMIN_CONFIG_UPDATE_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
@@ -246,7 +246,7 @@ const deleteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_STATUS_DELETE_REQUEST, id });
     return api(getState)
-      .delete(`/api/pleroma/admin/statuses/${id}`)
+      .delete(`/api/admin/statuses/${id}`)
       .then(() => {
         dispatch({ type: ADMIN_STATUS_DELETE_SUCCESS, id });
       }).catch(error => {
@@ -258,7 +258,7 @@ const toggleStatusSensitivity = (id: string, sensitive: boolean) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_REQUEST, id });
     return api(getState)
-      .put(`/api/pleroma/admin/statuses/${id}`, { sensitive: !sensitive })
+      .put(`/api/admin/statuses/${id}`, { sensitive: !sensitive })
       .then(() => {
         dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_SUCCESS, id });
       }).catch(error => {
@@ -270,7 +270,7 @@ const fetchModerationLog = (params?: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ADMIN_LOG_FETCH_REQUEST });
     return api(getState)
-      .get('/api/pleroma/admin/moderation_log', { params })
+      .get('/api/admin/moderation_log', { params })
       .then(({ data }) => {
         dispatch({ type: ADMIN_LOG_FETCH_SUCCESS, items: data.items, total: data.total });
         return data;

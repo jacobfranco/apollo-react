@@ -72,7 +72,7 @@ interface AccountCredentialsSource {
 
 /**
  * Params to submit when updating an account.
- * @see PATCH /api/v1/accounts/update_credentials
+ * @see PATCH /api/accounts/update_credentials
  */
 interface AccountCredentials {
   /** Whether the account should be shown in the profile directory. */

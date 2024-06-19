@@ -106,7 +106,7 @@ const fetchAccountLikedStatuses = (accountId: string) =>
 
     dispatch(fetchAccountLikedStatusesRequest(accountId));
 
-    api(getState).get(`/api/pleroma/accounts/${accountId}/likes`).then(response => {
+    api(getState).get(`/api/accounts/${accountId}/likes`).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
       dispatch(fetchAccountLikedStatusesSuccess(accountId, response.data, next ? next.uri : null));
