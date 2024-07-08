@@ -78,6 +78,7 @@ export const DeleteAccount = lazy(() => import('./DeleteAccount'));
 export const AuthTokenList = lazy(() => import('./AuthTokenList'));
 export const ServerInfo = lazy(() => import('./ServerInfo'));
 export const Share = lazy(() => import('./Share'));
+export const Games = lazy(() => import('./Games'));
 // export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
 // export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement

@@ -1,20 +1,28 @@
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { Stack } from 'src/components';
-import { useStatContext } from 'src/contexts/stat-context';
-import ComposeButton from 'src/features/ComposeButton';
-import { useAppSelector, useGroupsPath, useOwnAccount, useSettings } from 'src/hooks';
+import { Stack } from "src/components";
+import { useStatContext } from "src/contexts/stat-context";
+import ComposeButton from "src/features/ComposeButton";
+import {
+  useAppSelector,
+  useGroupsPath,
+  useOwnAccount,
+  useSettings,
+} from "src/hooks";
 
-import DropdownMenu, { Menu } from './dropdown-menu';
-import SidebarNavigationLink from './SidebarNavigationLink';
+import DropdownMenu, { Menu } from "./dropdown-menu";
+import SidebarNavigationLink from "./SidebarNavigationLink";
 
 const messages = defineMessages({
-  follow_requests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
-  bookmarks: { id: 'column.bookmarks', defaultMessage: 'Bookmarks' },
-  lists: { id: 'column.lists', defaultMessage: 'Lists' },
-  events: { id: 'column.events', defaultMessage: 'Events' },
-  developers: { id: 'navigation.developers', defaultMessage: 'Developers' },
+  follow_requests: {
+    id: "navigation_bar.follow_requests",
+    defaultMessage: "Follow requests",
+  },
+  bookmarks: { id: "column.bookmarks", defaultMessage: "Bookmarks" },
+  lists: { id: "column.lists", defaultMessage: "Lists" },
+  events: { id: "column.events", defaultMessage: "Events" },
+  developers: { id: "navigation.developers", defaultMessage: "Developers" },
 });
 
 /** Desktop sidebar with links to different views in the app. */
@@ -24,36 +32,42 @@ const SidebarNavigation = () => {
 
   const { isDeveloper } = useSettings();
   const { account } = useOwnAccount();
-  const groupsPath = useGroupsPath(); 
+  const groupsPath = useGroupsPath();
 
-  const notificationCount = useAppSelector((state) => state.notifications.unread);
+  const notificationCount = useAppSelector(
+    (state) => state.notifications.unread
+  );
 
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
-  const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
+  const followRequestsCount = useAppSelector((state) =>
+    state.user_lists.follow_requests.items.count()
+  );
+  const dashboardCount = useAppSelector(
+    (state) =>
+      state.admin.openReports.count() + state.admin.awaitingApproval.count()
+  );
   const makeMenu = (): Menu => {
     const menu: Menu = [];
 
     if (account) {
-      if ( followRequestsCount > 0) {  
+      if (followRequestsCount > 0) {
         menu.push({
-          to: '/follow_requests',
+          to: "/follow_requests",
           text: intl.formatMessage(messages.follow_requests),
-          icon: require('@tabler/icons/outline/user-plus.svg'),
+          icon: require("@tabler/icons/outline/user-plus.svg"),
           count: followRequestsCount,
         });
       }
 
-        menu.push({ 
-          to: '/bookmarks',
-          text: intl.formatMessage(messages.bookmarks),
-          icon: require('@tabler/icons/outline/bookmark.svg'),
-        });
-
+      menu.push({
+        to: "/bookmarks",
+        text: intl.formatMessage(messages.bookmarks),
+        icon: require("@tabler/icons/outline/bookmark.svg"),
+      });
 
       if (isDeveloper) {
         menu.push({
-          to: '/developers',
-          icon: require('@tabler/icons/outline/code.svg'),
+          to: "/developers",
+          icon: require("@tabler/icons/outline/code.svg"),
           text: intl.formatMessage(messages.developers),
         });
       }
@@ -66,15 +80,15 @@ const SidebarNavigation = () => {
 
   /** Conditionally render the supported messages link */
   const renderMessagesLink = (): React.ReactNode => {
-      return (
-        <SidebarNavigationLink
-          to='/chats'
-          icon={require('@tabler/icons/outline/messages.svg')}
-          count={unreadChatsCount}
-          countMax={9}
-          text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
-        />
-      );
+    return (
+      <SidebarNavigationLink
+        to="/chats"
+        icon={require("@tabler/icons/outline/messages.svg")}
+        count={unreadChatsCount}
+        countMax={9}
+        text={<FormattedMessage id="navigation.chats" defaultMessage="Chats" />}
+      />
+    );
 
     /*  TODO: Decide if we can get rid of this
     if (features.directTimeline || features.conversations) {
@@ -89,66 +103,99 @@ const SidebarNavigation = () => {
 
     return null;
 
-        */ 
+        */
   };
 
   return (
     <Stack space={4}>
       <Stack space={2}>
         <SidebarNavigationLink
-          to='/'
-          icon={require('@tabler/icons/outline/home.svg')}
-          activeIcon={require('@tabler/icons/filled/home.svg')}
-          text={<FormattedMessage id='tabs_bar.home' defaultMessage='Home' />}
+          to="/"
+          icon={require("@tabler/icons/outline/home.svg")}
+          activeIcon={require("@tabler/icons/filled/home.svg")}
+          text={<FormattedMessage id="tabs_bar.home" defaultMessage="Home" />}
         />
 
         <SidebarNavigationLink
-          to='/search'
-          icon={require('@tabler/icons/outline/search.svg')}
-          text={<FormattedMessage id='tabs_bar.search' defaultMessage='Search' />}
+          to="/search"
+          icon={require("@tabler/icons/outline/search.svg")}
+          text={
+            <FormattedMessage id="tabs_bar.search" defaultMessage="Search" />
+          }
         />
 
-        {/* TODO: eSports Info Should be Visible without an account */}
+<SidebarNavigationLink
+          to="/games"
+          icon={require("@tabler/icons/outline/device-gamepad-2.svg")}
+          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Games" />}
+        />
 
         {account && (
           <>
             <SidebarNavigationLink
-              to='/notifications'
-              icon={require('@tabler/icons/outline/bell.svg')}
-              activeIcon={require('@tabler/icons/filled/bell.svg')}
+              to="/notifications"
+              icon={require("@tabler/icons/outline/bell.svg")}
+              activeIcon={require("@tabler/icons/filled/bell.svg")}
               count={notificationCount}
-              text={<FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' />}
+              text={
+                <FormattedMessage
+                  id="tabs_bar.notifications"
+                  defaultMessage="Notifications"
+                />
+              }
             />
 
-            {renderMessagesLink() /* TODO: Maybe just replace with the component defined in the function */ }
+            {
+              renderMessagesLink() /* TODO: Maybe just replace with the component defined in the function */
+            }
 
-              <SidebarNavigationLink
-                to={groupsPath}
-                icon={require('@tabler/icons/outline/circles.svg')}
-                activeIcon={require('@tabler/icons/filled/circles.svg')}
-                text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
-              />
+            <SidebarNavigationLink
+              to={groupsPath}
+              icon={require("@tabler/icons/outline/circles.svg")}
+              activeIcon={require("@tabler/icons/filled/circles.svg")}
+              text={
+                <FormattedMessage
+                  id="tabs_bar.groups"
+                  defaultMessage="Groups"
+                />
+              }
+            />
 
             <SidebarNavigationLink
               to={`/@${account.id}`}
-              icon={require('@tabler/icons/outline/user.svg')}
-              activeIcon={require('@tabler/icons/filled/user.svg')}
-              text={<FormattedMessage id='tabs_bar.profile' defaultMessage='Profile' />}
+              icon={require("@tabler/icons/outline/user.svg")}
+              activeIcon={require("@tabler/icons/filled/user.svg")}
+              text={
+                <FormattedMessage
+                  id="tabs_bar.profile"
+                  defaultMessage="Profile"
+                />
+              }
             />
 
             <SidebarNavigationLink
-              to='/settings'
-              icon={require('@tabler/icons/outline/settings.svg')}
-              activeIcon={require('@tabler/icons/filled/settings.svg')}
-              text={<FormattedMessage id='tabs_bar.settings' defaultMessage='Settings' />}
+              to="/settings"
+              icon={require("@tabler/icons/outline/settings.svg")}
+              activeIcon={require("@tabler/icons/filled/settings.svg")}
+              text={
+                <FormattedMessage
+                  id="tabs_bar.settings"
+                  defaultMessage="Settings"
+                />
+              }
             />
 
-            {account.staff && (  
+            {account.staff && (
               <SidebarNavigationLink
-                to='/apollo/admin'  
-                icon={require('@tabler/icons/outline/dashboard.svg')}
+                to="/apollo/admin"
+                icon={require("@tabler/icons/outline/dashboard.svg")}
                 count={dashboardCount}
-                text={<FormattedMessage id='tabs_bar.dashboard' defaultMessage='Dashboard' />}
+                text={
+                  <FormattedMessage
+                    id="tabs_bar.dashboard"
+                    defaultMessage="Dashboard"
+                  />
+                }
               />
             )}
           </>
@@ -176,18 +223,18 @@ const SidebarNavigation = () => {
             ) */}
 
         {menu.length > 0 && (
-          <DropdownMenu items={menu} placement='top'>
+          <DropdownMenu items={menu} placement="top">
             <SidebarNavigationLink
-              icon={require('@tabler/icons/outline/dots-circle-horizontal.svg')}
-              text={<FormattedMessage id='tabs_bar.more' defaultMessage='More' />}
+              icon={require("@tabler/icons/outline/dots-circle-horizontal.svg")}
+              text={
+                <FormattedMessage id="tabs_bar.more" defaultMessage="More" />
+              }
             />
           </DropdownMenu>
         )}
       </Stack>
 
-      {account && (
-        <ComposeButton />
-      )}
+      {account && <ComposeButton />}
     </Stack>
   );
 };

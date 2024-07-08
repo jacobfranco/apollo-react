@@ -31,6 +31,7 @@ import {
 import ChatsPage from "src/pages/ChatsPage";
 import DefaultPage from "src/pages/DefaultPage";
 import EmptyPage from "src/pages/EmptyPage";
+import GamesPage from 'src/pages/GamesPage';
 // import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
 // import GroupsPage from 'src/pages/GroupsPage';
 // import GroupsPendingPage from 'src/pages/GroupsPendingPage';
@@ -112,6 +113,7 @@ import {
   // GroupMembershipRequests,
   // EditGroup,
   FollowedTags,
+  Games,
   // AboutPage,
   Signup,
   Login,
@@ -228,6 +230,15 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
+
+<WrappedRoute
+        path="/games"
+        page={GamesPage}
+        component={Games}
+        content={children}
+        publicRoute
+      />
+
       <WrappedRoute
         path="/suggestions"
         publicRoute
