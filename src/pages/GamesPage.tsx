@@ -1,15 +1,16 @@
-// src/pages/GamesPage.tsx
 import React from 'react';
 import { Layout } from 'src/components';
-import { Link } from 'react-router-dom';
-import Games from '../features/Games';
 
-const GamesPage: React.FC = () => {
+interface GamesPageProps {
+  children: React.ReactNode;
+}
+
+const GamesPage: React.FC<GamesPageProps> = ({ children }) => {
   return (
     <>
       <Layout.Main>
         <h1 className="text-2xl font-bold mb-6">Games</h1>
-        <Games />
+        {children}
       </Layout.Main>
       <Layout.Aside />
     </>

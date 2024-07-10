@@ -35,7 +35,7 @@ const LoLScoreboard: React.FC<LoLScoreboardProps> = ({
   const history = useHistory();
 
   const handleClick = () => {
-    history.push(`/game/${gameId}`);
+    history.push(`/game/lol/${gameId}`);
   };
 
   return (

@@ -31,7 +31,7 @@ import {
 import ChatsPage from "src/pages/ChatsPage";
 import DefaultPage from "src/pages/DefaultPage";
 import EmptyPage from "src/pages/EmptyPage";
-import GamesPage from 'src/pages/GamesPage';
+import GamesPage from "src/pages/GamesPage";
 // import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
 // import GroupsPage from 'src/pages/GroupsPage';
 // import GroupsPendingPage from 'src/pages/GroupsPendingPage';
@@ -113,7 +113,6 @@ import {
   // GroupMembershipRequests,
   // EditGroup,
   FollowedTags,
-  Games,
   // AboutPage,
   Signup,
   Login,
@@ -121,6 +120,8 @@ import {
   PasswordResetConfirm,
   SignupInvite,
   LandingTimeline,
+  GamePage,
+  Games,
 } from "./AsyncComponents";
 import GlobalHotkeys from "./GlobalHotkeys";
 import { WrappedRoute } from "src/utils/react-router-helpers";
@@ -230,11 +231,17 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
-
-<WrappedRoute
+      <WrappedRoute
         path="/games"
         page={GamesPage}
         component={Games}
+        content={children}
+        publicRoute
+      />
+      <WrappedRoute
+        path="/games/:gameName"
+        page={GamesPage}
+        component={GamePage}
         content={children}
         publicRoute
       />
@@ -469,7 +476,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
       />
 
-      { /*  
+      {/*  
       <WrappedRoute
         path="/apollo/config"
         adminOnly
@@ -493,11 +500,20 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       
 */}
 
-<WrappedRoute path='/info' page={EmptyPage} component={ServerInfo} content={children} />
+      <WrappedRoute
+        path="/info"
+        page={EmptyPage}
+        component={ServerInfo}
+        content={children}
+      />
 
-<WrappedRoute path='/share' page={DefaultPage} component={Share} content={children} exact />
-
-
+      <WrappedRoute
+        path="/share"
+        page={DefaultPage}
+        component={Share}
+        content={children}
+        exact
+      />
 
       {/* 
       <WrappedRoute path='/developers/apps/create' developerOnly page={DefaultPage} component={CreateApp} content={children} />
