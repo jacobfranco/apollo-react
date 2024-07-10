@@ -10,7 +10,6 @@ const Games: React.FC = () => {
         <Link key={game.path} to={`/games/${game.path}`} className="block p-4 bg-blue-500 text-white rounded-lg">
           <div className="flex flex-col items-center">
             <h2 className="text-xl font-bold">{game.name}</h2>
-            <p>View timeline and stats</p>
           </div>
         </Link>
       ))}

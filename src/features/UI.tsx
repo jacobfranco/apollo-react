@@ -231,13 +231,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
-      <WrappedRoute
-        path="/games"
-        page={GamesPage}
-        component={Games}
-        content={children}
-        publicRoute
-      />
+
       <WrappedRoute
         path="/games/:gameName"
         page={GamesPage}
@@ -245,6 +239,15 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
+
+      <WrappedRoute
+        path="/games"
+        page={GamesPage}
+        component={Games}
+        content={children}
+        publicRoute
+      />
+
 
       <WrappedRoute
         path="/suggestions"
