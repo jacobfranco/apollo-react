@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Route, Switch } from 'react-router-dom';
-import { initialLoLScoreboardState } from 'src/slices/LoLScoreboardSlice';
-import { initialValorantScoreboardState } from 'src/slices/ValorantScoreboardSlice';
+import { initialLoLScoreboardState } from 'src/slices/lol-scoreboard';
+import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
 import gameConfig from 'src/game-config';
 import GamePageMenu from 'src/components/GamePageMenu';
 import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboards';

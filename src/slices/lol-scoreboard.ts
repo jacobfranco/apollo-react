@@ -77,3 +77,4 @@ export const initialLoLScoreboardState: LoLScoreboardState = {
     },
   ],
 };
+
