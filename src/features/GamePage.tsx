@@ -1,9 +1,10 @@
+// src/pages/GamePage.tsx
 import React from 'react';
 import { useParams, Route, Switch } from 'react-router-dom';
-import LoLScoreboard from 'src/components/LoLScoreboard';
 import { initialLoLScoreboardState } from 'src/slices/LoLScoreboardSlice';
 import gameConfig from 'src/game-config';
 import GamePageMenu from 'src/components/GamePageMenu';
+import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboards';
 
 const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
@@ -13,20 +14,27 @@ const GamePage: React.FC = () => {
     return <div className="text-center text-red-500">Invalid game name</div>;
   }
 
+  const ScoreboardComponent = getScoreboardComponent(game.path);
+
   const renderEsportContent = () => {
     const { games } = initialLoLScoreboardState;
+
+    if (!ScoreboardComponent) {
+      return <div>Scoreboard component not found for {game.name}</div>;
+    }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {games.map((game) => (
-          <LoLScoreboard 
-            key={game.id} 
-            gameId={game.id} 
-            team1={game.team1} 
-            team2={game.team2} 
-            seriesInfo={game.seriesInfo} 
-            gameNumber={game.gameNumber} 
-            leadingTeam={game.leadingTeam} 
-            leadingScore={game.leadingScore} 
+          <ScoreboardComponent
+            key={game.id}
+            gameId={game.id}
+            team1={game.team1}
+            team2={game.team2}
+            seriesInfo={game.seriesInfo}
+            gameNumber={game.gameNumber}
+            leadingTeam={game.leadingTeam}
+            leadingScore={game.leadingScore}
           />
         ))}
       </div>

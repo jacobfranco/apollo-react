@@ -2,6 +2,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
+import { ScoreboardProps } from './Scoreboards';
 
 interface Team {
   name: string;
@@ -13,8 +14,7 @@ interface Team {
   seed: number;
 }
 
-interface LoLScoreboardProps {
-  gameId: number;
+interface LoLScoreboardProps extends ScoreboardProps {
   team1: Team;
   team2: Team;
   seriesInfo: string;
