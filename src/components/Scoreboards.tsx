@@ -1,6 +1,5 @@
 import LoLScoreboard from './LoLScoreboard';
-import LoLScoreboardProps from './LoLScoreboard';
-// import other scoreboards as they are implemented
+import ValorantScoreboard from './ValorantScoreboard';
 
 export interface ScoreboardProps {
   gameId: number;
@@ -12,7 +11,7 @@ type ScoreboardComponent = React.FC<ScoreboardProps>;
 
 const scoreboardComponents: { [key: string]: React.FC<any> } = {
   lol: LoLScoreboard,
-  // Add other scoreboards here
+  valorant: ValorantScoreboard,
 };
 
 export const getScoreboardComponent = (gamePath: string): ScoreboardComponent | null => {

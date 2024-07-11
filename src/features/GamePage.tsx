@@ -1,7 +1,7 @@
-// src/pages/GamePage.tsx
 import React from 'react';
 import { useParams, Route, Switch } from 'react-router-dom';
 import { initialLoLScoreboardState } from 'src/slices/LoLScoreboardSlice';
+import { initialValorantScoreboardState } from 'src/slices/ValorantScoreboardSlice';
 import gameConfig from 'src/game-config';
 import GamePageMenu from 'src/components/GamePageMenu';
 import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboards';
@@ -16,27 +16,59 @@ const GamePage: React.FC = () => {
 
   const ScoreboardComponent = getScoreboardComponent(game.path);
 
-  const renderEsportContent = () => {
-    const { games } = initialLoLScoreboardState;
-
+  const renderScoresContent = () => {
     if (!ScoreboardComponent) {
       return <div>Scoreboard component not found for {game.name}</div>;
     }
 
+    switch (game.path) {
+      case 'lol': {
+        const { games } = initialLoLScoreboardState;
+
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {games.map((game) => (
+              <ScoreboardComponent
+                key={game.id}
+                gameId={game.id}
+                team1={game.team1}
+                team2={game.team2}
+                seriesInfo={game.seriesInfo}
+                gameNumber={game.gameNumber}
+                leadingTeam={game.leadingTeam}
+                leadingScore={game.leadingScore}
+              />
+            ))}
+          </div>
+        );
+      }
+      case 'valorant': {
+        const { games } = initialValorantScoreboardState;
+
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {games.map((game) => (
+              <ScoreboardComponent
+                key={game.id}
+                gameId={game.id}
+                team1={game.team1}
+                team2={game.team2}
+                matchInfo={game.matchInfo}
+              />
+            ))}
+          </div>
+        );
+      }
+      default:
+        return <div>Unsupported game type for scores content</div>;
+    }
+  };
+
+  const renderEsportContent = () => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {games.map((game) => (
-          <ScoreboardComponent
-            key={game.id}
-            gameId={game.id}
-            team1={game.team1}
-            team2={game.team2}
-            seriesInfo={game.seriesInfo}
-            gameNumber={game.gameNumber}
-            leadingTeam={game.leadingTeam}
-            leadingScore={game.leadingScore}
-          />
-        ))}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">{game.name} Esports</h2>
+        {/* Additional esports content can go here */}
       </div>
     );
   };
@@ -61,7 +93,7 @@ const GamePage: React.FC = () => {
         {game.isEsport && (
           <>
             <Route path={`/games/${gameName}/scores`}>
-              <div>Scores Content</div>
+              {renderScoresContent()}
             </Route>
             <Route path={`/games/${gameName}/standings`}>
               <div>Standings Content</div>
