@@ -5,6 +5,8 @@ import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
 import gameConfig from 'src/game-config';
 import GamePageMenu from 'src/components/GamePageMenu';
 import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboards';
+import LolScoreboardDetail from 'src/components/LolScoreboardDetail';
+import ValorantScoreboardDetail from 'src/components/ValorantScoreboardDetail';
 
 const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
@@ -92,6 +94,7 @@ const GamePage: React.FC = () => {
         </Route>
         {game.isEsport && (
           <>
+           <Route path={`/games/${gameName}/scores/:gameId/details`} component={game.path === 'lol' ? LolScoreboardDetail : ValorantScoreboardDetail} />
             <Route path={`/games/${gameName}/scores`}>
               {renderScoresContent()}
             </Route>
