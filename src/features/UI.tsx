@@ -122,6 +122,13 @@ import {
   LandingTimeline,
   GamePage,
   Games,
+  CommunityTab,
+  ScoreDetailsTab,
+  ScoresTab,
+  StatsTab,
+  StandingsTab,
+  FantasyTab,
+  MediaTab
 } from "./AsyncComponents";
 import GlobalHotkeys from "./GlobalHotkeys";
 import { WrappedRoute } from "src/utils/react-router-helpers";
@@ -236,7 +243,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         path="/games/:gameName"
         page={GamesPage}
         component={GamePage}
-        content={children}
         publicRoute
       />
 
