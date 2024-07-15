@@ -1,13 +1,12 @@
 import React from 'react';
-import { useParams, Route, Switch } from 'react-router-dom';
+import { useParams, Route, Switch, Link, BrowserRouter as Router } from 'react-router-dom';
 import { initialLoLScoreboardState } from 'src/slices/lol-scoreboard';
 import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
 import gameConfig from 'src/game-config';
 import GamePageMenu from 'src/components/GamePageMenu';
-import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboards';
+import { getScoreboardComponent, ScoreboardProps } from 'src/components/Scoreboard';
 import LolScoreboardDetail from 'src/components/LolScoreboardDetail';
 import ValorantScoreboardDetail from 'src/components/ValorantScoreboardDetail';
-
 const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
   const game = gameConfig.find(g => g.path === gameName);
@@ -30,16 +29,17 @@ const GamePage: React.FC = () => {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {games.map((game) => (
-              <ScoreboardComponent
-                key={game.id}
-                gameId={game.id}
-                team1={game.team1}
-                team2={game.team2}
-                seriesInfo={game.seriesInfo}
-                gameNumber={game.gameNumber}
-                leadingTeam={game.leadingTeam}
-                leadingScore={game.leadingScore}
-              />
+              <Link key={game.id} to={`/games/${gameName}/scores/${game.id}`}>
+                <ScoreboardComponent
+                  gameId={game.id}
+                  team1={game.team1}
+                  team2={game.team2}
+                  seriesInfo={game.seriesInfo}
+                  gameNumber={game.gameNumber}
+                  leadingTeam={game.leadingTeam}
+                  leadingScore={game.leadingScore}
+                />
+              </Link>
             ))}
           </div>
         );
@@ -50,13 +50,14 @@ const GamePage: React.FC = () => {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {games.map((game) => (
-              <ScoreboardComponent
-                key={game.id}
-                gameId={game.id}
-                team1={game.team1}
-                team2={game.team2}
-                matchInfo={game.matchInfo}
-              />
+              <Link key={game.id} to={`/games/${gameName}/scores/${game.id}`}>
+                <ScoreboardComponent
+                  gameId={game.id}
+                  team1={game.team1}
+                  team2={game.team2}
+                  matchInfo={game.matchInfo}
+                />
+              </Link>
             ))}
           </div>
         );
@@ -64,6 +65,11 @@ const GamePage: React.FC = () => {
       default:
         return <div>Unsupported game type for scores content</div>;
     }
+  };
+
+  const renderScoreDetailsContent = () => {
+    console.log("rendering score details")
+return <div>Score Details for {game.path} </div>
   };
 
   const renderEsportContent = () => {
@@ -89,30 +95,32 @@ const GamePage: React.FC = () => {
     <div className="flex flex-col items-center">
       <GamePageMenu />
       <Switch>
-        <Route path={`/games/${gameName}/community`}>
+        <Route path={`/games/:gameName/community`}>
           <div>Community Content</div>
         </Route>
         {game.isEsport && (
           <>
-           <Route path={`/games/${gameName}/scores/:gameId/details`} component={game.path === 'lol' ? LolScoreboardDetail : ValorantScoreboardDetail} />
-            <Route path={`/games/${gameName}/scores`}>
+            <Route path={`/games/:gameName/scores/:gameId`}>
+              {renderScoreDetailsContent()}
+            </Route>
+            <Route path={`/games/:gameName/scores`} exact>
               {renderScoresContent()}
             </Route>
-            <Route path={`/games/${gameName}/standings`}>
+            <Route path={`/games/:gameName/standings`}>
               <div>Standings Content</div>
             </Route>
-            <Route path={`/games/${gameName}/stats`}>
+            <Route path={`/games/:gameName/stats`}>
               <div>Stats Content</div>
             </Route>
-            <Route path={`/games/${gameName}/fantasy`}>
+            <Route path={`/games/:gameName/fantasy`}>
               <div>Fantasy Content</div>
             </Route>
           </>
         )}
-        <Route path={`/games/${gameName}/media`}>
+        <Route path={`/games/:gameName/media`}>
           <div>Media Content</div>
         </Route>
-        <Route path={`/games/${gameName}`}>
+        <Route path={`/games/:gameName`}>
           {game.isEsport ? renderEsportContent() : renderNonEsportContent()}
         </Route>
       </Switch>
