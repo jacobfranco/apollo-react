@@ -8,7 +8,6 @@ const LolScoreboardDetail: React.FC = () => {
     <div>
       <h2>LoL Scoreboard Detail for Game {gameId}</h2>
       {/* Render detailed information for the LoL game */}
-      <p> Test </p>
     </div>
   );
 };

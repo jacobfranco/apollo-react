@@ -124,7 +124,7 @@ const SidebarNavigation = () => {
           }
         />
 
-<SidebarNavigationLink
+        <SidebarNavigationLink
           to="/games"
           icon={require("@tabler/icons/outline/device-gamepad-2.svg")}
           text={<FormattedMessage id="tabs_bar.games" defaultMessage="Games" />}
