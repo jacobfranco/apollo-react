@@ -22,7 +22,7 @@ const ValorantScoreboard: React.FC<ValorantScoreboardProps> = ({
   matchInfo,
 }) => {
   return (
-    <Link to={`/games/valorant/${gameId}`} className={clsx("cursor-pointer p-4 rounded-xl shadow-lg bg-white dark:bg-accent-700 text-gray-900 dark:text-gray-100 grid grid-rows-[auto_1fr_auto] gap-4 max-w-lg mx-auto")}>
+    <Link to={`/games/valorant/scores/${gameId}`} className={clsx("cursor-pointer p-4 rounded-xl shadow-lg bg-white dark:bg-accent-700 text-gray-900 dark:text-gray-100 grid grid-rows-[auto_1fr_auto] gap-4 max-w-lg mx-auto")}>
       <div className="text-lg font-bold text-red-500">{matchInfo}</div>
       <div className="grid grid-cols-2 gap-4 items-center">
         <div className="flex flex-col items-center">

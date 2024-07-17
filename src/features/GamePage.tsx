@@ -1,39 +1,73 @@
-import React from 'react';
-import { Route, Switch, Redirect, useParams } from 'react-router-dom';
-import gameConfig from 'src/game-config';
-import GamePageMenu from 'src/components/GamePageMenu';
-import {
-  CommunityTab,
-  ScoreDetailsTab,
-  ScoresTab,
-  StandingsTab,
-  StatsTab,
-  FantasyTab,
-  MediaTab
-} from 'src/features/AsyncComponents'
+import clsx from 'clsx';
+import React, { useRef } from 'react';
+import { defineMessages, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
-const GamePage: React.FC = () => {
-  const { gameName } = useParams<{ gameName: string }>();
-  const game = gameConfig.find(g => g.path === gameName);
+import { HStack, Tabs } from 'src/components';
 
-  if (!game) {
-    return <div className="text-center text-red-500">Invalid game name</div>;
-  }
+import type { VirtuosoHandle } from 'react-virtuoso';
+
+import { ScoresTab, StandingsTab, StatsTab } from './AsyncComponents'
+
+const messages = defineMessages({
+  scores: { id: 'game_page.scores', defaultMessage: 'Scores' },
+  standings: { id: 'game_page.standings', defaultMessage: 'Standings' },
+  stats: { id: 'game_page.stats', defaultMessage: 'Stats' },
+});
+
+const GamePage = () => {
+  const node = useRef<VirtuosoHandle>(null);
+
+  const intl = useIntl();
+
+  const [selectedTab, setSelectedTab] = React.useState('scores');
+
+  const selectTab = (tab: string) => setSelectedTab(tab);
+
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case 'scores':
+        return <ScoresTab />;
+      case 'standings':
+        return <StandingsTab />;
+      case 'stats':
+        return <StatsTab />;
+      default:
+        return null;
+    }
+  };
+
+  const renderFilterBar = () => {
+    const items = [
+      {
+        text: intl.formatMessage(messages.scores),
+        action: () => selectTab('scores'),
+        name: 'scores',
+      },
+      {
+        text: intl.formatMessage(messages.standings),
+        action: () => selectTab('standings'),
+        name: 'standings',
+      },
+      {
+        text: intl.formatMessage(messages.stats),
+        action: () => selectTab('stats'),
+        name: 'stats',
+      },
+    ];
+
+    return <Tabs items={items} activeItem={selectedTab} />;
+  };
 
   return (
-    <div className="flex flex-col items-center">
-      <GamePageMenu />
-      <Switch>
-        <Route path={`/games/:gameName/community`} component={CommunityTab} />
-        <Route path={`/games/:gameName/scores/:gameId`} component={ScoreDetailsTab} />
-        <Route path={`/games/:gameName/scores`} component={ScoresTab} />
-        <Route path={`/games/:gameName/standings`} component={StandingsTab} />
-        <Route path={`/games/:gameName/stats`} component={StatsTab} />
-        <Route path={`/games/:gameName/fantasy`} component={FantasyTab} />
-        <Route path={`/games/:gameName/media`} component={MediaTab} />
-        <Redirect exact from="/games/:gameName" to="/games/:gameName/community" />
-      </Switch>
-    </div>
+    <>
+      <HStack className='mb-4 border-b border-solid border-gray-200 px-2 pb-4 dark:border-gray-800' space={2}>
+      </HStack>
+      {renderFilterBar()}
+      <div className="tab-content">
+        {renderTabContent()}
+      </div>
+    </>
   );
 };
 

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import LoLScoreboard from 'src/components/LoLScoreboard';
+import ValorantScoreboard from 'src/components/ValorantScoreboard'
 import { initialLoLScoreboardState } from 'src/slices/lol-scoreboard';
 import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
-import { getScoreboardComponent } from 'src/components/Scoreboard';
 import gameConfig from 'src/game-config';
 
 const ScoresTab: React.FC = () => {
@@ -13,12 +14,7 @@ const ScoresTab: React.FC = () => {
     return <div className="text-center text-red-500">Invalid game name</div>;
   }
 
-  const ScoreboardComponent = getScoreboardComponent(game.path);
-
   const renderScoresContent = () => {
-    if (!ScoreboardComponent) {
-      return <div>Scoreboard component not found for {game.name}</div>;
-    }
 
     switch (game.path) {
       case 'lol': {
@@ -28,7 +24,7 @@ const ScoresTab: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {games.map((game) => (
               <Link key={game.id} to={`/games/${gameName}/scores/${game.id}`}>
-                <ScoreboardComponent
+                <LoLScoreboard
                   gameId={game.id}
                   team1={game.team1}
                   team2={game.team2}
@@ -49,7 +45,7 @@ const ScoresTab: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {games.map((game) => (
               <Link key={game.id} to={`/games/${gameName}/scores/${game.id}`}>
-                <ScoreboardComponent
+                <ValorantScoreboard
                   gameId={game.id}
                   team1={game.team1}
                   team2={game.team2}

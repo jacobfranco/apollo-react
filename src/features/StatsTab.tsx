@@ -1,7 +1,10 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
 const StatsTab: React.FC = () => {
-  return <div>Stats Content</div>;
+  const { gameName } = useParams<{ gameName: string }>();
+
+  return <div>Stats for: {gameName}</div>;
 };
 
 export default StatsTab;
