@@ -8,6 +8,7 @@ import { HStack, Tabs } from 'src/components';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
 import { ScoresTab, StandingsTab, StatsTab } from './AsyncComponents'
+import gameConfig from 'src/game-config';
 
 const messages = defineMessages({
   scores: { id: 'game_page.scores', defaultMessage: 'Scores' },
@@ -19,6 +20,13 @@ const GamePage = () => {
   const node = useRef<VirtuosoHandle>(null);
 
   const intl = useIntl();
+
+  const { gameName } = useParams<{ gameName: string }>();
+  const game = gameConfig.find(g => g.path === gameName);
+
+  if (!game) {
+    return <div className="text-center text-red-500">Invalid game name</div>;
+  }
 
   const [selectedTab, setSelectedTab] = React.useState('scores');
 
@@ -61,8 +69,7 @@ const GamePage = () => {
 
   return (
     <>
-      <HStack className='mb-4 border-b border-solid border-gray-200 px-2 pb-4 dark:border-gray-800' space={2}>
-      </HStack>
+    <h1 className="text-2xl font-bold mb-6">{game.name}</h1>
       {renderFilterBar()}
       <div className="tab-content">
         {renderTabContent()}
