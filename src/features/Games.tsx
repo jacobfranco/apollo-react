@@ -5,6 +5,8 @@ import gameConfig from 'src/game-config';
 
 const Games: React.FC = () => {
   return (
+    <>
+    <h1 className="text-2xl font-bold mb-6">Games</h1>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {gameConfig.map((game) => (
         <Link key={game.path} to={`/games/${game.path}`} className="block p-4 bg-blue-500 text-white rounded-lg">
@@ -14,6 +16,7 @@ const Games: React.FC = () => {
         </Link>
       ))}
     </div>
+    </>
   );
 };
 

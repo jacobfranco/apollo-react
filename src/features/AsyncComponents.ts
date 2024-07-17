@@ -83,12 +83,13 @@ export const Games = lazy(() => import('./Games'));
 export const ScoreboardPage = lazy(() => import('./ScoreboardPage'));
 export const ScoreboardDetailPage = lazy(() => import('./ScoreboardDetailPage'));
 export const CommunityTab = lazy(() => import('./CommunityTab'));
-export const ScoreDetailsTab = lazy(() => import('./ScoreDetailsTab'));
-export const ScoresTab = lazy(() => import('./ScoresTab'));
+export const ScoreboardDetailsTab = lazy(() => import('./ScoreboardDetailsTab'));
+export const ScheduleTab = lazy(() => import('./ScheduleTab'));
 export const StandingsTab = lazy(() => import('./StandingsTab'));
 export const StatsTab = lazy(() => import('./StatsTab'));
 export const FantasyTab = lazy(() => import('./FantasyTab'));
 export const MediaTab = lazy(() => import('./MediaTab'));
+export const EsportsTab = lazy (() => import('./EsportsTab'));
 // export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
 // export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement

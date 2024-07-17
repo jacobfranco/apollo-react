@@ -123,8 +123,8 @@ import {
   GamePage,
   Games,
   CommunityTab,
-  ScoreDetailsTab,
-  ScoresTab,
+  ScoreboardDetailsTab,
+  ScheduleTab,
   StatsTab,
   StandingsTab,
   FantasyTab,
@@ -242,7 +242,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
 <WrappedRoute
         path="/games/:gameName/scores/:gameId"
         page={GamesPage}
-        component={ScoreDetailsTab}
+        component={ScoreboardDetailsTab}
         content={children}
         publicRoute
       />

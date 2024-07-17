@@ -7,13 +7,17 @@ import { HStack, Tabs } from 'src/components';
 
 import type { VirtuosoHandle } from 'react-virtuoso';
 
-import { ScoresTab, StandingsTab, StatsTab } from './AsyncComponents'
+import { StandingsTab, StatsTab, CommunityTab, MediaTab, EsportsTab, ScheduleTab, FantasyTab } from './AsyncComponents';
 import gameConfig from 'src/game-config';
 
 const messages = defineMessages({
-  scores: { id: 'game_page.scores', defaultMessage: 'Scores' },
+  community: { id: 'game_page.community', defaultMessage: 'Community' },
+  media: { id: 'game_page.media', defaultMessage: 'Media' },
+  esports: { id: 'game_page.esports', defaultMessage: 'Esports' },
+  schedule: { id: 'game_page.schedule', defaultMessage: 'Schedule' },
   standings: { id: 'game_page.standings', defaultMessage: 'Standings' },
   stats: { id: 'game_page.stats', defaultMessage: 'Stats' },
+  fantasy: { id: 'game_page.fantasy', defaultMessage: 'Fantasy' },
 });
 
 const GamePage = () => {
@@ -28,49 +32,90 @@ const GamePage = () => {
     return <div className="text-center text-red-500">Invalid game name</div>;
   }
 
-  const [selectedTab, setSelectedTab] = React.useState('scores');
+  const [selectedTab, setSelectedTab] = React.useState(game.isEsport ? 'community' : 'community');
 
   const selectTab = (tab: string) => setSelectedTab(tab);
 
   const renderTabContent = () => {
     switch (selectedTab) {
-      case 'scores':
-        return <ScoresTab />;
+      case 'community':
+        return <CommunityTab />;
+      case 'media':
+        return <MediaTab />;
+      case 'esports':
+        return game.isEsport ? <EsportsTab /> : null;
+      case 'schedule':
+        return game.isEsport ? <ScheduleTab /> : null;
       case 'standings':
-        return <StandingsTab />;
+        return game.isEsport ? <StandingsTab /> : null;
       case 'stats':
-        return <StatsTab />;
+        return game.isEsport ? <StatsTab /> : null;
+      case 'fantasy':
+        return game.isEsport ? <FantasyTab /> : null;
       default:
         return null;
     }
   };
 
-  const renderFilterBar = () => {
-    const items = [
-      {
-        text: intl.formatMessage(messages.scores),
-        action: () => selectTab('scores'),
-        name: 'scores',
-      },
-      {
-        text: intl.formatMessage(messages.standings),
-        action: () => selectTab('standings'),
-        name: 'standings',
-      },
-      {
-        text: intl.formatMessage(messages.stats),
-        action: () => selectTab('stats'),
-        name: 'stats',
-      },
-    ];
+  const renderTabBar = () => {
+    const items = game.isEsport
+      ? [
+          {
+            text: intl.formatMessage(messages.community),
+            action: () => selectTab('community'),
+            name: 'community',
+          },
+          {
+            text: intl.formatMessage(messages.media),
+            action: () => selectTab('media'),
+            name: 'media',
+          },
+          {
+            text: intl.formatMessage(messages.esports),
+            action: () => selectTab('esports'),
+            name: 'esports',
+          },
+          {
+            text: intl.formatMessage(messages.schedule),
+            action: () => selectTab('schedule'),
+            name: 'schedule',
+          },
+          {
+            text: intl.formatMessage(messages.standings),
+            action: () => selectTab('standings'),
+            name: 'standings',
+          },
+          {
+            text: intl.formatMessage(messages.stats),
+            action: () => selectTab('stats'),
+            name: 'stats',
+          },
+          {
+            text: intl.formatMessage(messages.fantasy),
+            action: () => selectTab('fantasy'),
+            name: 'fantasy',
+          },
+        ]
+      : [
+          {
+            text: intl.formatMessage(messages.community),
+            action: () => selectTab('community'),
+            name: 'community',
+          },
+          {
+            text: intl.formatMessage(messages.media),
+            action: () => selectTab('media'),
+            name: 'media',
+          },
+        ];
 
     return <Tabs items={items} activeItem={selectedTab} />;
   };
 
   return (
     <>
-    <h1 className="text-2xl font-bold mb-6">{game.name}</h1>
-      {renderFilterBar()}
+      <h1 className="text-2xl font-bold mb-6">{game.name}</h1>
+      {renderTabBar()}
       <div className="tab-content">
         {renderTabContent()}
       </div>
