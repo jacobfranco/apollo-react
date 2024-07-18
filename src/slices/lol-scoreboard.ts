@@ -75,6 +75,31 @@ export const initialLoLScoreboardState: LoLScoreboardState = {
       leadingTeam: "Tied",
       leadingScore: "0-0"
     },
+    {
+      id: 3,
+      team1: {
+        name: '100',
+        kills: 5,
+        gold: 11924,
+        towers: 1,
+        logo: '/src/assets/100.png',
+        record: '8-6',
+        seed: 5
+      },
+      team2: {
+        name: 'IMM',
+        kills: 3,
+        gold: 10148,
+        towers: 0,
+        logo: '/src/assets/immortals.png',
+        record: '9-5',
+        seed: 4
+      },
+      seriesInfo: "LCS Championship Round 1",
+      gameNumber: "1",
+      leadingTeam: "Tied",
+      leadingScore: "0-0"
+    },
   ],
 };
 
