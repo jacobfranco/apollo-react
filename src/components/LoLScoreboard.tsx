@@ -33,19 +33,22 @@ const LoLScoreboard: React.FC<LoLScoreboardProps> = ({
 }) => {
 
   return (
-    <div style={{ width: '100%', paddingTop: '40.79%', borderRadius: '15px', backgroundColor: '#ccc', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: '15px', backgroundColor: '#fff' }}>
-        {/* Content goes here */}
-      </div>
-    </div>
-  );
-  
-  return (
-    <Link to={`/games/lol/scores/${gameId}`} style={{ display: 'inline-block', paddingTop: '40.8%', width: '100%', borderRadius: '20px', background: '#f0f0f0', textDecoration: 'none' }}>
+    <Link
+      to={`/games/lol/scores/${gameId}`}
+      className="block p-0 m-0"
+      style={{
+        paddingTop: '40.8%',  // Keep this for aspect ratio if necessary
+        width: '100%',
+        borderRadius: '5px',
+        background: 'linear-gradient(to bottom, #FFFFFF, #808080)',
+        opacity: 0.1,
+        border: '1px solid #F1F1F1',
+        textDecoration: 'none'
+      }}
+    >
       {/* Content goes here */}
     </Link>
   );
-  
 };
 
 export default LoLScoreboard;
