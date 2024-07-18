@@ -30,7 +30,7 @@ const Layout: LayoutComponent = ({ children }) => (
 
 /** Left sidebar container in the UI. */
 const Sidebar: React.FC<ISidebar> = ({ children }) => (
-  <div className='hidden lg:col-span-3 lg:block'>
+  <div className='hidden lg:col-span-2 lg:block'>
     <StickyBox offsetTop={80} className='pb-4'>
       {children}
     </StickyBox>
@@ -41,7 +41,7 @@ const Sidebar: React.FC<ISidebar> = ({ children }) => (
 const Main: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, className }) => (
   <main
     className={clsx({
-      'md:col-span-12 lg:col-span-9 xl:col-span-6 pb-36': true,
+      'md:col-span-12 lg:col-span-10 xl:col-span-7 pb-36': true,
     }, className)}
   >
     {children}

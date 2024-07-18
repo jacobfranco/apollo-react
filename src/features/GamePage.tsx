@@ -32,7 +32,7 @@ const GamePage = () => {
     return <div className="text-center text-red-500">Invalid game name</div>;
   }
 
-  const [selectedTab, setSelectedTab] = React.useState(game.isEsport ? 'community' : 'community');
+  const [selectedTab, setSelectedTab] = React.useState('community');
 
   const selectTab = (tab: string) => setSelectedTab(tab);
 
@@ -45,13 +45,13 @@ const GamePage = () => {
       case 'esports':
         return game.isEsport ? <EsportsTab /> : null;
       case 'schedule':
-        return game.isEsport ? <ScheduleTab /> : null;
+        return game.isEsport && game.hasApiSupport ? <ScheduleTab /> : null;
       case 'standings':
-        return game.isEsport ? <StandingsTab /> : null;
+        return game.isEsport && game.hasApiSupport ? <StandingsTab /> : null;
       case 'stats':
-        return game.isEsport ? <StatsTab /> : null;
+        return game.isEsport && game.hasApiSupport ? <StatsTab /> : null;
       case 'fantasy':
-        return game.isEsport ? <FantasyTab /> : null;
+        return game.isEsport && game.hasApiSupport ? <FantasyTab /> : null;
       default:
         return null;
     }
@@ -59,43 +59,61 @@ const GamePage = () => {
 
   const renderTabBar = () => {
     const items = game.isEsport
-      ? [
-          {
-            text: intl.formatMessage(messages.community),
-            action: () => selectTab('community'),
-            name: 'community',
-          },
-          {
-            text: intl.formatMessage(messages.media),
-            action: () => selectTab('media'),
-            name: 'media',
-          },
-          {
-            text: intl.formatMessage(messages.esports),
-            action: () => selectTab('esports'),
-            name: 'esports',
-          },
-          {
-            text: intl.formatMessage(messages.schedule),
-            action: () => selectTab('schedule'),
-            name: 'schedule',
-          },
-          {
-            text: intl.formatMessage(messages.standings),
-            action: () => selectTab('standings'),
-            name: 'standings',
-          },
-          {
-            text: intl.formatMessage(messages.stats),
-            action: () => selectTab('stats'),
-            name: 'stats',
-          },
-          {
-            text: intl.formatMessage(messages.fantasy),
-            action: () => selectTab('fantasy'),
-            name: 'fantasy',
-          },
-        ]
+      ? game.hasApiSupport
+        ? [
+            {
+              text: intl.formatMessage(messages.community),
+              action: () => selectTab('community'),
+              name: 'community',
+            },
+            {
+              text: intl.formatMessage(messages.media),
+              action: () => selectTab('media'),
+              name: 'media',
+            },
+            {
+              text: intl.formatMessage(messages.esports),
+              action: () => selectTab('esports'),
+              name: 'esports',
+            },
+            {
+              text: intl.formatMessage(messages.schedule),
+              action: () => selectTab('schedule'),
+              name: 'schedule',
+            },
+            {
+              text: intl.formatMessage(messages.standings),
+              action: () => selectTab('standings'),
+              name: 'standings',
+            },
+            {
+              text: intl.formatMessage(messages.stats),
+              action: () => selectTab('stats'),
+              name: 'stats',
+            },
+            {
+              text: intl.formatMessage(messages.fantasy),
+              action: () => selectTab('fantasy'),
+              name: 'fantasy',
+            },
+          ]
+        : [
+            {
+              text: intl.formatMessage(messages.community),
+              action: () => selectTab('community'),
+              name: 'community',
+            },
+            {
+              text: intl.formatMessage(messages.media),
+              action: () => selectTab('media'),
+              name: 'media',
+            },
+            {
+              text: intl.formatMessage(messages.esports),
+              action: () => selectTab('esports'),
+              name: 'esports',
+            },
+          ]
       : [
           {
             text: intl.formatMessage(messages.community),

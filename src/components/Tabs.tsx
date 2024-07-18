@@ -33,9 +33,10 @@ const AnimatedTabs: React.FC<IAnimatedInterface> = ({ children, ...rest }) => {
   // @ts-ignore
   const top: number = (activeRect && activeRect.bottom) - (rect && rect.top);
   // @ts-ignore
-  const width: number = activeRect && activeRect.width - HORIZONTAL_PADDING * 2;
+  const width: number = activeRect && activeRect.width;
   // @ts-ignore
-  const left: number = (activeRect && activeRect.left) - (rect && rect.left) + HORIZONTAL_PADDING;
+  const left: number = activeRect && activeRect.left - (rect && rect.left);
+
 
   return (
     // @ts-ignore
