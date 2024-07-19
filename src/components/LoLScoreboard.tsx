@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import clsx from 'clsx';
+import ScoreboardOverlay from './ScoreboardOverlay';
 import { ScoreboardProps } from './Scoreboard';
 
 interface Team {
@@ -31,22 +31,28 @@ const LoLScoreboard: React.FC<LoLScoreboardProps> = ({
   leadingTeam,
   leadingScore,
 }) => {
+  // Hardcode the values for now
+  const winningSide = 'right'; // Change to 'left' or 'right' to test
+  const winningColor = '#A981FC'; // Change this color to test
 
   return (
     <Link
       to={`/games/lol/scores/${gameId}`}
       className="block p-0 m-0"
       style={{
-        paddingTop: '40.8%',  // Keep this for aspect ratio if necessary
+        position: 'relative',
+        paddingTop: '40.8%',
         width: '100%',
         borderRadius: '5px',
-        background: 'linear-gradient(to bottom, #FFFFFF, #808080)',
-        opacity: 0.1,
-        border: '1px solid #F1F1F1',
-        textDecoration: 'none'
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(128, 128, 128, 0.1))',
+        // TODO: Need to add border or shadow of some kind 
+        textDecoration: 'none',
+        overflow: 'hidden',
       }}
     >
       {/* Content goes here */}
+      <ScoreboardOverlay winningSide={winningSide} winningColor={winningColor} />
+   
     </Link>
   );
 };

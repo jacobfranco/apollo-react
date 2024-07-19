@@ -21,8 +21,8 @@ interface LayoutComponent extends React.FC<ILayout> {
 
 /** Layout container, to hold Sidebar, Main, and Aside. */
 const Layout: LayoutComponent = ({ children }) => (
-  <div className='relative sm:pt-4'>
-    <div className='mx-auto max-w-3xl sm:px-6 md:grid md:max-w-7xl md:grid-cols-12 md:gap-8 md:px-8'>
+  <div className='relative flex grow flex-col black:pt-0 sm:pt-4'>
+    <div className='mx-auto w-full max-w-3xl grow sm:px-6 md:grid md:max-w-7xl md:grid-cols-12 md:gap-8 md:px-8'>
       {children}
     </div>
   </div>
@@ -30,7 +30,7 @@ const Layout: LayoutComponent = ({ children }) => (
 
 /** Left sidebar container in the UI. */
 const Sidebar: React.FC<ISidebar> = ({ children }) => (
-  <div className='hidden lg:col-span-2 lg:block'>
+  <div className='hidden lg:col-span-3 lg:block'>
     <StickyBox offsetTop={80} className='pb-4'>
       {children}
     </StickyBox>
@@ -41,7 +41,7 @@ const Sidebar: React.FC<ISidebar> = ({ children }) => (
 const Main: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, className }) => (
   <main
     className={clsx({
-      'md:col-span-12 lg:col-span-10 xl:col-span-7 pb-36': true,
+      'md:col-span-12 lg:col-span-9 xl:col-span-6 pb-36 black:border-gray-800 lg:black:border-l xl:black:border-r': true,
     }, className)}
   >
     {children}
