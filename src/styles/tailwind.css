@@ -35,6 +35,7 @@
 
   .bg-gradient-dark {
     background-color: #110132;
+    /* stylelint-disable-next-line color-hex-length */
     background-image: linear-gradient(315deg, #110132 0%, #000000 74%);
   }
 
