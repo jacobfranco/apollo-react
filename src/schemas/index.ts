@@ -9,3 +9,4 @@ export { mentionSchema, type Mention } from './mention';
 export { pollSchema, type Poll, type PollOption } from './poll'
 export { relationshipSchema, type Relationship } from './relationship';
 export { statusSchema, type Status } from './status'
+export { teamSchema, type Team } from './team'

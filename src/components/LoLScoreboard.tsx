@@ -1,17 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ScoreboardProps } from './Scoreboard';
-
-// Interface for Team properties
-interface Team {
-  name: string;
-  kills: number;
-  gold: number;
-  towers: number;
-  logo: string;
-  record: string;
-  seed: number;
-}
+import ScoreboardOverlay from './ScoreboardOverlay';
+import { type Team } from 'src/schemas'
 
 // Interface for LoLScoreboard properties
 interface LoLScoreboardProps extends ScoreboardProps {
@@ -48,7 +39,7 @@ const LoLScoreboard: React.FC<LoLScoreboardProps> = ({
       <div className="absolute top-[0px] left-[0px] w-full h-[134px]">
         {/* Background and border styles */}
         <div className="absolute h-[calc(100%_-_1px)] w-full top-[1px] right-[0px] bottom-[0px] left-[0px] rounded-5px [background:linear-gradient(180deg,_#fff,_#808080)] box-border opacity-[0.1] border-[1px] border-solid border-gray-500" />
-        <div className="absolute h-[calc(100%_-_1px)] w-full top-[1px] right-[0px] bottom-[0px] left-[0px] rounded-5px [background:linear-gradient(88.99deg,_rgba(0,_0,_0,_0),_#1894db)] opacity-[0.55]" />
+        <ScoreboardOverlay />
         
         {/* Team 1 kills display */}
         <div className="absolute top-[calc(50%_-_27.5px)] left-[37.58%] text-5xl tracking-[0.6px] font-medium [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] opacity-[0.5]">
