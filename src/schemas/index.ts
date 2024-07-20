@@ -5,8 +5,9 @@ export { groupSchema, type Group } from './group'
 export { groupMemberSchema, type GroupMember } from './group-member';
 export { groupRelationshipSchema, type GroupRelationship } from './group-relationship';
 export { groupTagSchema, type GroupTag } from './group-tag'
+export { lolMatchSchema, type LolMatch } from './lol-match'
+export { lolTeamSchema, type LolTeam } from './lol-team'
 export { mentionSchema, type Mention } from './mention';
 export { pollSchema, type Poll, type PollOption } from './poll'
 export { relationshipSchema, type Relationship } from './relationship';
 export { statusSchema, type Status } from './status'
-export { teamSchema, type Team } from './team'

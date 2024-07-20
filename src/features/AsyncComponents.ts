@@ -80,7 +80,6 @@ export const ServerInfo = lazy(() => import('./ServerInfo'));
 export const Share = lazy(() => import('./Share'));
 export const GamePage = lazy(() => import('./GamePage'));
 export const Games = lazy(() => import('./Games'));
-export const ScoreboardPage = lazy(() => import('./ScoreboardPage'));
 export const ScoreboardDetailPage = lazy(() => import('./ScoreboardDetailPage'));
 export const CommunityTab = lazy(() => import('./CommunityTab'));
 export const ScoreboardDetailsTab = lazy(() => import('./ScoreboardDetailsTab'));

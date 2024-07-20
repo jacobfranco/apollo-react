@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import LoLScoreboard from 'src/components/LoLScoreboard';
+import LolScoreboard from 'src/components/LolScoreboard';
 import ValorantScoreboard from 'src/components/ValorantScoreboard';
 import { initialLoLScoreboardState } from 'src/slices/lol-scoreboard';
 import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
@@ -17,25 +17,19 @@ const ScheduleTab: React.FC = () => {
   const renderScoresContent = () => {
     switch (game.path) {
       case 'lol': {
-        const { games } = initialLoLScoreboardState;
+        const { matches } = initialLoLScoreboardState;
 
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
-            {games.map((game) => (
+            {matches.map((match) => (
               <Link 
-                key={game.id} 
-                to={`/games/${gameName}/scores/${game.id}`} 
+                key={match.id} 
+                to={`/games/${gameName}/scores/${match.id}`} 
                 className="block p-0 m-0"
                 style={{ width: '100%', textDecoration: 'none' }}
               >
-                <LoLScoreboard
-                  gameId={game.id}
-                  team1={game.team1}
-                  team2={game.team2}
-                  seriesInfo={game.seriesInfo}
-                  gameNumber={game.gameNumber}
-                  leadingTeam={game.leadingTeam}
-                  leadingScore={game.leadingScore}
+                <LolScoreboard
+                  match={match}
                 />
               </Link>
             ))}
@@ -55,7 +49,7 @@ const ScheduleTab: React.FC = () => {
                 style={{ width: '100%', textDecoration: 'none' }}
               >
                 <ValorantScoreboard
-                  gameId={game.id}
+                  id={game.id}
                   team1={game.team1}
                   team2={game.team2}
                   matchInfo={game.matchInfo}
