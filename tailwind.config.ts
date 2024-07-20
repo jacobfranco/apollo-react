@@ -24,6 +24,11 @@ const config: Config = {
 
       fontSize: {
         base: '0.9375rem',
+        "5xs": "8px",
+        "3xs": "10px",
+        "5xl": "24px",
+        "7xs": "6px",
+        inherit: "inherit",
       },
       fontFamily: {
         'sans': [
@@ -52,7 +57,7 @@ const config: Config = {
         ],
       },
       borderRadius: {
-        '5px': '5px', 
+        '5px': '5px',
       },
       spacing: {
         '4.5': '1.125rem',
