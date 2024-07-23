@@ -2,7 +2,7 @@ import { lolTeamSchema, LolTeam, lolMatchSchema, LolMatch } from 'src/schemas';
 
 // Define constants for teams
 const cloud9: LolTeam = lolTeamSchema.parse({
-  name: 'C9',
+  name: 'Cloud9',
   kills: 21,
   gold: 41624,
   towers: 7,
@@ -12,7 +12,7 @@ const cloud9: LolTeam = lolTeamSchema.parse({
 });
 
 const teamLiquid: LolTeam = lolTeamSchema.parse({
-  name: 'TL',
+  name: 'Team Liquid',
   kills: 17,
   gold: 39436,
   towers: 5,
@@ -22,7 +22,7 @@ const teamLiquid: LolTeam = lolTeamSchema.parse({
 });
 
 const thieves: LolTeam = lolTeamSchema.parse({
-  name: '100',
+  name: '100 Thieves',
   kills: 5,
   gold: 11924,
   towers: 1,
@@ -32,7 +32,7 @@ const thieves: LolTeam = lolTeamSchema.parse({
 });
 
 const immortals: LolTeam = lolTeamSchema.parse({
-  name: 'IMM',
+  name: 'Immortals',
   kills: 3,
   gold: 10148,
   towers: 0,
@@ -51,8 +51,8 @@ export const initialLoLScoreboardState: LoLScoreboardState = {
   matches: [
     lolMatchSchema.parse({
       id: 1,
-      team1: cloud9,
-      team2: teamLiquid,
+      team1: teamLiquid,
+      team2: cloud9,
       seriesInfo: 'LCS Championship Round 1',
       matchNumber: '1',
       leadingTeam: 'C9',
