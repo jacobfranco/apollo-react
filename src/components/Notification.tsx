@@ -53,7 +53,7 @@ const buildLink = (account: AccountEntity): JSX.Element => (
     <Link
       className="font-bold text-gray-800 hover:underline dark:text-gray-200"
       title={account.username}
-      to={`/@${account.username}`}
+      to={`/@${account.id}`}
       dangerouslySetInnerHTML={{ __html: account.display_name_html }}
     />
   </bdi>
@@ -376,24 +376,24 @@ const Notification: React.FC<INotification> = (props) => {
   const message: React.ReactNode =
     validType(type) && account && typeof account === "object"
       ? buildMessage(
-          intl,
-          type,
-          account,
-          notification.total_count,
-          targetName,
-          "Apollo"
-        )
+        intl,
+        type,
+        account,
+        notification.total_count,
+        targetName,
+        "Apollo"
+      )
       : null;
 
   const ariaLabel = validType(type)
     ? notificationForScreenReader(
-        intl,
-        intl.formatMessage(messages[type], {
-          name: account && typeof account === "object" ? account.id : "",
-          targetName,
-        }),
-        notification.created_at
-      )
+      intl,
+      intl.formatMessage(messages[type], {
+        name: account && typeof account === "object" ? account.id : "",
+        targetName,
+      }),
+      notification.created_at
+    )
     : "";
 
   return (

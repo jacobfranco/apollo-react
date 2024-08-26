@@ -18,17 +18,17 @@ import ChatPageBlankslateWithChats from './ChatPageBlankslateWithChats';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
-  blockHeading: { id: 'chat_settings.block.heading', defaultMessage: 'Block @{acct}' },
+  blockHeading: { id: 'chat_settings.block.heading', defaultMessage: 'Block @{username}' },
   blockConfirm: { id: 'chat_settings.block.confirm', defaultMessage: 'Block' },
   unblockMessage: { id: 'chat_settings.unblock.message', defaultMessage: 'Unblocking will allow this profile to direct message you and view your content.' },
-  unblockHeading: { id: 'chat_settings.unblock.heading', defaultMessage: 'Unblock @{acct}' },
+  unblockHeading: { id: 'chat_settings.unblock.heading', defaultMessage: 'Unblock @{username}' },
   unblockConfirm: { id: 'chat_settings.unblock.confirm', defaultMessage: 'Unblock' },
   leaveMessage: { id: 'chat_settings.leave.message', defaultMessage: 'Are you sure you want to leave this chat? Messages will be deleted for you and this chat will be removed from your inbox.' },
   leaveHeading: { id: 'chat_settings.leave.heading', defaultMessage: 'Leave Chat' },
   leaveConfirm: { id: 'chat_settings.leave.confirm', defaultMessage: 'Leave Chat' },
-  blockUser: { id: 'chat_settings.options.block_user', defaultMessage: 'Block @{acct}' },
-  unblockUser: { id: 'chat_settings.options.unblock_user', defaultMessage: 'Unblock @{acct}' },
-  reportUser: { id: 'chat_settings.options.report_user', defaultMessage: 'Report @{acct}' },
+  blockUser: { id: 'chat_settings.options.block_user', defaultMessage: 'Block @{username}' },
+  unblockUser: { id: 'chat_settings.options.unblock_user', defaultMessage: 'Unblock @{username}' },
+  reportUser: { id: 'chat_settings.options.report_user', defaultMessage: 'Report @{username}' },
   leaveChat: { id: 'chat_settings.options.leave_chat', defaultMessage: 'Leave Chat' },
   autoDeleteLabel: { id: 'chat_settings.auto_delete.label', defaultMessage: 'Auto-delete messages' },
   autoDeleteHint: { id: 'chat_settings.auto_delete.hint', defaultMessage: 'Sent messages will auto-delete after the time period selected' },
@@ -184,7 +184,7 @@ const ChatPageMain = () => {
                 >
                   <div className='flex w-full items-center space-x-2 text-sm font-bold text-primary-500 dark:text-accent-blue'>
                     <Icon src={require('@tabler/icons/outline/ban.svg')} className='h-5 w-5' />
-                    <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { acct: chat.account.username })}</span>
+                    <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { username: chat.account.username })}</span>
                   </div>
                 </MenuItem>
 

@@ -16,7 +16,7 @@ import { Entities } from 'src/entity-store/entities';
 /** Load initial data from the backend */
 const loadInitial = () => {
   // @ts-ignore
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     console.log('Loading initial data...');
     // Await for authenticated fetch
     await dispatch(fetchMe());
@@ -77,13 +77,13 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
       setMessages(messages);
       setLocaleLoading(false);
       console.log('Locale messages loaded');
-    }).catch(error => { 
+    }).catch(error => {
       console.error('Error loading locale messages:', error);
     });
   }, [locale]);
 
-   // Load initial data from the API
-   useEffect(() => {
+  // Load initial data from the API
+  useEffect(() => {
     dispatch(loadInitial()).then(() => {
       setIsLoaded(true);
       console.log('Initial data loading complete');

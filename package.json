@@ -15,6 +15,7 @@
     "dev": "${npm_execpath} run start",
     "build": "npx vite build --emptyOutDir",
     "preview": "npx vite preview",
+    "prod": "yarn build && yarn preview",
     "audit:fix": "npx yarn-audit-fix",
     "i18n": "npx formatjs extract 'src/**/*.{ts,tsx}' --ignore '**/*.d.ts' --out-file build/messages.json && npx formatjs compile build/messages.json --out-file src/locales/en.json",
     "test": "npx vitest",

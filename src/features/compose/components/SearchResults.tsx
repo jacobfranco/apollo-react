@@ -202,8 +202,8 @@ const SearchResults = () => {
           <Text truncate>
             <FormattedMessage
               id='search_results.filter_message'
-              defaultMessage='You are searching for posts from @{acct}.'
-              values={{ acct: <strong className='break-words'>{account?.username}</strong> }}
+              defaultMessage='You are searching for posts from @{username}.'
+              values={{ username: <strong className='break-words'>{account?.username}</strong> }}
             />
           </Text>
         </HStack>
