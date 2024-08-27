@@ -32,7 +32,7 @@ const config: Config = {
       },
       fontFamily: {
         'sans': [
-          'URWDIN',
+          'D-DIN',
           'Soapbox i18n',
           'Inter',
           'ui-sans-serif',
