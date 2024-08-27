@@ -1,10 +1,10 @@
 import { AnyAction } from "redux";
-import { 
+import {
   Record as ImmutableRecord,
   Map as ImmutableMap,
   List as ImmutableList,
   fromJS
-  } from 'immutable'
+} from 'immutable'
 import trim from 'lodash/trim'
 import * as BuildConfig from 'src/build-config';
 
@@ -12,10 +12,16 @@ import {
   AUTH_APP_CREATED,
   AUTH_APP_AUTHORIZED,
   AUTH_LOGGED_IN,
-  AUTH_LOGGED_OUT
+  AUTH_LOGGED_OUT,
+  SWITCH_ACCOUNT,
+  VERIFY_CREDENTIALS_FAIL,
+  VERIFY_CREDENTIALS_SUCCESS
 } from 'src/actions/auth'
 import type { APIEntity, Account as AccountEntity } from 'src/types/entities';
 import { validId, isURL } from 'src/utils/auth';
+import { ME_FETCH_SKIP } from "src/actions/me";
+import KVStore from "src/storage/kv-store";
+import { AxiosError } from "axios";
 
 export const AuthAppRecord = ImmutableRecord({
   access_token: null as string | null,
@@ -143,7 +149,7 @@ const deleteUser = (state: State, account: Pick<AccountEntity, 'url'>) => {
     if (accountUrl !== undefined) {
       state.update('users', users => users.delete(accountUrl));
     }
-    
+
     state.update('tokens', tokens => tokens.filterNot(token => token.get('me') === accountUrl));
     maybeShiftMe(state);
   });
@@ -199,6 +205,62 @@ const initialize = (state: State) => {
   });
 };
 
+const persistAuthAccount = (account: APIEntity) => {
+  if (account && account.url) {
+    const key = `authAccount:${account.url}`;
+    if (!account.pleroma) account.pleroma = {};
+    KVStore.getItem(key).then((oldAccount: any) => {
+      const settings = oldAccount?.pleroma?.settings_store || {};
+      if (!account.pleroma.settings_store) {
+        account.pleroma.settings_store = settings;
+      }
+      KVStore.setItem(key, account);
+    })
+      .catch(console.error);
+  }
+};
+
+// Returns a predicate function for filtering a mismatched user/token
+const userMismatch = (token: string, account: APIEntity) => {
+  return (user: AuthUser, url: string) => {
+    const sameToken = user.get('access_token') === token;
+    const differentUrl = url !== account.url || user.get('url') !== account.url;
+    const differentId = user.get('id') !== account.id;
+
+    return sameToken && (differentUrl || differentId);
+  };
+};
+
+const importCredentials = (state: State, token: string, account: APIEntity) => {
+  return state.withMutations(state => {
+    state.setIn(['users', account.url], AuthUserRecord({
+      id: account.id,
+      access_token: token,
+      url: account.url,
+    }));
+    state.setIn(['tokens', token, 'account'], account.id);
+    state.setIn(['tokens', token, 'me'], account.url);
+    state.update('users', users => users.filterNot(userMismatch(token, account)));
+    state.update('me', me => me || account.url);
+  });
+};
+
+const deleteToken = (state: State, token: string) => {
+  return state.withMutations(state => {
+    state.update('tokens', tokens => tokens.delete(token));
+    state.update('users', users => users.filterNot(user => user.get('access_token') === token));
+    maybeShiftMe(state);
+  });
+};
+
+const deleteForbiddenToken = (state: State, error: AxiosError, token: string) => {
+  if ([401, 403].includes(error.response?.status!)) {
+    return deleteToken(state, token);
+  } else {
+    return state;
+  }
+};
+
 const initialState = initialize(ReducerRecord().merge(localState as any));
 
 const reducer = (state: State, action: AnyAction) => {
@@ -211,8 +273,46 @@ const reducer = (state: State, action: AnyAction) => {
       return importToken(state, action.token);
     case AUTH_LOGGED_OUT:
       return deleteUser(state, action.account);
+    case VERIFY_CREDENTIALS_SUCCESS:
+      persistAuthAccount(action.account);
+      return importCredentials(state, action.token, action.account);
+    case VERIFY_CREDENTIALS_FAIL:
+      return deleteForbiddenToken(state, action.error, action.token);
+    case SWITCH_ACCOUNT:
+      return state.set('me', action.account.url);
+    case ME_FETCH_SKIP:
+      return state.set('me', null);
     default:
       return state;
+  }
+};
+
+
+const reload = () => location.replace('/');
+
+// `me` is a user ID string
+const validMe = (state: State) => {
+  const me = state.me;
+  return typeof me === 'string';
+};
+
+const userSwitched = (oldState: State, state: State) => {
+  const me = state.me;
+  const oldMe = oldState.me;
+
+  const stillValid = validMe(oldState) && validMe(state);
+  const didChange = oldMe !== me;
+  const userUpgradedUrl = state.users.get(me!)?.id === oldMe;
+
+  return stillValid && didChange && !userUpgradedUrl;
+};
+
+const maybeReload = (oldState: State, state: State, action: AnyAction) => {
+  const loggedOutStandalone = action.type === AUTH_LOGGED_OUT && action.standalone;
+  const switched = userSwitched(oldState, state);
+
+  if (switched || loggedOutStandalone) {
+    reload();
   }
 };
 
@@ -233,7 +333,7 @@ export default function auth(oldState: State = initialState, action: AnyAction) 
     persistSession(state);
 
     // Reload the page under some conditions
-    // maybeReload(oldState, state, action);
+    maybeReload(oldState, state, action);
   }
 
   return state;

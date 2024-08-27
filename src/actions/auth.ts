@@ -6,34 +6,36 @@ import { createAccount } from 'src/actions/accounts';
 import { startOnboarding } from 'src/actions/onboarding';
 import { fetchMeSuccess, fetchMeFail } from 'src/actions/me';
 import { createApp } from 'src/actions/apps';
-import { obtainOAuthToken, revokeOAuthToken  } from 'src/actions/oauth';
+import { obtainOAuthToken, revokeOAuthToken } from 'src/actions/oauth';
 import { getLoggedInAccount, parseBaseURL } from 'src/utils/auth';
 import { queryClient } from 'src/queries/client';
 import { selectAccount } from 'src/selectors';
 import toast from 'src/toast';
 import KVStore from 'src/storage/kv-store';
-import sourceCode from 'src/utils/code'
 import { unsetSentryAccount } from "src/sentry";
+import { custom } from 'src/custom'
 
 import api, { baseClient } from "src/api";
 import { importFetchedAccount } from 'src/actions/importer';
 
 export const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT';
 
-export const AUTH_APP_CREATED    = 'AUTH_APP_CREATED';
+export const AUTH_APP_CREATED = 'AUTH_APP_CREATED';
 export const AUTH_APP_AUTHORIZED = 'AUTH_APP_AUTHORIZED';
-export const AUTH_LOGGED_IN      = 'AUTH_LOGGED_IN';
-export const AUTH_LOGGED_OUT     = 'AUTH_LOGGED_OUT';
+export const AUTH_LOGGED_IN = 'AUTH_LOGGED_IN';
+export const AUTH_LOGGED_OUT = 'AUTH_LOGGED_OUT';
 
 export const VERIFY_CREDENTIALS_REQUEST = 'VERIFY_CREDENTIALS_REQUEST';
 export const VERIFY_CREDENTIALS_SUCCESS = 'VERIFY_CREDENTIALS_SUCCESS';
-export const VERIFY_CREDENTIALS_FAIL    = 'VERIFY_CREDENTIALS_FAIL';
+export const VERIFY_CREDENTIALS_FAIL = 'VERIFY_CREDENTIALS_FAIL';
 
 export const AUTH_ACCOUNT_REMEMBER_REQUEST = 'AUTH_ACCOUNT_REMEMBER_REQUEST';
 export const AUTH_ACCOUNT_REMEMBER_SUCCESS = 'AUTH_ACCOUNT_REMEMBER_SUCCESS';
-export const AUTH_ACCOUNT_REMEMBER_FAIL    = 'AUTH_ACCOUNT_REMEMBER_FAIL';
+export const AUTH_ACCOUNT_REMEMBER_FAIL = 'AUTH_ACCOUNT_REMEMBER_FAIL';
 
 const noOp = () => new Promise(f => f(undefined));
+
+const customApp = custom('app');
 
 export const messages = defineMessages({
   loggedOut: { id: 'auth.logged_out', defaultMessage: 'Logged out.' },
@@ -55,7 +57,7 @@ export const register = (params: Record<string, any>) =>
       });
   };
 
-  export const logIn = (username: string, password: string) =>
+export const logIn = (username: string, password: string) =>
   (dispatch: AppDispatch) => dispatch(getAuthApp()).then(() => {
     return dispatch(createUserToken(username, password));
   }).catch((error: AxiosError) => {
@@ -71,37 +73,37 @@ export const register = (params: Record<string, any>) =>
     throw error;
   })
 
-  export const verifyCredentials = (token: string, accountUrl?: string) => {
-    const baseURL = parseBaseURL(accountUrl);
-  
-    return (dispatch: AppDispatch, getState: () => RootState) => {
-      dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
-  
-      return baseClient(token, baseURL).get('/api/accounts/verify_credentials').then(({ data: account }) => {
-        console.log('Verify credentials account fetched:', account);
+export const verifyCredentials = (token: string, accountUrl?: string) => {
+  const baseURL = parseBaseURL(accountUrl);
+
+  return (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
+
+    return baseClient(token, baseURL).get('/api/accounts/verify_credentials').then(({ data: account }) => {
+      console.log('Verify credentials account fetched:', account);
+      dispatch(importFetchedAccount(account));
+      dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
+      if (account.id === getState().me) dispatch(fetchMeSuccess(account));
+      return account;
+    }).catch(error => {
+      console.error('Error verifying credentials:', error);
+      if (error?.response?.status === 403 && error?.response?.data?.id) {
+        // The user is waitlisted
+        const account = error.response.data;
         dispatch(importFetchedAccount(account));
         dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
         if (account.id === getState().me) dispatch(fetchMeSuccess(account));
         return account;
-      }).catch(error => {
-        console.error('Error verifying credentials:', error);
-        if (error?.response?.status === 403 && error?.response?.data?.id) {
-          // The user is waitlisted
-          const account = error.response.data;
-          dispatch(importFetchedAccount(account));
-          dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
-          if (account.id === getState().me) dispatch(fetchMeSuccess(account));
-          return account;
-        } else {
-          if (getState().me === null) dispatch(fetchMeFail(error));
-          dispatch({ type: VERIFY_CREDENTIALS_FAIL, token, error });
-          throw error;
-        }
-      });
-    };
+      } else {
+        if (getState().me === null) dispatch(fetchMeFail(error));
+        dispatch({ type: VERIFY_CREDENTIALS_FAIL, token, error });
+        throw error;
+      }
+    });
   };
+};
 
-  export const switchAccount = (accountId: string, background = false) =>
+export const switchAccount = (accountId: string, background = false) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const account = selectAccount(getState(), accountId);
     // Clear all stored cache from React Query
@@ -111,18 +113,18 @@ export const register = (params: Record<string, any>) =>
     return dispatch({ type: SWITCH_ACCOUNT, account, background });
   };
 
-  const createUserToken = (username: string, password: string) =>
+const createUserToken = (username: string, password: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const app = getState().auth.app;
 
     const params = {
-      client_id:     app.client_id!,
+      client_id: app.client_id!,
       client_secret: app.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'password',
-      username:      username,
-      password:      password,
-      scope:         'read write',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      grant_type: 'password',
+      username: username,
+      password: password,
+      scope: 'read write',
     };
 
     console.log("Creating user token.  Params: ", params)
@@ -131,62 +133,42 @@ export const register = (params: Record<string, any>) =>
       .then((token: Record<string, string | number>) => dispatch(authLoggedIn(token)));
   };
 
-  const createAppAndToken = () =>
+const createAppAndToken = () =>
   (dispatch: AppDispatch) =>
     dispatch(getAuthApp()).then(() =>
       dispatch(createAppToken()),
     );
 
-    const getAuthApp = () =>
+const getAuthApp = () =>
   (dispatch: AppDispatch) => {
-      return dispatch(createAuthApp());
+    return noOp().then(() => dispatch({ type: AUTH_APP_CREATED, app: customApp }));
   };
 
-  /**
- * Redux thunk action creator that initiates the creation of a new OAuth app for the Apollo API for authentication.
- * Calls createApp with predefined parameters based on sourceCode object.
- * Dispatches AUTH_APP_CREATED action with the created OAuth app details on success.
- */
 
-  const createAuthApp = () => (dispatch: AppDispatch) => {
-    const params = {
-      client_name:   sourceCode.displayName, 
-      redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes:        'read write', // Define scopes as needed
-      website:       sourceCode.homepage, 
-    };
+const createAppToken = () => (dispatch: AppDispatch, getState: () => RootState) => {
+  const app = getState().auth.app;
 
-    console.log("Creating Auth App: ", params)
-  
-    return dispatch(createApp(params)).then((app: Record<string, string>) =>
-      dispatch({ type: AUTH_APP_CREATED, app }),
-    );
+  const params = {
+    client_id: app.client_id!,
+    client_secret: app.client_secret!,
+    redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+    grant_type: 'client_credentials',
+    scope: 'read write', // TODO: Define scopes as needed
   };
 
-  const createAppToken = () => (dispatch: AppDispatch, getState: () => RootState) => {
-    const app = getState().auth.app;
-  
-    const params = {
-      client_id:     app.client_id!,
-      client_secret: app.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'client_credentials',
-      scope:         'read write', // Define scopes as needed
-    };
-  
-    return dispatch(obtainOAuthToken(params)).then((token: Record<string, string | number>) =>
-      dispatch({ type: AUTH_APP_AUTHORIZED, app, token }),
-    );
-  };
+  return dispatch(obtainOAuthToken(params)).then((token: Record<string, string | number>) =>
+    dispatch({ type: AUTH_APP_AUTHORIZED, app, token }),
+  );
+};
 
-    export const authLoggedIn = (token: Record<string, string | number>) =>
+export const authLoggedIn = (token: Record<string, string | number>) =>
   (dispatch: AppDispatch) => {
     dispatch({ type: AUTH_LOGGED_IN, token });
     console.log("Auth logged in: ", token)
     return token;
   };
 
-  export const logOut = () =>
+export const logOut = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
     const account = getLoggedInAccount(state);
@@ -195,15 +177,15 @@ export const register = (params: Record<string, any>) =>
 
     const user = state.auth.users.get(account.url);
     if (!user) return dispatch(noOp); // Check if user is undefined
-  
+
     // Assuming user is of a specific type that includes access_token
     const token = user.access_token;
-  
+
     if (!state.auth.app.client_id || !state.auth.app.client_secret || !token) {
       // Handle missing values
       return dispatch(noOp);
     }
-  
+
     const params = {
       client_id: state.auth.app.client_id,
       client_secret: state.auth.app.client_secret,
@@ -225,13 +207,13 @@ export const register = (params: Record<string, any>) =>
       });
   };
 
-  // TODO: Remove and remove all associated functionality
-  export const fetchCaptcha = () =>
+// TODO: Remove and remove all associated functionality
+export const fetchCaptcha = () =>
   (_dispatch: AppDispatch, getState: () => RootState) => {
     return api(getState).get('/api/captcha');
   };
 
-  export const fetchOwnAccounts = () =>
+export const fetchOwnAccounts = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
     return state.auth.users.forEach((user) => {
@@ -243,31 +225,31 @@ export const register = (params: Record<string, any>) =>
     });
   };
 
-  export const loadCredentials = (token: string, accountUrl: string) =>
-    (dispatch: AppDispatch) => {
-      console.log(`loadCredentials called with token: ${token}`);
-  
-      return dispatch(rememberAuthAccount(accountUrl))
-        .then(() => {
-          console.log('rememberAuthAccount successful');
-        })
-        .catch((error) => {
-          console.error('rememberAuthAccount error:', error);
-        })
-        .finally(() => {
-          console.log('verifyCredentials dispatching');
-          dispatch(verifyCredentials(token, accountUrl))
-            .then(() => {
-              console.log('verifyCredentials successful');
-            })
-            .catch((error) => {
-              console.error('verifyCredentials error:', error);
-            });
-        });
-    };
-  
+export const loadCredentials = (token: string, accountUrl: string) =>
+  (dispatch: AppDispatch) => {
+    console.log(`loadCredentials called with token: ${token}`);
 
-    export const rememberAuthAccount = (accountUrl: string) =>
+    return dispatch(rememberAuthAccount(accountUrl))
+      .then(() => {
+        console.log('rememberAuthAccount successful');
+      })
+      .catch((error) => {
+        console.error('rememberAuthAccount error:', error);
+      })
+      .finally(() => {
+        console.log('verifyCredentials dispatching');
+        dispatch(verifyCredentials(token, accountUrl))
+          .then(() => {
+            console.log('verifyCredentials successful');
+          })
+          .catch((error) => {
+            console.error('verifyCredentials error:', error);
+          });
+      });
+  };
+
+
+export const rememberAuthAccount = (accountUrl: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     console.log("Remember auth account, accountURL: ", accountUrl)
     dispatch({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });

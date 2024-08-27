@@ -239,7 +239,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         publicRoute
       />
 
-<WrappedRoute
+      <WrappedRoute
         path="/games/:gameName/scores/:gameId"
         page={GamesPage}
         component={ScoreboardDetailsTab}
@@ -385,7 +385,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
       />
       <WrappedRoute
-        path="/@:username/favorites"
+        path="/@:username/likes"
         component={LikedStatuses}
         page={ProfilePage}
         content={children}

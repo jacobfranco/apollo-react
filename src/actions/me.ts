@@ -15,12 +15,12 @@ import type { APIEntity } from 'src/types/entities';
 
 const ME_FETCH_REQUEST = 'ME_FETCH_REQUEST' as const;
 const ME_FETCH_SUCCESS = 'ME_FETCH_SUCCESS' as const;
-const ME_FETCH_FAIL    = 'ME_FETCH_FAIL' as const;
-const ME_FETCH_SKIP    = 'ME_FETCH_SKIP' as const;
+const ME_FETCH_FAIL = 'ME_FETCH_FAIL' as const;
+const ME_FETCH_SKIP = 'ME_FETCH_SKIP' as const;
 
 const ME_PATCH_REQUEST = 'ME_PATCH_REQUEST' as const;
 const ME_PATCH_SUCCESS = 'ME_PATCH_SUCCESS' as const;
-const ME_PATCH_FAIL    = 'ME_PATCH_FAIL' as const;
+const ME_PATCH_FAIL = 'ME_PATCH_FAIL' as const;
 
 const noOp = () => new Promise(f => f(undefined));
 
@@ -60,6 +60,7 @@ const fetchMe = () =>
 
 const persistAuthAccount = (account: APIEntity, params: Record<string, any>) => {
   if (account && account.url) {
+    console.log("persisting auth account - setting kv store for: " + account.url)
     KVStore.setItem(`authAccount:${account.url}`, account).catch(console.error);
   }
 };
