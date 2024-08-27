@@ -64,10 +64,6 @@ interface AccountCredentialsSource {
   /** Default language to use for authored statuses. (ISO 6391) */
   language?: string;
   /** Nostr metadata. */
-  nostr?: {
-    /** Nostr NIP-05 identifier. */
-    nip05?: string;
-  };
 }
 
 /**
@@ -186,8 +182,8 @@ const EditProfile: React.FC = () => {
   ];
 
   const attachmentTypes = supportedMimeTypes
-  .filter(type => type.startsWith('image/'))
-  .join(',');
+    .filter(type => type.startsWith('image/'))
+    .join(',');
 
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState<AccountCredentials>({});
@@ -297,36 +293,36 @@ const EditProfile: React.FC = () => {
           />
         </FormGroup>
 
-          <FormGroup
-            labelText={<FormattedMessage id='edit_profile.fields.birthday_label' defaultMessage='Birthday' />}
-          >
-            <BirthdayInput
-              value={data.birthday}
-              onChange={handleBirthdayChange}
-            />
-          </FormGroup>
+        <FormGroup
+          labelText={<FormattedMessage id='edit_profile.fields.birthday_label' defaultMessage='Birthday' />}
+        >
+          <BirthdayInput
+            value={data.birthday}
+            onChange={handleBirthdayChange}
+          />
+        </FormGroup>
 
-          <FormGroup
-            labelText={<FormattedMessage id='edit_profile.fields.location_label' defaultMessage='Location' />}
-          >
-            <Input
-              type='text'
-              value={data.location}
-              onChange={handleTextChange('location')}
-              placeholder={intl.formatMessage(messages.locationPlaceholder)}
-            />
-          </FormGroup>
+        <FormGroup
+          labelText={<FormattedMessage id='edit_profile.fields.location_label' defaultMessage='Location' />}
+        >
+          <Input
+            type='text'
+            value={data.location}
+            onChange={handleTextChange('location')}
+            placeholder={intl.formatMessage(messages.locationPlaceholder)}
+          />
+        </FormGroup>
 
-          <FormGroup
-            labelText={<FormattedMessage id='edit_profile.fields.website_label' defaultMessage='Website' />}
-          >
-            <Input
-              type='url'
-              value={data.website}
-              onChange={handleTextChange('website')}
-              placeholder={intl.formatMessage(messages.websitePlaceholder)}
-            />
-          </FormGroup>
+        <FormGroup
+          labelText={<FormattedMessage id='edit_profile.fields.website_label' defaultMessage='Website' />}
+        >
+          <Input
+            type='url'
+            value={data.website}
+            onChange={handleTextChange('website')}
+            placeholder={intl.formatMessage(messages.websitePlaceholder)}
+          />
+        </FormGroup>
 
         <FormGroup
           labelText={<FormattedMessage id='edit_profile.fields.bio_label' defaultMessage='Bio' />}
@@ -340,58 +336,58 @@ const EditProfile: React.FC = () => {
         </FormGroup>
 
         <List>
-            <ListItem
-              label={<FormattedMessage id='edit_profile.fields.locked_label' defaultMessage='Lock account' />}
-              hint={<FormattedMessage id='edit_profile.hints.locked' defaultMessage='Requires you to manually approve followers' />}
-            >
-              <Toggle
-                checked={data.locked}
-                onChange={handleCheckboxChange('locked')}
-              />
-            </ListItem>
+          <ListItem
+            label={<FormattedMessage id='edit_profile.fields.locked_label' defaultMessage='Lock account' />}
+            hint={<FormattedMessage id='edit_profile.hints.locked' defaultMessage='Requires you to manually approve followers' />}
+          >
+            <Toggle
+              checked={data.locked}
+              onChange={handleCheckboxChange('locked')}
+            />
+          </ListItem>
 
 
-            <ListItem
-              label={<FormattedMessage id='edit_profile.fields.bot_label' defaultMessage='This is a bot account' />}
-              hint={<FormattedMessage id='edit_profile.hints.bot' defaultMessage='This account mainly performs automated actions and might not be monitored' />}
-            >
-              <Toggle
-                checked={data.bot}
-                onChange={handleCheckboxChange('bot')}
-              />
-            </ListItem>
+          <ListItem
+            label={<FormattedMessage id='edit_profile.fields.bot_label' defaultMessage='This is a bot account' />}
+            hint={<FormattedMessage id='edit_profile.hints.bot' defaultMessage='This account mainly performs automated actions and might not be monitored' />}
+          >
+            <Toggle
+              checked={data.bot}
+              onChange={handleCheckboxChange('bot')}
+            />
+          </ListItem>
 
-            <ListItem
-              label={<FormattedMessage id='edit_profile.fields.discoverable_label' defaultMessage='Allow account discovery' />}
-              hint={<FormattedMessage id='edit_profile.hints.discoverable' defaultMessage='Display account in profile directory and allow indexing by external services' />}
-            >
-              <Toggle
-                checked={data.discoverable}
-                onChange={handleCheckboxChange('discoverable')}
-              />
-            </ListItem>
+          <ListItem
+            label={<FormattedMessage id='edit_profile.fields.discoverable_label' defaultMessage='Allow account discovery' />}
+            hint={<FormattedMessage id='edit_profile.hints.discoverable' defaultMessage='Display account in profile directory and allow indexing by external services' />}
+          >
+            <Toggle
+              checked={data.discoverable}
+              onChange={handleCheckboxChange('discoverable')}
+            />
+          </ListItem>
 
-            <ListItem
-              label={<FormattedMessage id='edit_profile.fields.accepts_email_list_label' defaultMessage='Subscribe to newsletter' />}
-              hint={<FormattedMessage id='edit_profile.hints.accepts_email_list' defaultMessage='Opt-in to news and marketing updates.' />}
-            >
-              <Toggle
-                checked={data.accepts_email_list}
-                onChange={handleCheckboxChange('accepts_email_list')}
-              />
-            </ListItem>
+          <ListItem
+            label={<FormattedMessage id='edit_profile.fields.accepts_email_list_label' defaultMessage='Subscribe to newsletter' />}
+            hint={<FormattedMessage id='edit_profile.hints.accepts_email_list' defaultMessage='Opt-in to news and marketing updates.' />}
+          >
+            <Toggle
+              checked={data.accepts_email_list}
+              onChange={handleCheckboxChange('accepts_email_list')}
+            />
+          </ListItem>
         </List>
 
-          <Streamfield
-            label={<FormattedMessage id='edit_profile.fields.meta_fields_label' defaultMessage='Profile fields' />}
-            hint={<FormattedMessage id='edit_profile.hints.meta_fields' defaultMessage='You can have up to {count, plural, one {# custom field} other {# custom fields}} displayed on your profile.' values={{ count: maxFields }} />}
-            values={data.fields_attributes || []}
-            onChange={handleFieldsChange}
-            onAddItem={handleAddField}
-            onRemoveItem={handleRemoveField}
-            component={ProfileField}
-            maxItems={maxFields}
-          />
+        <Streamfield
+          label={<FormattedMessage id='edit_profile.fields.meta_fields_label' defaultMessage='Profile fields' />}
+          hint={<FormattedMessage id='edit_profile.hints.meta_fields' defaultMessage='You can have up to {count, plural, one {# custom field} other {# custom fields}} displayed on your profile.' values={{ count: maxFields }} />}
+          values={data.fields_attributes || []}
+          onChange={handleFieldsChange}
+          onAddItem={handleAddField}
+          onRemoveItem={handleRemoveField}
+          component={ProfileField}
+          maxItems={maxFields}
+        />
 
         <FormActions>
           <Button to='/settings' theme='tertiary'>
