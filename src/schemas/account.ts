@@ -10,8 +10,8 @@ import { coerceObject, contentSchema, filteredArray } from './utils';
 import type { Resolve } from 'src/utils/types';
 import { relationshipSchema } from './relationship';
 
-const avatarMissing = require('src/assets/images/avatar-missing.png');
-const headerMissing = require('src/assets/images/header-missing.png');
+import avatarMissing from 'src/assets/images/avatar-missing.png';
+import headerMissing from 'src/assets/images/header-missing.png';
 
 const birthdaySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 

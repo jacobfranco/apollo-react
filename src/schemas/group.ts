@@ -6,8 +6,9 @@ import { groupTagSchema } from './group-tag';
 import emojify from 'src/features/emoji';
 import { unescapeHTML } from 'src/utils/html';
 
-const avatarMissing = require('src/assets/images/avatar-missing.png');
-const headerMissing = require('src/assets/images/header-missing.png');
+import avatarMissing from 'src/assets/images/avatar-missing.png';
+import headerMissing from 'src/assets/images/header-missing.png';
+
 
 const groupSchema = z.object({
   avatar: z.string().catch(avatarMissing),

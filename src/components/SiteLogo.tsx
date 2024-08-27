@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useTheme } from 'src/hooks';
+import bigLogo from 'src/assets/big_logo.png'
 
 interface ISiteLogo extends React.ComponentProps<'img'> {
   className?: string;
@@ -13,8 +14,8 @@ const SiteLogo: React.FC<ISiteLogo> = ({ className, theme, ...rest }) => {
   else if (theme === 'light') darkMode = false;
 
   const apolloLogo = darkMode
-    ? require('src/assets/big_logo.png')
-    : require('src/assets/big_logo.png'); // TODO: change ?
+    ? bigLogo
+    : bigLogo; // TODO: Make this responsive for dark / light mode if necessary
 
   return (
     <img

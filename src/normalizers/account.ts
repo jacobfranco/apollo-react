@@ -15,6 +15,10 @@ import emojify from 'src/features/emoji';
 import { normalizeEmoji } from 'src/normalizers/emoji';
 import { unescapeHTML } from 'src/utils/html';
 // import { makeEmojiMap } from 'src/utils/normalizers';  TODO: Implement
+import avatarMissing from 'src/assets/images/avatar-missing.png';
+import headerMissing from 'src/assets/images/header-missing.png';
+
+
 
 // import type { PatronAccount } from 'src/reducers/patron';
 import type { Emoji, Field, EmbeddedEntity, Relationship } from 'src/types/entities'; // TODO: Implement fields
@@ -78,7 +82,7 @@ export const FieldRecord = ImmutableRecord({
 const normalizeAvatar = (account: ImmutableMap<string, any>) => {
   const avatar = account.get('avatar');
   const avatarStatic = account.get('avatar_static');
-  const missing = require('src/assets/images/avatar-missing.png');
+  const missing = avatarMissing;
 
   return account.withMutations(account => {
     account.set('avatar', avatar || avatarStatic || missing);
@@ -90,7 +94,7 @@ const normalizeAvatar = (account: ImmutableMap<string, any>) => {
 const normalizeHeader = (account: ImmutableMap<string, any>) => {
   const header = account.get('header');
   const headerStatic = account.get('header_static');
-  const missing = require('src/assets/images/header-missing.png');
+  const missing = headerMissing;
 
   return account.withMutations(account => {
     account.set('header', header || headerStatic || missing);

@@ -14,6 +14,10 @@ import emojify from 'src/features/emoji';
 import { normalizeEmoji } from 'src/normalizers/emoji';
 import { unescapeHTML } from 'src/utils/html';
 // import { makeEmojiMap } from 'src/utils/normalizers'; TODO: Maybe needed ?
+import avatarMissing from 'src/assets/images/avatar-missing.png';
+import headerMissing from 'src/assets/images/header-missing.png';
+
+
 
 import type { Emoji, GroupRelationship } from 'src/types/entities';
 
@@ -52,7 +56,7 @@ export const GroupRecord = ImmutableRecord({
 const normalizeAvatar = (group: ImmutableMap<string, any>) => {
   const avatar = group.get('avatar');
   const avatarStatic = group.get('avatar_static');
-  const missing = require('src/assets/images/avatar-missing.png');
+  const missing = avatarMissing;
 
   return group.withMutations(group => {
     group.set('avatar', avatar || avatarStatic || missing);
@@ -64,7 +68,7 @@ const normalizeAvatar = (group: ImmutableMap<string, any>) => {
 const normalizeHeader = (group: ImmutableMap<string, any>) => {
   const header = group.get('header');
   const headerStatic = group.get('header_static');
-  const missing = require('src/assets/images/header-missing.png');
+  const missing = headerMissing;
 
   return group.withMutations(group => {
     group.set('header', header || headerStatic || missing);
