@@ -16,6 +16,9 @@ yarn-error.log*
 /static/
 /public/
 /dist/
+/custom/**/*
+!/custom/*
+/custom/*.*
 
 .idea
 .DS_Store
