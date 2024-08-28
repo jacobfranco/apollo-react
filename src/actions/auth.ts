@@ -190,11 +190,6 @@ export const logOut = () =>
         // Clear the account from Sentry.
         unsetSentryAccount();
 
-        // Remove external auth entries.
-        localStorage.removeItem('apollo:external:app');
-        localStorage.removeItem('apollo:external:baseurl');
-        localStorage.removeItem('apollo:external:scopes');
-
         dispatch({ type: AUTH_LOGGED_OUT, account });
 
         toast.success(messages.loggedOut);
