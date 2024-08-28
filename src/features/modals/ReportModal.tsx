@@ -5,7 +5,7 @@ import { blockAccount } from 'src/actions/accounts';
 import { submitReport, submitReportSuccess, submitReportFail, ReportableEntities } from 'src/actions/reports';
 import { expandAccountTimeline } from 'src/actions/timelines';
 import { useAccount } from 'src/api/hooks';
-import { AttachmentThumbs, Avatar, GroupCard, HStack, Icon, Modal, ProgressBar, Stack, StatusContent, Text} from 'src/components';
+import { AttachmentThumbs, Avatar, GroupCard, HStack, Icon, Modal, ProgressBar, Stack, StatusContent, Text } from 'src/components';
 import List, { ListItem } from 'src/components/List';
 import AccountContainer from 'src/containers/AccountContainer';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
@@ -215,12 +215,12 @@ const ReportModal = ({ onClose }: IReportModal) => {
             <div>
               <Avatar src={account.avatar} className='h-8 w-8' />
             </div>
-        { /* TODO: Implement chats
+            { /* TODO: Implement reports
             <div className='grow rounded-md bg-gray-200 p-4 dark:bg-primary-800'>
               <Text dangerouslySetInnerHTML={{ __html: selectedChatMessage?.content as string }} />
             </div>  
       */ }
-       </HStack>
+          </HStack>
           <List>
             <ListItem
               label={<Icon src={require('@tabler/icons/outline/info-circle.svg')} className='text-gray-600' />}
@@ -243,10 +243,10 @@ const ReportModal = ({ onClose }: IReportModal) => {
     switch (entityType) {
       case ReportableEntities.STATUS:
         return renderSelectedStatuses();
-        /* TODO: Implement chats
-      case ReportableEntities.CHAT_MESSAGE:
-        return renderSelectedChatMessage();
-        */ 
+      /* TODO: Implement chats
+    case ReportableEntities.CHAT_MESSAGE:
+      return renderSelectedChatMessage();
+      */
       case ReportableEntities.GROUP:
         if (currentStep === Steps.TWO) {
           return null;
