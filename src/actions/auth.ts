@@ -173,23 +173,12 @@ export const logOut = () =>
     const state = getState();
     const account = getLoggedInAccount(state);
 
-    if (!account || !account.url) return dispatch(noOp); // Check if account or account.url is undefined
-
-    const user = state.auth.users.get(account.url);
-    if (!user) return dispatch(noOp); // Check if user is undefined
-
-    // Assuming user is of a specific type that includes access_token
-    const token = user.access_token;
-
-    if (!state.auth.app.client_id || !state.auth.app.client_secret || !token) {
-      // Handle missing values
-      return dispatch(noOp);
-    }
+    if (!account) return dispatch(noOp);
 
     const params = {
-      client_id: state.auth.app.client_id,
-      client_secret: state.auth.app.client_secret,
-      token: token,
+      client_id: state.auth.app.client_id!,
+      client_secret: state.auth.app.client_secret!,
+      token: state.auth.users.get(account.url)!.access_token,
     };
 
     return dispatch(revokeOAuthToken(params))
@@ -198,8 +187,13 @@ export const logOut = () =>
         queryClient.invalidateQueries();
         queryClient.clear();
 
-        // Clear account from sentry
+        // Clear the account from Sentry.
         unsetSentryAccount();
+
+        // Remove external auth entries.
+        localStorage.removeItem('apollo:external:app');
+        localStorage.removeItem('apollo:external:baseurl');
+        localStorage.removeItem('apollo:external:scopes');
 
         dispatch({ type: AUTH_LOGGED_OUT, account });
 

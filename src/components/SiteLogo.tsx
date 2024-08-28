@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useTheme } from 'src/hooks';
-import bigLogo from 'src/assets/big_logo.png'
+import bigLogo from 'src/assets/images/big_logo.png'
 
 interface ISiteLogo extends React.ComponentProps<'img'> {
   className?: string;
