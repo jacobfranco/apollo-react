@@ -14,7 +14,7 @@ import { deleteStatus, editStatus, toggleMuteStatus } from 'src/actions/statuses
 import { deleteFromTimelines } from 'src/actions/timelines';
 import { useBlockGroupMember, useDeleteGroupStatus, useGroup, useGroupRelationship, useMuteGroup, useUnmuteGroup } from 'src/api/hooks';
 import DropdownMenu from 'src/components/dropdown-menu';
-import { GroupPopover, StatusActionButton, HStack } from 'src/components';
+import { GroupPopover, StatusActionButton, HStack, TranslateButton } from 'src/components';
 import { useAppDispatch, useAppSelector, useOwnAccount, useSettings, useApolloConfig } from 'src/hooks';
 import { GroupRoles } from 'src/schemas/group-member';
 import toast from 'src/toast';
@@ -688,6 +688,8 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
           // text={withLabels ? meEmojiTitle : undefined}
           theme={statusActionButtonTheme}
         />
+
+        {/*TODO: Implement functionality + styling <TranslateButton status={status} /> */}
 
         {canShare && (
           <StatusActionButton

@@ -86,7 +86,7 @@ const SidebarNavigation = () => {
         icon={require("@tabler/icons/outline/messages.svg")}
         count={unreadChatsCount}
         countMax={9}
-        text={<FormattedMessage id="navigation.chats" defaultMessage="Chats" />}
+        text={<FormattedMessage id="navigation.direct_messages" defaultMessage="Messages" />}
       />
     );
 
@@ -149,6 +149,8 @@ const SidebarNavigation = () => {
               renderMessagesLink() /* TODO: Maybe just replace with the component defined in the function */
             }
 
+            { /* TODO: Put this back
+
             <SidebarNavigationLink
               to={groupsPath}
               icon={require("@tabler/icons/outline/circles.svg")}
@@ -160,6 +162,7 @@ const SidebarNavigation = () => {
                 />
               }
             />
+            */ }
 
             <SidebarNavigationLink
               to={`/@${account.id}`}

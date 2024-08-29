@@ -13,8 +13,10 @@ import { HotKeys } from 'src/features/Hotkeys';
 import { useAppDispatch, useSettings } from 'src/hooks';
 import { defaultMediaVisibility, textForScreenReader, getActualStatus } from 'src/utils/status';
 
-import { Card, Icon, Stack, Text, TranslateButton, StatusActionBar, StatusContent, 
-  StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo } from 'src/components';
+import {
+  Card, Icon, Stack, Text, StatusActionBar, StatusContent,
+  StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo
+} from 'src/components';
 
 import type { Status as StatusEntity } from 'src/types/entities';
 
@@ -347,7 +349,7 @@ const Status: React.FC<IStatus> = (props) => {
   let quote;
 
   if (actualStatus.quote) {
-      quote = <QuotedStatus statusId={actualStatus.quote as string} />;
+    quote = <QuotedStatus statusId={actualStatus.quote as string} />;
   }
 
   const handlers = muted ? undefined : {
@@ -421,30 +423,28 @@ const Status: React.FC<IStatus> = (props) => {
                 />
               )}
 
-                <Stack space={4}>
-                  <StatusContent
-                    status={actualStatus}
-                    onClick={handleClick}
-                    collapsable
-                    translatable
-                  />
+              <Stack space={4}>
+                <StatusContent
+                  status={actualStatus}
+                  onClick={handleClick}
+                  collapsable
+                  translatable
+                />
 
-                  <TranslateButton status={actualStatus} />
+                {(quote || actualStatus.card || actualStatus.media_attachments.size > 0) && (
+                  <Stack space={4}>
+                    <StatusMedia
+                      status={actualStatus}
+                      muted={muted}
+                      onClick={handleClick}
+                      showMedia={showMedia}
+                      onToggleVisibility={handleToggleMediaVisibility}
+                    />
 
-                  {(quote || actualStatus.card || actualStatus.media_attachments.size > 0) && (
-                    <Stack space={4}>
-                      <StatusMedia
-                        status={actualStatus}
-                        muted={muted}
-                        onClick={handleClick}
-                        showMedia={showMedia}
-                        onToggleVisibility={handleToggleMediaVisibility}
-                      />
-
-                      {quote}
-                    </Stack>
-                  )}
-                </Stack>
+                    {quote}
+                  </Stack>
+                )}
+              </Stack>
             </Stack>
 
             {(!hideActionBar && !isUnderReview) && (

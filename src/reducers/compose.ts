@@ -111,14 +111,17 @@ type Poll = ReturnType<typeof PollRecord>;
 
 const statusToTextMentions = (status: Status, account: Account) => {
   const author = status.getIn(['account', 'id']);
-  const mentions = status.get('mentions')?.map((m) => m.id) || [];
+  const mentions = status.get('mentions') || [];
 
   return ImmutableOrderedSet([author])
-    .concat(mentions)
+    .concat(mentions.map(m => m.id))
     .delete(account.id)
-    .map(m => `@${m} `)
+    .map(m => {
+      const mention = mentions.find(mention => mention.id === m) || { username: m };
+      return `@${mention.username} `;
+    })
     .join('');
-};
+}
 
 export const statusToMentionsArray = (status: Status, account: Account) => {
   const author = status.getIn(['account', 'id']) as string;

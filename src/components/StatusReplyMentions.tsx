@@ -51,7 +51,7 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
     const link = (
       <Link
         key={account.id}
-        to={`/@${account.id}`}
+        to={`/${account.id}`}
         className='reply-mentions__account max-w-[200px] truncate align-bottom'
         onClick={(e) => e.stopPropagation()}
       >

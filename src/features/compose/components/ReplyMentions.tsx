@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 
 import { openModal } from 'src/actions/modals';
+import { useAccount } from 'src/api/hooks';
 import { useAppDispatch, useAppSelector, useCompose, useOwnAccount } from 'src/hooks';
 import { statusToMentionsAccountIdsArray } from 'src/reducers/compose';
 import { makeGetStatus } from 'src/selectors';
@@ -46,14 +47,15 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
     );
   }
 
-  const accounts = to.slice(0, 2).map((username: string) => {
+  const accounts = to.slice(0, 2).map((accountId: string) => {
+    const { account } = useAccount(accountId);
     return (
-      <span className='reply-mentions__account'>
-        @{username}
+      <span key={accountId} className='reply-mentions__account'>
+        @{account ? account.username : accountId}
       </span>
     );
   }).toArray();
-  
+
   if (to.size > 2) {
     accounts.push(
       <FormattedMessage id='reply_mentions.more' defaultMessage='{count} more' values={{ count: to.size - 2 }} />,

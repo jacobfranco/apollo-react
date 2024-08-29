@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Account, StatusContent, StatusInteractionBar, StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo, 
-    TranslateButton, HStack, Icon, Stack, Text } from 'src/components';
+import {
+  Account, StatusContent, StatusInteractionBar, StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo,
+  HStack, Icon, Stack, Text
+} from 'src/components';
 import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
 import { getActualStatus } from 'src/utils/status';
 
@@ -105,7 +107,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
 
         <div className='mb-4'>
           <Account
-            key={account.id}
+            key={account.username}
             account={account}
             avatarSize={42}
             hideActions
@@ -134,8 +136,6 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
               textSize='lg'
               translatable
             />
-
-            <TranslateButton status={actualStatus} />
 
             {(withMedia && (quote || actualStatus.card || actualStatus.media_attachments.size > 0)) && (
               <Stack space={4}>

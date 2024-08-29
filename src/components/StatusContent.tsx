@@ -95,7 +95,7 @@ const StatusContent: React.FC<IStatusContent> = ({
         if (classes?.includes('mention')) {
           const mention = status.mentions.find(({ url }) => domNode.attribs.href === url);
           if (mention) {
-            return <Mention mention={mention} />;
+            return <Mention mention={{ id: mention.id, username: mention.username }} />;
           }
         }
 

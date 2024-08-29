@@ -20,9 +20,9 @@ const Mention: React.FC<IMention> = ({ mention: { id, username }, disabled }) =>
   };
 
   return (
-    <Tooltip text={`@${id}`}>
+    <Tooltip text={`@${username}`}>
       <Link
-        to={`/@${id}`}
+        to={`/${id}`}
         className='text-primary-600 hover:underline dark:text-accent-blue'
         onClick={handleClick}
         dir='ltr'

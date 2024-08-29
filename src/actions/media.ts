@@ -16,7 +16,7 @@ const messages = defineMessages({
   exceededVideoDurationLimit: { id: 'upload_error.video_duration_limit', defaultMessage: 'Video exceeds the current duration limit ({limit, plural, one {# second} other {# seconds}})' },
 });
 
-const noOp = (e: any) => {};
+const noOp = (e: any) => { };
 
 const fetchMedia = (mediaId: string) =>
   (dispatch: any, getState: () => RootState) => {
@@ -38,16 +38,17 @@ const uploadMedia = (data: FormData, onUploadProgress = noOp) =>
 const uploadFile = (
   file: File,
   intl: IntlShape,
-  onSuccess: (data: APIEntity) => void = () => {},
-  onFail: (error: unknown) => void = () => {},
-  onProgress: (loaded: number) => void = () => {},
-  changeTotal: (value: number) => void = () => {},
+  onSuccess: (data: APIEntity) => void = () => { },
+  onFail: (error: unknown) => void = () => { },
+  onProgress: (loaded: number) => void = () => { },
+  changeTotal: (value: number) => void = () => { },
 ) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-    const maxImageSize = 10000; // TODO: Figure out what this should be
-    const maxVideoSize = 10000; // TODO: Figure out what this should be
-    const maxVideoDuration = 120; // TODO: Figure out what this should be
+    // TODO: Change these to be more specific
+    const maxImageSize = 30 * 1024 * 1024; // 30 MB in bytes
+    const maxVideoSize = 2 * 1024 * 1024 * 1024; // 2 GB in bytes
+    const maxVideoDuration = 3600; // 1 hour in seconds (may adjust this as needed)
 
     const isImage = file.type.match(/image.*/);
     const isVideo = file.type.match(/video.*/);

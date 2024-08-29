@@ -41,7 +41,6 @@ const messages = defineMessages({
   displayNamePlaceholder: { id: 'edit_profile.fields.display_name_placeholder', defaultMessage: 'Name' },
   websitePlaceholder: { id: 'edit_profile.fields.website_placeholder', defaultMessage: 'Display a Link' },
   locationPlaceholder: { id: 'edit_profile.fields.location_placeholder', defaultMessage: 'Location' },
-  nip05Placeholder: { id: 'edit_profile.fields.nip05_placeholder', defaultMessage: 'user@{domain}' },
   lud16Placeholder: { id: 'edit_profile.fields.lud16_placeholder', defaultMessage: 'user@example.com' },
   cancel: { id: 'common.cancel', defaultMessage: 'Cancel' },
 });
