@@ -1,13 +1,14 @@
 import React from 'react';
 
-import { Link } from 'src/components';
+import Link from './Link';
 
 interface IHashtagLink {
   hashtag: string;
 }
 
 const HashtagLink: React.FC<IHashtagLink> = ({ hashtag }) => (
-  <Link to={`/tags/${hashtag}`}>
+  // eslint-disable-next-line formatjs/no-literal-string-in-jsx
+  <Link to={`/tags/${hashtag}`} onClick={(e) => e.stopPropagation()}>
     #{hashtag}
   </Link>
 );

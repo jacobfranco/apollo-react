@@ -15,8 +15,8 @@ const Mention: React.FC<IMention> = ({ mention: { id, username }, disabled }) =>
   const handleClick: React.MouseEventHandler = (e) => {
     if (disabled) {
       e.preventDefault();
-      e.stopPropagation();
     }
+    e.stopPropagation();
   };
 
   return (
