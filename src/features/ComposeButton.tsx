@@ -2,10 +2,12 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 
-import { groupComposeModal } from 'src/actions/compose'; 
+import { groupComposeModal } from 'src/actions/compose';
 import { openModal } from 'src/actions/modals';
-import { useGroupLookup } from 'src/api/hooks'; 
-import { Avatar, Button, HStack } from 'src/components';
+import { useGroupLookup } from 'src/api/hooks';
+import { HStack } from 'src/components';
+import Avatar from 'src/components/Avatar';
+import Button from 'src/components/Button';
 import { useAppDispatch } from 'src/hooks';
 
 const ComposeButton = () => {
@@ -38,7 +40,7 @@ const HomeComposeButton = () => {
   );
 };
 
-const GroupComposeButton = () => { 
+const GroupComposeButton = () => {
   const dispatch = useAppDispatch();
   const match = useRouteMatch<{ groupSlug: string }>('/group/:groupSlug');
   const { entity: group } = useGroupLookup(match?.params.groupSlug || '');

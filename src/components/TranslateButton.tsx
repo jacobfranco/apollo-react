@@ -4,9 +4,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { translateStatus, undoStatusTranslation } from 'src/actions/statuses';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
-import { Stack, Button, Text } from 'src/components';
+import { Stack, Text } from 'src/components';
 
 import type { Status } from 'src/types/entities';
+import Button from './Button';
 
 interface ITranslateButton {
   status: Status;
@@ -31,7 +32,7 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   if (status.translation) {
     const languageNames = new Intl.DisplayNames([intl.locale], { type: 'language' });
     const languageName = languageNames.of(status.language!);
-    const provider     = status.translation.get('provider');
+    const provider = status.translation.get('provider');
 
     return (
       <Stack space={3} alignItems='start'>

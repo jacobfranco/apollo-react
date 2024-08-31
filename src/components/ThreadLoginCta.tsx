@@ -1,8 +1,9 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Card, CardTitle, Text, Stack, Button } from 'src/components';
+import { Card, CardTitle, Text, Stack } from 'src/components';
 import { useApolloConfig } from 'src/hooks';
+import Button from './Button';
 
 /** Prompts logged-out users to log in when viewing a thread. */
 const ThreadLoginCta: React.FC = () => {

@@ -4,9 +4,11 @@ import { useHistory } from 'react-router-dom';
 
 import { changeSetting } from 'src/actions/settings';
 import List, { ListItem } from 'src/components/List';
-import { Button, CardBody, CardTitle, Form, HStack, IconButton, SettingToggle, Stack, Toggle } from 'src/components';
-import { useAppDispatch, useOwnAccount, useSettings } from 'src/hooks';
+import { CardBody, CardTitle, Form, HStack, IconButton, SettingToggle, Stack, Toggle } from 'src/components';
+import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import { useUpdateCredentials } from 'src/queries/accounts';
+import { useSettings } from 'src/hooks/useSettings';
+import Button from 'src/components/Button';
 
 type FormData = {
   accepts_chat_messages?: boolean

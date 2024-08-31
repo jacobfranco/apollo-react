@@ -2,7 +2,8 @@ import clsx from 'clsx';
 import React, { useCallback, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { Avatar, HStack, Stack, Text, VerificationBadge } from 'src/components';
+import { HStack, Stack, Text, VerificationBadge } from 'src/components';
+import Avatar from 'src/components/Avatar';
 import useAccountSearch from 'src/queries/search';
 
 import type { Account } from 'src/types/entities';

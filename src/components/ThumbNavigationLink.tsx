@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
-import { Icon, Text } from 'src/components';
+import { Text } from 'src/components';
 import IconWithCounter from 'src/components/IconWithCounter'
+import Icon from './Icon';
 
 interface IThumbNavigationLink {
   count?: number;

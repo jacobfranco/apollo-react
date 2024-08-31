@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import List, { ListItem } from 'src/components/List';
-import { Button, CardBody, CardTitle, Form, Stack, Text, Toggle } from 'src/components';
+import { CardBody, CardTitle, Form, Stack, Text, Toggle } from 'src/components';
 import { useOwnAccount } from 'src/hooks';
 import { useUpdateCredentials } from 'src/queries/accounts';
+import Button from 'src/components/Button';
 
 type FormData = {
   accepts_chat_messages?: boolean

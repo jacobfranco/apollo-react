@@ -14,39 +14,39 @@ import type { APIEntity, Status } from 'src/types/entities';
 
 const STATUS_CREATE_REQUEST = 'STATUS_CREATE_REQUEST';
 const STATUS_CREATE_SUCCESS = 'STATUS_CREATE_SUCCESS';
-const STATUS_CREATE_FAIL    = 'STATUS_CREATE_FAIL';
+const STATUS_CREATE_FAIL = 'STATUS_CREATE_FAIL';
 
 const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST';
 const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS';
-const STATUS_FETCH_SOURCE_FAIL    = 'STATUS_FETCH_SOURCE_FAIL';
+const STATUS_FETCH_SOURCE_FAIL = 'STATUS_FETCH_SOURCE_FAIL';
 
 const STATUS_FETCH_REQUEST = 'STATUS_FETCH_REQUEST';
 const STATUS_FETCH_SUCCESS = 'STATUS_FETCH_SUCCESS';
-const STATUS_FETCH_FAIL    = 'STATUS_FETCH_FAIL';
+const STATUS_FETCH_FAIL = 'STATUS_FETCH_FAIL';
 
 const STATUS_DELETE_REQUEST = 'STATUS_DELETE_REQUEST';
 const STATUS_DELETE_SUCCESS = 'STATUS_DELETE_SUCCESS';
-const STATUS_DELETE_FAIL    = 'STATUS_DELETE_FAIL';
+const STATUS_DELETE_FAIL = 'STATUS_DELETE_FAIL';
 
 const CONTEXT_FETCH_REQUEST = 'CONTEXT_FETCH_REQUEST';
 const CONTEXT_FETCH_SUCCESS = 'CONTEXT_FETCH_SUCCESS';
-const CONTEXT_FETCH_FAIL    = 'CONTEXT_FETCH_FAIL';
+const CONTEXT_FETCH_FAIL = 'CONTEXT_FETCH_FAIL';
 
 const STATUS_MUTE_REQUEST = 'STATUS_MUTE_REQUEST';
 const STATUS_MUTE_SUCCESS = 'STATUS_MUTE_SUCCESS';
-const STATUS_MUTE_FAIL    = 'STATUS_MUTE_FAIL';
+const STATUS_MUTE_FAIL = 'STATUS_MUTE_FAIL';
 
 const STATUS_UNMUTE_REQUEST = 'STATUS_UNMUTE_REQUEST';
 const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS';
-const STATUS_UNMUTE_FAIL    = 'STATUS_UNMUTE_FAIL';
+const STATUS_UNMUTE_FAIL = 'STATUS_UNMUTE_FAIL';
 
 const STATUS_REVEAL = 'STATUS_REVEAL';
-const STATUS_HIDE   = 'STATUS_HIDE';
+const STATUS_HIDE = 'STATUS_HIDE';
 
 const STATUS_TRANSLATE_REQUEST = 'STATUS_TRANSLATE_REQUEST';
 const STATUS_TRANSLATE_SUCCESS = 'STATUS_TRANSLATE_SUCCESS';
-const STATUS_TRANSLATE_FAIL    = 'STATUS_TRANSLATE_FAIL';
-const STATUS_TRANSLATE_UNDO    = 'STATUS_TRANSLATE_UNDO';
+const STATUS_TRANSLATE_FAIL = 'STATUS_TRANSLATE_FAIL';
+const STATUS_TRANSLATE_UNDO = 'STATUS_TRANSLATE_UNDO';
 
 const STATUS_UNFILTER = 'STATUS_UNFILTER';
 
@@ -195,7 +195,7 @@ const fetchContext = (id: string) =>
   };
 
 const fetchNext = (statusId: string, next: string) =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
+  async (dispatch: AppDispatch, getState: () => RootState) => {
     const response = await api(getState).get(next);
     dispatch(importFetchedStatuses(response.data));
 
@@ -210,37 +210,37 @@ const fetchNext = (statusId: string, next: string) =>
   };
 
 const fetchAncestors = (id: string) =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
+  async (dispatch: AppDispatch, getState: () => RootState) => {
     const response = await api(getState).get(`/api/statuses/${id}/context/ancestors`);
     dispatch(importFetchedStatuses(response.data));
     return response;
   };
 
 const fetchDescendants = (id: string) =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
+  async (dispatch: AppDispatch, getState: () => RootState) => {
     const response = await api(getState).get(`/api/statuses/${id}/context/descendants`);
     dispatch(importFetchedStatuses(response.data));
     return response;
   };
 
-  // TODO: removed the paginated context false branch, investigate issues with that
 const fetchStatusWithContext = (id: string) =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
-      await dispatch(fetchStatus(id));
-      const responses = await Promise.all([
-        dispatch(fetchAncestors(id)),
-        dispatch(fetchDescendants(id)),
-      ]);
+  async (dispatch: AppDispatch, getState: () => RootState) => {
 
-      dispatch({
-        type: CONTEXT_FETCH_SUCCESS,
-        id,
-        ancestors: responses[0].data,
-        descendants: responses[1].data,
-      });
+    await dispatch(fetchStatus(id));
+    const responses = await Promise.all([
+      dispatch(fetchAncestors(id)),
+      dispatch(fetchDescendants(id)),
+    ]);
 
-      const next = getNextLink(responses[1]);
-      return { next };
+    dispatch({
+      type: CONTEXT_FETCH_SUCCESS,
+      id,
+      ancestors: responses[0].data,
+      descendants: responses[1].data,
+    });
+
+    const next = getNextLink(responses[1]);
+    return { next };
   };
 
 const muteStatus = (id: string) =>

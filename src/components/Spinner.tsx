@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { Stack, Text } from 'src/components';
 
-import 'src/styles/components/Spinner.css';
+import 'src/components/Spinner.css';
 
 interface ISpinner {
   /** Width and height of the spinner in pixels. */

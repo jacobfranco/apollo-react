@@ -11,10 +11,11 @@ import {
 } from 'src/actions/accounts';
 import { openModal } from 'src/actions/modals';
 import { useFollow } from 'src/api/hooks';
-import { Button, HStack } from 'src/components';
+import { HStack } from 'src/components';
 import { useAppDispatch, useLoggedIn } from 'src/hooks';
 
 import type { Account } from 'src/schemas';
+import Button from './Button';
 
 const messages = defineMessages({
   block: { id: 'account.block', defaultMessage: 'Block @{name}' },

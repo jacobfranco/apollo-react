@@ -2,8 +2,11 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { changePassword } from 'src/actions/security';
-import { Button, Column, Form, FormActions, FormGroup, Input } from 'src/components';
+import { Form, FormActions, FormGroup } from 'src/components';
+import { default as Input } from 'src/components/Input'
+import { default as Button } from 'src/components/Button'
 import { useAppDispatch } from 'src/hooks';
+import { Column } from 'src/components/Column'
 import toast from 'src/toast';
 
 const messages = defineMessages({

@@ -4,10 +4,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { changeReportBlock, changeReportForward } from 'src/actions/reports';
 import { fetchRules } from 'src/actions/rules';
-import { Button, FormGroup, HStack, Stack, StatusCheckBox, Text, Toggle } from 'src/components';
+import { FormGroup, HStack, Stack, StatusCheckBox, Text, Toggle } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 import type { Account } from 'src/schemas';
+import Button from './Button';
 
 const messages = defineMessages({
   addAdditionalStatuses: { id: 'report.otherActions.addAdditional', defaultMessage: 'Would you like to add additional statuses to this report?' },
@@ -46,41 +47,41 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
 
   return (
     <Stack space={4}>
-        <Stack space={2}>
-          <Text tag='h1' size='xl' weight='semibold'>
-            {intl.formatMessage(messages.otherStatuses)}
-          </Text>
+      <Stack space={2}>
+        <Text tag='h1' size='xl' weight='semibold'>
+          {intl.formatMessage(messages.otherStatuses)}
+        </Text>
 
-          <FormGroup labelText={intl.formatMessage(messages.addAdditionalStatuses)}>
-            {showAdditionalStatuses ? (
-              <Stack space={2}>
-                <div className='divide-y divide-solid divide-gray-200 dark:divide-gray-800'>
-                  {statusIds.map((statusId) => <StatusCheckBox id={statusId} key={statusId} />)}
-                </div>
+        <FormGroup labelText={intl.formatMessage(messages.addAdditionalStatuses)}>
+          {showAdditionalStatuses ? (
+            <Stack space={2}>
+              <div className='divide-y divide-solid divide-gray-200 dark:divide-gray-800'>
+                {statusIds.map((statusId) => <StatusCheckBox id={statusId} key={statusId} />)}
+              </div>
 
-                <div>
-                  <Button
-                    icon={require('@tabler/icons/outline/arrows-minimize.svg')}
-                    theme='tertiary'
-                    size='sm'
-                    onClick={() => setShowAdditionalStatuses(false)}
-                  >
-                    {intl.formatMessage(messages.hideAdditionalStatuses)}
-                  </Button>
-                </div>
-              </Stack>
-            ) : (
-              <Button
-                icon={require('@tabler/icons/outline/plus.svg')}
-                theme='tertiary'
-                size='sm'
-                onClick={() => setShowAdditionalStatuses(true)}
-              >
-                {intl.formatMessage(messages.addMore)}
-              </Button>
-            )}
-          </FormGroup>
-        </Stack>
+              <div>
+                <Button
+                  icon={require('@tabler/icons/outline/arrows-minimize.svg')}
+                  theme='tertiary'
+                  size='sm'
+                  onClick={() => setShowAdditionalStatuses(false)}
+                >
+                  {intl.formatMessage(messages.hideAdditionalStatuses)}
+                </Button>
+              </div>
+            </Stack>
+          ) : (
+            <Button
+              icon={require('@tabler/icons/outline/plus.svg')}
+              theme='tertiary'
+              size='sm'
+              onClick={() => setShowAdditionalStatuses(true)}
+            >
+              {intl.formatMessage(messages.addMore)}
+            </Button>
+          )}
+        </FormGroup>
+      </Stack>
 
       <Stack space={2}>
         <Text tag='h1' size='xl' weight='semibold'>

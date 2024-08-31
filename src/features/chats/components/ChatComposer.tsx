@@ -3,7 +3,7 @@ import { defineMessages, IntlShape, useIntl } from 'react-intl';
 
 import { unblockAccount } from 'src/actions/accounts';
 import { openModal } from 'src/actions/modals';
-import { Button, Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover, HStack, IconButton, Stack, Text } from 'src/components';
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover, HStack, IconButton, Stack, Text } from 'src/components';
 import { useChatContext } from 'src/contexts/chat-context';
 import UploadButton from 'src/features/compose/components/UploadButton';
 import emojiSearch from 'src/features/emoji/search';
@@ -14,6 +14,7 @@ import { textAtCursorMatchesToken } from 'src/utils/suggestions';
 import ChatTextarea from './ChatTextarea';
 
 import type { Emoji, NativeEmoji } from 'src/features/emoji';
+import Button from 'src/components/Button';
 
 const messages = defineMessages({
   placeholder: { id: 'chat.input.placeholder', defaultMessage: 'Type a message' },
@@ -170,15 +171,15 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
       <div className='h-5' />
 
       <HStack alignItems='stretch' justifyContent='between' space={4}>
-          <Stack justifyContent='end' alignItems='center' className='mb-1.5 w-10'>
-            <UploadButton
-              onSelectFile={onSelectFile}
-              resetFileKey={resetFileKey}
-              iconClassName='h-5 w-5'
-              className='text-primary-500'
-              disabled={isUploading || (attachments.length >= attachmentLimit)}
-            />
-          </Stack>
+        <Stack justifyContent='end' alignItems='center' className='mb-1.5 w-10'>
+          <UploadButton
+            onSelectFile={onSelectFile}
+            resetFileKey={resetFileKey}
+            iconClassName='h-5 w-5'
+            className='text-primary-500'
+            disabled={isUploading || (attachments.length >= attachmentLimit)}
+          />
+        </Stack>
 
         <Stack grow>
           <Combobox onSelect={onSelectComboboxOption}>

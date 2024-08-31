@@ -5,13 +5,16 @@ import { Link } from 'react-router-dom';
 
 import { logIn, verifyCredentials } from 'src/actions/auth';
 import { openSidebar } from 'src/actions/sidebar';
-import { Avatar, Button, Form, HStack, IconButton, Input, SiteLogo, Tooltip } from 'src/components';
+import { Form, HStack, IconButton, SiteLogo, Tooltip } from 'src/components';
 import Search from 'src/features/compose/components/Search';
 import { useAppDispatch, useOwnAccount, useRegistrationStatus } from 'src/hooks';
 
 import ProfileDropdown from 'src/features/ProfileDropdown';
 
 import type { AxiosError } from 'axios';
+import Button from 'src/components/Button';
+import Avatar from 'src/components/Avatar';
+import Input from 'src/components/Input';
 
 const messages = defineMessages({
   login: { id: 'navbar.login.action', defaultMessage: 'Log In' },
@@ -94,45 +97,45 @@ const Navbar = () => {
               </div>
             ) : (
               <>
-                  <Form className='hidden items-center space-x-2 xl:flex rtl:space-x-reverse' onSubmit={handleSubmit}>
-                    <Input
-                      required
-                      value={username}
-                      onChange={(event) => setUsername(event.target.value)}
-                      type='text'
-                      placeholder={intl.formatMessage(messages.username)} // TODO: Implement so that message is for username or email
-                      className='max-w-[200px]'
-                    />
+                <Form className='hidden items-center space-x-2 xl:flex rtl:space-x-reverse' onSubmit={handleSubmit}>
+                  <Input
+                    required
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                    type='text'
+                    placeholder={intl.formatMessage(messages.username)} // TODO: Implement so that message is for username or email
+                    className='max-w-[200px]'
+                  />
 
-                    <Input
-                      required
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      type='password'
-                      placeholder={intl.formatMessage(messages.password)}
-                      className='max-w-[200px]'
-                    />
+                  <Input
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    type='password'
+                    placeholder={intl.formatMessage(messages.password)}
+                    className='max-w-[200px]'
+                  />
 
-                    <Link to='/reset-password'>
-                      <Tooltip text={intl.formatMessage(messages.forgotPassword)}>
-                        <IconButton
-                          src={require('@tabler/icons/outline/help.svg')}
-                          className='cursor-pointer bg-transparent text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200'
-                          iconClassName='h-5 w-5'
-                        />
-                      </Tooltip>
-                    </Link>
+                  <Link to='/reset-password'>
+                    <Tooltip text={intl.formatMessage(messages.forgotPassword)}>
+                      <IconButton
+                        src={require('@tabler/icons/outline/help.svg')}
+                        className='cursor-pointer bg-transparent text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200'
+                        iconClassName='h-5 w-5'
+                      />
+                    </Tooltip>
+                  </Link>
 
-                    <Button
-                      theme='primary'
-                      type='submit'
-                      disabled={isLoading}
-                    >
-                      {intl.formatMessage(messages.login)}
-                    </Button>
-                  </Form>
+                  <Button
+                    theme='primary'
+                    type='submit'
+                    disabled={isLoading}
+                  >
+                    {intl.formatMessage(messages.login)}
+                  </Button>
+                </Form>
 
-                <div className='space-x-1.5 xl:hidden'> 
+                <div className='space-x-1.5 xl:hidden'>
                   {(isOpen) && (
                     <Button theme='primary' to='/signup' size='sm'>
                       <FormattedMessage id='account.register' defaultMessage='Sign Up' />

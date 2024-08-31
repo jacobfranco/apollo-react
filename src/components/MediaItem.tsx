@@ -1,11 +1,12 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
-import { Blurhash, Icon, StillImage } from 'src/components';
-import { useSettings } from 'src/hooks';
+import { Blurhash, StillImage } from 'src/components';
+import { useSettings } from 'src/hooks/useSettings';
 import { isIOS } from 'src/is-mobile';
 
 import type { Attachment } from 'src/types/entities';
+import Icon from './Icon';
 
 interface IMediaItem {
   attachment: Attachment;
@@ -48,7 +49,7 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
   };
 
   const status = attachment.status;
-  const title  = status.spoiler_text || attachment.description;
+  const title = status.spoiler_text || attachment.description;
 
   let thumbnail: React.ReactNode = '';
   let icon;
@@ -58,7 +59,7 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
   } else if (attachment.type === 'image') {
     const focusX = Number(attachment.meta.getIn(['focus', 'x'])) || 0;
     const focusY = Number(attachment.meta.getIn(['focus', 'y'])) || 0;
-    const x = ((focusX /  2) + .5) * 100;
+    const x = ((focusX / 2) + .5) * 100;
     const y = ((focusY / -2) + .5) * 100;
 
     thumbnail = (

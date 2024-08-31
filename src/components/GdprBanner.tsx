@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Banner, Button, HStack, Stack, Text } from 'src/components';
+import { Banner, HStack, Stack, Text } from 'src/components';
 import { useApolloConfig } from 'src/hooks';
+import Button from './Button';
 
 const acceptedGdpr = !!localStorage.getItem('apollo:gdpr');
 
@@ -37,7 +38,7 @@ const GdprBanner: React.FC = () => {
             <FormattedMessage
               id='gdpr.message'
               defaultMessage="{siteTitle} uses session cookies, which are essential to the website's functioning."
-              values={{ siteTitle: 'Apollo'}}
+              values={{ siteTitle: 'Apollo' }}
             />
           </Text>
         </Stack>

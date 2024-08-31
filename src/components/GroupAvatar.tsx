@@ -3,7 +3,7 @@ import React from 'react';
 
 import { GroupRoles } from 'src/schemas/group-member';
 
-import { Avatar } from 'src/components';
+import Avatar from 'src/components/Avatar';
 
 import type { Group } from 'src/schemas';
 

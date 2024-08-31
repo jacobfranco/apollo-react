@@ -56,7 +56,6 @@ export const baseClient = (
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
-  console.log("Base client using this as baseURL: ", BuildConfig.BACKEND_URL)
   return axios.create({
     // When BACKEND_URL is set, always use it.
     baseURL: isURL(BuildConfig.BACKEND_URL) ? BuildConfig.BACKEND_URL : baseURL,

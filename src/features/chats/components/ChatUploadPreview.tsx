@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icon } from 'src/components';
+import Icon from 'src/components/Icon';
 import { MIMETYPE_ICONS } from 'src/components/Upload';
 
 import type { Attachment } from 'src/types/entities';

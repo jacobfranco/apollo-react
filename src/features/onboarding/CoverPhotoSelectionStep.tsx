@@ -3,13 +3,16 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { patchMe } from 'src/actions/me';
-import { Avatar, BigCard, Button, Icon, Spinner, Stack, StillImage, Text } from 'src/components';
+import { BigCard, Spinner, Stack, StillImage, Text } from 'src/components';
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 import { isDefaultHeader } from 'src/utils/accounts';
 import resizeImage from 'src/utils/resize-image';
 
 import type { AxiosError } from 'axios';
+import Avatar from 'src/components/Avatar';
+import Button from 'src/components/Button';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   header: { id: 'account.header.alt', defaultMessage: 'Profile header' },

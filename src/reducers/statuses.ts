@@ -1,12 +1,13 @@
 import escapeTextContentForBrowser from 'escape-html';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
+import DOMPurify from 'isomorphic-dompurify';
 
 import emojify from 'src/features/emoji';
 import { normalizeStatus } from 'src/normalizers';
 import { stripCompatibilityFeatures, unescapeHTML } from 'src/utils/html';
 import { normalizeId } from 'src/utils/normalizers';
 
-import { STATUS_IMPORT, STATUSES_IMPORT } from 'src/actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT } from '../actions/importer';
 import {
   REPOST_REQUEST,
   REPOST_FAIL,
@@ -15,7 +16,7 @@ import {
   LIKE_REQUEST,
   UNLIKE_REQUEST,
   LIKE_FAIL,
-} from 'src/actions/interactions';
+} from '../actions/interactions';
 import {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_FAIL,
@@ -29,7 +30,7 @@ import {
   STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
 } from '../actions/statuses';
-import { TIMELINE_DELETE } from 'src/actions/timelines';
+import { TIMELINE_DELETE } from '../actions/timelines';
 
 import type { AnyAction } from 'redux';
 import type { APIEntity } from 'src/types/entities';
@@ -97,24 +98,17 @@ export const calculateStatus = (
       hidden: oldStatus.hidden,
     });
   } else {
-    const spoilerText   = status.spoiler_text;
+    const spoilerText = status.spoiler_text;
     const searchContent = buildSearchContent(status);
 
     return status.merge({
       search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-      contentHtml: stripCompatibilityFeatures(emojify(status.content)),
-      spoilerHtml: emojify(escapeTextContentForBrowser(spoilerText)),
+      contentHtml: DOMPurify.sanitize(stripCompatibilityFeatures(emojify(status.content)), { USE_PROFILES: { html: true } }),
+      spoilerHtml: DOMPurify.sanitize(emojify(escapeTextContentForBrowser(spoilerText)), { USE_PROFILES: { html: true } }),
       hidden: expandSpoilers ? false : spoilerText.length > 0 || status.sensitive,
     });
   }
 };
-
-/*  TODO: Possibly fix/remove
-// Check whether a status is a quote by secondary characteristics
-const isQuote = (status: StatusRecord) => {
-  return Boolean(status.pleroma.get('quote_url'));
-};
-*/ 
 
 // Preserve translation if an existing status already has it
 const fixTranslation = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
@@ -126,26 +120,11 @@ const fixTranslation = (status: StatusRecord, oldStatus?: StatusRecord): StatusR
   }
 };
 
-/* TODO: Possibly fix/remove
-// Preserve quote if an existing status already has it
-const fixQuote = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
-  if (oldStatus && !status.quote && isQuote(status)) {
-    return status
-      .set('quote', oldStatus.quote)
-      .updateIn(['pleroma', 'quote_visible'], visible => visible || oldStatus.pleroma.get('quote_visible'));
-  } else {
-    return status;
-  }
-};
-
-*/
-
 const fixStatus = (state: State, status: APIEntity, expandSpoilers: boolean): ReducerStatus => {
   const oldStatus = state.get(status.id);
 
   return normalizeStatus(status).withMutations(status => {
     fixTranslation(status, oldStatus);
-    // fixQuote(status, oldStatus); TODO: Maybe fix/remove
     calculateStatus(status, oldStatus, expandSpoilers);
     minifyStatus(status);
   }) as ReducerStatus;

@@ -13,10 +13,11 @@ import {
   submitSearch,
 } from 'src/actions/search';
 import AutosuggestAccountInput from 'src/components/AutosuggestAccountInput';
-import { SvgIcon, Input } from 'src/components';
+import { SvgIcon } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { selectAccount } from 'src/selectors';
 import { AppDispatch, RootState } from 'src/store';
+import Input from 'src/components/Input';
 
 const messages = defineMessages({
   placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
@@ -82,7 +83,7 @@ const Search = (props: ISearch) => {
       dispatch(setSearchAccount(null));
       dispatch(submitSearch());
 
-    history.push('/search');
+      history.push('/search');
     } else {
       dispatch(submitSearch());
     }

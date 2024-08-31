@@ -4,7 +4,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchGroupRelationshipsSuccess } from 'src/actions/groups';
 import { openModal } from 'src/actions/modals';
 import { useCancelMembershipRequest, useJoinGroup, useLeaveGroup, usePendingGroups } from 'src/api/hooks';
-import { Button } from 'src/components';
+import { Button } from 'src/components/Button';
 import { importEntities } from 'src/entity-store/actions';
 import { Entities } from 'src/entity-store/entities';
 import { useAppDispatch } from 'src/hooks';

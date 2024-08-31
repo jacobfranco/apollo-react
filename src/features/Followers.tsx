@@ -2,7 +2,8 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { useAccountLookup, useFollowers } from 'src/api/hooks';
-import { Account, Column, MissingIndicator, ScrollableList, Spinner } from 'src/components';
+import { Account, MissingIndicator, ScrollableList, Spinner } from 'src/components';
+import { Column } from 'src/components/Column'
 
 const messages = defineMessages({
   heading: { id: 'column.followers', defaultMessage: 'Followers' },

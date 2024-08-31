@@ -23,7 +23,7 @@
   }
   
   [data-markup] a {
-    @apply text-primary-600 dark:text-accent-blue hover:underline;
+    @apply text-primary-600 dark:text-primary-500 hover:underline;
   }
   
   [data-markup] strong {

@@ -1,9 +1,10 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Text } from 'src/components';
+import { HStack, Text } from 'src/components';
 import { GroupRoles } from 'src/schemas/group-member';
 import { Group } from 'src/types/entities';
+import Icon from './Icon';
 
 interface IGroupRelationship {
   group: Group;

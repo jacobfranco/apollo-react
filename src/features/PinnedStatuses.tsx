@@ -3,7 +3,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { fetchPinnedStatuses } from 'src/actions/pin-statuses';
-import { Column, MissingIndicator, StatusList } from 'src/components';
+import { MissingIndicator, StatusList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { selectOwnAccount } from 'src/selectors';
 

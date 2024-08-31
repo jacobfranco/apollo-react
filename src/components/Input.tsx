@@ -5,7 +5,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { useLocale } from 'src/hooks';
 import { getTextDirection } from 'src/utils/rtl';
 
-import { Icon, SvgIcon, Tooltip } from 'src/components';
+import { SvgIcon, Tooltip } from 'src/components';
+import Icon from './Icon';
 
 const messages = defineMessages({
   showPassword: { id: 'input.password.show_password', defaultMessage: 'Show password' },

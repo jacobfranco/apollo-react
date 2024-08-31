@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Button, Form, Input, Modal, Stack, Text } from 'src/components';
+import { Form, Modal, Stack, Text } from 'src/components';
 import { useAppSelector, useAppDispatch, useRegistrationStatus } from 'src/hooks';
 import { selectAccount } from 'src/selectors';
 
@@ -12,7 +12,7 @@ const messages = defineMessages({
 
 interface IUnauthorizedModal {
   /** Unauthorized action type. */
-  action: 'FOLLOW' | 'REPLY' | 'REPOST' | 'LIKE' | 'POLL_VOTE' 
+  action: 'FOLLOW' | 'REPLY' | 'REPOST' | 'LIKE' | 'POLL_VOTE'
   /** Close event handler. */
   onClose: (modalType: string) => void;
   /** ActivityPub ID of the account OR status being acted upon. */

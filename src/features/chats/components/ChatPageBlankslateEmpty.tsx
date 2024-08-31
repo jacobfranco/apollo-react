@@ -2,7 +2,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Button, Stack, Text } from 'src/components';
+import { Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
 
 interface IBlankslate {
 }

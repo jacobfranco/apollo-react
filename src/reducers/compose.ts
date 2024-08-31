@@ -50,6 +50,7 @@ import {
   COMPOSE_EDITOR_STATE_SET,
   COMPOSE_SET_GROUP_TIMELINE_VISIBLE,
   ComposeAction,
+  COMPOSE_CHANGE_MEDIA_ORDER,
 } from '../actions/compose';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from 'src/actions/me';
 import { SETTING_CHANGE, FE_NAME, SettingsAction } from 'src/actions/settings';
@@ -435,7 +436,7 @@ export default function compose(state = initialState, action: ComposeAction | Me
           map.set('id', action.status.id);
         }
         map.set('text', action.rawText || unescapeHTML(expandMentions(action.status)));
-        map.set('to', getExplicitMentions(action.status.account.id, action.status)); // TODO: Maybe wrong
+        map.set('to', ImmutableOrderedSet<string>()); // TODO: Maybe wrong
         map.set('in_reply_to', action.status.get('in_reply_to_id'));
         map.set('privacy', action.status.get('visibility'));
         map.set('focusDate', new Date());
@@ -503,6 +504,14 @@ export default function compose(state = initialState, action: ComposeAction | Me
       return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.id, compose => compose.set('editorState', action.editorState as string));
+    case COMPOSE_CHANGE_MEDIA_ORDER:
+      return updateCompose(state, action.id, compose => compose.update('media_attachments', list => {
+        const indexA = list.findIndex(x => x.get('id') === action.a);
+        const moveItem = list.get(indexA)!;
+        const indexB = list.findIndex(x => x.get('id') === action.b);
+
+        return list.splice(indexA, 1).splice(indexB, 0, moveItem);
+      }));
     default:
       return state;
   }

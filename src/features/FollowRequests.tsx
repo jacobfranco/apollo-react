@@ -3,7 +3,8 @@ import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { fetchFollowRequests, expandFollowRequests } from 'src/actions/accounts';
-import { AccountAuthorize, Column, Spinner, ScrollableList } from 'src/components';
+import { AccountAuthorize, Spinner, ScrollableList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 const messages = defineMessages({

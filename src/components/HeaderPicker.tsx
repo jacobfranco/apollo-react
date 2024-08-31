@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { HStack, Icon, IconButton, Text } from 'src/components';
+import { HStack, IconButton, Text } from 'src/components';
 import { useDraggedFiles } from 'src/hooks';
+import Icon from './Icon';
 
 const messages = defineMessages({
   title: { id: 'group.upload_banner.title', defaultMessage: 'Upload background picture' },

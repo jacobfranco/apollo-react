@@ -2,7 +2,9 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Button, Form, FormActions, FormGroup, Input } from 'src/components';
+import { Form, FormActions, FormGroup } from 'src/components';
+import Button from 'src/components/Button';
+import Input from 'src/components/Input';
 
 const messages = defineMessages({
   username: {

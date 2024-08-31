@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { useHistory, useParams } from 'react-router-dom';
 
 import { toggleMainWindow } from 'src/actions/chats';
-import { useAppDispatch, useOwnAccount, useSettings } from 'src/hooks';
+import { useAppDispatch, useOwnAccount } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings';
 import { IChat, useChat } from 'src/queries/chats';
 
 const ChatContext = createContext<any>({

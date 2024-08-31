@@ -5,11 +5,14 @@ import { useHistory } from 'react-router-dom';
 
 import { openModal } from 'src/actions/modals';
 import Link from 'src/components/Link';
-import { Avatar, Button, HStack, Icon, Stack, Text } from 'src/components';
+import { HStack, Stack, Text } from 'src/components';
 import { useChatContext } from 'src/contexts/chat-context';
 import { useAppDispatch } from 'src/hooks';
 import { useChatActions } from 'src/queries/chats';
 import { secondsToDays } from 'src/utils/numbers';
+import Avatar from 'src/components/Avatar';
+import Button from 'src/components/Button';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   leaveChatHeading: { id: 'chat_message_list_intro.leave_chat.heading', defaultMessage: 'Leave Chat' },

@@ -15,13 +15,14 @@ import { deleteFromTimelines } from 'src/actions/timelines';
 import { useBlockGroupMember, useDeleteGroupStatus, useGroup, useGroupRelationship, useMuteGroup, useUnmuteGroup } from 'src/api/hooks';
 import DropdownMenu from 'src/components/dropdown-menu';
 import { GroupPopover, StatusActionButton, HStack, TranslateButton } from 'src/components';
-import { useAppDispatch, useAppSelector, useOwnAccount, useSettings, useApolloConfig } from 'src/hooks';
+import { useAppDispatch, useAppSelector, useOwnAccount, useApolloConfig } from 'src/hooks';
 import { GroupRoles } from 'src/schemas/group-member';
 import toast from 'src/toast';
 import copy from 'src/utils/copy';
 
 import type { Menu } from 'src/components/dropdown-menu';
 import type { Group, Status } from 'src/types/entities';
+import { useSettings } from 'src/hooks/useSettings';
 
 const messages = defineMessages({
   adminAccount: { id: 'status.admin_account', defaultMessage: 'Moderate @{name}' },

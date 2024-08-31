@@ -2,7 +2,8 @@ import clsx from 'clsx';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { Icon, Text } from 'src/components';
+import { Text } from 'src/components';
+import Icon from './Icon';
 
 interface ISidebarNavigationLink {
   /** Notification count, if any. */

@@ -4,10 +4,11 @@ import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { openModal } from 'src/actions/modals';
 import { cancelScheduledStatus } from 'src/actions/scheduled-statuses';
 import { getSettings } from 'src/actions/settings';
-import { Button, HStack } from 'src/components';
+import { HStack } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 
 import type { Status as StatusEntity } from 'src/types/entities';
+import Button from './Button';
 
 const messages = defineMessages({
   cancel: { id: 'scheduled_status.cancel', defaultMessage: 'Cancel' },

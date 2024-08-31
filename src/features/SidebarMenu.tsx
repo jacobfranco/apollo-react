@@ -9,13 +9,14 @@ import { getSettings } from 'src/actions/settings';
 import { closeSidebar } from 'src/actions/sidebar';
 import { useAccount } from 'src/api/hooks';
 import Account from 'src/components/Account';
-import { Stack, Divider, HStack, Icon, IconButton, Text } from 'src/components';
+import { Stack, Divider, HStack, IconButton, Text } from 'src/components';
 import ProfileStats from './ProfileStats';
 import { useAppDispatch, useAppSelector, useGroupsPath } from 'src/hooks';
 import { makeGetOtherAccounts } from 'src/selectors';
 
 import type { List as ImmutableList } from 'immutable';
 import type { Account as AccountEntity } from 'src/types/entities';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   followers: { id: 'account.followers', defaultMessage: 'Followers' },
@@ -196,19 +197,19 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                     />
                   )}
 
-                    <SidebarLink
-                      to='/bookmarks'
-                      icon={require('@tabler/icons/outline/bookmark.svg')}
-                      text={intl.formatMessage(messages.bookmarks)}
-                      onClick={onClose}
-                    />
+                  <SidebarLink
+                    to='/bookmarks'
+                    icon={require('@tabler/icons/outline/bookmark.svg')}
+                    text={intl.formatMessage(messages.bookmarks)}
+                    onClick={onClose}
+                  />
 
-                    <SidebarLink
-                      to={groupsPath}
-                      icon={require('@tabler/icons/outline/circles.svg')}
-                      text={intl.formatMessage(messages.groups)}
-                      onClick={onClose}
-                    />
+                  <SidebarLink
+                    to={groupsPath}
+                    icon={require('@tabler/icons/outline/circles.svg')}
+                    text={intl.formatMessage(messages.groups)}
+                    onClick={onClose}
+                  />
 
                   { /* TODO: Idk if we will implement lists
                   
@@ -253,19 +254,19 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                     onClick={onClose}
                   />
 
-                    <SidebarLink
-                      to='/filters'
-                      icon={require('@tabler/icons/outline/filter.svg')}
-                      text={intl.formatMessage(messages.filters)}
-                      onClick={onClose}
-                    />
+                  <SidebarLink
+                    to='/filters'
+                    icon={require('@tabler/icons/outline/filter.svg')}
+                    text={intl.formatMessage(messages.filters)}
+                    onClick={onClose}
+                  />
 
-                    <SidebarLink
-                      to='/followed_tags'
-                      icon={require('@tabler/icons/outline/hash.svg')}
-                      text={intl.formatMessage(messages.followedTags)}
-                      onClick={onClose}
-                    />
+                  <SidebarLink
+                    to='/followed_tags'
+                    icon={require('@tabler/icons/outline/hash.svg')}
+                    text={intl.formatMessage(messages.followedTags)}
+                    onClick={onClose}
+                  />
 
                   {account.admin && (
                     <SidebarLink

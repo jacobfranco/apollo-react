@@ -2,11 +2,13 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { patchMe } from 'src/actions/me';
-import { BigCard, Button, FormGroup, Input, Stack } from 'src/components';
+import { BigCard, FormGroup, Stack } from 'src/components';
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 
 import type { AxiosError } from 'axios';
+import Button from 'src/components/Button';
+import Input from 'src/components/Input';
 
 const messages = defineMessages({
   usernamePlaceholder: { id: 'onboarding.display_name.placeholder', defaultMessage: 'Eg. John Smith' },

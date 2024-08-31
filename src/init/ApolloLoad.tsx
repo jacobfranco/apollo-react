@@ -17,13 +17,13 @@ import { Entities } from 'src/entity-store/entities';
 const loadInitial = () => {
   // @ts-ignore
   return async (dispatch, getState) => {
-    console.log('Loading initial data...');
+
     // Await for authenticated fetch
     await dispatch(fetchMe());
-    console.log('Fetched user data (me)');
+
     // Await for configuration
     await dispatch(loadApolloConfig());
-    console.log('Fetched Apollo configuration');
+
   };
 };
 
@@ -50,16 +50,8 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
     relationships: state.relationships,
     accounts: state.entities[Entities.ACCOUNTS]?.store,
   }));
-  console.log('Initial state values:', initialStateValues);
 
 
-  console.log('Current state values:', {
-    me,
-    account: account ? account : 'Account not loaded',
-    isLoaded,
-    localeLoading,
-    swUpdating,
-  });
   /** Whether to display a loading indicator. */
   const showLoading = [
     me === null,
@@ -69,14 +61,12 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
     swUpdating,
   ].some(Boolean);
 
-  console.log('Show loading screen:', showLoading);
 
   // Load the user's locale
   useEffect(() => {
     MESSAGES[locale]().then(messages => {
       setMessages(messages);
       setLocaleLoading(false);
-      console.log('Locale messages loaded');
     }).catch(error => {
       console.error('Error loading locale messages:', error);
     });
@@ -86,7 +76,6 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
   useEffect(() => {
     dispatch(loadInitial()).then(() => {
       setIsLoaded(true);
-      console.log('Initial data loading complete');
     }).catch(error => {
       console.error('Error loading initial data:', error);
       setIsLoaded(true); // Consider handling this differently as it assumes loading is complete

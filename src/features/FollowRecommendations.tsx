@@ -3,8 +3,9 @@ import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchSuggestions } from 'src/actions/suggestions';
-import { Column, ScrollableList, Stack, Text } from 'src/components';
+import { ScrollableList, Stack, Text } from 'src/components';
 import AccountContainer from 'src/containers/AccountContainer';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 const messages = defineMessages({

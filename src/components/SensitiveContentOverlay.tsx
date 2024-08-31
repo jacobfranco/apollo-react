@@ -4,13 +4,15 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { openModal } from 'src/actions/modals';
 import { deleteStatus } from 'src/actions/statuses';
-import { useAppDispatch, useOwnAccount, useSettings, useApolloConfig } from 'src/hooks';
+import { useAppDispatch, useOwnAccount, useApolloConfig } from 'src/hooks';
 import { defaultMediaVisibility } from 'src/utils/status';
 
 import DropdownMenu from './dropdown-menu';
-import { Button, HStack, Text } from 'src/components';
+import { HStack, Text } from 'src/components';
 
 import type { Status as StatusEntity } from 'src/types/entities';
+import Button from './Button';
+import { useSettings } from 'src/hooks/useSettings';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },

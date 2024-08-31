@@ -4,9 +4,12 @@ import { useHistory } from 'react-router-dom';
 
 import { createFilter, fetchFilter, updateFilter } from 'src/actions/filters';
 import List, { ListItem } from 'src/components/List';
-import { Button, Column, Form, FormActions, FormGroup, HStack, Input, MissingIndicator, Stack, Streamfield, Text, Toggle } from 'src/components';
+import { Form, FormActions, FormGroup, HStack, MissingIndicator, Stack, Streamfield, Text, Toggle } from 'src/components';
+import { default as Input } from 'src/components/Input'
+import { default as Button } from 'src/components/Button'
 import { useAppDispatch } from 'src/hooks';
 import { normalizeFilter } from 'src/normalizers';
+import { Column } from 'src/components/Column'
 import toast from 'src/toast';
 
 import { SelectDropdown } from './Forms';
@@ -135,10 +138,10 @@ const EditFilter: React.FC<IEditFilter> = ({ params }) => {
     dispatch(params.id
       ? updateFilter(params.id, title, expiresIn, context, hide, keywords)
       : createFilter(title, expiresIn, context, hide, keywords)).then(() => {
-      history.push('/filters');
-    }).catch(() => {
-      toast.error(intl.formatMessage(messages.create_error));
-    });
+        history.push('/filters');
+      }).catch(() => {
+        toast.error(intl.formatMessage(messages.create_error));
+      });
   };
 
   const handleChangeKeyword = (keywords: { keyword: string; whole_word: boolean }[]) => setKeywords(keywords);
@@ -187,13 +190,13 @@ const EditFilter: React.FC<IEditFilter> = ({ params }) => {
           />
         </FormGroup>
 
-          <FormGroup labelText={intl.formatMessage(messages.expires)}>
-            <SelectDropdown
-              items={expirations}
-              defaultValue={''}
-              onChange={handleSelectChange}
-            />
-          </FormGroup>
+        <FormGroup labelText={intl.formatMessage(messages.expires)}>
+          <SelectDropdown
+            items={expirations}
+            defaultValue={''}
+            onChange={handleSelectChange}
+          />
+        </FormGroup>
 
         <Stack>
           <Text size='sm' weight='medium'>
@@ -229,12 +232,12 @@ const EditFilter: React.FC<IEditFilter> = ({ params }) => {
               onChange={({ target }) => setConversations(target.checked)}
             />
           </ListItem>
-            <ListItem label={intl.formatMessage(messages.accounts)}>
-              <Toggle
-                checked={accounts}
-                onChange={({ target }) => setAccounts(target.checked)}
-              />
-            </ListItem>
+          <ListItem label={intl.formatMessage(messages.accounts)}>
+            <Toggle
+              checked={accounts}
+              onChange={({ target }) => setAccounts(target.checked)}
+            />
+          </ListItem>
         </List>
 
         <List>

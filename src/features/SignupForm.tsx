@@ -10,9 +10,12 @@ import { accountLookup } from 'src/actions/accounts';
 import { register, verifyCredentials } from 'src/actions/auth';
 import { openModal } from 'src/actions/modals';
 import BirthdayInput from 'src/components/BirthdayInput';
-import { Checkbox, Form, FormGroup, FormActions, Button, Input } from 'src/components';
+import { Checkbox, Form, FormGroup, FormActions } from 'src/components';
 import CaptchaField from 'src/features/Captcha';
-import { useAppDispatch, useSettings } from 'src/hooks';
+import { useAppDispatch } from 'src/hooks';
+import Input from 'src/components/Input';
+import Button from 'src/components/Button';
+import { useSettings } from 'src/hooks/useSettings';
 
 const messages = defineMessages({
   username: { id: 'registration.fields.username_placeholder', defaultMessage: 'Username' },
@@ -120,7 +123,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
         />
       </p>
     ) : null;
-  
+
     dispatch(openModal('CONFIRM', {
       icon: require('@tabler/icons/outline/check.svg'),
       heading: needsConfirmation
@@ -130,7 +133,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
       confirm: intl.formatMessage(messages.close),
     }));
   };
-  
+
 
   const postRegisterAction = ({ access_token }: any) => {
     if (needsConfirmation) {

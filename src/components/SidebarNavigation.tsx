@@ -8,11 +8,11 @@ import {
   useAppSelector,
   useGroupsPath,
   useOwnAccount,
-  useSettings,
 } from "src/hooks";
 
 import DropdownMenu, { Menu } from "./dropdown-menu";
 import SidebarNavigationLink from "./SidebarNavigationLink";
+import { useSettings } from "src/hooks/useSettings";
 
 const messages = defineMessages({
   follow_requests: {

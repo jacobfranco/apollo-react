@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchScheduledStatuses, expandScheduledStatuses } from 'src/actions/scheduled-statuses';
-import { Column, ScheduledStatus, ScrollableList } from 'src/components';
+import { ScheduledStatus, ScrollableList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppSelector, useAppDispatch } from 'src/hooks';
 
 

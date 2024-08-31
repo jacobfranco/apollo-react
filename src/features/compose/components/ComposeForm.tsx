@@ -14,7 +14,8 @@ import {
   uploadCompose,
 } from 'src/actions/compose';
 import AutosuggestInput, { AutoSuggestion } from 'src/components/AutosuggestInput';
-import { Button, HStack, Stack } from 'src/components';
+import { HStack, Stack } from 'src/components';
+import { default as Button } from 'src/components/Button'
 import EmojiPickerDropdown from 'src/containers/EmojiPickerDropdownContainer';
 import { ComposeEditor } from 'src/features/AsyncComponents';
 import { useAppDispatch, useAppSelector, useCompose, useDraggedFiles, usePrevious } from 'src/hooks';
@@ -250,14 +251,16 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
             <FormattedMessage
               id='compose_form.scheduled_statuses.message'
               defaultMessage='You have scheduled posts. {click_here} to see them.'
-              values={{ click_here: (
-                <Link to='/scheduled_statuses'>
-                  <FormattedMessage
-                    id='compose_form.scheduled_statuses.click_here'
-                    defaultMessage='Click here'
-                  />
-                </Link>
-              ) }}
+              values={{
+                click_here: (
+                  <Link to='/scheduled_statuses'>
+                    <FormattedMessage
+                      id='compose_form.scheduled_statuses.click_here'
+                      defaultMessage='Click here'
+                    />
+                  </Link>
+                )
+              }}
             />)
           }
         />

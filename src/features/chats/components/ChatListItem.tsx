@@ -4,12 +4,13 @@ import { useHistory } from 'react-router-dom';
 
 import { openModal } from 'src/actions/modals';
 import DropdownMenu from 'src/components/dropdown-menu';
-import { Avatar, HStack, IconButton, RelativeTimestamp, Stack, Text, VerificationBadge } from 'src/components';
+import { HStack, IconButton, RelativeTimestamp, Stack, Text, VerificationBadge } from 'src/components';
 import { useChatContext } from 'src/contexts/chat-context';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { IChat, useChatActions } from 'src/queries/chats';
 
 import type { Menu } from 'src/components/dropdown-menu';
+import Avatar from 'src/components/Avatar';
 
 const messages = defineMessages({
   blockedYou: { id: 'chat_list_item.blocked_you', defaultMessage: 'This user has blocked you' },
@@ -117,16 +118,16 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
         </HStack>
 
         <HStack alignItems='center' space={2}>
-            <div className='hidden text-gray-600 hover:text-gray-100 group-hover:block'>
-              <DropdownMenu items={menu}>
-                <IconButton
-                  src={require('@tabler/icons/outline/dots.svg')}
-                  title='Settings'
-                  className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500'
-                  iconClassName='h-4 w-4'
-                />
-              </DropdownMenu>
-            </div>
+          <div className='hidden text-gray-600 hover:text-gray-100 group-hover:block'>
+            <DropdownMenu items={menu}>
+              <IconButton
+                src={require('@tabler/icons/outline/dots.svg')}
+                title='Settings'
+                className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500'
+                iconClassName='h-4 w-4'
+              />
+            </DropdownMenu>
+          </div>
 
           {chat.last_message && (
             <>

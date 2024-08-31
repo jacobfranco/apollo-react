@@ -6,7 +6,8 @@ import { fetchAccountByUsername } from 'src/actions/accounts';
 import { expandAccountFeaturedTimeline, expandAccountTimeline } from 'src/actions/timelines';
 import { useAccountLookup } from 'src/api/hooks';
 import { Card, CardBody, MissingIndicator, Spinner, StatusList, Text } from 'src/components';
-import { useAppDispatch, useAppSelector, useSettings, useApolloConfig } from 'src/hooks';
+import { useAppDispatch, useAppSelector, useApolloConfig } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings';
 import { makeGetStatusIds } from 'src/selectors';
 
 const getStatusIds = makeGetStatusIds();

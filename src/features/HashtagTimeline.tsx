@@ -4,7 +4,8 @@ import { FormattedMessage } from 'react-intl';
 import { fetchHashtag, followHashtag, unfollowHashtag } from 'src/actions/tags';
 import { expandHashtagTimeline, clearTimeline } from 'src/actions/timelines';
 import { useHashtagStream } from 'src/api/hooks';
-import { Column, List, ListItem, Toggle } from 'src/components';
+import { List, ListItem, Toggle } from 'src/components';
+import { Column } from 'src/components/Column'
 import Timeline from 'src/features/Timeline';
 import { useAppDispatch, useAppSelector, useLoggedIn, useTheme } from 'src/hooks';
 import { useIsMobile } from 'src/hooks';

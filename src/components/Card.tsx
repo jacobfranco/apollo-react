@@ -3,7 +3,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { SvgIcon, HStack, Text } from 'src/components/';
+import SvgIcon from './SvgIcon';
+
+import HStack from './HStack';
+import Text from './Text';
 
 const sizes = {
   md: 'p-4 sm:rounded-xl',
@@ -35,9 +38,10 @@ const Card = React.forwardRef<HTMLDivElement, ICard>(({ children, variant = 'def
     ref={ref}
     {...filteredProps}
     className={clsx({
-      'bg-white dark:bg-accent-700 text-gray-900 dark:text-gray-100 shadow-lg dark:shadow-lg': variant === 'rounded',
+      'bg-primary-100 dark:bg-secondary-500 black:bg-black text-gray-900 dark:text-gray-100 shadow-lg dark:shadow-none': variant === 'rounded',
       [sizes[size]]: variant === 'rounded',
       'py-4': variant === 'slim',
+      'black:rounded-none': size !== 'xl',
     }, className)}
   >
     {children}

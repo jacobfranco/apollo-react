@@ -2,9 +2,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link, matchPath, useHistory } from 'react-router-dom';
 
-import { Button, Divider, GroupAvatar, GroupMemberCount, GroupPrivacy, HStack, Popover, Stack, Text } from 'src/components';
+import { Divider, GroupAvatar, GroupMemberCount, GroupPrivacy, HStack, Popover, Stack, Text } from 'src/components';
 
 import type { Group } from 'src/schemas';
+import Button from './Button';
 
 interface IGroupPopoverContainer {
   children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;

@@ -3,12 +3,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Motion, presets, spring } from 'react-motion';
 
-import { HStack, Icon, Text } from 'src/components';
+import { HStack, Text } from 'src/components';
 
 import type {
   Poll as PollEntity,
   PollOption as PollOptionEntity,
 } from 'src/types/entities';
+import Icon from './Icon';
 
 const messages = defineMessages({
   voted: { id: 'poll.voted', defaultMessage: 'You voted for this answer' },

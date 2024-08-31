@@ -2,11 +2,11 @@ import clsx from 'clsx';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Icon } from 'src/components';
+import { default as Icon } from 'src/components/Icon';
 
-import { useButtonStyles } from 'src/styles/components/useButtonStyles';
+import { useButtonStyles } from 'src/components/useButtonStyles';
 
-import type { ButtonSizes, ButtonThemes } from 'src/styles/components/useButtonStyles';
+import type { ButtonSizes, ButtonThemes } from 'src/components/useButtonStyles';
 
 interface IButton {
   /** Whether this button expands the width of its container. */

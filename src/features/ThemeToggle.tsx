@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { changeSetting } from 'src/actions/settings';
-import { useAppDispatch, useSettings } from 'src/hooks';
+import { useAppDispatch } from 'src/hooks';
 
 import ThemeSelector from 'src/features/ThemeSelector';
+import { useSettings } from 'src/hooks/useSettings';
 
 /** Stateful theme selector. */
 const ThemeToggle: React.FC = () => {

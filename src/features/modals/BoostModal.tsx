@@ -1,7 +1,8 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { Icon, Modal, Stack, Text } from 'src/components';
+import { Modal, Stack, Text } from 'src/components';
+import Icon from 'src/components/Icon';
 import ReplyIndicator from 'src/features/compose/components/ReplyIndicator';
 
 import type { Status as StatusEntity } from 'src/types/entities';

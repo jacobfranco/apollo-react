@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Avatar, HStack, Icon, Stack, Text, Tooltip, VerificationBadge } from 'src/components';
+import { HStack, Stack, Text, Tooltip, VerificationBadge } from 'src/components';
 import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
 import { secondsToDays } from 'src/utils/numbers';
 
@@ -10,6 +10,8 @@ import Chat from './Chat';
 
 import ChatPaneHeader from './ChatPaneHeader';
 import ChatSettings from './ChatSettings';
+import Icon from 'src/components/Icon';
+import Avatar from 'src/components/Avatar';
 
 const messages = defineMessages({
   autoDeleteMessage: { id: 'chat_window.auto_delete_label', defaultMessage: 'Auto-delete after {day, plural, one {# day} other {# days}}' },

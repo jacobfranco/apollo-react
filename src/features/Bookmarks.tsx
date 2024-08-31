@@ -3,7 +3,8 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'src/actions/bookmarks';
-import { Column, PullToRefresh, StatusList} from 'src/components';
+import { PullToRefresh, StatusList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppSelector, useAppDispatch } from 'src/hooks';
 
 const messages = defineMessages({

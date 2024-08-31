@@ -2,7 +2,8 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { useBlocks } from 'src/api/hooks';
-import { Account, Column, ScrollableList, Spinner } from 'src/components';
+import { Account, ScrollableList, Spinner } from 'src/components';
+import { Column } from 'src/components/Column'
 
 const messages = defineMessages({
   heading: { id: 'column.blocks', defaultMessage: 'Blocks' },

@@ -3,15 +3,17 @@ import { List as ImmutableList } from 'immutable';
 import React from 'react';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
-import { AutosuggestEmoji, Icon, Input, Portal }from 'src/components';
+import { AutosuggestEmoji, Portal } from 'src/components';
 import AutosuggestAccount from 'src/features/compose/components/AutosuggestAccount';
 import { textAtCursorMatchesToken } from 'src/utils/suggestions';
 
 import type { Menu, MenuItem } from 'src/components/dropdown-menu';
 import type { InputThemes } from 'src/components/Input';
 import type { Emoji } from 'src/features/emoji';
+import Icon from './Icon';
+import Input from './Input'
 
-export type AutoSuggestion = string | Emoji ;
+export type AutoSuggestion = string | Emoji;
 
 export interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>, 'onChange' | 'onKeyUp' | 'onKeyDown'> {
   value: string;

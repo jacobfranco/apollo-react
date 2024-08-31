@@ -3,7 +3,9 @@ import { defineMessages, FormattedDate, useIntl } from 'react-intl';
 
 import { openModal } from 'src/actions/modals';
 import { fetchOAuthTokens, revokeOAuthTokenById } from 'src/actions/security';
-import { Button, Card, CardBody, CardHeader, CardTitle, Column, HStack, Spinner, Stack, Text } from 'src/components';
+import { Card, CardBody, CardHeader, CardTitle, HStack, Spinner, Stack, Text } from 'src/components';
+import { Column } from 'src/components/Column'
+import { default as Button } from 'src/components/Button'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { Token } from 'src/reducers/security';
 

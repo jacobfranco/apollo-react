@@ -2,13 +2,6 @@ body {
   @apply antialiased;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  @apply leading-[normal] m-0;
-}
-
-*,
-::before,
-::after {
-  border-width: 0;
 }
 
 body.with-modals {

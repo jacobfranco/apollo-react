@@ -10,14 +10,16 @@ import zoomInIcon from '@tabler/icons/outline/zoom-in.svg';
 import clsx from 'clsx';
 import { List as ImmutableList } from 'immutable';
 import React, { useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { spring } from 'react-motion';
 
 import { openModal } from 'src/actions/modals';
-import { Blurhash, HStack, Icon, IconButton } from 'src/components';
-import Motion from 'src/utils/optional-motion';
+import { Blurhash, HStack, IconButton } from 'src/components';
+import Motion from 'src//utils/optional-motion';
 import { useAppDispatch } from 'src/hooks';
 import { Attachment } from 'src/types/entities';
+import Icon from './Icon';
+import { useSettings } from 'src/hooks/useSettings';
 
 export const MIMETYPE_ICONS: Record<string, string> = {
   'application/x-freearc': fileZipIcon,
@@ -57,9 +59,10 @@ const messages = defineMessages({
   description: { id: 'upload_form.description', defaultMessage: 'Describe for the visually impaired' },
   delete: { id: 'upload_form.undo', defaultMessage: 'Delete' },
   preview: { id: 'upload_form.preview', defaultMessage: 'Preview' },
+  descriptionMissingTitle: { id: 'upload_form.description_missing.title', defaultMessage: 'This attachment doesn\'t have a description' },
 });
 
-interface IUpload {
+interface IUpload extends Pick<React.HTMLAttributes<HTMLDivElement>, 'onDragStart' | 'onDragEnter' | 'onDragEnd'> {
   media: Attachment;
   onSubmit?(): void;
   onDelete?(): void;
@@ -73,11 +76,16 @@ const Upload: React.FC<IUpload> = ({
   onSubmit,
   onDelete,
   onDescriptionChange,
+  onDragStart,
+  onDragEnter,
+  onDragEnd,
   descriptionLimit,
   withPreview = true,
 }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
+
+  const { missingDescriptionModal } = useSettings();
 
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -134,7 +142,7 @@ const Upload: React.FC<IUpload> = ({
   const description = dirtyDescription || (dirtyDescription !== '' && media.description) || '';
   const focusX = media.meta.getIn(['focus', 'x']) as number | undefined;
   const focusY = media.meta.getIn(['focus', 'y']) as number | undefined;
-  const x = focusX ? ((focusX /  2) + .5) * 100 : undefined;
+  const x = focusX ? ((focusX / 2) + .5) * 100 : undefined;
   const y = focusY ? ((focusY / -2) + .5) * 100 : undefined;
   const mediaType = media.type;
   const mimeType = undefined; // TODO: This might cause issues
@@ -147,7 +155,18 @@ const Upload: React.FC<IUpload> = ({
   );
 
   return (
-    <div className='compose-form__upload' tabIndex={0} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleClick} role='button'>
+    <div
+      className='compose-form__upload'
+      tabIndex={0}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      role='button'
+      draggable
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragEnd={onDragEnd}
+    >
       <Blurhash hash={media.blurhash} className='media-gallery__preview' />
       <Motion defaultStyle={{ scale: 0.8 }} style={{ scale: spring(1, { stiffness: 180, damping: 12 }) }}>
         {({ scale }) => (
@@ -156,7 +175,8 @@ const Upload: React.FC<IUpload> = ({
             style={{
               transform: `scale(${scale})`,
               backgroundImage: mediaType === 'image' ? `url(${media.preview_url})` : undefined,
-              backgroundPosition: typeof x === 'number' && typeof y === 'number' ? `${x}% ${y}%` : undefined }}
+              backgroundPosition: typeof x === 'number' && typeof y === 'number' ? `${x}% ${y}%` : undefined
+            }}
           >
             <HStack className='absolute right-2 top-2 z-10' space={2}>
               {(withPreview && mediaType !== 'unknown' && Boolean(media.url)) && (
@@ -197,6 +217,19 @@ const Upload: React.FC<IUpload> = ({
                   />
                 </label>
               </div>
+            )}
+
+            {missingDescriptionModal && !description && (
+              <span
+                title={intl.formatMessage(messages.descriptionMissingTitle)}
+                className={clsx('absolute bottom-2 left-2 z-10 inline-flex items-center gap-1 rounded bg-gray-900 px-2 py-1 text-xs font-medium uppercase text-white transition-opacity duration-100 ease-linear', {
+                  'opacity-0 pointer-events-none': active,
+                  'opacity-100': !active,
+                })}
+              >
+                <Icon className='h-4 w-4' src={require('@tabler/icons/outline/alert-triangle.svg')} />
+                <FormattedMessage id='upload_form.description_missing.indicator' defaultMessage='Alt' />
+              </span>
             )}
 
             <div className='compose-form__upload-preview'>

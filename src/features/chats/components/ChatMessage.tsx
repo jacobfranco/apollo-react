@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { openModal } from 'src/actions/modals';
 import { initReport, ReportableEntities } from 'src/actions/reports';
 import DropdownMenu from 'src/components/dropdown-menu';
-import { HStack, Icon, Stack, Text } from 'src/components';
+import { HStack, Stack, Text } from 'src/components';
 import emojify from 'src/features/emoji';
 import { MediaGallery } from 'src/features/AsyncComponents';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
@@ -22,6 +22,7 @@ import ChatMessageReactionWrapper from './ChatMessageReactionWrapper';
 
 import type { Menu as IMenu } from 'src/components/dropdown-menu';
 import type { ChatMessage as ChatMessageEntity } from 'src/types/entities';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   copy: { id: 'chats.actions.copy', defaultMessage: 'Copy' },
@@ -169,11 +170,11 @@ const ChatMessage = (props: IChatMessage) => {
         destructive: true,
       });
     } else {
-        menu.push({
-          text: intl.formatMessage(messages.report),
-          action: () => dispatch(initReport(ReportableEntities.CHAT_MESSAGE, chat.account, { chatMessage })),
-          icon: require('@tabler/icons/outline/flag.svg'),
-        });
+      menu.push({
+        text: intl.formatMessage(messages.report),
+        action: () => dispatch(initReport(ReportableEntities.CHAT_MESSAGE, chat.account, { chatMessage })),
+        icon: require('@tabler/icons/outline/flag.svg'),
+      });
       menu.push({
         text: intl.formatMessage(messages.deleteForMe),
         action: () => handleDeleteMessage.mutate(chatMessage.id),
@@ -205,23 +206,23 @@ const ChatMessage = (props: IChatMessage) => {
           })
         }
       >
-          <ChatMessageReactionWrapper
-            onOpen={setIsReactionSelectorOpen}
-            onSelect={(emoji) => createReaction.mutate({ emoji, messageId: chatMessage.id, chatMessage })}
+        <ChatMessageReactionWrapper
+          onOpen={setIsReactionSelectorOpen}
+          onSelect={(emoji) => createReaction.mutate({ emoji, messageId: chatMessage.id, chatMessage })}
+        >
+          <button
+            title={intl.formatMessage(messages.more)}
+            className={clsx({
+              'p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0': true,
+              '!text-gray-700 dark:!text-gray-500': isReactionSelectorOpen,
+            })}
           >
-            <button
-              title={intl.formatMessage(messages.more)}
-              className={clsx({
-                'p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0': true,
-                '!text-gray-700 dark:!text-gray-500': isReactionSelectorOpen,
-              })}
-            >
-              <Icon
-                src={require('@tabler/icons/outline/mood-smile.svg')}
-                className='h-4 w-4'
-              />
-            </button>
-          </ChatMessageReactionWrapper>
+            <Icon
+              src={require('@tabler/icons/outline/mood-smile.svg')}
+              className='h-4 w-4'
+            />
+          </button>
+        </ChatMessageReactionWrapper>
 
         {menu.length > 0 && (
           <DropdownMenu
@@ -351,25 +352,25 @@ const ChatMessage = (props: IChatMessage) => {
                 {intl.formatTime(chatMessage.created_at)}
               </Text>
 
-                <>
-                  {isRead ? (
-                    <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-primary-500 p-0.5 text-white dark:border-primary-400 dark:bg-primary-400 dark:text-primary-900'>
-                      <Icon
-                        src={require('@tabler/icons/outline/check.svg')}
-                        strokeWidth={3}
-                        className='h-2.5 w-2.5'
-                      />
-                    </span>
-                  ) : (
-                    <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-transparent p-0.5 text-primary-500 dark:border-primary-400 dark:text-primary-400'>
-                      <Icon
-                        src={require('@tabler/icons/outline/check.svg')}
-                        strokeWidth={3}
-                        className='h-2.5 w-2.5'
-                      />
-                    </span>
-                  )}
-                </>
+              <>
+                {isRead ? (
+                  <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-primary-500 p-0.5 text-white dark:border-primary-400 dark:bg-primary-400 dark:text-primary-900'>
+                    <Icon
+                      src={require('@tabler/icons/outline/check.svg')}
+                      strokeWidth={3}
+                      className='h-2.5 w-2.5'
+                    />
+                  </span>
+                ) : (
+                  <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-transparent p-0.5 text-primary-500 dark:border-primary-400 dark:text-primary-400'>
+                    <Icon
+                      src={require('@tabler/icons/outline/check.svg')}
+                      strokeWidth={3}
+                      className='h-2.5 w-2.5'
+                    />
+                  </span>
+                )}
+              </>
             </span>
           </div>
         </HStack>

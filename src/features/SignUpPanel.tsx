@@ -1,7 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Stack, Text } from 'src/components';
+import { Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
 import { useAppSelector, useRegistrationStatus } from 'src/hooks';
 
 const SignUpPanel = () => {

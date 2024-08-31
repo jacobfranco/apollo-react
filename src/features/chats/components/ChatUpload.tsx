@@ -4,7 +4,7 @@ import React from 'react';
 
 import { openModal } from 'src/actions/modals';
 import Blurhash from 'src/components/Blurhash';
-import { Icon } from 'src/components';
+import Icon from 'src/components/Icon';
 import { useAppDispatch } from 'src/hooks';
 
 import ChatUploadPreview from './ChatUploadPreview';

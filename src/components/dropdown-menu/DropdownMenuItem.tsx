@@ -2,7 +2,8 @@ import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Counter, Icon } from 'src/components';
+import { Counter } from 'src/components';
+import Icon from '../Icon';
 
 export interface MenuItem {
   action?: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;

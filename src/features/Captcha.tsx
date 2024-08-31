@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import { fetchCaptcha } from 'src/actions/auth';
-import { Stack, Text, Input } from 'src/components';
+import { Stack, Text } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 
 import type { AxiosResponse } from 'axios';
+import Input from 'src/components/Input';
 
-const noOp = () => {};
+const noOp = () => { };
 
 const messages = defineMessages({
   placeholder: { id: 'registration.captcha.placeholder', defaultMessage: 'Enter the pictured text' },

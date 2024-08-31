@@ -3,7 +3,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { useAccount } from 'src/api/hooks';
-import { Avatar, HStack, Stack, StillImage, Text, VerificationBadge } from 'src/components';
+import { HStack, Stack, StillImage, Text, VerificationBadge } from 'src/components';
+import Avatar from 'src/components/Avatar';
 import { useAppSelector } from 'src/hooks';
 import { shortNumberFormat } from 'src/utils/numbers';
 

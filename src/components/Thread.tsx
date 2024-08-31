@@ -13,7 +13,8 @@ import { getSettings } from 'src/actions/settings';
 import { hideStatus, revealStatus } from 'src/actions/statuses';
 import { DetailedStatus, PendingStatus, PlaceholderStatus, ScrollableList, Stack, StatusActionBar, ThreadStatus } from 'src/components';
 import { HotKeys } from 'src/features/Hotkeys';
-import { useAppDispatch, useAppSelector, useSettings } from 'src/hooks';
+import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings';
 import { RootState } from 'src/store';
 import { type Account, type Status } from 'src/types/entities';
 import { defaultMediaVisibility, textForScreenReader } from 'src/utils/status';
@@ -293,7 +294,7 @@ const Thread = (props: IThread) => {
 
   const renderChildren = (list: ImmutableOrderedSet<string>) => {
     return list.map(id => {
-     if (id.startsWith('末pending-')) {
+      if (id.startsWith('末pending-')) {
         return renderPendingStatus(id);
       } else {
         return renderStatus(id);

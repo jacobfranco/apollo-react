@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column } from 'src/components';
+import { Column } from './Column';
 
 const messages = defineMessages({
   title: { id: 'column_forbidden.title', defaultMessage: 'Forbidden' },

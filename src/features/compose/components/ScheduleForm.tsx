@@ -3,7 +3,8 @@ import React, { Suspense } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { setSchedule, removeSchedule } from 'src/actions/compose';
-import { HStack, IconButton, Input, Stack, Text } from 'src/components';
+import { HStack, IconButton, Stack, Text } from 'src/components';
+import Input from 'src/components/Input';
 import { DatePicker } from 'src/features/AsyncComponents';
 import { useAppDispatch, useCompose } from 'src/hooks';
 

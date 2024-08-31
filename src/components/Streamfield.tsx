@@ -1,7 +1,8 @@
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
-import { Button, HStack, IconButton, Stack, Text } from 'src/components';
+import { HStack, IconButton, Stack, Text } from 'src/components';
+import Button from './Button';
 
 const messages = defineMessages({
   add: { id: 'streamfield.add', defaultMessage: 'Add' },

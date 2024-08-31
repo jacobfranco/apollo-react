@@ -4,8 +4,10 @@ import { Redirect } from 'react-router-dom';
 
 import { resetPasswordConfirm } from 'src/actions/security';
 import { BigCard } from 'src/components/BigCard';
-import { Button, Form, FormActions, FormGroup, Input } from 'src/components';
+import { Form, FormActions, FormGroup } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
+import Button from 'src/components/Button';
+import Input from 'src/components/Input';
 
 const token = new URLSearchParams(window.location.search).get('reset_password_token');
 

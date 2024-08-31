@@ -1,7 +1,8 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column, Divider, Stack, Text } from 'src/components';
+import { Divider, Stack, Text } from 'src/components';
+import { Column } from 'src/components/Column'
 
 import LinkFooter from './LinkFooter';
 

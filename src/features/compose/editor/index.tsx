@@ -124,11 +124,6 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
 
   let textareaPlaceholder = placeholder || <FormattedMessage id='compose_form.placeholder' defaultMessage="What's on your mind?" />;
 
-  if (eventDiscussion) {
-    textareaPlaceholder = <FormattedMessage id='compose_form.event_placeholder' defaultMessage='Post to this event' />;
-  } else if (hasPoll) {
-    textareaPlaceholder = <FormattedMessage id='compose_form.poll_placeholder' defaultMessage='Add a poll topic…' />;
-  }
 
   return (
     <LexicalComposer initialConfig={initialConfig}>

@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl, FormatDateOptions } from 'react-intl';
 
-import { HStack, Icon, Markup } from 'src/components';
+import { HStack, Markup } from 'src/components';
 
 import type { Account } from 'src/schemas';
+import Icon from './Icon';
 
 const messages = defineMessages({
   linkVerifiedOn: { id: 'account.link_verified_on', defaultMessage: 'Ownership of this link was checked on {date}' },

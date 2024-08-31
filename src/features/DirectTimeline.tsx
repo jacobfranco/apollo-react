@@ -4,8 +4,9 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { directComposeById } from 'src/actions/compose';
 import { expandDirectTimeline } from 'src/actions/timelines';
 import { useDirectStream } from 'src/api/hooks';
-import { AccountSearch, Column, Timeline } from 'src/components';
+import { AccountSearch, Timeline } from 'src/components';
 import { useAppSelector, useAppDispatch } from 'src/hooks';
+import { Column } from 'src/components/Column'
 
 const messages = defineMessages({
   heading: { id: 'column.direct', defaultMessage: 'Direct messages' },

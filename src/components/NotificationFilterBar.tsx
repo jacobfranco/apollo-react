@@ -2,15 +2,17 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { setFilter } from 'src/actions/notifications';
-import { Icon, Tabs } from 'src/components';
-import { useAppDispatch, useSettings } from 'src/hooks';
+import { Tabs } from 'src/components';
+import { default as Icon } from 'src/components/Icon'
+import { useAppDispatch } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings'
 
 import type { Item } from 'src/components/Tabs';
 
 const messages = defineMessages({
   all: { id: 'notifications.filter.all', defaultMessage: 'All' },
   mentions: { id: 'notifications.filter.mentions', defaultMessage: 'Mentions' },
-  favourites: { id: 'notifications.filter.favourites', defaultMessage: 'Likes' },
+  likes: { id: 'notifications.filter.favourites', defaultMessage: 'Likes' },
   boosts: { id: 'notifications.filter.boosts', defaultMessage: 'Reposts' },
   polls: { id: 'notifications.filter.polls', defaultMessage: 'Poll results' },
   follows: { id: 'notifications.filter.follows', defaultMessage: 'Follows' },
@@ -50,9 +52,9 @@ const NotificationFilterBar = () => {
     });
     items.push({
       text: <Icon src={require('@tabler/icons/outline/heart.svg')} />,
-      title: intl.formatMessage(messages.favourites),
-      action: onClick('favourite'),
-      name: 'favourite',
+      title: intl.formatMessage(messages.likes),
+      action: onClick('like'),
+      name: 'like',
     });
     items.push({
       text: <Icon src={require('@tabler/icons/outline/repeat.svg')} />,

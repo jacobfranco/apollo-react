@@ -2,12 +2,13 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { addPollOption, changePollOption, changePollSettings, clearComposeSuggestions, fetchComposeSuggestions, removePoll, removePollOption, selectComposeSuggestion } from 'src/actions/compose';
-import { AutosuggestInput, Button, Divider, HStack, Stack, Text, Toggle } from 'src/components';
+import { AutosuggestInput, Divider, HStack, Stack, Text, Toggle } from 'src/components';
 import { useAppDispatch, useCompose } from 'src/hooks';
 
 import DurationSelector from './DurationSelector';
 
 import type { AutoSuggestion } from 'src/components/AutosuggestInput';
+import Button from 'src/components/Button';
 
 const messages = defineMessages({
   option_placeholder: { id: 'compose_form.poll.option_placeholder', defaultMessage: 'Answer #{number}' },
@@ -116,8 +117,8 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
   const expiresIn = compose.poll?.expires_in;
   const isMultiple = compose.poll?.multiple;
 
-const maxOptions = 4;  // TODO: Maybe change
-const maxOptionChars = 80;  // TODO: Maybe change
+  const maxOptions = 4;  // TODO: Maybe change
+  const maxOptionChars = 80;  // TODO: Maybe change
 
 
   const onRemoveOption = (index: number) => dispatch(removePollOption(composeId, index));

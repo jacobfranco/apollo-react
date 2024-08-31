@@ -1,7 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Banner, Button, HStack, Stack, Text } from 'src/components';
+import { Banner, HStack, Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
 import { useAppSelector, useRegistrationStatus, useApolloConfig } from 'src/hooks';
 
 const CtaBanner = () => {

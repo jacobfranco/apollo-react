@@ -2,9 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { GroupActionButton, GroupAvatar, HStack, Icon, Stack, Text } from 'src/components';
+import { GroupActionButton, GroupAvatar, HStack, Stack, Text } from 'src/components';
 import { Group as GroupEntity } from 'src/types/entities';
 import { shortNumberFormat } from 'src/utils/numbers';
+import Icon from './Icon';
 
 interface IGroupListItem {
   group: GroupEntity;

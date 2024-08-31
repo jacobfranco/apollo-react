@@ -11,11 +11,13 @@ import {
 } from 'immutable';
 
 import { normalizeAttachment } from 'src/normalizers/attachment';
+import { normalizeEmoji } from 'src/normalizers/emoji';
 import { normalizeMention } from 'src/normalizers/mention';
-import { accountSchema, cardSchema, groupSchema, pollSchema } from 'src/schemas';
+import { accountSchema, cardSchema, emojiReactionSchema, groupSchema, pollSchema } from 'src/schemas';
+import { filteredArray } from 'src/schemas/utils';
 import { maybeFromJS } from 'src/utils/normalizers';
 
-import type { Account, Attachment, Card, Group, Mention, Poll, EmbeddedEntity } from 'src/types/entities';
+import type { Account, Attachment, Card, Emoji, Group, Mention, Poll, EmbeddedEntity, EmojiReaction } from 'src/types/entities';
 
 export type StatusApprovalStatus = 'pending' | 'approval' | 'rejected';
 export type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'self' | 'group';
@@ -30,25 +32,30 @@ export const StatusRecord = ImmutableRecord({
   content: '',
   created_at: '',
   edited_at: null as string | null,
+  emojis: ImmutableList<Emoji>(),
+  liked: false,
+  likes_count: 0,
   filtered: ImmutableList<string>(),
   group: null as Group | null,
   in_reply_to_account_id: null as string | null,
   in_reply_to_id: null as string | null,
   id: '',
   language: null as string | null,
-  liked: false,
-  likes_count: 0,
   media_attachments: ImmutableList<Attachment>(),
   mentions: ImmutableList<Mention>(),
   muted: false,
   pinned: false,
+  pleroma: ImmutableMap<string, any>(),
+  ditto: ImmutableMap<string, any>(),
   poll: null as EmbeddedEntity<Poll>,
   quote: null as EmbeddedEntity<any>,
   quotes_count: 0,
+  reactions: null as ImmutableList<EmojiReaction> | null,
   repost: null as EmbeddedEntity<any>,
   reposted: false,
   reposts_count: 0,
   replies_count: 0,
+  zaps_amount: 0,
   sensitive: false,
   spoiler_text: '',
   tags: ImmutableList<ImmutableMap<string, any>>(),
@@ -149,6 +156,16 @@ const fixSensitivity = (status: ImmutableMap<string, any>) => {
   }
 };
 
+/** Normalize emojis. */
+const normalizeEmojis = (status: ImmutableMap<string, any>) => {
+  const data = ImmutableList<ImmutableMap<string, any>>(status.getIn(['pleroma', 'emoji_reactions']) || status.get('reactions'));
+  const reactions = filteredArray(emojiReactionSchema).parse(data.toJS());
+
+  if (reactions) {
+    status.set('reactions', ImmutableList(reactions));
+  }
+};
+
 /** Rewrite `<p></p>` to empty string. */
 const fixContent = (status: ImmutableMap<string, any>) => {
   if (status.get('content') === '<p></p>') {
@@ -188,6 +205,7 @@ export const normalizeStatus = (status: Record<string, any>) => {
     ImmutableMap(fromJS(status)).withMutations(status => {
       normalizeAttachments(status);
       normalizeMentions(status);
+      normalizeEmojis(status);
       normalizeStatusPoll(status);
       normalizeStatusCard(status);
       fixMentionsOrder(status);

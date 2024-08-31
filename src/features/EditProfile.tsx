@@ -5,20 +5,20 @@ import { updateNotificationSettings } from 'src/actions/accounts';
 import { patchMe } from 'src/actions/me';
 import BirthdayInput from 'src/components/BirthdayInput';
 import List, { ListItem } from 'src/components/List';
+import { Column } from 'src/components/Column'
+import { default as Button } from 'src/components/Button'
 import {
   AvatarPicker,
-  Button,
-  Column,
   Form,
   FormActions,
   FormGroup,
   HeaderPicker,
   HStack,
-  Input,
   Streamfield,
   Textarea,
   Toggle,
 } from 'src/components';
+import { default as Input } from 'src/components/Input'
 import { useAppDispatch, useOwnAccount, useAppSelector } from 'src/hooks';
 import { useImageField } from 'src/hooks';
 import toast from 'src/toast';

@@ -1,10 +1,11 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { HStack, Icon, Text } from 'src/components';
+import { HStack, Text } from 'src/components';
 import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
 
 import ChatPaneHeader from './ChatPaneHeader';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   title: { id: 'chat_search.title', defaultMessage: 'Messages' },

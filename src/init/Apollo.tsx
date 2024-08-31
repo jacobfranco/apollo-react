@@ -14,24 +14,18 @@ import ApolloHead from './ApolloHead';
 import ApolloLoad from './ApolloLoad';
 import ApolloMount from './ApolloMount';
 
-console.log('[Apollo] Component setup started.');
 
 // Configure global functions for developers
 createGlobals(store);
 
-console.log('[Apollo] Global functions configured.');
-
-// Preload happens synchronously TODO: Implement with backend
-// console.log('[Apollo] Dispatching preload...');
+// Preload happens synchronously
 // store.dispatch(preload() as any);
 
 // This happens synchronously
-console.log('[Apollo] Checking onboarding status...');
 store.dispatch(checkOnboardingStatus() as any);
 
 /** The root React node of the application. */
 const Apollo: React.FC = () => {
-  console.log('[Apollo] Component rendering...');
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>

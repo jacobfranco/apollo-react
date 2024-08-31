@@ -2,9 +2,10 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { useUnmuteGroup } from 'src/api/hooks';
-import { Button, GroupAvatar, HStack, Text } from 'src/components';
+import { GroupAvatar, HStack, Text } from 'src/components';
 import { type Group } from 'src/schemas';
 import toast from 'src/toast';
+import Button from './Button';
 
 interface IMuteGroupListItem {
   group: Group;

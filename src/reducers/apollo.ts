@@ -19,7 +19,6 @@ const fallbackState = ImmutableMap<string, any>({
 
 const persistApolloConfig = (apolloConfig: ImmutableMap<string, any>, host: string) => {
   if (host) {
-    console.log("setting kv store - apollo config")
     KVStore.setItem(`apollo_config:${host}`, apolloConfig.toJS()).catch(console.error);
   }
 };

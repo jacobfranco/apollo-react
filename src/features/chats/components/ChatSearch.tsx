@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Icon, Input, Stack } from 'src/components';
+import { Stack } from 'src/components';
 import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
 import { useDebounce } from 'src/hooks';
 import { useChats, ChatKeys } from 'src/queries/chats';
@@ -15,6 +15,8 @@ import toast from 'src/toast';
 import ChatSearchBlankslate from './ChatSearchBlankslate';
 import ChatSearchEmptyResultsBlankslate from './ChatSearchEmptyResultsBlankslate';
 import ChatSearchResults from './ChatSearchResults'
+import Input from 'src/components/Input';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   placeholder: { id: 'chat_search.placeholder', defaultMessage: 'Type a name' },

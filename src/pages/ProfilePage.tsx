@@ -3,7 +3,8 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect, useHistory } from 'react-router-dom';
 
 import { useAccountLookup } from 'src/api/hooks';
-import { Column, Header, Layout, Tabs } from 'src/components';
+import { Header, Layout, Tabs } from 'src/components';
+import { Column as Column } from 'src/components/Column'
 import {
   WhoToFollowPanel,
   ProfileInfoPanel,

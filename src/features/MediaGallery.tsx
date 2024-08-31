@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import React, { useState, useRef, useLayoutEffect, Suspense } from 'react';
 
-import { Blurhash, Icon, StillImage } from 'src/components';
+import { Blurhash, StillImage } from 'src/components';
 import { MIMETYPE_ICONS } from 'src/components/Upload';
-import { useSettings, useApolloConfig } from 'src/hooks';
+import { useApolloConfig } from 'src/hooks';
 import { Attachment } from 'src/types/entities';
 import { truncateFilename } from 'src/utils/media';
 
@@ -12,6 +12,8 @@ import { isPanoramic, isPortrait, isNonConformingRatio, minimumAspectRatio, maxi
 
 import type { Property } from 'csstype';
 import type { List as ImmutableList } from 'immutable';
+import Icon from 'src/components/Icon';
+import { useSettings } from 'src/hooks/useSettings';
 
 // const Gameboy = React.lazy(() => import('src/components/Gameboy')); TODO: Implement gameboy ?
 
@@ -152,8 +154,8 @@ const Item: React.FC<IItem> = ({
         key={attachment.id}
         style={{ position, float, left, top, right, bottom, height, width: `${width}%` }}
       >
-        <Suspense fallback={<div  className='media-gallery__item-thumbnail' />}>
-          { <p>Gameboy impl. (TODO) </p>/* <Gameboy className='media-gallery__item-thumbnail cursor-default' src={attachment.url} /> */}
+        <Suspense fallback={<div className='media-gallery__item-thumbnail' />}>
+          {<p>Gameboy impl. (TODO) </p>/* <Gameboy className='media-gallery__item-thumbnail cursor-default' src={attachment.url} /> */}
         </Suspense>
       </div>
     );

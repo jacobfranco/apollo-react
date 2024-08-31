@@ -3,8 +3,10 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchFilters, deleteFilter } from 'src/actions/filters';
-import { Button, Column, HStack, RelativeTimestamp, ScrollableList, Stack, Text } from 'src/components';
+import { HStack, RelativeTimestamp, ScrollableList, Stack, Text } from 'src/components';
+import { default as Button } from 'src/components/Button'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { Column } from 'src/components/Column'
 import toast from 'src/toast';
 
 const messages = defineMessages({
@@ -83,9 +85,9 @@ const Filters = () => {
                 </Text>
                 <HStack space={4} wrap>
                   <Text weight='medium'>
-                      filter.filter_action === 'hide' ?
-                        <FormattedMessage id='filters.filters_list_hide_completely' defaultMessage='Hide content' /> :
-                        <FormattedMessage id='filters.filters_list_warn' defaultMessage='Display warning' />
+                    filter.filter_action === 'hide' ?
+                    <FormattedMessage id='filters.filters_list_hide_completely' defaultMessage='Hide content' /> :
+                    <FormattedMessage id='filters.filters_list_warn' defaultMessage='Display warning' />
                   </Text>
                   {filter.expires_at && (
                     <Text weight='medium'>

@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom';
 import { openModal } from 'src/actions/modals';
 import { expandAccountMediaTimeline } from 'src/actions/timelines';
 import { useAccountLookup } from 'src/api/hooks';
-import { Column, LoadMore, MediaItem, MissingIndicator, Spinner } from 'src/components';
+import { LoadMore, MediaItem, MissingIndicator, Spinner } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { getAccountGallery } from 'src/selectors';
 

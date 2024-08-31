@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { fetchFollowedHashtags, expandFollowedHashtags } from 'src/actions/tags';
-import { Column, Hashtag, PlaceholderHashtag, ScrollableList } from 'src/components';
+import { Hashtag, PlaceholderHashtag, ScrollableList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 const messages = defineMessages({

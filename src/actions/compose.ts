@@ -31,23 +31,23 @@ const { CancelToken, isCancel } = axios;
 
 let cancelFetchComposeSuggestions: Canceler;
 
-const COMPOSE_CHANGE          = 'COMPOSE_CHANGE' as const;
-const COMPOSE_SUBMIT_REQUEST  = 'COMPOSE_SUBMIT_REQUEST' as const;
-const COMPOSE_SUBMIT_SUCCESS  = 'COMPOSE_SUBMIT_SUCCESS' as const;
-const COMPOSE_SUBMIT_FAIL     = 'COMPOSE_SUBMIT_FAIL' as const;
-const COMPOSE_REPLY           = 'COMPOSE_REPLY' as const;
-const COMPOSE_REPLY_CANCEL    = 'COMPOSE_REPLY_CANCEL' as const;
-const COMPOSE_QUOTE           = 'COMPOSE_QUOTE' as const;
-const COMPOSE_QUOTE_CANCEL    = 'COMPOSE_QUOTE_CANCEL' as const;
-const COMPOSE_DIRECT          = 'COMPOSE_DIRECT' as const;
-const COMPOSE_MENTION         = 'COMPOSE_MENTION' as const;
-const COMPOSE_RESET           = 'COMPOSE_RESET' as const;
-const COMPOSE_UPLOAD_REQUEST  = 'COMPOSE_UPLOAD_REQUEST' as const;
-const COMPOSE_UPLOAD_SUCCESS  = 'COMPOSE_UPLOAD_SUCCESS' as const;
-const COMPOSE_UPLOAD_FAIL     = 'COMPOSE_UPLOAD_FAIL' as const;
+const COMPOSE_CHANGE = 'COMPOSE_CHANGE' as const;
+const COMPOSE_SUBMIT_REQUEST = 'COMPOSE_SUBMIT_REQUEST' as const;
+const COMPOSE_SUBMIT_SUCCESS = 'COMPOSE_SUBMIT_SUCCESS' as const;
+const COMPOSE_SUBMIT_FAIL = 'COMPOSE_SUBMIT_FAIL' as const;
+const COMPOSE_REPLY = 'COMPOSE_REPLY' as const;
+const COMPOSE_REPLY_CANCEL = 'COMPOSE_REPLY_CANCEL' as const;
+const COMPOSE_QUOTE = 'COMPOSE_QUOTE' as const;
+const COMPOSE_QUOTE_CANCEL = 'COMPOSE_QUOTE_CANCEL' as const;
+const COMPOSE_DIRECT = 'COMPOSE_DIRECT' as const;
+const COMPOSE_MENTION = 'COMPOSE_MENTION' as const;
+const COMPOSE_RESET = 'COMPOSE_RESET' as const;
+const COMPOSE_UPLOAD_REQUEST = 'COMPOSE_UPLOAD_REQUEST' as const;
+const COMPOSE_UPLOAD_SUCCESS = 'COMPOSE_UPLOAD_SUCCESS' as const;
+const COMPOSE_UPLOAD_FAIL = 'COMPOSE_UPLOAD_FAIL' as const;
 const COMPOSE_UPLOAD_PROGRESS = 'COMPOSE_UPLOAD_PROGRESS' as const;
-const COMPOSE_UPLOAD_UNDO     = 'COMPOSE_UPLOAD_UNDO' as const;
-const COMPOSE_GROUP_POST      = 'COMPOSE_GROUP_POST' as const;
+const COMPOSE_UPLOAD_UNDO = 'COMPOSE_UPLOAD_UNDO' as const;
+const COMPOSE_GROUP_POST = 'COMPOSE_GROUP_POST' as const;
 const COMPOSE_SET_GROUP_TIMELINE_VISIBLE = 'COMPOSE_SET_GROUP_TIMELINE_VISIBLE' as const;
 
 const COMPOSE_SUGGESTIONS_CLEAR = 'COMPOSE_SUGGESTIONS_CLEAR' as const;
@@ -60,24 +60,24 @@ const COMPOSE_TAG_HISTORY_UPDATE = 'COMPOSE_TAG_HISTORY_UPDATE' as const;
 const COMPOSE_SPOILERNESS_CHANGE = 'COMPOSE_SPOILERNESS_CHANGE' as const;
 const COMPOSE_TYPE_CHANGE = 'COMPOSE_TYPE_CHANGE' as const;
 const COMPOSE_SPOILER_TEXT_CHANGE = 'COMPOSE_SPOILER_TEXT_CHANGE' as const;
-const COMPOSE_VISIBILITY_CHANGE  = 'COMPOSE_VISIBILITY_CHANGE' as const;
+const COMPOSE_VISIBILITY_CHANGE = 'COMPOSE_VISIBILITY_CHANGE' as const;
 const COMPOSE_LISTABILITY_CHANGE = 'COMPOSE_LISTABILITY_CHANGE' as const;
 
 const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT' as const;
 
-const COMPOSE_UPLOAD_CHANGE_REQUEST     = 'COMPOSE_UPLOAD_UPDATE_REQUEST' as const;
-const COMPOSE_UPLOAD_CHANGE_SUCCESS     = 'COMPOSE_UPLOAD_UPDATE_SUCCESS' as const;
-const COMPOSE_UPLOAD_CHANGE_FAIL        = 'COMPOSE_UPLOAD_UPDATE_FAIL' as const;
+const COMPOSE_UPLOAD_CHANGE_REQUEST = 'COMPOSE_UPLOAD_UPDATE_REQUEST' as const;
+const COMPOSE_UPLOAD_CHANGE_SUCCESS = 'COMPOSE_UPLOAD_UPDATE_SUCCESS' as const;
+const COMPOSE_UPLOAD_CHANGE_FAIL = 'COMPOSE_UPLOAD_UPDATE_FAIL' as const;
 
-const COMPOSE_POLL_ADD             = 'COMPOSE_POLL_ADD' as const;
-const COMPOSE_POLL_REMOVE          = 'COMPOSE_POLL_REMOVE' as const;
-const COMPOSE_POLL_OPTION_ADD      = 'COMPOSE_POLL_OPTION_ADD' as const;
-const COMPOSE_POLL_OPTION_CHANGE   = 'COMPOSE_POLL_OPTION_CHANGE' as const;
-const COMPOSE_POLL_OPTION_REMOVE   = 'COMPOSE_POLL_OPTION_REMOVE' as const;
+const COMPOSE_POLL_ADD = 'COMPOSE_POLL_ADD' as const;
+const COMPOSE_POLL_REMOVE = 'COMPOSE_POLL_REMOVE' as const;
+const COMPOSE_POLL_OPTION_ADD = 'COMPOSE_POLL_OPTION_ADD' as const;
+const COMPOSE_POLL_OPTION_CHANGE = 'COMPOSE_POLL_OPTION_CHANGE' as const;
+const COMPOSE_POLL_OPTION_REMOVE = 'COMPOSE_POLL_OPTION_REMOVE' as const;
 const COMPOSE_POLL_SETTINGS_CHANGE = 'COMPOSE_POLL_SETTINGS_CHANGE' as const;
 
-const COMPOSE_SCHEDULE_ADD    = 'COMPOSE_SCHEDULE_ADD' as const;
-const COMPOSE_SCHEDULE_SET    = 'COMPOSE_SCHEDULE_SET' as const;
+const COMPOSE_SCHEDULE_ADD = 'COMPOSE_SCHEDULE_ADD' as const;
+const COMPOSE_SCHEDULE_SET = 'COMPOSE_SCHEDULE_SET' as const;
 const COMPOSE_SCHEDULE_REMOVE = 'COMPOSE_SCHEDULE_REMOVE' as const;
 
 const COMPOSE_ADD_TO_MENTIONS = 'COMPOSE_ADD_TO_MENTIONS' as const;
@@ -268,7 +268,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
 };
 
 const needsDescriptions = (state: RootState, composeId: string) => {
-  const media  = state.compose.get(composeId)!.media_attachments;
+  const media = state.compose.get(composeId)!.media_attachments;
   const missingDescriptionModal = getSettings(state).get('missingDescriptionModal');
 
   const hasMissing = media.filter(item => !item.description).size > 0;
@@ -299,10 +299,10 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
 
     const compose = state.compose.get(composeId)!;
 
-    const status   = compose.text;
-    const media    = compose.media_attachments;
+    const status = compose.text;
+    const media = compose.media_attachments;
     const statusId = compose.id;
-    let to         = compose.to;
+    let to = compose.to;
 
     if (!validateSchedule(state, composeId)) {
       toast.error(messages.scheduleError);
@@ -353,12 +353,12 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       params.group_timeline_visible = compose.group_timeline_visible; // Truth Social
     }
 
-    return dispatch(createStatus(params, idempotencyKey, statusId)).then(function(data) {
+    return dispatch(createStatus(params, idempotencyKey, statusId)).then(function (data) {
       if (!statusId && data.visibility === 'direct' && getState().conversations.mounted <= 0 && history) {
         history.push('/messages');
       }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
-    }).catch(function(error) {
+    }).catch(function (error) {
       dispatch(submitComposeFail(composeId, error));
     });
   };
@@ -383,9 +383,9 @@ const submitComposeFail = (composeId: string, error: unknown) => ({
 const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-    const attachmentLimit = 4; // TODO: Maybe change
+    const attachmentLimit = 4;
 
-    const media  = getState().compose.get(composeId)?.media_attachments;
+    const media = getState().compose.get(composeId)?.media_attachments;
     const progress = new Array(files.length).fill(0);
     let total = Array.from(files).reduce((a, v) => a + v.size, 0);
 
@@ -398,7 +398,7 @@ const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
 
     dispatch(uploadComposeRequest(composeId));
 
-    Array.from(files).forEach(async(f, i) => {
+    Array.from(files).forEach(async (f, i) => {
       if (mediaCount + i > attachmentLimit - 1) return;
 
       dispatch(uploadFile(
@@ -531,7 +531,7 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
 
 const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
   const state = getState();
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }); // TODO: Maybe change
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 });
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
@@ -543,11 +543,12 @@ const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => Root
 
   const state = getState();
 
-    const currentTrends = state.trends.items;
+  const currentTrends = state.trends.items;
 
-    return dispatch(updateSuggestionTags(composeId, token, currentTrends));
+  return dispatch(updateSuggestionTags(composeId, token, currentTrends));
 
-  api(getState).get('/api/search', {
+  // TODO: If this doesn't work, make it false
+  api(getState).get('/api/v2/search', {
     cancelToken: new CancelToken(cancel => {
       cancelFetchComposeSuggestions = cancel;
     }),
@@ -616,15 +617,15 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
     let completion = '', startPosition = position;
 
     if (typeof suggestion === 'object' && suggestion.id) {
-      completion    = suggestion.native;
+      completion = suggestion.native;
       startPosition = position - 1;
 
       dispatch(chooseEmoji(suggestion));
     } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
-      completion    = suggestion;
+      completion = suggestion;
       startPosition = position - 1;
     } else if (typeof suggestion === 'string') {
-      completion    = selectAccount(getState(), suggestion)!.id;
+      completion = selectAccount(getState(), suggestion)!.id;
       startPosition = position;
     }
 
@@ -802,8 +803,6 @@ const removeFromMentions = (composeId: string, accountId: string) =>
 
     return dispatch(action);
   };
-
-
 
 const setEditorState = (composeId: string, editorState: EditorState | string | null) => ({
   type: COMPOSE_EDITOR_STATE_SET,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-
-import { Icon, Input } from 'src/components';
+import Icon from 'src/components/Icon';
+import Input from 'src/components/Input';
 
 const messages = defineMessages({
   searchPlaceholder: { id: 'chats.search_placeholder', defaultMessage: 'Start a chat with…' },

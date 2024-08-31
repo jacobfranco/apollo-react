@@ -2,11 +2,12 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { patchMe } from 'src/actions/me';
-import { BigCard, Button, FormGroup, Stack, Textarea } from 'src/components';
+import { BigCard, FormGroup, Stack, Textarea } from 'src/components';
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 
 import type { AxiosError } from 'axios';
+import Button from 'src/components/Button';
 
 const messages = defineMessages({
   bioPlaceholder: { id: 'onboarding.bio.placeholder', defaultMessage: 'Tell the world a little about yourself…' },

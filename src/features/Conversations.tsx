@@ -4,7 +4,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { directComposeById } from 'src/actions/compose';
 import { mountConversations, unmountConversations, expandConversations } from 'src/actions/conversations';
 import { useDirectStream } from 'src/api/hooks';
-import { AccountSearch, Column, ConversationsList } from 'src/components';
+import { AccountSearch, ConversationsList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch } from 'src/hooks';
 
 const messages = defineMessages({

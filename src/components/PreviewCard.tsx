@@ -2,12 +2,13 @@ import clsx from 'clsx';
 import { List as ImmutableList } from 'immutable';
 import React, { useState, useEffect } from 'react';
 
-import { Blurhash, HStack, Stack, Text, Icon } from 'src/components';
+import { Blurhash, HStack, Stack, Text } from 'src/components';
 import { normalizeAttachment } from 'src/normalizers';
 import { addAutoPlay } from 'src/utils/media';
 import { getTextDirection } from 'src/utils/rtl';
 
 import type { Card as CardEntity, Attachment } from 'src/types/entities';
+import Icon from './Icon';
 
 /** Props for `PreviewCard`. */
 interface IPreviewCard {

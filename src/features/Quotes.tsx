@@ -5,7 +5,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { expandStatusQuotes, fetchStatusQuotes } from 'src/actions/status-quotes';
-import { Column, StatusList } from 'src/components';
+import { StatusList } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector, useTheme } from 'src/hooks';
 import { useIsMobile } from 'src/hooks/useIsMobile';
 
@@ -31,7 +32,7 @@ const Quotes: React.FC = () => {
     dispatch(fetchStatusQuotes(statusId));
   }, [statusId]);
 
-  const handleRefresh = async() => {
+  const handleRefresh = async () => {
     await dispatch(fetchStatusQuotes(statusId));
   };
 

@@ -2,11 +2,12 @@ import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { dateFormatOptions } from 'src/components/RelativeTimestamp';
-import { Badge, HStack, Icon, Markup, ProfileFamiliarFollowers, ProfileField, Stack, Text } from 'src/components';
+import { Badge, HStack, Markup, ProfileFamiliarFollowers, ProfileField, Stack, Text } from 'src/components';
 import ProfileStats from 'src/features/ProfileStats';
 import { useAppSelector } from 'src/hooks';
 
 import type { Account } from 'src/schemas';
+import Icon from 'src/components/Icon';
 
 /** Basically ensure the URL isn't `javascript:alert('hi')` or something like that */
 const isSafeUrl = (text: string): boolean => {
@@ -129,20 +130,20 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
         )}
 
         <div className='flex flex-col items-start gap-2 md:flex-row md:flex-wrap md:items-center'>
-            <HStack alignItems='center' space={0.5}>
-              <Icon
-                src={require('@tabler/icons/outline/calendar.svg')}
-                className='h-4 w-4 text-gray-800 dark:text-gray-200'
-              />
+          <HStack alignItems='center' space={0.5}>
+            <Icon
+              src={require('@tabler/icons/outline/calendar.svg')}
+              className='h-4 w-4 text-gray-800 dark:text-gray-200'
+            />
 
-              <Text size='sm' title={intl.formatDate(account.created_at, dateFormatOptions)}>
-                <FormattedMessage
-                  id='account.member_since' defaultMessage='Joined {date}' values={{
-                    date: memberSinceDate,
-                  }}
-                />
-              </Text>
-            </HStack>
+            <Text size='sm' title={intl.formatDate(account.created_at, dateFormatOptions)}>
+              <FormattedMessage
+                id='account.member_since' defaultMessage='Joined {date}' values={{
+                  date: memberSinceDate,
+                }}
+              />
+            </Text>
+          </HStack>
 
           {account.location ? (
             <HStack alignItems='center' space={0.5}>

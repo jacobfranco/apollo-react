@@ -15,11 +15,8 @@ const decodeFromMarkup = (elementId: string, decoder: (json: string) => Record<s
 const preloadFromMarkup = (elementId: string, decoder: (json: string) => Record<string, any>, action: (data: Record<string, any>) => any) =>
   (dispatch: AppDispatch) => {
     try {
-      console.log(`[preloadFromMarkup] Attempting to decode from markup for elementId: ${elementId}`);
       const data = decodeFromMarkup(elementId, decoder);
-      console.log(`[preloadFromMarkup] Decoded data from markup for elementId: ${elementId}`, data);
       dispatch(action(data));
-      console.log(`[preloadFromMarkup] Dispatched action for decoded data from elementId: ${elementId}`);
     } catch (error) {
       console.error(`[preloadFromMarkup] Failed to decode from markup for elementId: ${elementId}`, error);
     }
@@ -27,7 +24,7 @@ const preloadFromMarkup = (elementId: string, decoder: (json: string) => Record<
 
 const preload = () =>
   (dispatch: AppDispatch) => {
-     console.log("[preload] Starting preload process...");
+    console.log("[preload] Starting preload process...");
     dispatch(preloadFromMarkup('initial-state', JSON.parse, preloadApollo));
   };
 

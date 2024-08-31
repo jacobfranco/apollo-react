@@ -1,7 +1,9 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Card, CardBody, Icon, Stack, Text } from 'src/components';
+import { Card, CardBody, Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
+import Icon from 'src/components/Icon';
 
 const CompletedStep = ({ onComplete }: { onComplete: () => void }) => (
   <Card variant='rounded' size='xl'>

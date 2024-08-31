@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useIntl, defineMessages } from 'react-intl';
 import { Components, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { Avatar, Button, Divider, PlaceholderChatMessage, Spinner, Stack, Text } from 'src/components';
+import { Divider, PlaceholderChatMessage, Spinner, Stack, Text } from 'src/components';
 import { useAppSelector, useOwnAccount } from 'src/hooks';
 import { IChat, useChatActions, useChatMessages } from 'src/queries/chats';
 
@@ -10,6 +10,8 @@ import ChatMessage from './ChatMessage';
 import ChatMessageListIntro from './ChatMessageListIntro';
 
 import type { ChatMessage as ChatMessageEntity } from 'src/types/entities';
+import Avatar from 'src/components/Avatar';
+import Button from 'src/components/Button';
 
 const messages = defineMessages({
   today: { id: 'chats.dividers.today', defaultMessage: 'Today' },

@@ -2,7 +2,8 @@ import React from 'react';
 import { Helmet as ReactHelmet } from 'react-helmet';
 
 import { useStatContext } from 'src/contexts/stat-context';
-import { useAppSelector, useSettings } from 'src/hooks';
+import { useAppSelector } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings';
 import { RootState } from 'src/store';
 import FaviconService from 'src/utils/favicon-service';
 

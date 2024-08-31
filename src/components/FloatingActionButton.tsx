@@ -6,7 +6,9 @@ import { useLocation, useRouteMatch } from 'react-router-dom';
 import { groupComposeModal } from 'src/actions/compose';
 import { openModal } from 'src/actions/modals';
 import { useGroupLookup } from 'src/api/hooks';
-import { Avatar, HStack, Icon } from 'src/components';
+import { HStack } from 'src/components';
+import { default as Avatar } from 'src/components/Avatar'
+import { default as Icon } from 'src/components/Icon'
 import { useAppDispatch } from 'src/hooks';
 
 const messages = defineMessages({
@@ -18,7 +20,7 @@ const FloatingActionButton: React.FC = () => {
   const location = useLocation();
 
   if (location.pathname.startsWith('/group/')) {
-    return  <GroupFAB />;
+    return <GroupFAB />;
   }
 
   return <HomeFAB />;

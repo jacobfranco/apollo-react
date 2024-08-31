@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 import { ActionButton, Badge, HoverRefWrapper, VerificationBadge, RelativeTimestamp } from 'src/components';
 import { useAppSelector } from 'src/hooks';
 
-import { Avatar, Emoji, HStack, Icon, IconButton, Stack, Text } from 'src/components';
+import { Emoji, HStack, IconButton, Stack, Text } from 'src/components';
 
 import type { StatusApprovalStatus } from 'src/normalizers/status';
 import type { Account as AccountSchema } from 'src/schemas';
+import Avatar from './Avatar';
+import Icon from './Icon';
 
 const messages = defineMessages({
   bot: { id: 'account.badges.bot', defaultMessage: 'Bot' },

@@ -3,7 +3,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 // import { fetchMfa } from 'src/actions/mfa';
 import List, { ListItem } from 'src/components/List';
-import { Card, CardBody, CardHeader, CardTitle, Column, MessagesSettings } from 'src/components';
+import { Card, CardBody, CardHeader, CardTitle, MessagesSettings } from 'src/components';
+import { Column } from 'src/components/Column'
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 
 import Preferences from 'src/features/Preferences';
@@ -81,7 +82,7 @@ const Settings = () => {
           </List>
         </CardBody>
 
-{ /* TODO: Implement security and mfa
+        { /* TODO: Implement security and mfa
         {(features.security || features.sessions) && (
           <>
             <CardHeader>
@@ -113,15 +114,15 @@ const Settings = () => {
 
         */ }
 
-          <>
-            <CardHeader>
-              <CardTitle title={<FormattedMessage id='column.chats' defaultMessage='Chats' />} />
-            </CardHeader>
+        <>
+          <CardHeader>
+            <CardTitle title={<FormattedMessage id='column.chats' defaultMessage='Chats' />} />
+          </CardHeader>
 
-            <CardBody>
-              <MessagesSettings />
-            </CardBody>
-          </>
+          <CardBody>
+            <MessagesSettings />
+          </CardBody>
+        </>
 
         <CardHeader>
           <CardTitle title={intl.formatMessage(messages.preferences)} />
@@ -131,7 +132,7 @@ const Settings = () => {
           <Preferences />
         </CardBody>
 
-{ /*  TODO: Implement security and mfa
+        { /*  TODO: Implement security and mfa
         {(features.security || features.accountAliases) && (
           <>
             <CardHeader>

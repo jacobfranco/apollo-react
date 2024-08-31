@@ -5,7 +5,7 @@ import { deactivateUserModal } from 'src/actions/moderation';
 import { useAccount } from 'src/api/hooks';
 import Account from 'src/components/Account';
 import List, { ListItem } from 'src/components/List';
-import { Button, Text, HStack, MissingIndicator, Modal, OutlineBox, Stack, Toggle } from 'src/components';
+import { Text, HStack, MissingIndicator, Modal, OutlineBox, Stack, Toggle } from 'src/components';
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 // import { getBadges } from 'src/utils/badges'; TODO: Implement

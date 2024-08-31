@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { SelectDropdown } from 'src/features/Forms';
 
-import { Icon, HStack, Select } from 'src/components';
+import { HStack, Select } from 'src/components';
+import Icon from './Icon';
 
 interface IList {
   children: React.ReactNode;

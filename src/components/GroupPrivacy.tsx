@@ -1,8 +1,9 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Popover, Stack, Text } from 'src/components';
+import { HStack, Popover, Stack, Text } from 'src/components';
 import { Group } from 'src/types/entities';
+import Icon from './Icon';
 
 interface IGroupPolicy {
   group: Group;

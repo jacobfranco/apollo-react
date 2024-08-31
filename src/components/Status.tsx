@@ -7,16 +7,22 @@ import { mentionCompose, replyCompose } from 'src/actions/compose';
 import { toggleLike, toggleRepost } from 'src/actions/interactions';
 import { openModal } from 'src/actions/modals';
 import { toggleStatusHidden, unfilterStatus } from 'src/actions/statuses';
+import TranslateButton from 'src/components/TranslateButton';
 import AccountContainer from 'src/containers/AccountContainer';
 import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
 import { HotKeys } from 'src/features/Hotkeys';
-import { useAppDispatch, useSettings } from 'src/hooks';
+import { useAppDispatch } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings';
 import { defaultMediaVisibility, textForScreenReader, getActualStatus } from 'src/utils/status';
 
-import {
-  Card, Icon, Stack, Text, StatusActionBar, StatusContent,
-  StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo
-} from 'src/components';
+import StatusActionBar from './StatusActionBar';
+import StatusContent from './StatusContent';
+import StatusMedia from './StatusMedia';
+import StatusReplyMentions from './StatusReplyMentions';
+import SensitiveContentOverlay from './SensitiveContentOverlay';
+import StatusInfo from './StatusInfo';
+import Icon from 'src/components/Icon'
+import { Card, Stack, Text } from 'src/components';
 
 import type { Status as StatusEntity } from 'src/types/entities';
 
@@ -44,6 +50,7 @@ export interface IStatus {
   variant?: 'default' | 'rounded' | 'slim';
   showGroup?: boolean;
   accountAction?: React.ReactElement;
+  fromBookmarks?: boolean;
 }
 
 const Status: React.FC<IStatus> = (props) => {
@@ -63,6 +70,7 @@ const Status: React.FC<IStatus> = (props) => {
     hideActionBar,
     variant = 'rounded',
     showGroup = true,
+    fromBookmarks = false,
   } = props;
 
   const intl = useIntl();
@@ -142,16 +150,16 @@ const Status: React.FC<IStatus> = (props) => {
     dispatch(replyCompose(actualStatus));
   };
 
-  const handleHotkeyLike = (): void => {
+  const handleHotkeyFavourite = (): void => {
     toggleLike(actualStatus);
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent): void => {
-    const modalRepost = () => dispatch(toggleRepost(actualStatus));
+    const modalReblog = () => dispatch(toggleRepost(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
-      modalRepost();
+      modalReblog();
     } else {
-      dispatch(openModal('BOOST', { status: actualStatus, onRepost: modalRepost }));
+      dispatch(openModal('BOOST', { status: actualStatus, onReblog: modalReblog }));
     }
   };
 
@@ -207,7 +215,7 @@ const Status: React.FC<IStatus> = (props) => {
           icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='h-4 w-4 text-green-600' />}
           text={
             <FormattedMessage
-              id='status.reposted_by_with_group'
+              id='status.reblogged_by_with_group'
               defaultMessage='{name} reposted from {group}'
               values={{
                 name: (
@@ -219,7 +227,7 @@ const Status: React.FC<IStatus> = (props) => {
                       <strong
                         className='text-gray-800 dark:text-gray-200'
                         dangerouslySetInnerHTML={{
-                          __html: status.account.display_name,
+                          __html: status.account.display_name_html,
                         }}
                       />
                     </bdi>
@@ -247,7 +255,7 @@ const Status: React.FC<IStatus> = (props) => {
           icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='h-4 w-4 text-green-600' />}
           text={
             <FormattedMessage
-              id='status.reposted_by'
+              id='status.reblogged_by'
               defaultMessage='{name} reposted'
               values={{
                 name: (
@@ -256,7 +264,7 @@ const Status: React.FC<IStatus> = (props) => {
                       <strong
                         className='text-gray-800 dark:text-gray-200'
                         dangerouslySetInnerHTML={{
-                          __html: status.account.display_name,
+                          __html: status.account.display_name_html,
                         }}
                       />
                     </bdi>
@@ -349,12 +357,20 @@ const Status: React.FC<IStatus> = (props) => {
   let quote;
 
   if (actualStatus.quote) {
-    quote = <QuotedStatus statusId={actualStatus.quote as string} />;
+    if (actualStatus.pleroma.get('quote_visible', true) === false) {
+      quote = (
+        <div className='quoted-status-tombstone'>
+          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
+        </div>
+      );
+    } else {
+      quote = <QuotedStatus statusId={actualStatus.quote as string} />;
+    }
   }
 
   const handlers = muted ? undefined : {
     reply: handleHotkeyReply,
-    like: handleHotkeyLike,
+    favourite: handleHotkeyFavourite,
     boost: handleHotkeyBoost,
     mention: handleHotkeyMention,
     open: handleHotkeyOpen,
@@ -369,7 +385,6 @@ const Status: React.FC<IStatus> = (props) => {
 
   const isUnderReview = actualStatus.visibility === 'self';
   const isSensitive = actualStatus.hidden;
-
   return (
     <HotKeys handlers={handlers} data-testid='status'>
       <div

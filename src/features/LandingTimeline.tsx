@@ -3,7 +3,8 @@ import { FormattedMessage } from 'react-intl';
 
 import { expandCommunityTimeline } from 'src/actions/timelines';
 import { useCommunityStream } from 'src/api/hooks';
-import { Column, PullToRefresh, SiteBanner } from 'src/components';
+import { PullToRefresh, SiteBanner } from 'src/components';
+import { Column } from 'src/components/Column'
 import Timeline from 'src/features/Timeline'
 import { useAppSelector, useAppDispatch } from 'src/hooks';
 
@@ -15,17 +16,17 @@ const LandingTimeline = () => {
   const timelineId = 'community';
 
   const handleLoadMore = (maxId: string) => {
-      dispatch(expandCommunityTimeline({ url: next, maxId }));
+    dispatch(expandCommunityTimeline({ url: next, maxId }));
   };
 
   const handleRefresh = async () => {
-      return dispatch(expandCommunityTimeline());
+    return dispatch(expandCommunityTimeline());
   };
 
   useCommunityStream({ enabled: true });
 
   useEffect(() => {
-      dispatch(expandCommunityTimeline());
+    dispatch(expandCommunityTimeline());
   }, []);
 
   return (
@@ -34,16 +35,16 @@ const LandingTimeline = () => {
         <SiteBanner />
       </div>
 
-        <PullToRefresh onRefresh={handleRefresh}>
-          <Timeline
-            scrollKey={`${timelineId}_timeline`}
-            timelineId={timelineId}
-            prefix='home'
-            onLoadMore={handleLoadMore}
-            emptyMessage={<FormattedMessage id='empty_column.community' defaultMessage='The local timeline is empty. Write something publicly to get the ball rolling!' />}
-            divideType='space'
-          />
-        </PullToRefresh>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <Timeline
+          scrollKey={`${timelineId}_timeline`}
+          timelineId={timelineId}
+          prefix='home'
+          onLoadMore={handleLoadMore}
+          emptyMessage={<FormattedMessage id='empty_column.community' defaultMessage='The local timeline is empty. Write something publicly to get the ball rolling!' />}
+          divideType='space'
+        />
+      </PullToRefresh>
 
     </Column>
   );

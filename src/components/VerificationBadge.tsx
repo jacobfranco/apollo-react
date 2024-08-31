@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
-import { Icon } from 'src/components';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   verified: { id: 'account.verified', defaultMessage: 'Verified Account' },

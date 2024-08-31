@@ -8,7 +8,8 @@ import Overlay from 'react-overlays/lib/Overlay';
 
 import { changeComposeVisibility } from 'src/actions/compose';
 import { closeModal, openModal } from 'src/actions/modals';
-import { Icon, IconButton } from 'src/components';
+import { IconButton } from 'src/components';
+import Icon from 'src/components/Icon';
 import { useAppDispatch, useCompose } from 'src/hooks';
 import { userTouching } from 'src/is-mobile';
 import Motion from 'src/utils/optional-motion';

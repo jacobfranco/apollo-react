@@ -3,13 +3,16 @@ import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 
 import { patchMe } from 'src/actions/me';
-import { Avatar, BigCard, Button, Icon, Spinner, Stack } from 'src/components';
+import { BigCard, Spinner, Stack } from 'src/components';
 import { useAppDispatch, useOwnAccount } from 'src/hooks';
 import toast from 'src/toast';
 import { isDefaultAvatar } from 'src/utils/accounts';
 import resizeImage from 'src/utils/resize-image';
 
 import type { AxiosError } from 'axios';
+import Button from 'src/components/Button';
+import Icon from 'src/components/Icon';
+import Avatar from 'src/components/Avatar';
 
 const messages = defineMessages({
   error: { id: 'onboarding.error', defaultMessage: 'An unexpected error occurred. Please try again or skip this step.' },

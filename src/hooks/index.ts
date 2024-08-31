@@ -17,7 +17,6 @@ export { useOwnAccount } from './useOwnAccount'
 export { usePreview } from './usePreview'
 export { usePrevious } from './usePrevious'
 export { useRegistrationStatus } from './useRegistrationStatus'
-export { useScreenWidth } from './useScreenWidth'
-export { useSettings } from './useSettings'
+export { useScreenWidth } from './useScreenWidth';
 export { useSystemTheme } from './useSystemTheme'
 export { useTheme } from './useTheme'

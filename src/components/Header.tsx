@@ -15,7 +15,7 @@ import { setSearchAccount } from 'src/actions/search';
 import { getSettings } from 'src/actions/settings';
 import { useFollow } from 'src/api/hooks';
 import DropdownMenu, { Menu } from 'src/components/dropdown-menu';
-import { ActionButton, Avatar, Badge, HStack, IconButton, MovedNote, StillImage, VerificationBadge } from 'src/components';
+import { ActionButton, Badge, HStack, IconButton, MovedNote, StillImage, VerificationBadge } from 'src/components';
 import { useAppDispatch, useAppSelector, useOwnAccount } from 'src/hooks';
 import { normalizeAttachment } from 'src/normalizers';
 import { ChatKeys, useChats } from 'src/queries/chats';
@@ -24,6 +24,7 @@ import { Account } from 'src/schemas';
 import toast from 'src/toast';
 import { isDefaultHeader } from 'src/utils/accounts';
 import copy from 'src/utils/copy';
+import Avatar from './Avatar';
 
 const messages = defineMessages({
   edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
@@ -246,11 +247,11 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
     if (!ownAccount) return menu;
 
-      menu.push({
-        text: intl.formatMessage(account.id === ownAccount.id ? messages.searchSelf : messages.search, { name: account.username }),
-        action: onSearch,
-        icon: require('@tabler/icons/outline/search.svg'),
-      });
+    menu.push({
+      text: intl.formatMessage(account.id === ownAccount.id ? messages.searchSelf : messages.search, { name: account.username }),
+      action: onSearch,
+      icon: require('@tabler/icons/outline/search.svg'),
+    });
 
     if (menu.length) {
       menu.push(null);
@@ -285,11 +286,11 @@ const Header: React.FC<IHeader> = ({ account }) => {
         icon: require('@tabler/icons/outline/at.svg'),
       });
 
-        menu.push({
-          text: intl.formatMessage(messages.direct, { name: account.username }),
-          action: onDirect,
-          icon: require('@tabler/icons/outline/mail.svg'),
-        });
+      menu.push({
+        text: intl.formatMessage(messages.direct, { name: account.username }),
+        action: onDirect,
+        icon: require('@tabler/icons/outline/mail.svg'),
+      });
 
       if (account.relationship?.following) {
         if (account.relationship?.showing_reposts) {
@@ -305,7 +306,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
             icon: require('@tabler/icons/outline/repeat.svg'),
           });
         }
-      } 
+      }
 
       menu.push(null);
 
@@ -429,7 +430,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       return null;
     }
 
- if (account.accepts_chat_messages) {
+    if (account.accepts_chat_messages) {
       return (
         <IconButton
           src={require('@tabler/icons/outline/messages.svg')}

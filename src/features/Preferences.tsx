@@ -5,7 +5,8 @@ import { changeSetting } from 'src/actions/settings';
 import List, { ListItem } from 'src/components/List';
 import { Form, SettingToggle } from 'src/components';
 import { SelectDropdown } from 'src/features/Forms';
-import { useAppDispatch, useSettings } from 'src/hooks';
+import { useAppDispatch } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings'
 import ThemeToggle from 'src/features/ThemeToggle'
 
 const languages = {
@@ -119,7 +120,7 @@ const Preferences = () => {
     <Form>
       <List>
         <ListItem label={<FormattedMessage id='home.column_settings.show_reblogs' defaultMessage='Show reposts' />}>
-          <SettingToggle settings={settings} settingPath={['home', 'shows', 'reblog']} onChange={onToggleChange} />
+          <SettingToggle settings={settings} settingPath={['home', 'shows', 'repost']} onChange={onToggleChange} />
         </ListItem>
 
         <ListItem label={<FormattedMessage id='home.column_settings.show_replies' defaultMessage='Show replies' />}>
@@ -150,27 +151,27 @@ const Preferences = () => {
           />
         </ListItem>
 
-          <ListItem label={<FormattedMessage id='preferences.fields.privacy_label' defaultMessage='Default post privacy' />}>
-            <SelectDropdown
-              className='max-w-[200px]'
-              items={defaultPrivacyOptions}
-              defaultValue={settings.defaultPrivacy}
-              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onSelectChange(event, ['defaultPrivacy'])}
-            />
-          </ListItem>
+        <ListItem label={<FormattedMessage id='preferences.fields.privacy_label' defaultMessage='Default post privacy' />}>
+          <SelectDropdown
+            className='max-w-[200px]'
+            items={defaultPrivacyOptions}
+            defaultValue={settings.defaultPrivacy}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onSelectChange(event, ['defaultPrivacy'])}
+          />
+        </ListItem>
 
-          <ListItem label={<FormattedMessage id='preferences.fields.content_type_label' defaultMessage='Default post format' />}>
-            <SelectDropdown
-              className='max-w-[200px]'
-              items={defaultContentTypeOptions}
-              defaultValue={settings.defaultContentType}
-              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onSelectChange(event, ['defaultContentType'])}
-            />
-          </ListItem>
+        <ListItem label={<FormattedMessage id='preferences.fields.content_type_label' defaultMessage='Default post format' />}>
+          <SelectDropdown
+            className='max-w-[200px]'
+            items={defaultContentTypeOptions}
+            defaultValue={settings.defaultContentType}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onSelectChange(event, ['defaultContentType'])}
+          />
+        </ListItem>
 
-          <ListItem label={<FormattedMessage id='preferences.fields.preserve_spoilers_label' defaultMessage='Preserve content warning when replying' />}>
-            <SettingToggle settings={settings} settingPath={['preserveSpoilers']} onChange={onToggleChange} />
-          </ListItem>
+        <ListItem label={<FormattedMessage id='preferences.fields.preserve_spoilers_label' defaultMessage='Preserve content warning when replying' />}>
+          <SettingToggle settings={settings} settingPath={['preserveSpoilers']} onChange={onToggleChange} />
+        </ListItem>
 
       </List>
 
@@ -189,7 +190,7 @@ const Preferences = () => {
           <SettingToggle settings={settings} settingPath={['autoPlayGif']} onChange={onToggleChange} />
         </ListItem>
 
-         <ListItem label={<FormattedMessage id='preferences.fields.expand_spoilers_label' defaultMessage='Always expand posts marked with content warnings' />}>
+        <ListItem label={<FormattedMessage id='preferences.fields.expand_spoilers_label' defaultMessage='Always expand posts marked with content warnings' />}>
           <SettingToggle settings={settings} settingPath={['expandSpoilers']} onChange={onToggleChange} />
         </ListItem>
 

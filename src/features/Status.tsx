@@ -7,9 +7,10 @@ import {
   fetchStatusWithContext,
   fetchNext,
 } from 'src/actions/statuses';
-import { Column, MissingIndicator, PlaceholderStatus, PullToRefresh, Stack, Thread, ThreadLoginCta } from 'src/components';
+import { MissingIndicator, PlaceholderStatus, PullToRefresh, Stack, Thread, ThreadLoginCta } from 'src/components';
 import { useAppDispatch, useAppSelector, useLoggedIn } from 'src/hooks';
 import { makeGetStatus } from 'src/selectors';
+import { Column as Column } from 'src/components/Column'
 
 const messages = defineMessages({
   title: { id: 'status.title', defaultMessage: 'Post Details' },

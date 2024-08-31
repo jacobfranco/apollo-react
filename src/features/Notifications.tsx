@@ -11,8 +11,10 @@ import {
   dequeueNotifications,
 } from 'src/actions/notifications';
 import { getSettings } from 'src/actions/settings';
-import { Column, NotificationFilterBar, Notification, PlaceholderNotification, Portal, PullToRefresh, ScrollTopButton, ScrollableList }from 'src/components';
-import { useAppDispatch, useAppSelector, useSettings } from 'src/hooks';
+import { NotificationFilterBar, Notification, PlaceholderNotification, Portal, PullToRefresh, ScrollTopButton, ScrollableList } from 'src/components';
+import { Column } from 'src/components/Column'
+import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { useSettings } from 'src/hooks/useSettings'
 
 import type { VirtuosoHandle } from 'react-virtuoso';
 import type { RootState } from 'src/store';

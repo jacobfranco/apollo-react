@@ -14,7 +14,8 @@ import { repost, like, unrepost, unlike } from "src/actions/interactions";
 import { openModal } from "src/actions/modals";
 import { getSettings } from "src/actions/settings";
 import { hideStatus, revealStatus } from "src/actions/statuses";
-import { Emoji, HStack, Icon, Text } from "src/components";
+import { Emoji, HStack, Text } from "src/components";
+import { default as Icon } from 'src/components/Icon'
 import AccountContainer from "src/containers/AccountContainer";
 import StatusContainer from "src/containers/StatusContainer";
 import { HotKeys } from "src/features/Hotkeys";
@@ -168,7 +169,7 @@ interface INotification {
   notification: NotificationEntity;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
-  onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
+  onRepost?: (status: StatusEntity, e?: KeyboardEvent) => void;
   getScrollPosition?: () => ScrollPosition | undefined;
   updateScrollBottom?: (bottom: number) => void;
 }
@@ -259,7 +260,7 @@ const Notification: React.FC<INotification> = (props) => {
               dispatch(
                 openModal("BOOST", {
                   status,
-                  onReblog: (status: StatusEntity) => {
+                  onRepost: (status: StatusEntity) => {
                     dispatch(repost(status));
                   },
                 })

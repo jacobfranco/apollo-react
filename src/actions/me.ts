@@ -44,8 +44,6 @@ const fetchMe = () =>
     const state = getState();
     const token = getMeToken(state);
     const accountUrl = getMeUrl(state);
-    console.log("Fetch me -- token:  ", token)
-    console.log("Fetch me -- accountUrl: ", accountUrl)
 
     if (!token) {
       dispatch({ type: ME_FETCH_SKIP });
@@ -60,7 +58,6 @@ const fetchMe = () =>
 
 const persistAuthAccount = (account: APIEntity, params: Record<string, any>) => {
   if (account && account.url) {
-    console.log("persisting auth account - setting kv store for: " + account.url)
     KVStore.setItem(`authAccount:${account.url}`, account).catch(console.error);
   }
 };
@@ -89,7 +86,6 @@ const fetchMeRequest = () => ({
 });
 
 const fetchMeSuccess = (account: Account) => {
-  console.log("Fetch me success -- account: ", account)
   setSentryAccount(account);
 
   return {

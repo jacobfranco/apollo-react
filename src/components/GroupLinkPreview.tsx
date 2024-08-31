@@ -1,7 +1,9 @@
 import React from 'react';
 
-import { Avatar, Button, CardTitle, Stack } from 'src/components';
+import { CardTitle, Stack } from 'src/components';
 import { type Card as StatusCard } from 'src/types/entities';
+import Avatar from './Avatar';
+import Button from './Button';
 
 interface IGroupLinkPreview {
   card: StatusCard;

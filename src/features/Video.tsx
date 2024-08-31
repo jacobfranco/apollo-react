@@ -4,10 +4,11 @@ import throttle from 'lodash/throttle';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Blurhash, Icon } from 'src/components';
+import { Blurhash } from 'src/components';
 import { isPanoramic, isPortrait, minimumAspectRatio, maximumAspectRatio } from 'src/utils/media-aspect-ratio';
 
 import { isFullscreen, requestFullscreen, exitFullscreen } from 'src/utils/fullscreen';
+import Icon from 'src/components/Icon';
 
 const DEFAULT_HEIGHT = 300;
 
@@ -26,11 +27,11 @@ const messages = defineMessages({
 });
 
 export const formatTime = (secondsNum: number): string => {
-  let hours:   number | string = Math.floor(secondsNum / 3600);
+  let hours: number | string = Math.floor(secondsNum / 3600);
   let minutes: number | string = Math.floor((secondsNum - (hours * 3600)) / 60);
   let seconds: number | string = secondsNum - (hours * 3600) - (minutes * 60);
 
-  if (hours   < 10) hours   = '0' + hours;
+  if (hours < 10) hours = '0' + hours;
   if (minutes < 10) minutes = '0' + minutes;
   if (seconds < 10) seconds = '0' + seconds;
 
@@ -52,15 +53,15 @@ export const findElementPosition = (el: HTMLElement) => {
   }
 
   const docEl = document.documentElement;
-  const body  = document.body;
+  const body = document.body;
 
   const clientLeft = docEl.clientLeft || body.clientLeft || 0;
   const scrollLeft = window.pageXOffset || body.scrollLeft;
-  const left       = (box.left + scrollLeft) - clientLeft;
+  const left = (box.left + scrollLeft) - clientLeft;
 
   const clientTop = docEl.clientTop || body.clientTop || 0;
   const scrollTop = window.pageYOffset || body.scrollTop;
-  const top       = (box.top + scrollTop) - clientTop;
+  const top = (box.top + scrollTop) - clientTop;
 
   return {
     left: Math.round(left),
@@ -90,9 +91,9 @@ export const getPointerPosition = (el: HTMLElement, event: MouseEvent & TouchEve
 };
 
 export const fileNameFromURL = (str: string) => {
-  const url      = new URL(str);
+  const url = new URL(str);
   const pathname = url.pathname;
-  const index    = pathname.lastIndexOf('/');
+  const index = pathname.lastIndexOf('/');
 
   return pathname.substring(index + 1);
 };

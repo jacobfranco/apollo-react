@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import StillImage, { IStillImage } from 'src/components/StillImage';
 
-import { Icon } from 'src/components';
+import { default as Icon } from 'src/components/Icon';
 
 const AVATAR_SIZE = 42;
 

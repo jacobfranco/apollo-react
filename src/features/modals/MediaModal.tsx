@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import ReactSwipeableViews from 'react-swipeable-views';
 
 import { fetchNext, fetchStatusWithContext } from 'src/actions/statuses';
-import { ExtendedVideoPlayer, HStack, Icon, IconButton, ImageLoader, MissingIndicator, PlaceholderStatus, Stack, StatusActionBar, Thread } from 'src/components';
+import { ExtendedVideoPlayer, HStack, IconButton, ImageLoader, MissingIndicator, PlaceholderStatus, Stack, StatusActionBar, Thread } from 'src/components';
 import Audio from 'src/features/Audio';
 import Video from 'src/features/Video'
 import { useAppDispatch, useAppSelector } from 'src/hooks';
@@ -15,6 +15,7 @@ import { makeGetStatus } from 'src/selectors';
 
 import type { List as ImmutableList } from 'immutable';
 import type { Attachment, Status } from 'src/types/entities';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
@@ -109,7 +110,7 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
   };
 
   const content = media.map((attachment, i) => {
-    const width  = (attachment.meta.getIn(['original', 'width']) || undefined) as number | undefined;
+    const width = (attachment.meta.getIn(['original', 'width']) || undefined) as number | undefined;
     const height = (attachment.meta.getIn(['original', 'height']) || undefined) as number | undefined;
 
     const link = (status && (

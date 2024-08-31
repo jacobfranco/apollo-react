@@ -14,8 +14,9 @@ import {
 } from 'src/features/AsyncComponents';
 import { useAppSelector, useOwnAccount, useDraggedFiles, useAppDispatch } from 'src/hooks';
 
-import { Avatar, HStack, Layout, Card, CardBody } from 'src/components';
+import { HStack, Layout, Card, CardBody } from 'src/components';
 import ComposeForm from '../features/compose/components/ComposeForm';
+import Avatar from 'src/components/Avatar';
 
 interface IHomePage {
   children: React.ReactNode;
@@ -80,9 +81,9 @@ const HomePage: React.FC<IHomePage> = ({ children }) => {
         {!me && (
           <SignUpPanel />
         )}
-        
-         <TrendsPanel limit={5} />
-        
+
+        <TrendsPanel limit={5} />
+
         {  /* TODO: Implement promo panel
         <PromoPanel />
         {me && (

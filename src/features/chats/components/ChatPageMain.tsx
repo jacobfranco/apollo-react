@@ -5,7 +5,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { blockAccount, unblockAccount } from 'src/actions/accounts';
 import { openModal } from 'src/actions/modals';
 import List, { ListItem } from 'src/components/List';
-import { Avatar, HStack, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Stack, Text, Tooltip, VerificationBadge } from 'src/components';
+import { HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Stack, Text, Tooltip, VerificationBadge } from 'src/components';
 import { useChatContext } from 'src/contexts/chat-context';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { MessageExpirationValues, useChat, useChatActions, useChats } from 'src/queries/chats';
@@ -15,6 +15,8 @@ import Chat from './Chat';
 
 import ChatPageBlankslateEmpty from './ChatPageBlankslateEmpty';
 import ChatPageBlankslateWithChats from './ChatPageBlankslateWithChats';
+import Avatar from 'src/components/Avatar';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
@@ -188,16 +190,16 @@ const ChatPageMain = () => {
                   </div>
                 </MenuItem>
 
-                  <MenuItem
-                    as='button'
-                    onSelect={handleLeaveChat}
-                    className='!px-0 hover:!bg-transparent'
-                  >
-                    <div className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600 dark:text-danger-500'>
-                      <Icon src={require('@tabler/icons/outline/logout.svg')} className='h-5 w-5' />
-                      <span>{intl.formatMessage(messages.leaveChat)}</span>
-                    </div>
-                  </MenuItem>
+                <MenuItem
+                  as='button'
+                  onSelect={handleLeaveChat}
+                  className='!px-0 hover:!bg-transparent'
+                >
+                  <div className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600 dark:text-danger-500'>
+                    <Icon src={require('@tabler/icons/outline/logout.svg')} className='h-5 w-5' />
+                    <span>{intl.formatMessage(messages.leaveChat)}</span>
+                  </div>
+                </MenuItem>
               </Stack>
             </Stack>
           </MenuList>

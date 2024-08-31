@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 
 import { ToastText, ToastType } from 'src/toast';
 
-import { HStack, Icon, Stack, Text }from 'src/components';
+import { HStack, Stack, Text } from 'src/components';
+import Icon from './Icon';
 
 const renderText = (text: ToastText) => {
   if (typeof text === 'string') {

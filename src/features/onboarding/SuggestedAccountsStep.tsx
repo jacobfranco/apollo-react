@@ -2,7 +2,8 @@ import debounce from 'lodash/debounce';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { BigCard, Button, ScrollableList, Stack, Text } from 'src/components';
+import { BigCard, ScrollableList, Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
 import AccountContainer from 'src/containers/AccountContainer';
 import { useOnboardingSuggestions } from 'src/queries/suggestions';
 

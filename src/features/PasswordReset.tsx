@@ -4,9 +4,11 @@ import { Redirect } from 'react-router-dom';
 
 import { resetPassword } from 'src/actions/security';
 import { BigCard } from 'src/components/BigCard';
-import { Button, Form, FormActions, FormGroup, Input } from 'src/components';
+import { Form, FormActions, FormGroup } from 'src/components';
 import { useAppDispatch } from 'src/hooks';
 import toast from 'src/toast';
+import Input from 'src/components/Input';
+import Button from 'src/components/Button';
 
 const messages = defineMessages({
   nicknameOrEmail: { id: 'password_reset.fields.username_placeholder', defaultMessage: 'Email or username' },

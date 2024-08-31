@@ -3,8 +3,9 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Text, Icon, /* Emoji */} from 'src/components';
+import { Text, /* Emoji */ } from 'src/components';
 import { shortNumberFormat } from 'src/utils/numbers';
+import Icon from './Icon';
 
 const COLORS = {
   accent: 'accent',
@@ -50,18 +51,18 @@ const StatusActionButton = React.forwardRef<HTMLButtonElement, IStatusActionButt
       );
     } else {
         */
-      return (
-        <Icon
-          src={icon}
-          className={clsx(
-            {
-              'fill-accent-300 text-accent-300 hover:fill-accent-300': active && filled && color === COLORS.accent,
-            },
-            iconClassName,
-          )}
-        />
-      );
-    };
+    return (
+      <Icon
+        src={icon}
+        className={clsx(
+          {
+            'fill-accent-300 text-accent-300 hover:fill-accent-300': active && filled && color === COLORS.accent,
+          },
+          iconClassName,
+        )}
+      />
+    );
+  };
 
   const renderText = () => {
     if (text) {

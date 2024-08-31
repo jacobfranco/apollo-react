@@ -2,7 +2,9 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { deleteAccount } from 'src/actions/security';
-import { Button, Card, CardBody, CardHeader, CardTitle, Form, FormActions, FormGroup, Input, Stack, Text } from 'src/components';
+import { Card, CardBody, CardHeader, CardTitle, Form, FormActions, FormGroup, Stack, Text } from 'src/components';
+import Button from 'src/components/Button';
+import Input from 'src/components/Input';
 import { useAppDispatch } from 'src/hooks';
 import toast from 'src/toast';
 

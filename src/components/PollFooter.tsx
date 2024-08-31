@@ -4,10 +4,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPoll, vote } from 'src/actions/polls';
 import { useAppDispatch } from 'src/hooks';
 
-import { Button, HStack, RelativeTimestamp, Stack, Text, Tooltip } from 'src/components';
+import { HStack, RelativeTimestamp, Stack, Text, Tooltip } from 'src/components';
 
 import type { Selected } from 'src/components/Poll';
 import type { Poll as PollEntity } from 'src/types/entities';
+import Button from './Button';
 
 const messages = defineMessages({
   closed: { id: 'poll.closed', defaultMessage: 'Closed' },

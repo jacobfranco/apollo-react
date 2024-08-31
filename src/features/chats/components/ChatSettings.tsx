@@ -4,13 +4,15 @@ import { defineMessages, useIntl } from 'react-intl';
 import { blockAccount, unblockAccount } from 'src/actions/accounts';
 import { openModal } from 'src/actions/modals';
 import List, { ListItem } from 'src/components/List';
-import { Avatar, HStack, Icon, Select, Stack, Text } from 'src/components';
+import { HStack, Select, Stack, Text } from 'src/components';
 import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { messageExpirationOptions, MessageExpirationValues, useChatActions } from 'src/queries/chats';
 import { secondsToDays } from 'src/utils/numbers';
 
 import ChatPaneHeader from './ChatPaneHeader';
+import Avatar from 'src/components/Avatar';
+import Icon from 'src/components/Icon';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
@@ -115,21 +117,21 @@ const ChatSettings = () => {
           </Stack>
         </HStack>
 
-          <List>
-            <ListItem label={intl.formatMessage(messages.autoDeleteLabel)}>
-              <Select defaultValue={chat.message_expiration} onChange={(event) => handleUpdateChat(Number(event.target.value))}>
-                {messageExpirationOptions.map((duration) => {
-                  const inDays = secondsToDays(duration);
+        <List>
+          <ListItem label={intl.formatMessage(messages.autoDeleteLabel)}>
+            <Select defaultValue={chat.message_expiration} onChange={(event) => handleUpdateChat(Number(event.target.value))}>
+              {messageExpirationOptions.map((duration) => {
+                const inDays = secondsToDays(duration);
 
-                  return (
-                    <option key={duration} value={duration}>
-                      {intl.formatMessage(messages.autoDeleteDays, { day: inDays })}
-                    </option>
-                  );
-                })}
-              </Select>
-            </ListItem>
-          </List>
+                return (
+                  <option key={duration} value={duration}>
+                    {intl.formatMessage(messages.autoDeleteDays, { day: inDays })}
+                  </option>
+                );
+              })}
+            </Select>
+          </ListItem>
+        </List>
 
         <Stack space={5}>
           <button onClick={isBlocking ? handleUnblockUser : handleBlockUser} className='flex w-full items-center space-x-2 text-sm font-bold text-primary-600 dark:text-accent-blue'>
@@ -137,10 +139,10 @@ const ChatSettings = () => {
             <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { username: chat.account.username })}</span>
           </button>
 
-            <button onClick={handleLeaveChat} className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600'>
-              <Icon src={require('@tabler/icons/outline/logout.svg')} className='h-5 w-5' />
-              <span>{intl.formatMessage(messages.leaveChat)}</span>
-            </button>
+          <button onClick={handleLeaveChat} className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600'>
+            <Icon src={require('@tabler/icons/outline/logout.svg')} className='h-5 w-5' />
+            <span>{intl.formatMessage(messages.leaveChat)}</span>
+          </button>
         </Stack>
       </Stack>
     </>

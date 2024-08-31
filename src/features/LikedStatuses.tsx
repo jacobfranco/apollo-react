@@ -6,21 +6,22 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchAccount, fetchAccountByUsername } from 'src/actions/accounts';
 import { fetchLikedStatuses, expandLikedStatuses, fetchAccountLikedStatuses, expandAccountLikedStatuses } from 'src/actions/likes';
 import { useAccountLookup } from 'src/api/hooks';
-import { Column, MissingIndicator, StatusList } from 'src/components';
+import { MissingIndicator, StatusList } from 'src/components';
+import { Column as Column } from 'src/components/Column'
 import { useAppDispatch, useAppSelector, useOwnAccount } from 'src/hooks';
 
 const messages = defineMessages({
   heading: { id: 'column.Liked_statuses', defaultMessage: 'Liked posts' },
 });
 
-interface IFavourites {
+interface ILikes {
   params?: {
     username?: string;
   };
 }
 
 /** Timeline displaying a user's Liked statuses. */
-const Favourites: React.FC<IFavourites> = ({ params }) => {
+const Likes: React.FC<ILikes> = ({ params }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const { account: ownAccount } = useOwnAccount();
@@ -29,7 +30,7 @@ const Favourites: React.FC<IFavourites> = ({ params }) => {
   const username = params?.username || '';
   const isOwnAccount = username === ownAccount?.username;
 
-  const timelineKey = isOwnAccount ? 'favourites' : `favourites:${account?.id}`;
+  const timelineKey = isOwnAccount ? 'likes' : `likes:${account?.id}`;
   const statusIds = useAppSelector(state => state.status_lists.get(timelineKey)?.items || ImmutableOrderedSet<string>());
   const isLoading = useAppSelector(state => state.status_lists.get(timelineKey)?.isLoading === true);
   const hasMore = useAppSelector(state => !!state.status_lists.get(timelineKey)?.next);
@@ -96,4 +97,4 @@ const Favourites: React.FC<IFavourites> = ({ params }) => {
   );
 };
 
-export default Favourites;
+export default Likes;

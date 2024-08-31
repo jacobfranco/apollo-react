@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom';
 
 import {
   Account, StatusContent, StatusInteractionBar, StatusMedia, StatusReplyMentions, SensitiveContentOverlay, StatusInfo,
-  HStack, Icon, Stack, Text
+  HStack, Stack, Text
 } from 'src/components';
 import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
 import { getActualStatus } from 'src/utils/status';
 
 import type { Group, Status as StatusEntity } from 'src/types/entities';
+import Icon from './Icon';
 
 interface IDetailedStatus {
   status: StatusEntity;

@@ -1,7 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, ProgressBar, Stack, Text } from 'src/components';
+import { HStack, ProgressBar, Stack, Text } from 'src/components';
+import Icon from './Icon';
 
 interface IUploadProgress {
   /** Number between 0 and 100 to represent the percentage complete. */

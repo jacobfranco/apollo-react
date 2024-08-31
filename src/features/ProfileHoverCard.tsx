@@ -17,11 +17,12 @@ import { useAppSelector, useAppDispatch } from 'src/hooks';
 
 import { showProfileHoverCard } from 'src/components/HoverRefWrapper';
 import { dateFormatOptions } from 'src/components/RelativeTimestamp';
-import { HStack, Icon, Stack, Text } from 'src/components';
+import { HStack, Stack, Text } from 'src/components';
 import { Card, CardBody } from 'src/components/Card'
 
 import type { Account } from 'src/schemas';
 import type { AppDispatch } from 'src/store';
+import Icon from 'src/components/Icon';
 
 const getBadges = (
   account?: Pick<Account, 'admin' | 'moderator'>,
@@ -112,20 +113,20 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
               badges={badges}
             />
 
-              <HStack alignItems='center' space={0.5}>
-                <Icon
-                  src={require('@tabler/icons/outline/calendar.svg')}
-                  className='h-4 w-4 text-gray-800 dark:text-gray-200'
-                />
+            <HStack alignItems='center' space={0.5}>
+              <Icon
+                src={require('@tabler/icons/outline/calendar.svg')}
+                className='h-4 w-4 text-gray-800 dark:text-gray-200'
+              />
 
-                <Text size='sm' title={intl.formatDate(account.created_at, dateFormatOptions)}>
-                  <FormattedMessage
-                    id='account.member_since' defaultMessage='Joined {date}' values={{
-                      date: memberSinceDate,
-                    }}
-                  />
-                </Text>
-              </HStack>
+              <Text size='sm' title={intl.formatDate(account.created_at, dateFormatOptions)}>
+                <FormattedMessage
+                  id='account.member_since' defaultMessage='Joined {date}' values={{
+                    date: memberSinceDate,
+                  }}
+                />
+              </Text>
+            </HStack>
 
             {account.note.length > 0 && (
               <Text size='sm' dangerouslySetInnerHTML={accountBio} />

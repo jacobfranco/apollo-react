@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Button, HStack, IconButton }from 'src/components';
-import { ButtonThemes } from 'src/styles/components/useButtonStyles';
+import { HStack, IconButton } from 'src/components';
+import { default as Button } from 'src/components/Button'
+import { ButtonThemes } from 'src/components/useButtonStyles';
 
 const messages = defineMessages({
   back: { id: 'card.back.label', defaultMessage: 'Back' },

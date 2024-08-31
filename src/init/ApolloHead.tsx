@@ -2,12 +2,12 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 
 import {
-  useSettings,
   useApolloConfig,
   useTheme,
   useLocale,
 } from 'src/hooks';
 import { startSentry } from 'src/sentry';
+import { useSettings } from 'src/hooks/useSettings'
 import { generateThemeCss } from 'src/utils/theme';
 
 const Helmet = React.lazy(() => import('src/components/Helmet'));
@@ -33,13 +33,11 @@ const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
   });
 
   useEffect(() => {
-    console.log('[ApolloHead] Component mounted.');
     if (dsn) {
       startSentry(dsn).catch(console.error);
     }
   }, [dsn]);
 
-  console.log('[ApolloHead] Rendering...');
   return (
     <>
       <Helmet>

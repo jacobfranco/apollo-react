@@ -3,7 +3,8 @@ import throttle from 'lodash/throttle';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Helmet, Card, CardBody, CardHeader, CardTitle, type CardSizes} from 'src/components';
+import { Card, CardBody, CardHeader, CardTitle, type CardSizes } from 'src/components';
+import Helmet from 'src/components/Helmet'
 import { useApolloConfig } from 'src/hooks';
 
 type IColumnHeader = Pick<IColumn, 'label' | 'backHref' | 'className' | 'action'>;

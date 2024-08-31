@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { useMutes, useGroupMutes } from 'src/api/hooks';
-import { Column, MuteGroupListItem, ScrollableList, Stack, Tabs } from 'src/components';
+import { MuteGroupListItem, ScrollableList, Stack, Tabs } from 'src/components';
+import { Column } from 'src/components/Column'
 import AccountContainer from 'src/containers/AccountContainer';
 
 const messages = defineMessages({
@@ -44,21 +45,21 @@ const Mutes: React.FC = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <Stack space={4}>
-          <Tabs
-            items={[
-              {
-                text: 'Users',
-                action: () => setActiveItem(TabItems.ACCOUNTS),
-                name: TabItems.ACCOUNTS,
-              },
-              {
-                text: 'Groups',
-                action: () => setActiveItem(TabItems.GROUPS),
-                name: TabItems.GROUPS,
-              },
-            ]}
-            activeItem={activeItem}
-          />
+        <Tabs
+          items={[
+            {
+              text: 'Users',
+              action: () => setActiveItem(TabItems.ACCOUNTS),
+              name: TabItems.ACCOUNTS,
+            },
+            {
+              text: 'Groups',
+              action: () => setActiveItem(TabItems.GROUPS),
+              name: TabItems.GROUPS,
+            },
+          ]}
+          activeItem={activeItem}
+        />
 
         {isAccountsTabSelected ? (
           <ScrollableList
@@ -84,7 +85,7 @@ const Mutes: React.FC = () => {
               <FormattedMessage id='mutes.empty.groups' defaultMessage="You haven't muted any groups yet." />
             }
           >
-            {groupMutes.map((group) =>(
+            {groupMutes.map((group) => (
               <MuteGroupListItem
                 group={group}
                 onUnmute={fetchMutedGroups}

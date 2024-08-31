@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Text, { IText } from 'src/components/Text';
-import 'src/styles/components/Markup.css';
+import 'src/components/Markup.css';
 
 interface IMarkup extends IText {
 }

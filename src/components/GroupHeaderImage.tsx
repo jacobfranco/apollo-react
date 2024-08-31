@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Icon } from 'src/components';
+import Icon from 'src/components/Icon';
 
 import type { Group } from 'src/schemas';
 

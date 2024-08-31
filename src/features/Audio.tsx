@@ -4,7 +4,7 @@ import throttle from 'lodash/throttle';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Icon } from 'src/components';
+import Icon from 'src/components/Icon';
 import { formatTime, getPointerPosition } from 'src/features/Video';
 
 import Visualizer from './Visualizer';
@@ -18,7 +18,7 @@ const messages = defineMessages({
 });
 
 const TICK_SIZE = 10;
-const PADDING   = 180;
+const PADDING = 180;
 
 interface IAudio {
   src: string;
@@ -90,7 +90,7 @@ const Audio: React.FC<IAudio> = (props) => {
 
   const _setDimensions = () => {
     if (player.current) {
-      const width  = player.current.offsetWidth;
+      const width = player.current.offsetWidth;
       const height = fullscreen ? player.current.offsetHeight : (width / (16 / 9));
 
       if (cacheWidth) {
@@ -286,8 +286,8 @@ const Audio: React.FC<IAudio> = (props) => {
       // @ts-ignore
       // eslint-disable-next-line compat/compat
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      const context      = new AudioContext();
-      const source       = context.createMediaElementSource(audio.current);
+      const context = new AudioContext();
+      const source = context.createMediaElementSource(audio.current);
 
       visualizer.current.setAudioContext(context, source);
       source.connect(context.destination);

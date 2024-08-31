@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Textarea, Form, Button, FormGroup, FormActions, Text } from 'src/components';
+import { Textarea, Form, FormGroup, FormActions, Text } from 'src/components';
 import { useOwnAccount } from 'src/hooks';
 import { captureSentryFeedback } from 'src/sentry';
+import Button from './Button';
 
 interface ISentryFeedbackForm {
   eventId: string;

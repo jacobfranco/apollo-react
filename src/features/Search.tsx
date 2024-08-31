@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column } from 'src/components';
+import { Column } from 'src/components/Column';
 import Search from 'src/features/compose/components/Search';
 import SearchResults from 'src/features/compose/components/SearchResults';
 

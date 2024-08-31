@@ -1,9 +1,10 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Account, HStack, Icon, Text } from 'src/components';
+import { Account, HStack, Text } from 'src/components';
 
 import type { Account as AccountEntity } from 'src/schemas';
+import Icon from './Icon';
 
 interface IMovedNote {
   from: AccountEntity;

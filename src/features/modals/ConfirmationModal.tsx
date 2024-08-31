@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import List, { ListItem } from 'src/components/List';
 import { Modal, Stack, Text, Toggle } from 'src/components';
 
-import type { ButtonThemes } from 'src/styles/components/useButtonStyles';
+import type { ButtonThemes } from 'src/components/useButtonStyles';
 
 interface IConfirmationModal {
   heading: React.ReactNode;

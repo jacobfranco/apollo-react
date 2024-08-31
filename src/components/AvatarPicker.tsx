@@ -2,8 +2,10 @@ import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Avatar, Icon, HStack } from 'src/components';
+import { HStack } from 'src/components';
 import { useDraggedFiles } from 'src/hooks';
+import Avatar from './Avatar';
+import Icon from './Icon';
 
 interface IMediaInput {
   className?: string;

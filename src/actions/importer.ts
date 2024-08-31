@@ -8,13 +8,13 @@ import { getSettings } from './settings';
 import type { AppDispatch, RootState } from 'src/store';
 import type { APIEntity } from 'src/types/entities';
 
-const ACCOUNT_IMPORT  = 'ACCOUNT_IMPORT';
+const ACCOUNT_IMPORT = 'ACCOUNT_IMPORT';
 const ACCOUNTS_IMPORT = 'ACCOUNTS_IMPORT';
-const GROUP_IMPORT    = 'GROUP_IMPORT';
-const GROUPS_IMPORT   = 'GROUPS_IMPORT';
-const STATUS_IMPORT   = 'STATUS_IMPORT';
+const GROUP_IMPORT = 'GROUP_IMPORT';
+const GROUPS_IMPORT = 'GROUPS_IMPORT';
+const STATUS_IMPORT = 'STATUS_IMPORT';
 const STATUSES_IMPORT = 'STATUSES_IMPORT';
-const POLLS_IMPORT    = 'POLLS_IMPORT';
+const POLLS_IMPORT = 'POLLS_IMPORT';
 const ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP = 'ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP';
 
 const importAccount = (data: APIEntity) =>
@@ -33,7 +33,7 @@ const importAccounts = (data: APIEntity[]) =>
     dispatch({ type: ACCOUNTS_IMPORT, accounts: data });
     try {
       const accounts = filteredArray(accountSchema).parse(data);
-      console.log("Import accounts: ", accounts)
+
       dispatch(importEntities(accounts, Entities.ACCOUNTS));
     } catch (e) {
       //
@@ -62,7 +62,6 @@ const importPolls = (polls: APIEntity[]) =>
   ({ type: POLLS_IMPORT, polls });
 
 const importFetchedAccount = (account: APIEntity) => {
-  console.log('Importing fetched account:', account);
   return importFetchedAccounts([account]);
 };
 
@@ -72,7 +71,7 @@ const importFetchedAccounts = (accounts: APIEntity[], args = { should_refetch: f
 
   const processAccount = (account: APIEntity) => {
     if (!account.id) {
-      console.log('Account without ID, skipping:', account);
+
       return;
     }
 
@@ -83,14 +82,11 @@ const importFetchedAccounts = (accounts: APIEntity[], args = { should_refetch: f
     normalAccounts.push(account);
 
     if (account.moved) {
-      console.log('Processing moved account:', account.moved);
       processAccount(account.moved);
     }
   };
 
-  console.log('Accounts before processing:', accounts);
   accounts.forEach(processAccount);
-  console.log('Normal accounts after processing:', normalAccounts);
 
   return importAccounts(normalAccounts);
 };
