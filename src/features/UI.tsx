@@ -120,8 +120,10 @@ import {
   PasswordResetConfirm,
   SignupInvite,
   LandingTimeline,
-  GamePage,
-  Games,
+  SpacePage,
+  Spaces,
+  ESportPage,
+  ESports,
   CommunityTab,
   ScoreboardDetailsTab,
   ScheduleTab,
@@ -239,25 +241,42 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         publicRoute
       />
 
+
       <WrappedRoute
-        path="/games/:gameName/scores/:gameId"
-        page={GamesPage}
+        path="/s/:spaceName"
+        page={DefaultPage}
+        component={SpacePage}
+        publicRoute
+      />
+
+      <WrappedRoute
+        path="/s"
+        page={DefaultPage}
+        component={Spaces}
+        content={children}
+        publicRoute
+      />
+
+      <WrappedRoute
+        path="/esports/:esportName/scores/:matchId"
+        page={DefaultPage}
         component={ScoreboardDetailsTab}
         content={children}
         publicRoute
       />
 
       <WrappedRoute
-        path="/games/:gameName"
-        page={GamesPage}
-        component={GamePage}
+        path="/esports/:esportName"
+        page={DefaultPage}
+        component={ESportPage}
+        content={children}
         publicRoute
       />
 
       <WrappedRoute
-        path="/games"
-        page={GamesPage}
-        component={Games}
+        path="/esports"
+        page={DefaultPage}
+        component={ESports}
         content={children}
         publicRoute
       />

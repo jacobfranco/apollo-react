@@ -125,9 +125,15 @@ const SidebarNavigation = () => {
         />
 
         <SidebarNavigationLink
-          to="/games"
+          to="/s"
+          icon={require("@tabler/icons/outline/planet.svg")}
+          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Spaces" />}
+        />
+
+        <SidebarNavigationLink
+          to="/esports"
           icon={require("@tabler/icons/outline/device-gamepad-2.svg")}
-          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Games" />}
+          text={<FormattedMessage id="tabs_bar.games" defaultMessage="eSports" />}
         />
 
         {account && (

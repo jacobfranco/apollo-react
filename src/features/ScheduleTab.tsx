@@ -4,14 +4,14 @@ import LolScoreboard from 'src/components/LolScoreboard';
 import ValorantScoreboard from 'src/components/ValorantScoreboard';
 import { initialLoLScoreboardState } from 'src/slices/lol-scoreboard';
 import { initialValorantScoreboardState } from 'src/slices/valorant-scoreboard';
-import gameConfig from 'src/game-config';
+import esportsConfig from 'src/esports-config';
 
 const ScheduleTab: React.FC = () => {
-  const { gameName } = useParams<{ gameName: string }>();
-  const game = gameConfig.find(g => g.path === gameName);
+  const { esportName } = useParams<{ esportName: string }>();
+  const game = esportsConfig.find(g => g.path === esportName);
 
   if (!game) {
-    return <div className="text-center text-red-500">Invalid game name</div>;
+    return <div className="text-center text-red-500">Invalid eSport name</div>;
   }
 
   const renderScoresContent = () => {
@@ -22,9 +22,9 @@ const ScheduleTab: React.FC = () => {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
             {matches.map((match) => (
-              <Link 
-                key={match.id} 
-                to={`/games/${gameName}/scores/${match.id}`} 
+              <Link
+                key={match.id}
+                to={`/esports/${esportName}/scores/${match.id}`}
                 className="block p-0 m-0"
                 style={{ width: '100%', textDecoration: 'none' }}
               >
@@ -42,9 +42,9 @@ const ScheduleTab: React.FC = () => {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {games.map((game) => (
-              <Link 
-                key={game.id} 
-                to={`/games/${gameName}/scores/${game.id}`} 
+              <Link
+                key={game.id}
+                to={`/esports/${esportName}/scores/${game.id}`}
                 className="block p-0 m-0"
                 style={{ width: '100%', textDecoration: 'none' }}
               >

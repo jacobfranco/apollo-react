@@ -17,6 +17,7 @@ yarn-error.log*
 /public/
 /dist/
 src/custom/
+src/assets/images/spaces/
 
 .idea
 .DS_Store
