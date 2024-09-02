@@ -26,7 +26,7 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const statusIds = useAppSelector((state) => OrderedSet(state.timelines.get(`account:${account.id}:with_replies`)!.items).union(state.reports.new.status_ids) as OrderedSet<string>);
+  const statusIds = useAppSelector((state) => OrderedSet(state.timelines.get(`account:${account.username}:with_replies`)!.items).union(state.reports.new.status_ids) as OrderedSet<string>);
   const isBlocked = useAppSelector((state) => state.reports.new.block);
   const isForward = useAppSelector((state) => state.reports.new.forward);
   const isSubmitting = useAppSelector((state) => state.reports.new.isSubmitting);
@@ -99,7 +99,7 @@ const OtherActionsStep = ({ account }: IOtherActionsStep) => {
             />
 
             <Text theme='muted' tag='label' size='sm' htmlFor='report-block'>
-              <FormattedMessage id='report.block' defaultMessage='Block {target}' values={{ target: `@${account.id}` }} />
+              <FormattedMessage id='report.block' defaultMessage='Block {target}' values={{ target: `@${account.username}` }} />
             </Text>
           </HStack>
         </FormGroup>

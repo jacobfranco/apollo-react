@@ -50,8 +50,8 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
   const accounts = to.slice(0, 2).map(account => {
     const link = (
       <Link
-        key={account.id}
-        to={`/${account.id}`}
+        key={account.username}
+        to={`/@${account.username}`}
         className='reply-mentions__account max-w-[200px] truncate align-bottom'
         onClick={(e) => e.stopPropagation()}
       >

@@ -84,7 +84,7 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
             <ProfileInfoPanel username={username} account={account} />
 
             {account && showTabs && (
-              <Tabs key={`profile-tabs-${account.id}`} items={tabItems} activeItem={activeItem} />
+              <Tabs key={`profile-tabs-${account.username}`} items={tabItems} activeItem={activeItem} />
             )}
 
             {children}

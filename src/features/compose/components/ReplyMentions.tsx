@@ -47,11 +47,10 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
     );
   }
 
-  const accounts = to.slice(0, 2).map((accountId: string) => {
-    const { account } = useAccount(accountId);
+  const accounts = to.slice(0, 2).map((username: string) => {
     return (
-      <span key={accountId} className='reply-mentions__account'>
-        @{account ? account.username : accountId}
+      <span key={username} className='reply-mentions__account'>
+        @{account ? account.username : username}
       </span>
     );
   }).toArray();
