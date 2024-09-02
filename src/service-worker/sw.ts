@@ -91,8 +91,8 @@ const notify = (options: ExtendedNotificationOptions): Promise<void> =>
       const count = (group.data.count || 0) + 1;
 
       group.title = formatMessage('notifications.group', options.data.preferred_locale, { count });
-      group.body  = `${options.title}\n${group.body}`;
-      group.data  = { ...group.data, count };
+      group.body = `${options.title}\n${group.body}`;
+      group.data = { ...group.data, count };
 
       return self.registration.showNotification(group.title, group);
     }
@@ -155,24 +155,24 @@ const handlePush = (event: PushEvent) => {
   event.waitUntil(
     fetchFromApi(`/api/notifications/${notification_id}`, 'get', access_token).then(notification => {
       const options: ExtendedNotificationOptions = {
-        title:     formatMessage(`notification.${notification.type}`, preferred_locale, { name: notification.account.display_name.length > 0 ? notification.account.display_name : notification.account.username }),
-        body:      notification.status && htmlToPlainText(notification.status.content),
-        icon:      notification.account.avatar_static,
+        title: formatMessage(`notification.${notification.type}`, preferred_locale, { name: notification.account.display_name.length > 0 ? notification.account.display_name : notification.account.username }),
+        body: notification.status && htmlToPlainText(notification.status.content),
+        icon: notification.account.avatar_static,
         timestamp: notification.created_at && Number(new Date(notification.created_at)),
-        tag:       notification.id,
-        image:     notification.status?.media_attachments[0]?.preview_url,
-        data:      { access_token, preferred_locale, id: notification.status ? notification.status.id : notification.account.id, url: notification.status ? `/@${notification.account.id}/posts/${notification.status.id}` : `/@${notification.account.id}` },
+        tag: notification.id,
+        image: notification.status?.media_attachments[0]?.preview_url,
+        data: { access_token, preferred_locale, id: notification.status ? notification.status.id : notification.account.id, url: notification.status ? `/@${notification.account.username}/posts/${notification.status.id}` : `/@${notification.account.username}` },
       };
 
       if (notification.status?.spoiler_text || notification.status?.sensitive) {
-        options.data.hiddenBody  = htmlToPlainText(notification.status?.content);
+        options.data.hiddenBody = htmlToPlainText(notification.status?.content);
         options.data.hiddenImage = notification.status?.media_attachments[0]?.preview_url;
 
         if (notification.status?.spoiler_text) {
           options.body = notification.status.spoiler_text;
         }
 
-        options.image   = undefined;
+        options.image = undefined;
         options.actions = [actionExpand(preferred_locale)];
       } else if (notification.type === 'mention') {
         options.actions = [actionRepost(preferred_locale), actionLike(preferred_locale)];
@@ -225,8 +225,8 @@ const findBestClient = (clients: readonly WindowClient[]): WindowClient => {
 const expandNotification = (notification: Notification) => {
   const newNotification = cloneNotification(notification);
 
-  newNotification.body    = newNotification.data.hiddenBody;
-  newNotification.image   = newNotification.data.hiddenImage;
+  newNotification.body = newNotification.data.hiddenBody;
+  newNotification.image = newNotification.data.hiddenImage;
   newNotification.actions = [actionRepost(notification.data.preferred_locale), actionLike(notification.data.preferred_locale)];
 
   return self.registration.showNotification(newNotification.title, newNotification);

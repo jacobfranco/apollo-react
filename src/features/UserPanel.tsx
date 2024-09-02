@@ -35,8 +35,8 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
 
           <HStack justifyContent='between'>
             <Link
-              to={`/@${account.id}`}
-              title={account.id}
+              to={`/@${account.username}`}
+              title={account.username}
               className='-mt-12 block'
             >
               <Avatar src={account.avatar} size={80} className='h-20 w-20 overflow-hidden bg-gray-50 ring-2 ring-white' />
@@ -49,7 +49,7 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
         </Stack>
 
         <Stack>
-          <Link to={`/@${account.id}`}>
+          <Link to={`/@${account.username}`}>
             <HStack space={1} alignItems='center'>
               <Text size='lg' weight='bold' dangerouslySetInnerHTML={displayNameHtml} truncate />
 
@@ -72,7 +72,7 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
 
         <HStack alignItems='center' space={3}>
           {account.followers_count >= 0 && (
-            <Link to={`/@${account.id}/followers`} title={intl.formatNumber(account.followers_count)}>
+            <Link to={`/@${account.username}/followers`} title={intl.formatNumber(account.followers_count)}>
               <HStack alignItems='center' space={1}>
                 <Text theme='primary' weight='bold' size='sm'>
                   {shortNumberFormat(account.followers_count)}
@@ -85,7 +85,7 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
           )}
 
           {account.following_count >= 0 && (
-            <Link to={`/@${account.id}/following`} title={intl.formatNumber(account.following_count)}>
+            <Link to={`/@${account.username}/following`} title={intl.formatNumber(account.following_count)}>
               <HStack alignItems='center' space={1}>
                 <Text theme='primary' weight='bold' size='sm'>
                   {shortNumberFormat(account.following_count)}

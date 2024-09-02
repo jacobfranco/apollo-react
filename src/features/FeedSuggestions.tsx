@@ -25,7 +25,7 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
   return (
     <Stack space={3} className='w-52 shrink-0 rounded-md border border-solid border-gray-300 p-4 md:w-full md:shrink md:border-transparent md:p-0 dark:border-gray-800 dark:md:border-transparent'>
       <Link
-        to={`/@${account.id}`}
+        to={`/@${account.username}`}
         title={account.username}
       >
         <Stack space={3} className='mx-auto w-40 md:w-24'>

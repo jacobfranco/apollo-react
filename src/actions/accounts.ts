@@ -777,10 +777,10 @@ const accountSearch = (params: Record<string, any>, signal?: AbortSignal) =>
     });
   };
 
-const accountLookup = (id: string, cancelToken?: CancelToken) =>
+const accountLookup = (username: string, cancelToken?: CancelToken) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ACCOUNT_LOOKUP_REQUEST, id });
-    return api(getState).get('/api/accounts/lookup', { params: { id }, cancelToken }).then(({ data: account }) => {
+    dispatch({ type: ACCOUNT_LOOKUP_REQUEST, username });
+    return api(getState).get('/api/accounts/lookup', { params: { username }, cancelToken }).then(({ data: account }) => {
       if (account && account.id) dispatch(importFetchedAccount(account));
       dispatch({ type: ACCOUNT_LOOKUP_SUCCESS, account });
       return account;

@@ -112,17 +112,17 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
 
   const handleHotkeyGoToLikes = () => {
     if (!account) return;
-    history.push(`/@${account.id}/likes`);
+    history.push(`/@${account.username}/likes`);
   };
 
   const handleHotkeyGoToPinned = () => {
     if (!account) return;
-    history.push(`/@${account.id}/pins`);
+    history.push(`/@${account.username}/pins`);
   };
 
   const handleHotkeyGoToProfile = () => {
     if (!account) return;
-    history.push(`/@${account.id}`);
+    history.push(`/@${account.username}`);
   };
 
   const handleHotkeyGoToBlocked = () => {

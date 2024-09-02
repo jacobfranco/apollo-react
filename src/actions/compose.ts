@@ -263,7 +263,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
   dispatch(submitComposeSuccess(composeId, { ...data }));
   toast.success(edit ? messages.editSuccess : messages.success, {
     actionLabel: messages.view,
-    actionLink: `/@${data.account.id}/posts/${data.id}`,
+    actionLink: `/@${data.account.username}/posts/${data.id}`,
   });
 };
 

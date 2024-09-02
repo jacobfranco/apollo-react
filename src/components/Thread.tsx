@@ -214,7 +214,7 @@ const Thread = (props: IThread) => {
   };
 
   const handleHotkeyOpenProfile = () => {
-    history.push(`/@${status!.getIn(['account', 'id'])}`);
+    history.push(`/@${status!.getIn(['account', 'username'])}`);
   };
 
   const handleHotkeyToggleHidden = () => {

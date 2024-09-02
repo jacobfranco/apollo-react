@@ -87,7 +87,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   const actualStatus = getActualStatus(status);
   const isRepost = status.repost && typeof status.repost === 'object';
-  const statusUrl = `/@${actualStatus.account.id}/posts/${actualStatus.id}`;
+  const statusUrl = `/@${actualStatus.account.username}/posts/${actualStatus.id}`;
   const group = actualStatus.group;
 
   const filtered = (status.filtered.size || actualStatus.filtered.size) > 0;
@@ -173,7 +173,7 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyOpenProfile = (): void => {
-    history.push(`/@${actualStatus.account.id}`);
+    history.push(`/@${actualStatus.account.username}`);
   };
 
   const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
@@ -220,7 +220,7 @@ const Status: React.FC<IStatus> = (props) => {
               values={{
                 name: (
                   <Link
-                    to={`/@${status.account.id}`}
+                    to={`/@${status.account.username}`}
                     className='hover:underline'
                   >
                     <bdi className='truncate'>
@@ -259,7 +259,7 @@ const Status: React.FC<IStatus> = (props) => {
               defaultMessage='{name} reposted'
               values={{
                 name: (
-                  <Link to={`/@${status.account.id}`} className='hover:underline'>
+                  <Link to={`/@${status.account.username}`} className='hover:underline'>
                     <bdi className='truncate'>
                       <strong
                         className='text-gray-800 dark:text-gray-200'

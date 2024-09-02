@@ -171,7 +171,7 @@ const SidebarNavigation = () => {
             */ }
 
             <SidebarNavigationLink
-              to={`/@${account.id}`}
+              to={`/@${account.username}`}
               icon={require("@tabler/icons/outline/user.svg")}
               activeIcon={require("@tabler/icons/filled/user.svg")}
               text={

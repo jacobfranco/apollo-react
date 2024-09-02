@@ -169,7 +169,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
           <div className='relative h-full w-full overflow-auto overflow-y-scroll'>
             <div className='p-4'>
               <Stack space={4}>
-                <Link to={`/@${account.id}`} onClick={onClose}>
+                <Link to={`/@${account.username}`} onClick={onClose}>
                   <Account account={account} showProfileHoverCard={false} withLinkToProfile={false} />
                 </Link>
 
@@ -182,7 +182,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   <Divider />
 
                   <SidebarLink
-                    to={`/@${account.id}`}
+                    to={`/@${account.username}`}
                     icon={require('@tabler/icons/outline/user.svg')}
                     text={intl.formatMessage(messages.profile)}
                     onClick={onClose}

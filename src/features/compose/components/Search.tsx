@@ -26,10 +26,10 @@ const messages = defineMessages({
 
 function redirectToAccount(accountId: string, routerHistory: any) {
   return (_dispatch: AppDispatch, getState: () => RootState) => {
-    const id = selectAccount(getState(), accountId)!.id;
+    const username = selectAccount(getState(), accountId)!.username;
 
-    if (id && routerHistory) {
-      routerHistory.push(`/@${id}`);
+    if (username && routerHistory) {
+      routerHistory.push(`/@${username}`);
     }
   };
 }

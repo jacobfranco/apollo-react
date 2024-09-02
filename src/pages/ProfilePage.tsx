@@ -55,7 +55,7 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
     if (ownAccount) {
       tabItems.push({
         text: <FormattedMessage id='navigation_bar.favourites' defaultMessage='Likes' />,
-        to: `/@${account.id}/likes`,
+        to: `/@${account.username}/likes`,
         name: 'likes',
       });
     }

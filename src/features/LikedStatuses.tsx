@@ -43,6 +43,7 @@ const Likes: React.FC<ILikes> = ({ params }) => {
     }
   }, 300, { leading: true }), [account?.id]);
 
+
   useEffect(() => {
     if (isOwnAccount)
       dispatch(fetchLikedStatuses());

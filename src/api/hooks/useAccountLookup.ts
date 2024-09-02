@@ -13,7 +13,7 @@ interface UseAccountLookupOpts {
   withRelationship?: boolean;
 }
 
-function useAccountLookup(id: string | undefined, opts: UseAccountLookupOpts = {}) {
+function useAccountLookup(username: string | undefined, opts: UseAccountLookupOpts = {}) {
   const api = useApi();
   const history = useHistory();
   const { me } = useLoggedIn();
@@ -21,9 +21,9 @@ function useAccountLookup(id: string | undefined, opts: UseAccountLookupOpts = {
 
   const { entity: account, isUnauthorized, ...result } = useEntityLookup<Account>(
     Entities.ACCOUNTS,
-    (account) => account.id === id,
-    () => api.get(`/api/accounts/lookup?id=${id}`),
-    { schema: accountSchema, enabled: !!id },
+    (account) => account.username === username,
+    () => api.get(`/api/accounts/lookup?username=${username}`),
+    { schema: accountSchema, enabled: !!username },
   );
 
   const {

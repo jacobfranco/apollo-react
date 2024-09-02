@@ -297,7 +297,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   };
 
   const handleOpen: React.EventHandler<React.MouseEvent> = (e) => {
-    history.push(`/@${status.account.id}/posts/${status.id}`);
+    history.push(`/@${status.account.username}/posts/${status.id}`);
   };
 
   /* TODO: Implement embed

@@ -68,7 +68,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   const menu: IMenuItem[] = useMemo(() => {
     const menu: IMenuItem[] = [];
 
-    menu.push({ text: renderAccount(account), to: `/@${account.id}` });
+    menu.push({ text: renderAccount(account), to: `/@${account.username}` });
 
     otherAccounts.forEach((otherAccount: AccountEntity) => {
       if (otherAccount && otherAccount.id !== account.id) {

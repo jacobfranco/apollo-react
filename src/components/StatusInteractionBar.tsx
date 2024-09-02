@@ -1,4 +1,4 @@
-import clsx from 'clsx';import React from 'react';
+import clsx from 'clsx'; import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -64,7 +64,7 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
   const getQuotes = () => {
     if (status.quotes_count) {
       return (
-        <InteractionCounter count={status.quotes_count} to={`/@${status.getIn(['account', 'id'])}/posts/${status.id}/quotes`}>
+        <InteractionCounter count={status.quotes_count} to={`/@${status.getIn(['account', 'username'])}/posts/${status.id}/quotes`}>
           <FormattedMessage
             id='status.interactions.quotes'
             defaultMessage='{count, plural, one {Quote} other {Quotes}}'
