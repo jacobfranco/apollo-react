@@ -3,12 +3,13 @@ import React, { MouseEventHandler, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Stack, StatusMedia, OutlineBox, StatusContent, StatusReplyMentions, SensitiveContentOverlay } from 'src/components';
+import { Stack, StatusMedia, OutlineBox, StatusReplyMentions, SensitiveContentOverlay } from 'src/components';
 import AccountContainer from 'src/containers/AccountContainer';
 import { useSettings } from 'src/hooks/useSettings';
 import { defaultMediaVisibility } from 'src/utils/status';
 
 import type { Status as StatusEntity } from 'src/types/entities';
+import StatusContent from './StatusContent';
 
 const messages = defineMessages({
   cancel: { id: 'reply_indicator.cancel', defaultMessage: 'Cancel' },

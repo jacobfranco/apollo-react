@@ -1,24 +1,26 @@
 import clsx from 'clsx';
+import parse, { Element, type HTMLReactParserOptions, domToReact, type DOMNode } from 'html-react-parser';
 import React, { useState, useRef, useLayoutEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
 
 import Icon from 'src/components/Icon';
 import { onlyEmoji as isOnlyEmoji } from 'src/utils/rich-content';
 
-import { isRtl } from 'src/utils/rtl';
+import { getTextDirection } from '../utils/rtl';
 
+import HashtagLink from './HashtagLink';
 import Markup from './Markup';
+import Mention from './Mention';
 import Poll from './Poll';
 
 import type { Sizes } from 'src/components/Text';
-import type { Status, Mention } from 'src/types/entities';
+import type { Status } from 'src/types/entities';
 
 const MAX_HEIGHT = 642; // 20px * 32 (+ 2px padding at the top)
 const BIG_EMOJI_LIMIT = 10;
 
 interface IReadMoreButton {
-  onClick: React.MouseEventHandler
+  onClick: React.MouseEventHandler;
 }
 
 /** Button to expand a truncated status (due to too much content) */
@@ -30,11 +32,11 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick }) => (
 );
 
 interface IStatusContent {
-  status: Status
-  onClick?: () => void
-  collapsable?: boolean
-  translatable?: boolean
-  textSize?: Sizes
+  status: Status;
+  onClick?: () => void;
+  collapsable?: boolean;
+  translatable?: boolean;
+  textSize?: Sizes;
 }
 
 /** Renders the text content of a status */
@@ -45,64 +47,10 @@ const StatusContent: React.FC<IStatusContent> = ({
   translatable,
   textSize = 'md',
 }) => {
-  const history = useHistory();
-
   const [collapsed, setCollapsed] = useState(false);
   const [onlyEmoji, setOnlyEmoji] = useState(false);
 
   const node = useRef<HTMLDivElement>(null);
-
-  const onMentionClick = (mention: Mention, e: MouseEvent) => {
-    if (e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      e.stopPropagation();
-      history.push(`/@${mention.username}`);
-    }
-  };
-
-  const onHashtagClick = (hashtag: string, e: MouseEvent) => {
-    hashtag = hashtag.replace(/^#/, '').toLowerCase();
-
-    if (e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      e.stopPropagation();
-      history.push(`/tags/${hashtag}`);
-    }
-  };
-
-  /** For regular links, just stop propogation */
-  const onLinkClick = (e: MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  const updateStatusLinks = () => {
-    if (!node.current) return;
-
-    const links = node.current.querySelectorAll('a');
-
-    links.forEach(link => {
-      // Skip already processed
-      if (link.classList.contains('status-link')) return;
-
-      // Add attributes
-      link.classList.add('status-link');
-      link.setAttribute('rel', 'nofollow noopener');
-      link.setAttribute('target', '_blank');
-
-      const mention = status.mentions.find(mention => link.href === `${mention.url}`);
-
-      // Add event listeners on mentions and hashtags
-      if (mention) {
-        link.addEventListener('click', onMentionClick.bind(link, mention), false);
-        link.setAttribute('title', mention.username);
-      } else if (link.textContent?.charAt(0) === '#' || (link.previousSibling?.textContent?.charAt(link.previousSibling.textContent.length - 1) === '#')) {
-        link.addEventListener('click', onHashtagClick.bind(link, link.text), false);
-      } else {
-        link.setAttribute('title', link.href);
-        link.addEventListener('click', onLinkClick.bind(link), false);
-      }
-    });
-  };
 
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
@@ -126,16 +74,13 @@ const StatusContent: React.FC<IStatusContent> = ({
   useLayoutEffect(() => {
     maybeSetCollapsed();
     maybeSetOnlyEmoji();
-    updateStatusLinks();
   });
 
   const parsedHtml = useMemo((): string => {
     return translatable && status.translation ? status.translation.get('content')! : status.contentHtml;
   }, [status.contentHtml, status.translation]);
 
-  const hasPoll = status.poll && typeof status.poll === 'string';
-
-  if (status.content.length === 0 && !hasPoll) {
+  if (status.content.length === 0) {
     return null;
   }
 
@@ -143,8 +88,62 @@ const StatusContent: React.FC<IStatusContent> = ({
 
   const baseClassName = 'text-gray-900 dark:text-gray-100 break-words text-ellipsis overflow-hidden relative focus:outline-none';
 
-  const content = { __html: parsedHtml };
-  const direction = isRtl(status.search_index) ? 'rtl' : 'ltr';
+  const options: HTMLReactParserOptions = {
+    replace(domNode) {
+      if (domNode instanceof Element && ['script', 'iframe'].includes(domNode.name)) {
+        return null;
+      }
+
+      if (domNode instanceof Element && domNode.name === 'a') {
+        const classes = domNode.attribs.class?.split(' ');
+
+        if (classes?.includes('hashtag')) {
+          const child = domToReact(domNode.children as DOMNode[]);
+
+          const hashtag: string | undefined = (() => {
+            // Mastodon wraps the hashtag in a span, with a sibling text node containing the hashtag.
+            if (Array.isArray(child) && child.length) {
+              if (child[0]?.props?.children === '#' && typeof child[1] === 'string') {
+                return child[1];
+              }
+            }
+            // Pleroma renders a string directly inside the hashtag link.
+            if (typeof child === 'string') {
+              return child.replace(/^#/, '');
+            }
+          })();
+
+          if (hashtag) {
+            return <HashtagLink hashtag={hashtag} />;
+          }
+        }
+
+        if (classes?.includes('mention')) {
+          const mention = status.mentions.find(({ url }) => domNode.attribs.href === url);
+          if (mention) {
+            return <Mention mention={mention} />;
+          }
+        }
+
+        return (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+          <a
+            {...domNode.attribs}
+            onClick={(e) => e.stopPropagation()}
+            rel='nofollow noopener'
+            target='_blank'
+            title={domNode.attribs.href}
+          >
+            {domToReact(domNode.children as DOMNode[], options)}
+          </a>
+        );
+      }
+    },
+  };
+
+  const content = parse(parsedHtml, options);
+
+  const direction = getTextDirection(status.search_index);
   const className = clsx(baseClassName, {
     'cursor-pointer': onClick,
     'whitespace-normal': withSpoiler,
@@ -160,16 +159,18 @@ const StatusContent: React.FC<IStatusContent> = ({
         key='content'
         className={className}
         direction={direction}
-        dangerouslySetInnerHTML={content}
         lang={status.language || undefined}
         size={textSize}
-      />,
+      >
+        {content}
+      </Markup>,
     ];
 
     if (collapsed) {
       output.push(<ReadMoreButton onClick={onClick} key='read-more' />);
     }
 
+    const hasPoll = status.poll && typeof status.poll === 'string';
     if (hasPoll) {
       output.push(<Poll id={status.poll} key='poll' status={status.url} />);
     }
@@ -185,13 +186,14 @@ const StatusContent: React.FC<IStatusContent> = ({
           'leading-normal big-emoji': onlyEmoji,
         })}
         direction={direction}
-        dangerouslySetInnerHTML={content}
         lang={status.language || undefined}
         size={textSize}
-      />,
+      >
+        {content}
+      </Markup>,
     ];
 
-    if (hasPoll) {
+    if (status.poll && typeof status.poll === 'string') {
       output.push(<Poll id={status.poll} key='poll' status={status.url} />);
     }
 

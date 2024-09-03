@@ -1,13 +1,14 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Account, AttachmentThumbs, HStack, PollPreview, ScheduledStatusActionBar, StatusContent, StatusReplyMentions, Stack } from 'src/components';
+import { Account, AttachmentThumbs, HStack, PollPreview, ScheduledStatusActionBar, StatusReplyMentions, Stack } from 'src/components';
 import { useAppSelector } from 'src/hooks';
 
 import { buildStatus } from 'src/utils/scheduled-statuses'
 
 
 import type { Status as StatusEntity } from 'src/types/entities';
+import StatusContent from './StatusContent';
 
 interface IScheduledStatus {
   statusId: string;

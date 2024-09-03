@@ -2,10 +2,11 @@ import noop from 'lodash/noop';
 import React, { Suspense } from 'react';
 
 import { toggleStatusReport } from 'src/actions/reports';
-import { StatusContent, Toggle } from 'src/components';
+import { Toggle } from 'src/components';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 
 import { MediaGallery, Video, Audio } from 'src/features/AsyncComponents';
+import StatusContent from './StatusContent';
 
 interface IStatusCheckBox {
   id: string;

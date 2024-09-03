@@ -5,7 +5,7 @@ import { blockAccount } from 'src/actions/accounts';
 import { submitReport, submitReportSuccess, submitReportFail, ReportableEntities } from 'src/actions/reports';
 import { expandAccountTimeline } from 'src/actions/timelines';
 import { useAccount } from 'src/api/hooks';
-import { AttachmentThumbs, GroupCard, HStack, Modal, ProgressBar, Stack, StatusContent, Text } from 'src/components';
+import { AttachmentThumbs, GroupCard, HStack, Modal, ProgressBar, Stack, Text } from 'src/components';
 import List, { ListItem } from 'src/components/List';
 import AccountContainer from 'src/containers/AccountContainer';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
@@ -15,6 +15,7 @@ import OtherActionsStep from 'src/components/ReportOtherActions';
 import ReasonStep from 'src/components/ReportReason';
 import Icon from 'src/components/Icon';
 import Avatar from 'src/components/Avatar';
+import StatusContent from 'src/components/StatusContent';
 
 const messages = defineMessages({
   blankslate: { id: 'report.reason.blankslate', defaultMessage: 'You have removed all statuses from being selected.' },

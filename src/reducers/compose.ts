@@ -111,26 +111,24 @@ type Compose = ReturnType<typeof ReducerCompose>;
 type Poll = ReturnType<typeof PollRecord>;
 
 const statusToTextMentions = (status: Status, account: Account) => {
-  const author = status.getIn(['account', 'id']);
-  const mentions = status.get('mentions') || [];
+  const author = status.getIn(['account', 'username']);
+  const mentions = status.get('mentions')?.map((m) => m.username) || [];
 
   return ImmutableOrderedSet([author])
-    .concat(mentions.map(m => m.id))
-    .delete(account.id)
-    .map(m => {
-      const mention = mentions.find(mention => mention.id === m) || { username: m };
-      return `@${mention.username} `;
-    })
+    .concat(mentions)
+    .delete(account.username)
+    .map(m => `@${m} `)
     .join('');
-}
+};
+
 
 export const statusToMentionsArray = (status: Status, account: Account) => {
-  const author = status.getIn(['account', 'id']) as string;
-  const mentions = status.get('mentions')?.map((m) => m.id) || [];
+  const author = status.getIn(['account', 'username']) as string;
+  const mentions = status.get('mentions')?.map((m) => m.username) || [];
 
   return ImmutableOrderedSet<string>([author])
     .concat(mentions)
-    .delete(account.id) as ImmutableOrderedSet<string>;
+    .delete(account.username) as ImmutableOrderedSet<string>;
 };
 
 export const statusToMentionsAccountIdsArray = (status: StatusEntity, account: Account) => {
@@ -217,12 +215,13 @@ const privacyPreference = (a: string, b: string) => {
 
 const domParser = new DOMParser();
 
+
 const expandMentions = (status: Status) => {
   const fragment = domParser.parseFromString(status.get('content'), 'text/html').documentElement;
 
   status.get('mentions').forEach((mention) => {
     const node = fragment.querySelector(`a[href="${mention.get('url')}"]`);
-    if (node) node.textContent = `@${mention.get('id')}`;
+    if (node) node.textContent = `@${mention.get('username')}`;
   });
 
   return fragment.innerHTML;
@@ -377,14 +376,14 @@ export default function compose(state = initialState, action: ComposeAction | Me
       return updateCompose(state, action.id, compose => compose.set('progress', Math.round((action.loaded / action.total) * 100)));
     case COMPOSE_MENTION:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
-        map.update('text', text => [text.trim(), `@${action.account.id} `].filter((str) => str.length !== 0).join(' '));
+        map.update('text', text => [text.trim(), `@${action.account.username} `].filter((str) => str.length !== 0).join(' '));
         map.set('focusDate', new Date());
         map.set('caretPosition', null);
         map.set('idempotencyKey', uuid());
       }));
     case COMPOSE_DIRECT:
       return updateCompose(state, 'compose-modal', compose => compose.withMutations(map => {
-        map.update('text', text => [text.trim(), `@${action.account.id} `].filter((str) => str.length !== 0).join(' '));
+        map.update('text', text => [text.trim(), `@${action.account.username} `].filter((str) => str.length !== 0).join(' '));
         map.set('privacy', 'direct');
         map.set('focusDate', new Date());
         map.set('caretPosition', null);

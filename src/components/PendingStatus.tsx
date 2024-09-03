@@ -1,13 +1,14 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Account, StatusContent, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery, PollPreview } from 'src/components';
+import { Account, Card, HStack, Stack, StatusReplyMentions, PlaceholderCard, PlaceholderMediaGallery, PollPreview } from 'src/components';
 import QuotedStatus from 'src/containers/StatusQuotedStatusContainer';
 import { useAppSelector } from 'src/hooks';
 
 import { buildStatus } from 'src/utils/pending-status';
 
 import type { Status as StatusEntity } from 'src/types/entities';
+import StatusContent from './StatusContent';
 
 const shouldHaveCard = (pendingStatus: StatusEntity) => {
   return Boolean(pendingStatus.content.match(/https?:\/\/\S*/));
