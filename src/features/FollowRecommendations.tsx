@@ -36,7 +36,7 @@ const FollowRecommendations: React.FC = () => {
     return (
       <Column label={intl.formatMessage(messages.heading)}>
         <Text align='center'>
-          <FormattedMessage id='empty_column.follow_recommendations' defaultMessage='Looks like no suggestions could be generated for you. You can try using search to look for people you might know or explore trending hashtags.' />
+          <FormattedMessage id='empty_column.follow_recommendations' defaultMessage='Looks like no suggestions could be generated for you. You can try using search to look for people you might know or explore trending spaces and hashtags.' />
         </Text>
       </Column>
     );

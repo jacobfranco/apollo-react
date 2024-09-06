@@ -1,16 +1,20 @@
 import { List as ImmutableList, Record as ImmutableRecord } from 'immutable';
 
-import { normalizeTag } from 'src/normalizers';
+import { normalizeTag, normalizeSpace } from 'src/normalizers';
 
 import {
   TRENDS_FETCH_REQUEST,
   TRENDS_FETCH_SUCCESS,
   TRENDS_FETCH_FAIL,
+  TRENDING_SPACES_FETCH_REQUEST,
+  TRENDING_SPACES_FETCH_SUCCESS,
+  TRENDING_SPACES_FETCH_FAIL
 } from 'src/actions/trends';
 
 import type { AnyAction } from 'redux';
-import type { APIEntity, Tag } from 'src/types/entities';
+import type { APIEntity, Space, Tag } from 'src/types/entities';
 
+// TODO: Look back over this and finish this life
 const ReducerRecord = ImmutableRecord({
   items: ImmutableList<Tag>(),
   isLoading: false,

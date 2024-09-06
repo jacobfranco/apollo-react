@@ -5,7 +5,10 @@
     "sourceMap": true,
     "strict": true,
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "target": "ESNext",
     "jsx": "react",
     "allowJs": true,
@@ -14,7 +17,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "src/*": ["src/*"] 
+      "src/*": [
+        "src/*"
+      ]
     },
     "typeRoots": [
       "./src/types",

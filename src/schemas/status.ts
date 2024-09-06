@@ -12,6 +12,7 @@ import { groupSchema } from './group';
 import { mentionSchema } from './mention';
 import { pollSchema } from './poll';
 import { tagSchema } from './tag';
+import { spaceSchema } from './space'
 import { contentSchema, dateSchema, filteredArray } from './utils';
 
 import type { Resolve } from 'src/utils/types';
@@ -53,6 +54,7 @@ const baseStatusSchema = z.object({
   reposts_count: z.number().catch(0),
   replies_count: z.number().catch(0),
   sensitive: z.coerce.boolean(),
+  spaces: filteredArray(spaceSchema),
   spoiler_text: contentSchema,
   tags: filteredArray(tagSchema),
   tombstone: z.object({

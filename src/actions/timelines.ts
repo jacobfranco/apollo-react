@@ -146,6 +146,12 @@ const parseTags = (tags: Record<string, any[]> = {}, mode: 'any' | 'all' | 'none
   });
 };
 
+const parseSpaces = (spaces: Record<string, any[]> = {}, mode: 'any' | 'all' | 'none') => {
+  return (spaces[mode] || []).map((space) => {
+    return space.value;
+  });
+};
+
 const expandTimeline = (timelineId: string, path: string, params: Record<string, any> = {}, done = noOp) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const timeline = getState().timelines.get(timelineId) || {} as Record<string, any>;
@@ -247,6 +253,9 @@ const expandGroupFeaturedTimeline = (id: string) =>
 const expandGroupTimelineFromTag = (id: string, tagName: string, { maxId }: Record<string, any> = {}, done = noOp) =>
   expandTimeline(`group:tags:${id}:${tagName}`, `/api/timelines/group/${id}/tags/${tagName}`, { max_id: maxId }, done);
 
+const expandGroupTimelineFromSpace = (id: string, spaceName: string, { maxId }: Record<string, any> = {}, done = noOp) =>
+  expandTimeline(`group:spaces:${id}:${spaceName}`, `/api/timelines/group/${id}/spaces/${spaceName}`, { max_id: maxId }, done);
+
 const expandGroupMediaTimeline = (id: string | number, { maxId }: Record<string, any> = {}) =>
   expandTimeline(`group:${id}:media`, `/api/timelines/group/${id}`, { max_id: maxId, only_media: true, limit: 40, with_muted: true });
 
@@ -256,6 +265,15 @@ const expandHashtagTimeline = (hashtag: string, { url, maxId, tags }: Record<str
     any: parseTags(tags, 'any'),
     all: parseTags(tags, 'all'),
     none: parseTags(tags, 'none'),
+  }, done);
+};
+
+const expandSpaceTimeline = (space: string, { url, maxId, spaces }: Record<string, any> = {}, done = noOp) => {
+  return expandTimeline(`space:${space}`, url || `/api/timelines/space/${space}`, url ? {} : {
+    max_id: maxId,
+    any: parseSpaces(spaces, 'any'),
+    all: parseSpaces(spaces, 'all'),
+    none: parseSpaces(spaces, 'none'),
   }, done);
 };
 
@@ -347,8 +365,10 @@ export {
   expandGroupTimeline,
   expandGroupFeaturedTimeline,
   expandGroupTimelineFromTag,
+  expandGroupTimelineFromSpace,
   expandGroupMediaTimeline,
   expandHashtagTimeline,
+  expandSpaceTimeline,
   expandTimelineRequest,
   expandTimelineSuccess,
   expandTimelineFail,

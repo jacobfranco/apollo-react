@@ -12,6 +12,7 @@ import HashtagLink from './HashtagLink';
 import Markup from './Markup';
 import Mention from './Mention';
 import Poll from './Poll';
+import SpaceLink from './SpaceLink';
 
 import type { Sizes } from 'src/components/Text';
 import type { Status } from 'src/types/entities';
@@ -122,6 +123,27 @@ const StatusContent: React.FC<IStatusContent> = ({
           const mention = status.mentions.find(({ url }) => domNode.attribs.href === url);
           if (mention) {
             return <Mention mention={mention} />;
+          }
+        }
+
+        if (classes?.includes('space')) {
+          const child = domToReact(domNode.children as DOMNode[]);
+
+          const space: string | undefined = (() => {
+            // Mastodon wraps the hashtag in a span, with a sibling text node containing the hashtag.
+            if (Array.isArray(child) && child.length) {
+              if (child[0]?.props?.children === '#' && typeof child[1] === 'string') {
+                return child[1];
+              }
+            }
+            // Pleroma renders a string directly inside the link.
+            if (typeof child === 'string') {
+              return child.replace(/^\/s\//, '');
+            }
+          })();
+
+          if (space) {
+            return <SpaceLink space={space} />;
           }
         }
 

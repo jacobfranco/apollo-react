@@ -13,6 +13,12 @@ import {
   ADMIN_USERS_UNTAG_REQUEST,
   ADMIN_USERS_UNTAG_SUCCESS,
   ADMIN_USERS_UNTAG_FAIL,
+  ADMIN_USERS_SPACE_REQUEST,
+  ADMIN_USERS_SPACE_SUCCESS,
+  ADMIN_USERS_SPACE_FAIL,
+  ADMIN_USERS_UNSPACE_REQUEST,
+  ADMIN_USERS_UNSPACE_SUCCESS,
+  ADMIN_USERS_UNSPACE_FAIL,
   ADMIN_ADD_PERMISSION_GROUP_REQUEST,
   ADMIN_ADD_PERMISSION_GROUP_SUCCESS,
   ADMIN_ADD_PERMISSION_GROUP_FAIL,
@@ -238,14 +244,14 @@ export default function accounts(state: State = initialState, action: AnyAction)
       return normalizeAccounts(state, action.accounts);
     case ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP:
       return fixAccount(state, { id: -1, username: action.username });
-      /*  TODO: Implement chats
-    case CHATS_FETCH_SUCCESS:
-    case CHATS_EXPAND_SUCCESS:
-      return importAccountsFromChats(state, action.chats);
-    case CHAT_FETCH_SUCCESS:
-    case STREAMING_CHAT_UPDATE:
-      return importAccountsFromChats(state, [action.chat]);
-      */ 
+    /*  TODO: Implement chats
+  case CHATS_FETCH_SUCCESS:
+  case CHATS_EXPAND_SUCCESS:
+    return importAccountsFromChats(state, action.chats);
+  case CHAT_FETCH_SUCCESS:
+  case STREAMING_CHAT_UPDATE:
+    return importAccountsFromChats(state, [action.chat]);
+    */
     case ADMIN_USERS_TAG_REQUEST:
     case ADMIN_USERS_TAG_SUCCESS:
     case ADMIN_USERS_UNTAG_FAIL:

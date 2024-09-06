@@ -57,6 +57,7 @@ export const StatusRecord = ImmutableRecord({
   replies_count: 0,
   zaps_amount: 0,
   sensitive: false,
+  spaces: ImmutableList<ImmutableMap<string, any>>(),
   spoiler_text: '',
   tags: ImmutableList<ImmutableMap<string, any>>(),
   uri: '',

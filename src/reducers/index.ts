@@ -15,6 +15,7 @@ import contexts from './contexts'
 import conversations from './conversations'
 import dropdown_menu from './dropdown-menu'
 import filters from './filters'
+import followed_spaces from './followed-spaces'
 import followed_tags from './followed-tags'
 import group_memberships from './group-memberships';
 import group_relationships from './group-relationships';
@@ -35,6 +36,7 @@ import scheduled_statuses from './scheduled-statuses'
 import search from './search'
 import security from './security'
 import sidebar from './sidebar'
+import spaces from './spaces'
 import status_hover_card from './status-hover-card'
 import settings from './settings'
 import status_lists from './status-lists'
@@ -58,6 +60,7 @@ const reducers = {
   dropdown_menu,
   entities,
   filters,
+  followed_spaces,
   followed_tags,
   group_memberships,
   group_relationships,
@@ -79,6 +82,7 @@ const reducers = {
   security,
   settings,
   sidebar,
+  spaces,
   status_hover_card,
   status_lists,
   statuses,

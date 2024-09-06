@@ -6,9 +6,9 @@ import { defineMessages, IntlShape } from 'react-intl';
 import api from 'src/api';
 import { isNativeEmoji } from 'src/features/emoji';
 import emojiSearch from 'src/features/emoji/search';
-import { normalizeTag } from 'src/normalizers';
+import { normalizeSpace, normalizeTag } from 'src/normalizers';
 import { selectAccount, selectOwnAccount } from 'src/selectors';
-import { tagHistory } from 'src/settings';
+import { tagHistory, spaceHistory } from 'src/settings';
 import toast from 'src/toast';
 import { isLoggedIn } from 'src/utils/auth';
 
@@ -24,7 +24,7 @@ import type { AutoSuggestion } from 'src/components/AutosuggestInput';
 import type { Emoji } from 'src/features/emoji';
 import type { Account, Group } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity, Status, Tag } from 'src/types/entities';
+import type { APIEntity, Space, Status, Tag } from 'src/types/entities';
 import type { History } from 'src/types/history';
 
 const { CancelToken, isCancel } = axios;
@@ -54,8 +54,10 @@ const COMPOSE_SUGGESTIONS_CLEAR = 'COMPOSE_SUGGESTIONS_CLEAR' as const;
 const COMPOSE_SUGGESTIONS_READY = 'COMPOSE_SUGGESTIONS_READY' as const;
 const COMPOSE_SUGGESTION_SELECT = 'COMPOSE_SUGGESTION_SELECT' as const;
 const COMPOSE_SUGGESTION_TAGS_UPDATE = 'COMPOSE_SUGGESTION_TAGS_UPDATE' as const;
+const COMPOSE_SUGGESTION_SPACES_UPDATE = 'COMPOSE_SUGGESTION_SPACES_UPDATE' as const;
 
 const COMPOSE_TAG_HISTORY_UPDATE = 'COMPOSE_TAG_HISTORY_UPDATE' as const;
+const COMPOSE_SPACE_HISTORY_UPDATE = 'COMPOSE_SPACE_HISTORY_UPDATE' as const;
 
 const COMPOSE_SPOILERNESS_CHANGE = 'COMPOSE_SPOILERNESS_CHANGE' as const;
 const COMPOSE_TYPE_CHANGE = 'COMPOSE_TYPE_CHANGE' as const;
@@ -260,6 +262,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
   if (!dispatch || !getState) return;
 
   dispatch(insertIntoTagHistory(composeId, data.tags || [], status));
+  dispatch(insertIntoSpaceHistory(composeId, data.spaces || [], status));
   dispatch(submitComposeSuccess(composeId, { ...data }));
   toast.success(edit ? messages.editSuccess : messages.success, {
     actionLabel: messages.view,
@@ -566,6 +569,36 @@ const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => Root
   });
 };
 
+const fetchComposeSuggestionsSpaces = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
+  if (cancelFetchComposeSuggestions) {
+    cancelFetchComposeSuggestions(composeId);
+  }
+
+  /* TODO: If this doesnt work, then uncomment it
+  const state = getState();
+
+  const currentTrends = state.trends.items;
+
+  return dispatch(updateSuggestionSpaces(composeId, token, currentTrends));
+*/
+  api(getState).get('/api/search', {
+    cancelToken: new CancelToken(cancel => {
+      cancelFetchComposeSuggestions = cancel;
+    }),
+    params: {
+      q: token.slice(1),
+      limit: 10,
+      type: 'spaces',
+    },
+  }).then(response => {
+    dispatch(updateSuggestionSpaces(composeId, token, response.data?.spaces.map(normalizeSpace)));
+  }).catch(error => {
+    if (!isCancel(error)) {
+      toast.showAlertForError(error);
+    }
+  });
+};
+
 const fetchComposeSuggestions = (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     switch (token[0]) {
@@ -575,6 +608,8 @@ const fetchComposeSuggestions = (composeId: string, token: string) =>
       case '#':
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);
         break;
+      case '/s/':
+        fetchComposeSuggestionsSpaces(dispatch, getState, composeId, token);
       default:
         fetchComposeSuggestionsAccounts(dispatch, getState, composeId, token);
         break;
@@ -648,10 +683,23 @@ const updateSuggestionTags = (composeId: string, token: string, tags: ImmutableL
   tags,
 });
 
+const updateSuggestionSpaces = (composeId: string, token: string, spaces: ImmutableList<Space>) => ({
+  type: COMPOSE_SUGGESTION_SPACES_UPDATE,
+  id: composeId,
+  token,
+  spaces,
+});
+
 const updateTagHistory = (composeId: string, tags: string[]) => ({
   type: COMPOSE_TAG_HISTORY_UPDATE,
   id: composeId,
   tags,
+});
+
+const updateSpaceHistory = (composeId: string, spaces: string[]) => ({
+  type: COMPOSE_SPACE_HISTORY_UPDATE,
+  id: composeId,
+  spaces,
 });
 
 const insertIntoTagHistory = (composeId: string, recognizedTags: APIEntity[], text: string) =>
@@ -670,6 +718,24 @@ const insertIntoTagHistory = (composeId: string, recognizedTags: APIEntity[], te
 
     tagHistory.set(me as string, newHistory);
     dispatch(updateTagHistory(composeId, newHistory));
+  };
+
+const insertIntoSpaceHistory = (composeId: string, recognizedSpaces: APIEntity[], text: string) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+    const oldHistory = state.compose.get(composeId)!.spaceHistory;
+    const me = state.me;
+    const names = recognizedSpaces
+      .filter(space => text.match(new RegExp(`/s/${space.name}`, 'i')))
+      .map(space => space.name);
+    const intersectedOldHistory = oldHistory.filter(name => names.findIndex(newName => newName.toLowerCase() === name.toLowerCase()) === -1);
+
+    names.push(...intersectedOldHistory.toJS());
+
+    const newHistory = names.slice(0, 1000);
+
+    spaceHistory.set(me as string, newHistory);
+    dispatch(updateSpaceHistory(composeId, newHistory));
   };
 
 const changeComposeSpoilerness = (composeId: string) => ({
@@ -844,7 +910,9 @@ type ComposeAction =
   | ComposeSuggestionsReadyAction
   | ComposeSuggestionSelectAction
   | ReturnType<typeof updateSuggestionTags>
+  | ReturnType<typeof updateSuggestionSpaces>
   | ReturnType<typeof updateTagHistory>
+  | ReturnType<typeof updateSpaceHistory>
   | ReturnType<typeof changeComposeSpoilerness>
   | ReturnType<typeof changeComposeContentType>
   | ReturnType<typeof changeComposeSpoilerText>
@@ -886,7 +954,9 @@ export {
   COMPOSE_SUGGESTIONS_READY,
   COMPOSE_SUGGESTION_SELECT,
   COMPOSE_SUGGESTION_TAGS_UPDATE,
+  COMPOSE_SUGGESTION_SPACES_UPDATE,
   COMPOSE_TAG_HISTORY_UPDATE,
+  COMPOSE_SPACE_HISTORY_UPDATE,
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_TYPE_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
@@ -946,7 +1016,9 @@ export {
   readyComposeSuggestionsAccounts,
   selectComposeSuggestion,
   updateSuggestionTags,
+  updateSuggestionSpaces,
   updateTagHistory,
+  updateSpaceHistory,
   changeComposeSpoilerness,
   changeComposeContentType,
   changeComposeSpoilerText,

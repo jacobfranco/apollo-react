@@ -13,6 +13,7 @@ export { GroupRelationshipRecord, normalizeGroupRelationship } from './group-rel
 export { HistoryRecord, normalizeHistory } from './history';
 export { MentionRecord, normalizeMention } from './mention'
 export { NotificationRecord, normalizeNotification } from './notification';
+export { SpaceRecord, normalizeSpace } from './space';
 export { StatusRecord, normalizeStatus } from './status';
 export { TagRecord, normalizeTag } from './tag';
 

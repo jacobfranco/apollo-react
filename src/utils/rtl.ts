@@ -31,6 +31,8 @@ function isRtl(text: string, confidence = 0.3): boolean {
   text = text.replace(/(?:^|[^/\w])@([a-z0-9_]+(@[a-z0-9.-]+)?)/ig, '');
   // Remove hashtags
   text = text.replace(/(?:^|[^/\w])#([\S]+)/ig, '');
+  // Remove spaces with the token "/s/"
+  text = text.replace(/\/s\//g, '');
   // Remove all non-word characters
   text = text.replace(/\s+/g, '');
 

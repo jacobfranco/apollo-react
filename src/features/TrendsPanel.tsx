@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 
 import { setFilter } from 'src/actions/search';
 import Hashtag from 'src/components/Hashtag';
-import { Text, Widget, PlaceholderSidebarTrends } from 'src/components';
+import { Text, Widget } from 'src/components/';
+import PlaceholderSidebarTrends from 'src/components/PlaceholderSidebarTrends';
 import { useAppDispatch } from 'src/hooks';
 import useTrends from 'src/queries/trends';
 
@@ -14,7 +15,7 @@ interface ITrendsPanel {
 
 const messages = defineMessages({
   viewAll: {
-    id: 'trendsPanel.viewAll',
+    id: 'trends_panel.view_all',
     defaultMessage: 'View all',
   },
 });

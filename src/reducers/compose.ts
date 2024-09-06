@@ -2,7 +2,7 @@ import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrde
 import { v4 as uuid } from 'uuid';
 
 import { Account } from 'src/schemas';
-import { tagHistory } from 'src/settings';
+import { tagHistory, spaceHistory } from 'src/settings';
 
 import {
   COMPOSE_CHANGE,
@@ -25,7 +25,9 @@ import {
   COMPOSE_SUGGESTIONS_READY,
   COMPOSE_SUGGESTION_SELECT,
   COMPOSE_SUGGESTION_TAGS_UPDATE,
+  COMPOSE_SUGGESTION_SPACES_UPDATE,
   COMPOSE_TAG_HISTORY_UPDATE,
+  COMPOSE_SPACE_HISTORY_UPDATE,
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_TYPE_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
@@ -65,6 +67,7 @@ import type {
   Status,
   Status as StatusEntity,
   Tag,
+  Space,
 } from 'src/types/entities';
 
 const getResetFileKey = () => Math.floor((Math.random() * 0x10000));
@@ -96,6 +99,7 @@ export const ReducerCompose = ImmutableRecord({
   resetFileKey: null as number | null,
   schedule: null as Date | null,
   sensitive: false,
+  spaceHistory: ImmutableList<string>(),
   spoiler: false,
   spoiler_text: '',
   suggestions: ImmutableList<string>(),
@@ -192,6 +196,18 @@ const updateSuggestionTags = (compose: Compose, token: string, tags: ImmutableLi
   });
 };
 
+const updateSuggestionSpaces = (compose: Compose, token: string, spaces: ImmutableList<Space>) => {
+  const prefix = token.slice(1);
+
+  return compose.merge({
+    suggestions: ImmutableList(spaces
+      .filter((space) => space.get('name').toLowerCase().startsWith(prefix.toLowerCase()))
+      .slice(0, 4)
+      .map((space) => '/s/' + space.name)),
+    suggestion_token: token,
+  });
+};
+
 const insertEmoji = (compose: Compose, position: number, emojiData: Emoji, needsSpace: boolean) => {
   const oldText = compose.text;
   const emojiText = emojiData.native;
@@ -252,6 +268,7 @@ const importAccount = (compose: Compose, account: APIEntity) => {
     if (defaultPrivacy) compose.set('privacy', defaultPrivacy);
     if (defaultContentType) compose.set('content_type', defaultContentType);
     compose.set('tagHistory', ImmutableList(tagHistory.get(account.id)));
+    compose.set('spaceHistory', ImmutableList(spaceHistory.get(account.id)));
   });
 };
 
@@ -405,8 +422,12 @@ export default function compose(state = initialState, action: ComposeAction | Me
       return updateCompose(state, action.id, compose => insertSuggestion(compose, action.position, action.token, action.completion, action.path));
     case COMPOSE_SUGGESTION_TAGS_UPDATE:
       return updateCompose(state, action.id, compose => updateSuggestionTags(compose, action.token, action.tags));
+    case COMPOSE_SUGGESTION_SPACES_UPDATE:
+      return updateCompose(state, action.id, compose => updateSuggestionSpaces(compose, action.token, action.spaces));
     case COMPOSE_TAG_HISTORY_UPDATE:
       return updateCompose(state, action.id, compose => compose.set('tagHistory', ImmutableList(fromJS(action.tags)) as ImmutableList<string>));
+    case COMPOSE_SPACE_HISTORY_UPDATE:
+      return updateCompose(state, action.id, compose => compose.set('spaceHistory', ImmutableList(fromJS(action.spaces)) as ImmutableList<string>));
     case TIMELINE_DELETE:
       return updateCompose(state, 'compose-modal', compose => {
         if (action.id === compose.in_reply_to) {

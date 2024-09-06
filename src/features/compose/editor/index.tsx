@@ -51,8 +51,8 @@ interface IComposeEditor {
 
 const theme: InitialConfigType['theme'] = {
   emoji: 'select-none',
-  hashtag: 'hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue',
-  link: 'hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue',
+  hashtag: 'hover:underline text-primary-600 dark:text-primary-500 hover:text-primary-800 dark:hover:text-primary-500',
+  link: 'hover:underline text-primary-600 dark:text-secondary-500 hover:text-primary-800 dark:hover:text-primary-500',
   text: {
     bold: 'font-bold',
     code: 'font-mono',
