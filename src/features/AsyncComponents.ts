@@ -88,8 +88,8 @@ export const ScoreboardDetailPage = lazy(() => import('./ScoreboardDetailPage'))
 export const CommunityTab = lazy(() => import('./CommunityTab'));
 export const ScoreboardDetailsTab = lazy(() => import('./ScoreboardDetailsTab'));
 export const ScheduleTab = lazy(() => import('./ScheduleTab'));
-export const StandingsTab = lazy(() => import('./StandingsTab'));
-export const StatsTab = lazy(() => import('./StatsTab'));
+export const TeamsTab = lazy(() => import('./TeamsTab'));
+export const PlayersTab = lazy(() => import('./PlayersTab'));
 export const FantasyTab = lazy(() => import('./FantasyTab'));
 export const MediaTab = lazy(() => import('./MediaTab'));
 export const EsportsTab = lazy(() => import('./EsportsTab'));

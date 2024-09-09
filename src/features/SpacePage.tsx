@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
-import { Tabs } from 'src/components';
+import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
+import { useParams, Link } from 'react-router-dom';
+import { Tabs, List, ListItem, Toggle } from 'src/components';
 import { CommunityTab, MediaTab } from './AsyncComponents';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { fetchSpace } from 'src/actions/spaces';
+import { useAppDispatch, useAppSelector, useLoggedIn } from 'src/hooks';
+import { fetchSpace, followSpace, unfollowSpace } from 'src/actions/spaces';
 import SpaceTimeline from './SpaceTimeline';
+import { Column } from 'src/components/Column';
 
 const messages = defineMessages({
   community: { id: 'spaces_page.community', defaultMessage: 'Community' },
   media: { id: 'spaces_page.media', defaultMessage: 'Media' },
   loading: { id: 'spaces_page.loading', defaultMessage: 'Loading space...' },
+  follow: { id: 'space.follow', defaultMessage: 'Follow space' },
 });
 
 const SpacePage: React.FC = () => {
@@ -18,32 +20,71 @@ const SpacePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { spaceName } = useParams<{ spaceName: string }>();
   const [selectedTab, setSelectedTab] = useState('community');
+  const { isLoggedIn } = useLoggedIn();
 
-  const space = useAppSelector((state) => {
-    console.log('State in selector:', state.spaces);
-    console.log('Looking for space with URL:', spaceName);
-
-    return state.spaces.byUrl.get(spaceName) || state.spaces.byName.get(spaceName);
-  });
+  const space = useAppSelector((state) =>
+    state.spaces.byUrl.get(spaceName) || state.spaces.byName.get(spaceName)
+  );
 
   useEffect(() => {
-    console.log(`SpacePage mounted/updated for space: ${spaceName}`);
     if (spaceName && !space) {
-      console.log(`Fetching space: ${spaceName}`);
       dispatch(fetchSpace(spaceName));
-    } else {
-      console.log(`Space ${spaceName} already in state or fetched, space:`, space ? space.toJS() : null);
     }
   }, [dispatch, spaceName, space]);
 
-  console.log('Rendering SpacePage, space:', space ? space.toJS() : null);
-
   if (!space) {
-    console.log('Space is null, showing loading message');
     return <div className="text-center text-red-500">{intl.formatMessage(messages.loading)}</div>;
   }
 
-  const selectTab = (tab: string) => setSelectedTab(tab);
+  const handleFollow = () => {
+    if (!space) return;
+    const spaceUrl = space.get('url').replace(/^\/s\//, '');
+    if (!spaceUrl) return;
+
+    if (space.get('following')) {
+      dispatch(unfollowSpace(spaceUrl));
+    } else {
+      dispatch(followSpace(spaceUrl));
+    }
+  };
+
+  { /* TODO: Need to fix this and put it back in
+  const renderHeader = () => (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center">
+ <span className="ml-2 text-sm text-gray-500">/s/{spaceName}</span>
+      </div>
+      {isLoggedIn && (
+        <List>
+          <ListItem
+            label={<FormattedMessage id='space.follow' defaultMessage='Follow space' />}
+          >
+            <Toggle
+              checked={space.get('following')}
+              onChange={handleFollow}
+            />
+          </ListItem>
+        </List>
+      )}
+    </div>
+  );
+  */ }
+
+  const renderTabBar = () => {
+    const items = [
+      {
+        text: intl.formatMessage(messages.community),
+        action: () => setSelectedTab('community'),
+        name: 'community',
+      },
+      {
+        text: intl.formatMessage(messages.media),
+        action: () => setSelectedTab('media'),
+        name: 'media',
+      },
+    ];
+    return <Tabs items={items} activeItem={selectedTab} />;
+  };
 
   const renderTabContent = () => {
     switch (selectedTab) {
@@ -56,30 +97,16 @@ const SpacePage: React.FC = () => {
     }
   };
 
-  const renderTabBar = () => {
-    const items = [
-      {
-        text: intl.formatMessage(messages.community),
-        action: () => selectTab('community'),
-        name: 'community',
-      },
-      {
-        text: intl.formatMessage(messages.media),
-        action: () => selectTab('media'),
-        name: 'media',
-      },
-    ];
-    return <Tabs items={items} activeItem={selectedTab} />;
-  };
+  // TODO: Put render header back in
 
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-6">{space.get('name')} Space</h1>
+    <Column label={`${space.get('name')}`}>
+      {/* renderHeader() */}
       {renderTabBar()}
       <div className="tab-content">
         {renderTabContent()}
       </div>
-    </>
+    </Column>
   );
 };
 

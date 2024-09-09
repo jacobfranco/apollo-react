@@ -129,8 +129,8 @@ import {
   CommunityTab,
   ScoreboardDetailsTab,
   ScheduleTab,
-  StatsTab,
-  StandingsTab,
+  PlayersTab,
+  TeamsTab,
   FantasyTab,
   MediaTab
 } from "./AsyncComponents";

@@ -25,7 +25,7 @@ const SpaceImageLink: React.FC<SpaceImageLinkProps> = ({ space, isFollowed, onTo
       </Link>
       <button
         onClick={onToggleFollow}
-        className="absolute top-2 right-2 p-2 bg-white bg-opacity-75 rounded-full"
+        className="absolute top-2 right-2 p-2 rounded-full"
       >
         <SvgIcon
           src={require('@tabler/icons/outline/star.svg')}

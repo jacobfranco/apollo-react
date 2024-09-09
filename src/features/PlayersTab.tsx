@@ -1,10 +1,10 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-const StandingsTab: React.FC = () => {
+const PlayersTab: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
 
-  return <div>Standings for: {gameName}</div>;
+  return <div>Players for: {gameName}</div>;
 };
 
-export default StandingsTab;
+export default PlayersTab;

@@ -4,14 +4,14 @@ import { useParams } from 'react-router-dom';
 
 import { Tabs } from 'src/components';
 
-import { EsportsTab, ScheduleTab, StandingsTab, StatsTab, FantasyTab } from './AsyncComponents';
+import { EsportsTab, ScheduleTab, TeamsTab, PlayersTab, FantasyTab } from './AsyncComponents';
 import esportsConfig from 'src/esports-config';
 
 const messages = defineMessages({
   esports: { id: 'esports_page.esports', defaultMessage: 'Esports' },
   schedule: { id: 'esports_page.schedule', defaultMessage: 'Schedule' },
-  standings: { id: 'esports_page.standings', defaultMessage: 'Standings' },
-  stats: { id: 'esports_page.stats', defaultMessage: 'Stats' },
+  teams: { id: 'esports_page.teams', defaultMessage: 'Teams' },
+  players: { id: 'esports_page.players', defaultMessage: 'Players' },
   fantasy: { id: 'esports_page.fantasy', defaultMessage: 'Fantasy' },
 });
 
@@ -34,10 +34,10 @@ const EsportPage = () => {
         return <EsportsTab />;
       case 'schedule':
         return game.hasApiSupport ? <ScheduleTab /> : null;
-      case 'standings':
-        return game.hasApiSupport ? <StandingsTab /> : null;
-      case 'stats':
-        return game.hasApiSupport ? <StatsTab /> : null;
+      case 'teams':
+        return game.hasApiSupport ? <TeamsTab /> : null;
+      case 'players':
+        return game.hasApiSupport ? <PlayersTab /> : null;
       case 'fantasy':
         return game.hasApiSupport ? <FantasyTab /> : null;
       default:
@@ -59,14 +59,14 @@ const EsportPage = () => {
           name: 'schedule',
         },
         {
-          text: intl.formatMessage(messages.standings),
-          action: () => selectTab('standings'),
-          name: 'standings',
+          text: intl.formatMessage(messages.teams),
+          action: () => selectTab('teams'),
+          name: 'teams',
         },
         {
-          text: intl.formatMessage(messages.stats),
-          action: () => selectTab('stats'),
-          name: 'stats',
+          text: intl.formatMessage(messages.players),
+          action: () => selectTab('players'),
+          name: 'players',
         },
         {
           text: intl.formatMessage(messages.fantasy),
