@@ -48,6 +48,8 @@ import trending_statuses from './trending-statuses'
 import trends from './trends'
 import user_lists from './user-lists'
 
+import lol_schedule from 'src/slices/lol-schedule'
+
 const reducers = {
   admin_user_index,
   admin,
@@ -65,6 +67,7 @@ const reducers = {
   group_memberships,
   group_relationships,
   groups,
+  lol_schedule,
   me,
   meta,
   modals,

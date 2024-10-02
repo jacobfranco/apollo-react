@@ -1,152 +1,182 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import ScoreboardOverlay from './ScoreboardOverlay';
-import { type LolMatch } from 'src/schemas'
+import { Series } from 'src/schemas/series';
+import { useTeamColors } from 'src/team-colors';
+import AutoFitText from './AutoFitText';
 
-// Interface for LolScoreboard properties
+import placeholderTeam from 'src/assets/images/placeholder-team.png';
+
 interface LolScoreboardProps {
-  match: LolMatch;
+  series: Series;
 }
 
-// Main component for displaying the League of Legends scoreboard
-const LolScoreboard: React.FC<LolScoreboardProps> = ({
-  match, 
-}) => {
-  // Winning side and color configuration
-  const winningSide = 'right'; // Change to 'left' or 'right' to test
-  const winningColor = '#A981FC'; // Change this color to test
+const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
+  const { participants, title, lifecycle, start } = series;
+
+  const getTeamColor = useTeamColors();
+
+  // Extract team and participant data
+  const team1 = participants[0]?.roster.team;
+  const team2 = participants[1]?.roster.team;
+
+  const team1Name = team1?.name || 'Team 1';
+  const team2Name = team2?.name || 'Team 2';
+
+  const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
+  const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
+
+  const score1 = participants[0]?.score ?? 0;
+  const score2 = participants[1]?.score ?? 0;
+
+  // Determine the winning side
+  const winningSide = score1 > score2 ? 'left' : score2 > score1 ? 'right' : null;
+
+  // Get team colors from the mapping, default to a color if not found
+  const team1Color = getTeamColor(team1Name);
+  const team2Color = getTeamColor(team2Name);
+
+  // Winning color (use team color)
+  const winningColor =
+    winningSide === 'left' ? team1Color : winningSide === 'right' ? team2Color : '#A981FC';
+
+  // Format string
+  const bestOf = series.format?.bestOf ? `Best of ${series.format.bestOf}` : '';
+
+  // Format the start date
+  const startDate = new Date(start * 1000);
+  const formattedStartDate = startDate.toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+
+  // Adjust score colors
+  let score1Color = 'text-gray-700 dark:text-gray-300';
+  let score2Color = 'text-gray-700 dark:text-gray-300';
+
+  if (lifecycle === 'over') {
+    if (winningSide === 'left') {
+      score1Color = 'text-gray-900 dark:text-gray-100';
+    } else if (winningSide === 'right') {
+      score2Color = 'text-gray-900 dark:text-gray-100';
+    }
+  } else {
+    // For live or upcoming matches, both scores are dark mode responsive
+    score1Color = 'text-gray-900 dark:text-gray-100';
+    score2Color = 'text-gray-900 dark:text-gray-100';
+  }
 
   return (
     <div
-      className="relative block w-full h-[134px] text-center text-5xs text-white font-urw-din"
+      className="relative block w-full aspect-[2.5] text-center font-sans transform transition-transform duration-200 ease-in-out hover:scale-105"
       style={{ textDecoration: 'none' }}
     >
-      {/* Main container for the scoreboard */}
-      <div className="absolute top-[0px] left-[0px] w-full h-[134px]">
-        {/* Background and border styles */}
-        <div className="absolute h-[calc(100%_-_1px)] w-full top-[1px] right-[0px] bottom-[0px] left-[0px] rounded-5px [background:linear-gradient(180deg,_#fff,_#808080)] box-border opacity-[0.1] border-[1px] border-solid border-gray-500" />
-        <ScoreboardOverlay />
-        
-        {/* Team 1 kills display */}
-        <div className="absolute top-[calc(50%_-_27.5px)] left-[37.58%] text-5xl tracking-[0.6px] font-medium [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] opacity-[0.5]">
-          {match.team1.kills}
-        </div>
-        
-        {/* Team 1 name and record display */}
-        <div className="absolute top-[calc(50%_+_8.5px)] left-[5.98%] capitalize font-medium [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] text-7xs text-gray-500">
-          <span>{match.team1.record}</span>
-          <span className="text-3xs text-white whitespace-pre-wrap">
-            {` ${match.team1.name}`}
-          </span>
-        </div>
+      {/* Background and border styles */}
+      <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />
 
-        {/* Team 2 name and record display */}
-        <div className="absolute top-[calc(50%_+_7.5px)] left-[78.68%] font-medium [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] text-7xs text-gray-500">
-          <span className="whitespace-pre-wrap">{`${match.team2.record} `}</span>
-          <span className="text-3xs text-white">{match.team2.name}</span>
-        </div>
-
-        {/* Team 1 logo display */}
-        <img
-          className="absolute top-[calc(50%_-_43px)] left-[29px] rounded-5px w-11 h-11 object-cover"
-          alt={match.team1.name}
-          src={match.team1.logo}
+      {/* Winning gradient overlay */}
+      {winningSide && (
+        <div
+          className="absolute inset-0 rounded-[5px] opacity-50"
+          style={{
+            backgroundImage:
+              winningSide === 'left'
+                ? `linear-gradient(to right, ${winningColor}, transparent)`
+                : `linear-gradient(to left, ${winningColor}, transparent)`,
+          }}
         />
+      )}
 
-        {/* Team 2 logo display */}
-        <img
-          className="absolute top-[calc(50%_-_44px)] right-[28px] rounded-5px w-11 h-11 object-cover"
-          alt={match.team2.name}
-          src={match.team2.logo}
-        />
-
-        {/* Divider line */}
-        <div className="absolute w-[calc(100%_-_36px)] right-[18.5px] bottom-[9px] left-[17.5px] box-border h-0.5 opacity-[0.1] border-t-[1px] border-solid border-white" />
-
-        {/* Series info banner */}
-        <div className="absolute top-[0px] left-[calc(50%_-_62px)] rounded-t-none rounded-b bg-primary-500 w-[125px] h-[18px]" />
-        <div className="absolute w-[33.74%] top-[calc(50%_-_62px)] left-[33.59%] tracking-[0.2px] font-medium inline-block h-2.5">
-          {match.seriesInfo}
-        </div>
-
-        {/* Leading team and score display */}
-        <div className="absolute w-[24.85%] top-[calc(50%_+_44px)] left-[69.94%] tracking-[0.2px] text-right inline-block h-2.5 opacity-[0.8]">
-          {match.leadingTeam} leads {match.leadingScore}
-        </div>
-
-        {/* Final status display */}
-        <div className="absolute w-[20.55%] top-[calc(50%_-_41px)] left-[40.03%] tracking-[0.2px] font-medium inline-block h-2.5 opacity-[0.6]">
-          Final
-        </div>
-
-        {/* Team 1 seed display */}
-        <div className="absolute w-[20.55%] top-[calc(50%_+_21px)] left-[5.21%] tracking-[0.2px] inline-block h-2.5 opacity-[0.6]">
-          {match.team1.seed}
-        </div>
-
-        {/* Team 2 seed display */}
-        <div className="absolute w-[20.55%] top-[calc(50%_+_21px)] left-[74.54%] tracking-[0.2px] inline-block h-2.5 opacity-[0.6]">
-          {match.team2.seed}
-        </div>
-
-        {/* Center sword icon */}
-        <img
-          className="absolute top-[calc(50%_-_25px)] left-[calc(50%_-_7px)] w-[15px] h-[15px] object-cover"
-          alt="sword icon"
-          src="/icons8sword502@2x.png"
-        />
-
-        {/* Team 2 kills display */}
-        <div className="absolute top-[calc(50%_-_27.5px)] left-[54.14%] text-5xl tracking-[0.6px] font-medium [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)]">
-          {match.team2.kills}
-        </div>
-
-        {/* Team 1 gold display */}
-        <div className="absolute top-[calc(50%_+_2.5px)] left-[37.58%] text-3xs tracking-[0.25px] [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] opacity-[0.5]">
-          {match.team1.gold}
-        </div>
-
-        {/* Center coin icon */}
-        <img
-          className="absolute top-[calc(50%_+_3px)] left-[calc(50%_-_5px)] w-2.5 h-2.5 object-cover"
-          alt="coin icon"
-          src="/icons8coins503@2x.png"
-        />
-
-        {/* Team 2 gold display */}
-        <div className="absolute top-[calc(50%_+_2.5px)] left-[54.14%] text-3xs tracking-[0.25px] [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)]">
-          {match.team2.gold}
-        </div>
-
-        {/* Team 1 towers display */}
-        <div className="absolute top-[calc(50%_+_16.5px)] left-[40.64%] text-3xs tracking-[0.25px] [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)] opacity-[0.5]">
-          {match.team1.towers}
-        </div>
-
-        {/* Center tower icon */}
-        <img
-          className="absolute top-[calc(50%_+_17px)] left-[calc(50%_-_5px)] w-2.5 h-2.5 object-cover"
-          alt="tower icon"
-          src="/icons8tower502@2x.png"
-        />
-
-        {/* Team 2 towers display */}
-        <div className="absolute top-[calc(50%_+_16.5px)] left-[57.21%] text-3xs tracking-[0.25px] [text-shadow:0px_0px_5px_rgba(0,_0,_0,_0.1)] [-webkit-text-stroke:1px_rgba(0,_0,_0,_0)]">
-          {match.team2.towers}
-        </div>
-
-        {/* Game number display */}
-        <div className="absolute w-[24.85%] top-[calc(50%_+_44px)] left-[6.13%] tracking-[0.2px] text-left inline-block h-2.5 opacity-[0.8]">
-          {match.matchNumber}
-        </div>
-
-        {/* Best of 3 display */}
-        <div className="absolute w-[24.85%] top-[calc(50%_+_44px)] left-[38.04%] tracking-[0.2px] inline-block h-2.5 opacity-[0.6]">
-          Best of 3
+      {/* Title box at the top */}
+      <div
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-500 dark:bg-primary-600 rounded-b px-6 py-2 flex items-center justify-center"
+        style={{
+          minWidth: '35%', // Maintained minWidth
+          maxWidth: '100%',
+          height: '10%', // Slightly increased height for better visibility
+        }}
+      >
+        <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+          {title}
         </div>
       </div>
 
-      
+      {/* Flex container for the content */}
+      <div className="absolute inset-x-0 top-[12%] bottom-[12%] flex flex-row items-center justify-between px-4">
+        {/* Left Column */}
+        <div className="flex flex-col items-center w-1/3">
+          {/* Logo Container with increased size and no background */}
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4"> {/* Reduced mb from 6 to 4 */}
+            <img
+              className="max-w-full max-h-full object-contain" // Ensures the entire logo fits without cropping
+              src={team1Logo}
+              alt={team1Name}
+            />
+          </div>
+          {/* Team Name without Seed */}
+          <div className="flex items-center justify-center space-x-1 mt-2 w-full"> {/* Reduced mt from 4 to 2 */}
+            <AutoFitText
+              text={team1Name}
+              maxFontSize={16} // Increased maxFontSize for better readability
+              minFontSize={8}
+              maxLines={2} // Allowing up to 2 lines
+              className="text-gray-900 dark:text-gray-100 font-normal"
+              style={{ width: '100%', textAlign: 'center' }}
+            />
+          </div>
+        </div>
+
+        {/* Center Column */}
+        <div className="flex flex-col items-center w-1/3 justify-center space-y-6">
+          {/* Time */}
+          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100 mt-2">
+            {lifecycle === 'over'
+              ? 'Final'
+              : lifecycle === 'upcoming'
+                ? formattedStartDate
+                : ''}
+          </div>
+          {/* Score */}
+          <div className="flex items-center justify-center space-x-4">
+            <div className={`text-9xl font-bold ${score1Color}`}>{score1}</div>
+            <div className="text-5xl font-bold opacity-80 text-gray-900 dark:text-gray-100">
+              -
+            </div>
+            <div className={`text-9xl font-bold ${score2Color}`}>{score2}</div>
+          </div>
+          {/* Format */}
+          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100">
+            {bestOf}
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="flex flex-col items-center w-1/3">
+          {/* Logo Container with increased size and no background */}
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4"> {/* Reduced mb from 6 to 4 */}
+            <img
+              className="max-w-full max-h-full object-contain" // Ensures the entire logo fits without cropping
+              src={team2Logo}
+              alt={team2Name}
+            />
+          </div>
+          {/* Team Name without Seed */}
+          <div className="flex items-center justify-center space-x-1 mt-2 w-full"> {/* Reduced mt from 4 to 2 */}
+            <AutoFitText
+              text={team2Name}
+              maxFontSize={16} // Increased maxFontSize for better readability
+              minFontSize={8}
+              maxLines={2} // Allowing up to 2 lines
+              className="text-gray-900 dark:text-gray-100 font-normal"
+              style={{ width: '100%', textAlign: 'center' }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Divider line adjusted */}
+      <div className="absolute left-[5%] right-[5%] bottom-[5%] h-0.5 opacity-10 border-t border-solid border-gray-900 dark:border-gray-100" />
     </div>
   );
 };

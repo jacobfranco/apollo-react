@@ -87,7 +87,7 @@ const EsportPage = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-6">{game.name} Esports</h1>
+      <h1 className="text-2xl font-bold mb-6">{game.name}</h1>
       {renderTabBar()}
       <div className="tab-content">
         {renderTabContent()}

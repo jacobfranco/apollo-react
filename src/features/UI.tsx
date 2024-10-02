@@ -31,7 +31,7 @@ import {
 import ChatsPage from "src/pages/ChatsPage";
 import DefaultPage from "src/pages/DefaultPage";
 import EmptyPage from "src/pages/EmptyPage";
-import GamesPage from "src/pages/GamesPage";
+import ESportsPage from "src/pages/ESportsPage";
 // import GroupPage from 'src/pages/GroupPage'; TODO: Implement Groups (do after everything else is done though)
 // import GroupsPage from 'src/pages/GroupsPage';
 // import GroupsPendingPage from 'src/pages/GroupsPendingPage';
@@ -261,7 +261,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
 
       <WrappedRoute
         path="/esports/:esportName/scores/:matchId"
-        page={DefaultPage}
+        page={ESportsPage}
         component={ScoreboardDetailsTab}
         content={children}
         publicRoute
@@ -269,7 +269,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
 
       <WrappedRoute
         path="/esports/:esportName"
-        page={DefaultPage}
+        page={ESportsPage}
         component={ESportPage}
         content={children}
         publicRoute
@@ -277,7 +277,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
 
       <WrappedRoute
         path="/esports"
-        page={DefaultPage}
+        page={EmptyPage}
         component={ESports}
         content={children}
         publicRoute
@@ -780,7 +780,7 @@ const UI: React.FC<IUI> = ({ children }) => {
                   <div className="fixed bottom-0 z-[99] flex h-16 w-96 animate-pulse flex-col rounded-t-lg bg-white shadow-3xl ltr:right-5 rtl:left-5 dark:bg-gray-900" />
                 }
               >
-                {<ChatWidget />}
+                {/* <ChatWidget /> */}
               </Suspense>
             </div>
           )}

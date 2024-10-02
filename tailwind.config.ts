@@ -24,10 +24,14 @@ const config: Config = {
 
       fontSize: {
         base: '0.9375rem',
+        "7xs": "6px",
         "5xs": "8px",
         "3xs": "10px",
+        "3xl": "20px",
         "5xl": "24px",
-        "7xs": "6px",
+        "7xl": "28px",
+        "9xl": "32px",
+        "11xl": "36px",
         inherit: "inherit",
       },
       fontFamily: {

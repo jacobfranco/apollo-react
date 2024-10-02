@@ -231,3 +231,20 @@ export const getAccountGallery = createSelector([
       status.media_attachments.map(media => media.merge({ status, account: status.account })));
   }, ImmutableList());
 });
+
+const selectLolScheduleState = (state: RootState) => state.lol_schedule;
+
+export const selectLolSeries = createSelector(
+  selectLolScheduleState,
+  (lolScheduleState) => lolScheduleState.series
+);
+
+export const selectLolLoading = createSelector(
+  selectLolScheduleState,
+  (lolScheduleState) => lolScheduleState.loading
+);
+
+export const selectLolError = createSelector(
+  selectLolScheduleState,
+  (lolScheduleState) => lolScheduleState.error
+);
