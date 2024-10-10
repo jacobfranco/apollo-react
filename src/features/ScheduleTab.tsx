@@ -9,6 +9,9 @@ import { fetchLolSchedule } from 'src/slices/lol-schedule';
 import { selectLolSeries, selectLolLoading, selectLolError } from 'src/selectors';
 import WeekPicker from 'src/components/WeekPicker';
 import { getAllMondays } from 'src/utils/weeks';
+import { openModal, closeModal } from 'src/actions/modals';
+import { HStack } from 'src/components';
+import { Button } from 'src/components/Button';
 
 const ScheduleTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -46,6 +49,8 @@ const ScheduleTab: React.FC = () => {
     return firstMonday;
   });
 
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+
   useEffect(() => {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
     if (game?.path === 'lol') {
@@ -61,6 +66,22 @@ const ScheduleTab: React.FC = () => {
   if (error) {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
+
+  const handleOpenFilterModal = () => {
+    dispatch(openModal('REGION_FILTER', {
+      onApplyFilter: (regions: string[]) => {
+        setSelectedRegions(regions);
+        dispatch(closeModal());
+      }
+    }));
+  };
+
+  const filteredSeries = series.filter(seriesItem =>
+    selectedRegions.length === 0 ||
+    seriesItem.participants.some(participant =>
+      selectedRegions.includes(participant.roster.team.region?.abbreviation || '')
+    )
+  );
 
   const renderScoresContent = () => {
     switch (game.path) {
@@ -104,9 +125,12 @@ const ScheduleTab: React.FC = () => {
 
   return (
     <div className="space-y-8 mt-4">
-      <div className="flex justify-center mb-4">
+      <HStack justifyContent="center" alignItems="center" space={4} className="mb-4">
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
-      </div>
+        <Button onClick={handleOpenFilterModal}>
+          Filter Regions
+        </Button>
+      </HStack>
       {renderScoresContent()}
     </div>
   );

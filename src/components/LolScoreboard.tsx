@@ -82,8 +82,8 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
           style={{
             backgroundImage:
               winningSide === 'left'
-                ? `linear-gradient(to right, ${winningColor}, transparent)`
-                : `linear-gradient(to left, ${winningColor}, transparent)`,
+                ? `linear-gradient(to right, ${winningColor} 0%, ${winningColor} 5%, transparent 67.7%)`
+                : `linear-gradient(to left, ${winningColor} 0%, ${winningColor} 5%, transparent 67.7%)`,
           }}
         />
       )}

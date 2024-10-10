@@ -23,6 +23,7 @@ import {
 } from 'immutable'
 
 import type { LegacyMap } from 'src/utils/legacy';
+import { z } from 'zod';
 
 type Attachment = ReturnType<typeof AttachmentRecord>;
 type Chat = ReturnType<typeof ChatRecord>;
@@ -75,6 +76,7 @@ export type {
   Group,
   GroupMember,
   GroupRelationship,
+  LiveMatch,
   Poll,
   PollOption,
   Relationship

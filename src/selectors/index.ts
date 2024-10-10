@@ -248,3 +248,7 @@ export const selectLolError = createSelector(
   selectLolScheduleState,
   (lolScheduleState) => lolScheduleState.error
 );
+
+export const selectLiveMatchById = (state: RootState, matchId: number) => {
+  return state.live_match.liveMatches[matchId];
+};

@@ -26,14 +26,10 @@ const initialState: SpacesState = {
 const getUrlPath = (url: string) => url.split('/').pop() || '';
 
 export default function spaces(state: SpacesState = initialState, action: AnyAction): SpacesState {
-  console.log('Spaces reducer: Action type:', action.type);
-  console.log('Current state:', state);
 
   switch (action.type) {
     case SPACE_FETCH_SUCCESS:
-      console.log('SPACE_FETCH_SUCCESS reducer:', action.space);
       const normalizedSpace = normalizeSpace(action.space);
-      console.log('Normalized space:', normalizedSpace.toJS());
       const spaceName = normalizedSpace.get('name');
       const spaceUrl = getUrlPath(normalizedSpace.get('url'));
       return {

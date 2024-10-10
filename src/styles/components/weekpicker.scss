@@ -1,3 +1,5 @@
+/* week-picker.css */
+
 .week-picker {
   @apply relative inline-block;
 }
@@ -19,7 +21,6 @@
   @apply px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700;
   @apply text-gray-900 dark:text-gray-300;
   @apply text-center;
-  /* Center the text */
   @apply transition-colors duration-200;
 }
 
@@ -29,4 +30,34 @@
 
 .week-picker__item:focus {
   @apply outline-none ring-2 ring-primary-500;
+}
+
+.week-picker__item-content {
+  @apply flex flex-col items-center;
+}
+
+.week-picker__item-date {
+  @apply font-medium;
+}
+
+.week-picker__item-year {
+  @apply text-sm text-gray-500;
+}
+
+/* RangeIconButton Specific Styles */
+
+.range-line-text {
+  @apply flex flex-col items-center;
+}
+
+.range-line-text__date {
+  @apply text-sm font-medium;
+}
+
+.range-line-text__year {
+  @apply text-xs text-gray-500;
+}
+
+.range-line-text__dash {
+  @apply mx-2 text-sm font-semibold;
 }

@@ -3,7 +3,7 @@ import { importEntities } from 'src/entity-store/actions';
 import { Entities } from 'src/entity-store/entities';
 import { selectEntity } from 'src/entity-store/selectors';
 import messages from 'src/messages';
-import { ChatKeys, IChat, isLastMessage } from 'src/queries/chats'; 
+import { ChatKeys, IChat, isLastMessage } from 'src/queries/chats';
 import { queryClient } from 'src/queries/client';
 import { getUnreadChatsCount, updateChatListItem, updateChatMessage } from 'src/utils/chats';
 import { removePageItem } from 'src/utils/queries';
@@ -23,12 +23,20 @@ import {
   processTimelineUpdate,
 } from 'src/actions/timelines';
 
+import { addOrUpdateLiveMatch } from 'src/slices/live-match';
+
 import type { IStatContext } from 'src/contexts/stat-context';
-import type { Relationship } from 'src/schemas';
+import { liveMatchSchema, type Relationship } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity, Chat} from 'src/types/entities';
+import type { APIEntity, Chat, LiveMatch } from 'src/types/entities';
 
 const STREAMING_CHAT_UPDATE = 'STREAMING_CHAT_UPDATE';
+
+// Define the mapping from game IDs to sport identifiers
+const GAME_ID_TO_SPORT: Record<number, 'lol'> = {
+  2: 'lol',        // League of Legends
+  // Add other game mappings as needed
+};
 
 const removeChatMessage = (payload: string) => {
   const data = JSON.parse(payload);
@@ -118,7 +126,7 @@ const connectTimelineStream = (
         case 'filters_changed':
           dispatch(fetchFilters());
           break;
-        case 'chat_message.created': 
+        case 'chat_message.created':
           dispatch((_dispatch: AppDispatch, getState: () => RootState) => {
             const chat = JSON.parse(data.payload);
             const me = getState().me;
@@ -138,10 +146,10 @@ const connectTimelineStream = (
             }
           });
           break;
-        case 'chat_message.deleted': 
+        case 'chat_message.deleted':
           removeChatMessage(data.payload);
           break;
-        case 'chat_message.read': 
+        case 'chat_message.read':
           dispatch((_dispatch: AppDispatch, getState: () => RootState) => {
             const chat = JSON.parse(data.payload);
             const me = getState().me;
@@ -151,7 +159,7 @@ const connectTimelineStream = (
             }
           });
           break;
-        case 'chat_message.reaction': 
+        case 'chat_message.reaction':
           updateChatMessage(JSON.parse(data.payload));
           break;
         case 'pleroma:follow_relationships_update':
@@ -164,6 +172,49 @@ const connectTimelineStream = (
     },
   };
 });
+
+// **New Action to Connect to Live Match Stream**
+const connectLiveMatchStream = (
+  matchId: number,
+  path: string,
+) => connectStream(path, null, (dispatch: AppDispatch, getState: () => RootState) => {
+  const locale = getLocale(getState());
+
+  return {
+    onConnect() {
+      console.log(`Connected to live match stream for matchId: ${matchId}`);
+    },
+
+    onDisconnect() {
+      console.log(`Disconnected from live match stream for matchId: ${matchId}`);
+    },
+
+    onReceive(websocket: WebSocket, data: any) {
+      if (typeof data === 'object' && data !== null) {
+        const gameId = data.game?.id;
+        const sport = GAME_ID_TO_SPORT[gameId];
+
+        if (!sport) {
+          console.warn(`Unknown sport for gameId: ${gameId}`);
+          return;
+        }
+
+        // Validate data against the schema
+        const parseResult = liveMatchSchema.safeParse({ ...data, sport });
+
+        if (!parseResult.success) {
+          console.error('Invalid LiveMatch data received:', parseResult.error);
+          return;
+        }
+
+        const liveMatch: LiveMatch = parseResult.data;
+
+        dispatch(addOrUpdateLiveMatch(liveMatch));
+      }
+    },
+  };
+});
+
 
 function followStateToRelationship(followState: string) {
   switch (followState) {
@@ -212,5 +263,6 @@ function updateFollowRelationships(update: FollowUpdate) {
 export {
   STREAMING_CHAT_UPDATE,
   connectTimelineStream,
+  connectLiveMatchStream,
   type TimelineStreamOpts,
 };

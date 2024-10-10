@@ -93,6 +93,7 @@ export const PlayersTab = lazy(() => import('./PlayersTab'));
 export const FantasyTab = lazy(() => import('./FantasyTab'));
 export const MediaTab = lazy(() => import('./MediaTab'));
 export const EsportsTab = lazy(() => import('./EsportsTab'));
+export const RegionFilterModal = lazy(() => import('./modals/RegionFilterModal'));
 // export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
 // export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement

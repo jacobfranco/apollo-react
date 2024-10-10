@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { connectTimelineStream } from 'src/actions/streaming';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { getAccessToken } from 'src/utils/auth';
+import * as BuildConfig from 'src/build-config';
 
 function useTimelineStream(...args: Parameters<typeof connectTimelineStream>) {
   // TODO: get rid of streaming.ts and move the actual opts here.
@@ -13,7 +14,7 @@ function useTimelineStream(...args: Parameters<typeof connectTimelineStream>) {
   const stream = useRef<(() => void) | null>(null);
 
   const accessToken = useAppSelector(getAccessToken);
-  const streamingUrl = ''; // TODO: Figure out what this should be
+  const streamingUrl = BuildConfig.STREAMING_URL;
 
   const connect = () => {
     if (enabled && streamingUrl && !stream.current) {

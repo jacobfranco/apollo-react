@@ -1,7 +1,9 @@
+// WeekPicker.tsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { getAllMondays } from 'src/utils/weeks';
 import { format } from 'date-fns';
-import IconButton from './IconButton';
+import ArrowButton from './ArrowButton';
+import RangeIconButton from './RangeIconButton'; // Updated import
 
 interface WeekPickerProps {
   selectedDate: Date;
@@ -74,43 +76,42 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
   };
 
   const formattedSelectedDate = useMemo(() => {
-    const endOfWeek = new Date(selectedDate);
-    endOfWeek.setDate(selectedDate.getDate() + 6);
-    return `${format(selectedDate, 'MMM d, yyyy')} - ${format(endOfWeek, 'MMM d, yyyy')}`;
+    const startDate = format(selectedDate, 'MMM d');
+    const endDate = format(new Date(selectedDate.getTime() + 6 * 24 * 60 * 60 * 1000), 'MMM d');
+    const year = format(selectedDate, 'yyyy');
+    return { startDate, endDate, year };
   }, [selectedDate]);
 
   return (
     <div className="week-picker" ref={dropdownRef}>
       <div className="week-picker__controls">
         {/* Previous Week Button */}
-        <IconButton
+        <ArrowButton
           onClick={handlePreviousWeek}
           disabled={selectedDate <= allMondays[0]}
           src={require('@tabler/icons/outline/chevron-left.svg')}
-          theme="outlined" // Choose appropriate theme
-          aria-label="Previous Week"
-          iconClassName="h-5 w-5" // Adjust icon size as needed
+          ariaLabel="Previous Week"
         />
 
         {/* Dropdown Toggle Button */}
-        <IconButton
+        <RangeIconButton
           onClick={toggleDropdown}
-          src={require('@tabler/icons/outline/calendar.svg')}
-          text={formattedSelectedDate}
-          theme="outlined" // Choose appropriate theme
+          // Removed src prop as icon is no longer needed
+          startDate={formattedSelectedDate.startDate}
+          startYear={formattedSelectedDate.year}
+          endDate={formattedSelectedDate.endDate}
+          endYear={formattedSelectedDate.year}
+          theme="outlined" // You can keep this or change based on design
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          iconClassName="h-5 w-5 mr-2" // Adjust icon size and spacing
         />
 
         {/* Next Week Button */}
-        <IconButton
+        <ArrowButton
           onClick={handleNextWeek}
           disabled={selectedDate >= allMondays[allMondays.length - 1]}
           src={require('@tabler/icons/outline/chevron-right.svg')}
-          theme="outlined" // Choose appropriate theme
-          aria-label="Next Week"
-          iconClassName="h-5 w-5" // Adjust icon size as needed
+          ariaLabel="Next Week"
         />
       </div>
 
@@ -122,6 +123,11 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
               const endOfWeek = new Date(date);
               endOfWeek.setDate(date.getDate() + 6);
               const isSelected = date.getTime() === selectedDate.getTime();
+
+              const weekStart = format(date, 'MMM d');
+              const weekEnd = format(endOfWeek, 'MMM d');
+              const weekYear = format(date, 'yyyy');
+
               return (
                 <li
                   key={date.toISOString()}
@@ -136,7 +142,10 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
                     }
                   }}
                 >
-                  {`${format(date, 'MMM d, yyyy')} - ${format(endOfWeek, 'MMM d, yyyy')}`}
+                  <div className="week-picker__item-content">
+                    <span className="week-picker__item-date">{`${weekStart} - ${weekEnd}`}</span>
+                    <span className="week-picker__item-year">{weekYear}</span>
+                  </div>
                 </li>
               );
             })}

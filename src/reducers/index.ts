@@ -48,6 +48,8 @@ import trending_statuses from './trending-statuses'
 import trends from './trends'
 import user_lists from './user-lists'
 
+// Slices for eSports data
+import live_match from 'src/slices/live-match'
 import lol_schedule from 'src/slices/lol-schedule'
 
 const reducers = {
@@ -67,6 +69,7 @@ const reducers = {
   group_memberships,
   group_relationships,
   groups,
+  live_match,
   lol_schedule,
   me,
   meta,

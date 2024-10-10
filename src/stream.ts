@@ -1,6 +1,7 @@
 import WebSocketClient from '@gamestdio/websocket';
 
 import { getAccessToken } from 'src/utils/auth';
+import * as BuildConfig from 'src/build-config'
 
 import type { AppDispatch, RootState } from 'src/store';
 
@@ -20,7 +21,7 @@ export function connectStream(
   callbacks: (dispatch: AppDispatch, getState: () => RootState) => ConnectStreamCallbacks,
 ) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const streamingAPIBaseURL = '';  // TODO: Figure this out from backend
+    const streamingAPIBaseURL = BuildConfig.STREAMING_URL;
     const accessToken = getAccessToken(getState());
     const { onConnect, onDisconnect, onReceive } = callbacks(dispatch, getState);
 
@@ -104,15 +105,15 @@ export default function getStream(
     reconnected: ((this: WebSocket, ev: Event) => any);
   },
 ) {
-  const params = [ `stream=${stream}` ];
+  const params = [`stream=${stream}`];
 
   const ws = new WebSocketClient(`${streamingAPIBaseURL}/api/streaming/?${params.join('&')}`, accessToken as any);
 
-  ws.onopen      = connected;
-  ws.onclose     = disconnected;
+  ws.onopen = connected;
+  ws.onclose = disconnected;
   ws.onreconnect = reconnected;
 
-  ws.onmessage   = (e) => {
+  ws.onmessage = (e) => {
     if (!e.data) return;
     try {
       received(JSON.parse(e.data));
