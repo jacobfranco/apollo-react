@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { CoverageDetailSchema } from './coverage-detail';
+import { coverageDetailSchema } from './coverage-detail';
 
-export const CoverageDataSchema = z.object({
+export const coverageDataSchema = z.object({
   live: z.object({
-    api: CoverageDetailSchema,
-    cv: CoverageDetailSchema,
+    api: coverageDetailSchema,
+    cv: coverageDetailSchema,
     server: z.any().optional().nullable(), // Adjusted to be optional and nullable
   }),
   realtime: z.object({
-    api: CoverageDetailSchema,
+    api: coverageDetailSchema,
     cv: z.any().optional().nullable(), // Adjusted to be optional and nullable
     server: z.object({
       expectation: z.string(),
@@ -16,7 +16,7 @@ export const CoverageDataSchema = z.object({
     }).optional().nullable(), // Adjusted to be optional and nullable
   }),
   postgame: z.object({
-    api: CoverageDetailSchema,
+    api: coverageDetailSchema,
     cv: z.any().optional().nullable(), // Adjusted to be optional and nullable
     server: z.object({
       expectation: z.string(),
@@ -25,4 +25,4 @@ export const CoverageDataSchema = z.object({
   }),
 });
 
-export type CoverageData = z.infer<typeof CoverageDataSchema>;
+export type CoverageData = z.infer<typeof coverageDataSchema>;

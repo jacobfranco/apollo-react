@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { CoverageDataSchema } from './coverage-data';
+import { coverageDataSchema } from './coverage-data';
 
-export const CoverageSchema = z.object({
-  data: CoverageDataSchema,
+export const coverageSchema = z.object({
+  data: coverageDataSchema,
 });
 
-export type Coverage = z.infer<typeof CoverageSchema>;
+export type Coverage = z.infer<typeof coverageSchema>;

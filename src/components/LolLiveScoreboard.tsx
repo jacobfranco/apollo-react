@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { LiveMatch } from 'src/types/entities';
 import { useTeamColors } from 'src/team-colors';
 import AutoFitText from './AutoFitText';
@@ -6,9 +6,10 @@ import placeholderTeam from 'src/assets/images/placeholder-team.png';
 import useLiveMatchStream from 'src/api/hooks/useLiveMatchStream';
 import { useAppSelector } from 'src/hooks';
 import { selectLiveMatchById } from 'src/selectors'; // Ensure this selector exists
+import { Series } from 'src/schemas/series';
 
 interface LolLiveScoreboardProps {
-  series: any; // Replace with appropriate type if available
+  series: Series; // Replace with the appropriate type if available
 }
 
 const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
@@ -19,14 +20,18 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
       return null;
     }
 
-    // Example logic: sum of participant scores determines the current match
-    // Adjust this logic based on your actual criteria for live matches
-    const totalScore = series.participants.reduce((acc: number, participant: any) => acc + participant.score, 0);
-    const currentMatchIndex = totalScore; // Assuming 0-based index and each score increment represents a match
+    // Logic to determine the current match index
+    const totalScore = series.participants.reduce(
+      (acc: number, participant: any) => acc + participant.score,
+      0
+    );
+    const currentMatchIndex = totalScore;
 
     // Ensure the index is within bounds
     if (currentMatchIndex >= series.matchIds.length) {
-      console.warn(`Calculated match index ${currentMatchIndex} exceeds available matchIds.`);
+      console.warn(
+        `Calculated match index ${currentMatchIndex} exceeds available matchIds.`
+      );
       return null;
     }
 
@@ -39,24 +44,51 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   useLiveMatchStream(matchId);
 
   // 3. Select the live match data from the Redux store
-  const liveMatch: LiveMatch | undefined = useAppSelector(state =>
+  const liveMatch: LiveMatch | undefined = useAppSelector((state) =>
     matchId ? selectLiveMatchById(state, matchId) : undefined
   );
+
+  useEffect(() => {
+    console.log(`Component re-rendered. LiveMatch for matchId ${matchId}:`, liveMatch);
+  }, [liveMatch, matchId]);
 
   // 4. Log the liveMatch object for debugging
   console.log(`Received liveMatch for matchId ${matchId}:`, liveMatch);
 
-  // 5. Fallback to initial series data if live match data isn't available yet
-  const currentSeries = liveMatch?.series || series;
-  const participants = liveMatch?.participants || series.participants;
-  const lifecycle = liveMatch?.lifecycle || series.lifecycle;
+  // 5. Use series data as base
+  const currentSeries = series;
+
+  // 6. Merge participants
+  const mergedParticipants = currentSeries.participants.map(
+    (seriesParticipant: any) => {
+      // Match participants by seed or another unique identifier
+      const liveParticipant = liveMatch?.participants?.find(
+        (lp: any) => lp.seed === seriesParticipant.seed
+      );
+
+      if (liveParticipant) {
+        return {
+          ...seriesParticipant,
+          stats: liveParticipant.stats, // Overlay live stats
+        };
+      } else {
+        return seriesParticipant;
+      }
+    }
+  );
+
+  // 7. Update lifecycle
+  const lifecycle = liveMatch?.lifecycle || currentSeries.lifecycle;
+
+  // 8. Proceed with rendering using mergedParticipants and updated lifecycle
+
   const start = currentSeries.start;
 
   const getTeamColor = useTeamColors();
 
   // Extract team and participant data
-  const team1 = participants[0]?.roster.team;
-  const team2 = participants[1]?.roster.team;
+  const team1 = mergedParticipants[0]?.roster.team;
+  const team2 = mergedParticipants[1]?.roster.team;
 
   const team1Name = team1?.name || 'Team 1';
   const team2Name = team2?.name || 'Team 2';
@@ -64,17 +96,18 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
 
-  const team1Kills = participants[0]?.stats?.kills ?? 0;
-  const team2Kills = participants[1]?.stats?.kills ?? 0;
+  const team1Kills = mergedParticipants[0]?.stats?.kills ?? 0;
+  const team2Kills = mergedParticipants[1]?.stats?.kills ?? 0;
 
-  const team1Gold = participants[0]?.stats?.gold ?? 0;
-  const team2Gold = participants[1]?.stats?.gold ?? 0;
+  const team1Gold = mergedParticipants[0]?.stats?.gold ?? 0;
+  const team2Gold = mergedParticipants[1]?.stats?.gold ?? 0;
 
-  const team1Towers = participants[0]?.stats?.towers ?? 0;
-  const team2Towers = participants[1]?.stats?.towers ?? 0;
+  const team1Towers = mergedParticipants[0]?.stats?.towers ?? 0;
+  const team2Towers = mergedParticipants[1]?.stats?.towers ?? 0;
 
   // Determine the leading side based on Kills
-  const leadingSide = team1Kills > team2Kills ? 'left' : team2Kills > team1Kills ? 'right' : null;
+  const leadingSide =
+    team1Kills > team2Kills ? 'left' : team2Kills > team1Kills ? 'right' : null;
 
   // Get team colors from the mapping, default to a color if not found
   const team1Color = getTeamColor(team1Name);
@@ -82,10 +115,16 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
 
   // Leading color (use team color)
   const leadingColor =
-    leadingSide === 'left' ? team1Color : leadingSide === 'right' ? team2Color : '#A981FC';
+    leadingSide === 'left'
+      ? team1Color
+      : leadingSide === 'right'
+        ? team2Color
+        : '#A981FC';
 
   // Format string
-  const bestOf = currentSeries.format?.bestOf ? `Best of ${currentSeries.format.bestOf}` : '';
+  const bestOf = currentSeries.format?.bestOf
+    ? `Best of ${currentSeries.format.bestOf}`
+    : '';
 
   // Format the start date
   const startDate = new Date(start * 1000);
@@ -101,7 +140,9 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   let metricColor = 'text-gray-700 dark:text-gray-300';
 
   if (lifecycle === 'over') {
-    metricColor = leadingSide ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300';
+    metricColor = leadingSide
+      ? 'text-gray-900 dark:text-gray-100'
+      : 'text-gray-700 dark:text-gray-300';
   } else {
     // For live or upcoming matches, metrics are dark mode responsive
     metricColor = 'text-gray-900 dark:text-gray-100';

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-export const FormatSchema = z.object({
+export const formatSchema = z.object({
   bestOf: z.number(),
 });
 
-export type Format = z.infer<typeof FormatSchema>;
+export type Format = z.infer<typeof formatSchema>;

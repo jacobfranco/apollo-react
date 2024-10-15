@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
-export const StandingRosterSchema = z.object({
+import { dateStringOrNumber } from 'src/utils/dates'
+
+export const standingRosterSchema = z.object({
   id: z.number(),
-  from: z.number(),
-  to: z.number(),
+  from: dateStringOrNumber,
+  to: dateStringOrNumber,
   rosterId: z.number(),
-  deletedAt: z.number().optional(),
+  deletedAt: dateStringOrNumber,
 });
 
-export type StandingRoster = z.infer<typeof StandingRosterSchema>;
+export type StandingRoster = z.infer<typeof standingRosterSchema>;

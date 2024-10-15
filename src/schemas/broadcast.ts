@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const BroadcastSchema = z.object({
+export const broadcastSchema = z.object({
   externalId: z.string(),
   languageId: z.number(),
 });
 
-export type Broadcast = z.infer<typeof BroadcastSchema>;
+export type Broadcast = z.infer<typeof broadcastSchema>;

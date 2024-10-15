@@ -164,7 +164,7 @@ export const authLoggedIn = (token: Record<string, string | number>) =>
     return token;
   };
 
-export const logOut = () =>
+export const logOut = (refresh = true) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
     const account = getLoggedInAccount(state);
@@ -186,7 +186,12 @@ export const logOut = () =>
         // Clear the account from Sentry.
         unsetSentryAccount();
 
-        dispatch({ type: AUTH_LOGGED_OUT, account });
+        // Remove external auth entries.
+        localStorage.removeItem('apollo:external:app');
+        localStorage.removeItem('apollo:external:baseurl');
+        localStorage.removeItem('apollo:external:scopes');
+
+        dispatch({ type: AUTH_LOGGED_OUT, account, refresh });
 
         toast.success(messages.loggedOut);
       });

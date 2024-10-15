@@ -1,20 +1,23 @@
-// src/schemas/live-match.ts
-
 import { z } from 'zod';
-import { ParticipantSchema } from './participant'; // Adjust the import path as necessary
-import { CoverageSchema } from './coverage';
-import { SeriesSchema } from './series';       // Assuming you have a schema for coverage
+import { participantSchema } from './participant';
+import { coverageSchema } from './coverage';
+import { mapSchema } from './map';
+import { gameSchema } from './game';
+import { dateStringOrNumber } from 'src/utils/dates'
 
-// Define LiveMatch schema
 export const liveMatchSchema = z.object({
   id: z.number(),
-  lifecycle: z.string(),
+  map: mapSchema,
+  lifecycle: z.enum(['upcoming', 'live', 'over', 'deleted', 'over-forfeited']),
   order: z.number(),
-  series: SeriesSchema,
-  deletedAt: z.date().nullable(),
-  participants: z.array(ParticipantSchema),
-  coverage: CoverageSchema.optional().nullable(),
+  series: z.object({ id: z.number() }).passthrough(), // Adjusted series schema
+  deletedAt: dateStringOrNumber,
+  game: gameSchema,
+  participants: z.array(participantSchema),
+  winner: z.boolean().optional(),
+  stats: z.any().optional().nullable(),
+  coverage: coverageSchema.optional().nullable(),
   resourceVersion: z.number(),
-});
+}).passthrough();
 
 export type LiveMatch = z.infer<typeof liveMatchSchema>;

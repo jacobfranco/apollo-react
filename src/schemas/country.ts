@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { ImageSchema } from './image';
+import { imageSchema } from './image';
 
-export const CountrySchema = z.object({
+export const countrySchema = z.object({
   id: z.number(),
   name: z.string(),
   abbreviation: z.string(),
-  images: z.array(ImageSchema),
+  images: z.array(imageSchema),
 });
 
-export type Country = z.infer<typeof CountrySchema>;
+export type Country = z.infer<typeof countrySchema>;

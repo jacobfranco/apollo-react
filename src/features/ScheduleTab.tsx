@@ -5,20 +5,21 @@ import LolScoreboard from 'src/components/LolScoreboard';
 import LolLiveScoreboard from 'src/components/LolLiveScoreboard';
 import ValorantScoreboard from 'src/components/ValorantScoreboard';
 import esportsConfig from 'src/esports-config';
-import { fetchLolSchedule } from 'src/slices/lol-schedule';
 import { selectLolSeries, selectLolLoading, selectLolError } from 'src/selectors';
 import WeekPicker from 'src/components/WeekPicker';
 import { getAllMondays } from 'src/utils/weeks';
 import { openModal, closeModal } from 'src/actions/modals';
 import { HStack } from 'src/components';
 import { Button } from 'src/components/Button';
+import { Series } from 'src/schemas/series';
+import { fetchLolSchedule } from 'src/actions/lol-schedule';
 
 const ScheduleTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { esportName } = useParams<{ esportName: string }>();
   const game = esportsConfig.find((g) => g.path === esportName);
 
-  const series = useAppSelector(selectLolSeries);
+  const series: Series[] = useAppSelector((state) => selectLolSeries(state).toArray());
   const loading = useAppSelector(selectLolLoading);
   const error = useAppSelector(selectLolError);
 
@@ -76,9 +77,9 @@ const ScheduleTab: React.FC = () => {
     }));
   };
 
-  const filteredSeries = series.filter(seriesItem =>
+  const filteredSeries = series.filter((seriesItem: Series) =>
     selectedRegions.length === 0 ||
-    seriesItem.participants.some(participant =>
+    seriesItem.participants.some((participant) =>
       selectedRegions.includes(participant.roster.team.region?.abbreviation || '')
     )
   );

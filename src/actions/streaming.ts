@@ -23,12 +23,11 @@ import {
   processTimelineUpdate,
 } from 'src/actions/timelines';
 
-import { addOrUpdateLiveMatch } from 'src/slices/live-match';
-
 import type { IStatContext } from 'src/contexts/stat-context';
 import { liveMatchSchema, type Relationship } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
 import type { APIEntity, Chat, LiveMatch } from 'src/types/entities';
+import { addOrUpdateLiveMatch } from './live-match';
 
 const STREAMING_CHAT_UPDATE = 'STREAMING_CHAT_UPDATE';
 
@@ -189,31 +188,49 @@ const connectLiveMatchStream = (
       console.log(`Disconnected from live match stream for matchId: ${matchId}`);
     },
 
-    onReceive(websocket: WebSocket, data: any) {
+    onReceive(websocket: WebSocket, data: any) { // Corrected signature
+      console.log('Received data:', data);
+
       if (typeof data === 'object' && data !== null) {
-        const gameId = data.game?.id;
-        const sport = GAME_ID_TO_SPORT[gameId];
+        // Ensure the event is related to liveMatch
+        if (data.event === 'liveMatch') {
+          let payload = data.payload;
+          if (typeof payload === 'string') {
+            try {
+              payload = JSON.parse(payload);
+            } catch (error) {
+              console.error('Failed to parse payload:', error);
+              return;
+            }
+          }
 
-        if (!sport) {
-          console.warn(`Unknown sport for gameId: ${gameId}`);
-          return;
+          const gameId = payload.game?.id;
+          const sport = GAME_ID_TO_SPORT[gameId];
+
+          if (!sport) {
+            console.warn(`Unknown sport for gameId: ${gameId}`);
+            return;
+          }
+
+          // Validate data against the schema
+          const parseResult = liveMatchSchema.safeParse({ ...payload, sport });
+
+          if (!parseResult.success) {
+            console.error('Invalid LiveMatch data received:', parseResult.error);
+            return;
+          }
+
+          const liveMatch: LiveMatch = parseResult.data;
+
+          // Dispatch the action to update the Redux store
+          dispatch(addOrUpdateLiveMatch(liveMatch));
         }
-
-        // Validate data against the schema
-        const parseResult = liveMatchSchema.safeParse({ ...data, sport });
-
-        if (!parseResult.success) {
-          console.error('Invalid LiveMatch data received:', parseResult.error);
-          return;
-        }
-
-        const liveMatch: LiveMatch = parseResult.data;
-
-        dispatch(addOrUpdateLiveMatch(liveMatch));
       }
     },
   };
 });
+
+
 
 
 function followStateToRelationship(followState: string) {

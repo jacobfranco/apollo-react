@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import { RosterSchema } from './roster';
+import { rosterSchema } from './roster';
 
-export const ParticipantSchema = z.object({
+export const participantSchema = z.object({
   seed: z.number(),
   score: z.number(),
   forfeit: z.boolean(),
-  roster: RosterSchema,
+  roster: rosterSchema,
   winner: z.boolean(),
   stats: z.any().optional().nullable(), // Adjusted to be optional and nullable
 });
 
-export type Participant = z.infer<typeof ParticipantSchema>;
+export type Participant = z.infer<typeof participantSchema>;

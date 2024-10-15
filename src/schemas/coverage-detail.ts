@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const CoverageDetailSchema = z.object({
+export const coverageDetailSchema = z.object({
   expectation: z
     .union([
       z.literal('unsupported'),
@@ -21,4 +21,4 @@ export const CoverageDetailSchema = z.object({
     .nullable(),
 });
 
-export type CoverageDetail = z.infer<typeof CoverageDetailSchema>;
+export type CoverageDetail = z.infer<typeof coverageDetailSchema>;

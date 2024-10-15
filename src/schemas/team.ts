@@ -1,20 +1,22 @@
 import { z } from 'zod';
-import { ImageSchema } from './image';
-import { RegionSchema } from './region';
-import { SocialMediaAccountSchema } from './social-media-account';
-import { StandingRosterSchema } from './standing-roster';
+import { imageSchema } from './image';
+import { regionSchema } from './region';
+import { socialMediaAccountSchema } from './social-media-account';
+import { standingRosterSchema } from './standing-roster';
 
-export const TeamSchema = z.object({
+import { dateStringOrNumber } from 'src/utils/dates'
+
+export const teamSchema = z.object({
   id: z.number(),
   name: z.string(),
   abbreviation: z.string().optional(),
   alsoKnownAs: z.array(z.string()).optional(),
-  deletedAt: z.number().optional(),
+  deletedAt: dateStringOrNumber,
   active: z.boolean().optional(),
-  images: z.array(ImageSchema).optional(),
-  region: RegionSchema.optional().nullable(), // Adjusted to be optional and nullable
-  socialMediaAccounts: z.array(SocialMediaAccountSchema).optional(),
-  standingRoster: StandingRosterSchema.optional().nullable(), // Adjusted to be optional and nullable
+  images: z.array(imageSchema).optional(),
+  region: regionSchema.optional().nullable(), // Adjusted to be optional and nullable
+  socialMediaAccounts: z.array(socialMediaAccountSchema).optional(),
+  standingRoster: standingRosterSchema.optional().nullable(), // Adjusted to be optional and nullable
   gameId: z.number().optional(),
   organizationId: z.number().optional(),
   resourceVersion: z.number().optional(),
@@ -22,4 +24,4 @@ export const TeamSchema = z.object({
   lolSeasonStats: z.any().optional().nullable(),
 });
 
-export type Team = z.infer<typeof TeamSchema>;
+export type Team = z.infer<typeof teamSchema>;

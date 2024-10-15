@@ -1,8 +1,5 @@
-import { Record as ImmutableRecord } from 'immutable'
-import { combineReducers } from 'redux-immutable'
+import { combineReducers } from '@reduxjs/toolkit'
 
-import { AUTH_LOGGED_OUT } from 'src/actions/auth';
-import * as BuildConfig from 'src/build-config';
 import entities from 'src/entity-store/reducer'
 
 import admin_user_index from './admin-user-index'
@@ -20,6 +17,8 @@ import followed_tags from './followed-tags'
 import group_memberships from './group-memberships';
 import group_relationships from './group-relationships';
 import groups from './groups';
+import live_match from './live-match'
+import lol_schedule from './lol-schedule'
 import me from './me'
 import meta from './meta'
 import modals from './modals'
@@ -47,10 +46,6 @@ import timelines from './timelines'
 import trending_statuses from './trending-statuses'
 import trends from './trends'
 import user_lists from './user-lists'
-
-// Slices for eSports data
-import live_match from 'src/slices/live-match'
-import lol_schedule from 'src/slices/lol-schedule'
 
 const reducers = {
   admin_user_index,
@@ -100,39 +95,4 @@ const reducers = {
   user_lists
 };
 
-// Build a default state from all reducers: it has the key and `undefined`
-export const StateRecord = ImmutableRecord(
-  Object.keys(reducers).reduce((params: Record<string, any>, reducer) => {
-    params[reducer] = undefined;
-    return params;
-  }, {}),
-);
-
-const appReducer = combineReducers(reducers, StateRecord);
-
-// Clear the state (mostly) when the user logs out
-const logOut = (state: any = StateRecord()): ReturnType<typeof appReducer> => {
-  if (BuildConfig.NODE_ENV === 'production') {
-    location.href = '/login';
-  }
-
-  const whitelist: string[] = ['instance', 'apollo', 'auth']; // TODO: Change
-
-  return StateRecord(
-    whitelist.reduce((acc: Record<string, any>, curr) => {
-      acc[curr] = state.get(curr);
-      return acc;
-    }, {}),
-  ) as unknown as ReturnType<typeof appReducer>;
-};
-
-const rootReducer: typeof appReducer = (state, action) => {
-  switch (action.type) {
-    case AUTH_LOGGED_OUT:
-      return appReducer(logOut(state), action);
-    default:
-      return appReducer(state, action);
-  }
-};
-
-export default rootReducer;
+export default combineReducers(reducers);

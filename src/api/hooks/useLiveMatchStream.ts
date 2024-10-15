@@ -4,16 +4,16 @@ import { connectLiveMatchStream } from 'src/actions/streaming';
 import { getAccessToken } from 'src/utils/auth';
 import * as BuildConfig from 'src/build-config';
 
-const useLiveMatchStream = (matchId: number) => {
+const useLiveMatchStream = (matchId: number | null) => {
   const dispatch = useAppDispatch();
   const stream = useRef<(() => void) | null>(null);
 
   const accessToken = useAppSelector(getAccessToken);
   const streamingUrl = BuildConfig.STREAMING_URL;
-  const path = `live-match/${matchId}`; // WebSocket endpoint path
+  const path = matchId !== null ? `live-match/${matchId}` : null; // WebSocket endpoint path
 
   const connect = () => {
-    if (streamingUrl && !stream.current) {
+    if (streamingUrl && !stream.current && matchId !== null && path !== null) {
       console.log(`Attempting to connect to live match stream: ${path}`);
       stream.current = dispatch(connectLiveMatchStream(matchId, path));
     }
@@ -28,8 +28,10 @@ const useLiveMatchStream = (matchId: number) => {
   };
 
   useEffect(() => {
-    connect();
-    return disconnect; // Ensure disconnect is called when the component unmounts
+    if (matchId !== null) {
+      connect();
+      return disconnect; // Ensure disconnect is called when the component unmounts
+    }
   }, [dispatch, matchId, accessToken, streamingUrl]);
 
   return {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const ImageSchema = z.object({
+export const imageSchema = z.object({
   id: z.number(),
   type: z.string(),
   url: z.string().url(),
@@ -8,4 +8,4 @@ export const ImageSchema = z.object({
   fallback: z.boolean(),
 });
 
-export type Image = z.infer<typeof ImageSchema>;
+export type Image = z.infer<typeof imageSchema>;
