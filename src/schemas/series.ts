@@ -15,7 +15,7 @@ export const seriesSchema = z.object({
   end: z.number(),
   postponedFrom: z.number(),
   deletedAt: z.number(),
-  lifecycle: z.enum(['upcoming', 'live', 'over', 'deleted', 'over-forfeited']),
+  lifecycle: z.enum(['upcoming', 'live', 'over', 'deleted', 'over-forfeited', 'over-draw']),
   tier: z.number(),
   bestOf: z.number(),
   chainIds: z.array(z.number()).optional(),           // Adjusted to be optional

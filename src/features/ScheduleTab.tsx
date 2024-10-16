@@ -80,7 +80,7 @@ const ScheduleTab: React.FC = () => {
   const filteredSeries = series.filter((seriesItem: Series) =>
     selectedRegions.length === 0 ||
     seriesItem.participants.some((participant) =>
-      selectedRegions.includes(participant.roster.team.region?.abbreviation || '')
+      selectedRegions.includes(participant.roster.team?.region?.abbreviation || '')
     )
   );
 
