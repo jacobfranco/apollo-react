@@ -4,6 +4,7 @@ import { useTeamColors } from 'src/team-colors';
 import AutoFitText from './AutoFitText';
 
 import placeholderTeam from 'src/assets/images/placeholder-team.png';
+import { useTheme } from 'src/hooks/useTheme'; // Ensure useTheme is imported
 
 interface LolScoreboardProps {
   series: Series;
@@ -12,7 +13,8 @@ interface LolScoreboardProps {
 const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
   const { participants, title, lifecycle, start } = series;
 
-  const getTeamColor = useTeamColors();
+  const getTeamColorAndLogoType = useTeamColors();
+  const theme = useTheme(); // Get the current theme
 
   // Extract team and participant data
   const team1 = participants[0]?.roster.team;
@@ -30,9 +32,13 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
   // Determine the winning side
   const winningSide = score1 > score2 ? 'left' : score2 > score1 ? 'right' : null;
 
-  // Get team colors from the mapping, default to a color if not found
-  const team1Color = getTeamColor(team1Name);
-  const team2Color = getTeamColor(team2Name);
+  // Get team colors and logo types from the mapping
+  const { color: team1Color, logoType: team1LogoType } = getTeamColorAndLogoType(team1Name);
+  const { color: team2Color, logoType: team2LogoType } = getTeamColorAndLogoType(team2Name);
+
+  // Determine if the logos are placeholders
+  const isTeam1Placeholder = team1Logo === placeholderTeam;
+  const isTeam2Placeholder = team2Logo === placeholderTeam;
 
   // Winning color (use team color)
   const winningColor =
@@ -66,6 +72,23 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
     score1Color = 'text-gray-900 dark:text-gray-100';
     score2Color = 'text-gray-900 dark:text-gray-100';
   }
+
+  // Function to determine if a logo needs to be inverted
+  const getLogoFilter = (
+    logoType: 'black' | 'white' | 'color',
+    isPlaceholder: boolean,
+    currentTheme: string
+  ): string => {
+    if (isPlaceholder) {
+      return ''; // Do not invert placeholder logos
+    }
+    if (logoType === 'black' && currentTheme === 'dark') {
+      return 'invert'; // Invert black to white in dark mode
+    } else if (logoType === 'white' && currentTheme === 'light') {
+      return 'invert'; // Invert white to black in light mode
+    }
+    return ''; // No filter for colorful logos or irrelevant themes
+  };
 
   return (
     <div
@@ -107,15 +130,20 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
         {/* Left Column */}
         <div className="flex flex-col items-center w-1/3">
           {/* Logo Container with increased size and no background */}
-          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4"> {/* Reduced mb from 6 to 4 */}
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+            {/* Apply conditional filter based on logoType and placeholder status */}
             <img
-              className="max-w-full max-h-full object-contain" // Ensures the entire logo fits without cropping
+              className={`max-w-full max-h-full object-contain ${getLogoFilter(
+                team1LogoType,
+                isTeam1Placeholder,
+                theme
+              )}`}
               src={team1Logo}
               alt={team1Name}
             />
           </div>
           {/* Team Name without Seed */}
-          <div className="flex items-center justify-center space-x-1 mt-2 w-full"> {/* Reduced mt from 4 to 2 */}
+          <div className="flex items-center justify-center space-x-1 mt-2 w-full">
             <AutoFitText
               text={team1Name}
               maxFontSize={16} // Increased maxFontSize for better readability
@@ -154,15 +182,20 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
         {/* Right Column */}
         <div className="flex flex-col items-center w-1/3">
           {/* Logo Container with increased size and no background */}
-          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4"> {/* Reduced mb from 6 to 4 */}
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+            {/* Apply conditional filter based on logoType and placeholder status */}
             <img
-              className="max-w-full max-h-full object-contain" // Ensures the entire logo fits without cropping
+              className={`max-w-full max-h-full object-contain ${getLogoFilter(
+                team2LogoType,
+                isTeam2Placeholder,
+                theme
+              )}`}
               src={team2Logo}
               alt={team2Name}
             />
           </div>
           {/* Team Name without Seed */}
-          <div className="flex items-center justify-center space-x-1 mt-2 w-full"> {/* Reduced mt from 4 to 2 */}
+          <div className="flex items-center justify-center space-x-1 mt-2 w-full">
             <AutoFitText
               text={team2Name}
               maxFontSize={16} // Increased maxFontSize for better readability
