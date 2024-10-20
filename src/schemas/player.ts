@@ -5,6 +5,7 @@ import { ageSchema } from './age';
 import { socialMediaAccountSchema } from './social-media-account';
 
 import { dateStringOrNumber } from 'src/utils/dates'
+import { playerMatchStatsSchema } from './player-match-stats';
 
 export const playerSchema = z.object({
   id: z.number(),
@@ -24,7 +25,7 @@ export const playerSchema = z.object({
   socialMediaAccounts: z.array(socialMediaAccountSchema).optional(),
   resourceVersion: z.number().optional(),
   lolStats: z.any().optional().nullable(),
-  matchStats: z.any().optional().nullable(),
+  matchStats: playerMatchStatsSchema.optional().nullable(),
   lolSeasonStats: z.any().optional().nullable(),
 });
 

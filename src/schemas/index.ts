@@ -7,6 +7,10 @@ export { groupRelationshipSchema, type GroupRelationship } from './group-relatio
 export { groupTagSchema, type GroupTag } from './group-tag'
 export { liveMatchSchema, type LiveMatch } from './live-match'
 export { mentionSchema, type Mention } from './mention';
+export { participantSchema, type Participant } from './participant'
+export { playerSchema, type Player } from './player'
 export { pollSchema, type Poll, type PollOption } from './poll'
 export { relationshipSchema, type Relationship } from './relationship';
+export { seriesSchema, type Series } from './series'
 export { statusSchema, type Status } from './status'
+export { teamSchema, type Team } from './team'

@@ -4,7 +4,9 @@ import { regionSchema } from './region';
 import { socialMediaAccountSchema } from './social-media-account';
 import { standingRosterSchema } from './standing-roster';
 
+
 import { dateStringOrNumber } from 'src/utils/dates'
+import { teamMatchStatsSchema } from './team-match-stats';
 
 export const teamSchema = z.object({
   id: z.number(),
@@ -20,7 +22,7 @@ export const teamSchema = z.object({
   gameId: z.number().optional(),
   organizationId: z.number().optional(),
   resourceVersion: z.number().optional(),
-  matchStats: z.any().optional().nullable(),
+  matchStats: teamMatchStatsSchema.optional().nullable(),
   lolSeasonStats: z.any().optional().nullable(),
 });
 

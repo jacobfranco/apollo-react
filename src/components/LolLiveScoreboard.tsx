@@ -1,3 +1,5 @@
+// src/components/LolLiveScoreboard.tsx
+
 import React, { useEffect, useMemo } from 'react';
 import { LiveMatch } from 'src/types/entities';
 import { useTeamColors } from 'src/team-colors';
@@ -5,11 +7,11 @@ import AutoFitText from './AutoFitText';
 import placeholderTeam from 'src/assets/images/placeholder-team.png';
 import useLiveMatchStream from 'src/api/hooks/useLiveMatchStream';
 import { useAppSelector } from 'src/hooks';
-import { selectLiveMatchById } from 'src/selectors'; // Ensure this selector exists
-import { Series } from 'src/schemas/series';
+import { selectLiveMatchById } from 'src/selectors';
+import { Participant, Player, Series, Team } from 'src/schemas';
 
 interface LolLiveScoreboardProps {
-  series: Series; // Replace with the appropriate type if available
+  series: Series; // Ensure Series type is correctly defined
 }
 
 const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
@@ -59,23 +61,28 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   const currentSeries = series;
 
   // 6. Merge participants
-  const mergedParticipants = currentSeries.participants.map(
-    (seriesParticipant: any) => {
+  const mergedParticipants: Participant[] = useMemo(() => {
+    if (!liveMatch) return currentSeries.participants;
+
+    return currentSeries.participants.map((seriesParticipant: Participant) => {
       // Match participants by seed or another unique identifier
-      const liveParticipant = liveMatch?.participants?.find(
-        (lp: any) => lp.seed === seriesParticipant.seed
+      const liveParticipant = liveMatch.participants.find(
+        (lp: Participant) => lp.seed === seriesParticipant.seed
       );
 
       if (liveParticipant) {
         return {
           ...seriesParticipant,
-          stats: liveParticipant.stats, // Overlay live stats
+          roster: {
+            ...liveParticipant.roster,
+            players: liveParticipant.roster.players || [],
+          },
         };
       } else {
         return seriesParticipant;
       }
-    }
-  );
+    });
+  }, [currentSeries.participants, liveMatch]);
 
   // 7. Update lifecycle
   const lifecycle = liveMatch?.lifecycle || currentSeries.lifecycle;
@@ -87,8 +94,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   const getTeamColor = useTeamColors();
 
   // Extract team and participant data
-  const team1 = mergedParticipants[0]?.roster.team;
-  const team2 = mergedParticipants[1]?.roster.team;
+  const team1 = mergedParticipants[0]?.roster?.team as Team | undefined;
+  const team2 = mergedParticipants[1]?.roster?.team as Team | undefined;
 
   const team1Name = team1?.name || 'Team 1';
   const team2Name = team2?.name || 'Team 2';
@@ -96,14 +103,22 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
 
-  const team1Kills = mergedParticipants[0]?.stats?.kills ?? 0;
-  const team2Kills = mergedParticipants[1]?.stats?.kills ?? 0;
+  // 9. Calculate team1Kills by accessing matchStats.score
+  const team1Kills = useMemo(() => {
+    return team1?.matchStats?.score ?? 0;
+  }, [team1]);
 
-  const team1Gold = mergedParticipants[0]?.stats?.gold ?? 0;
-  const team2Gold = mergedParticipants[1]?.stats?.gold ?? 0;
+  // 10. Calculate team2Kills by accessing matchStats.score
+  const team2Kills = useMemo(() => {
+    return team2?.matchStats?.score ?? 0;
+  }, [team2]);
 
-  const team1Towers = mergedParticipants[0]?.stats?.towers ?? 0;
-  const team2Towers = mergedParticipants[1]?.stats?.towers ?? 0;
+  // 11. Access team-level stats
+  const team1Gold = team1?.matchStats?.goldEarned ?? 0;
+  const team2Gold = team2?.matchStats?.goldEarned ?? 0;
+
+  const team1Towers = team1?.matchStats?.turretsDestroyed ?? 0;
+  const team2Towers = team2?.matchStats?.turretsDestroyed ?? 0;
 
   // Determine the leading side based on Kills
   const leadingSide =
