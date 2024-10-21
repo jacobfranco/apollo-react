@@ -5,13 +5,16 @@ import AutoFitText from './AutoFitText';
 
 import placeholderTeam from 'src/assets/images/placeholder-team.png';
 import { useTheme } from 'src/hooks/useTheme'; // Ensure useTheme is imported
+import { formatScoreboardTitle } from 'src/utils/scoreboards';
 
 interface LolScoreboardProps {
   series: Series;
 }
 
 const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
-  const { participants, title, lifecycle, start } = series;
+  const { participants, lifecycle, start } = series;
+
+  const formattedTitle = formatScoreboardTitle(series);
 
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme(); // Get the current theme
@@ -113,7 +116,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
 
       {/* Title box at the top */}
       <div
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-500 dark:bg-primary-600 rounded-b px-6 py-2 flex items-center justify-center"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-300 dark:bg-primary-700 rounded-b px-6 py-2 flex items-center justify-center"
         style={{
           minWidth: '35%', // Maintained minWidth
           maxWidth: '100%',
@@ -121,7 +124,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
         }}
       >
         <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
-          {title}
+          {formattedTitle}
         </div>
       </div>
 

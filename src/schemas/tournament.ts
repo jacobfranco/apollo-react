@@ -7,7 +7,7 @@ import { coverageSchema } from './coverage';
 export const tournamentSchema = z.object({
   id: z.number(),
   title: z.string(),
-  shortTitle: z.string(),
+  shortTitle: z.string().nullable(),
   tier: z.number(),
   copy: z
     .object({

@@ -133,7 +133,7 @@ const SidebarNavigation = () => {
         <SidebarNavigationLink
           to="/esports"
           icon={require("@tabler/icons/outline/device-gamepad-2.svg")}
-          text={<FormattedMessage id="tabs_bar.games" defaultMessage="eSports" />}
+          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Esports" />}
         />
 
         {account && (
