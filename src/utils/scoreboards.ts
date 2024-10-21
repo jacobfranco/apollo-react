@@ -26,3 +26,21 @@ export function formatScoreboardTitle(
   // Combine the titles
   return `${series.tournament.title} - ${cleanedSeriesTitle}`;
 }
+
+// src/utils/scoreboards.ts
+
+/**
+ * Formats a gold value into a string with one decimal followed by 'K'.
+ * For example, 40200 becomes '40.2K', and 17000 becomes '17.0K'.
+ * If the gold is less than 1000, it returns the original number as a string.
+ *
+ * @param gold - The gold value to format.
+ * @returns The formatted gold string.
+ */
+export function formatGold(gold: number): string {
+  if (gold >= 1000) {
+    const formattedGold = (gold / 1000).toFixed(1);
+    return `${formattedGold}K`;
+  }
+  return gold.toString();
+}

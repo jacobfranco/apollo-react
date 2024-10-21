@@ -1,5 +1,3 @@
-// src/components/LolLiveScoreboard.tsx
-
 import React, { useEffect, useMemo } from 'react';
 import { LiveMatch } from 'src/types/entities';
 import { useTeamColors } from 'src/team-colors';
@@ -8,13 +6,19 @@ import placeholderTeam from 'src/assets/images/placeholder-team.png';
 import useLiveMatchStream from 'src/api/hooks/useLiveMatchStream';
 import { useAppSelector } from 'src/hooks';
 import { selectLiveMatchById } from 'src/selectors';
-import { Participant, Player, Series, Team } from 'src/schemas';
+import { Participant, Series, Team } from 'src/schemas';
+import { useTheme } from 'src/hooks/useTheme';
+import { formatScoreboardTitle, formatGold } from 'src/utils/scoreboards';
+import SvgIcon from './SvgIcon';
 
 interface LolLiveScoreboardProps {
   series: Series; // Ensure Series type is correctly defined
 }
 
 const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
+
+  const formattedTitle = formatScoreboardTitle(series);
+
   // 1. Determine the current live matchId
   const matchId = useMemo(() => {
     if (!series.matchIds || series.matchIds.length === 0) {
@@ -91,7 +95,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
 
   const start = currentSeries.start;
 
-  const getTeamColor = useTeamColors();
+  const getTeamColorAndLogoType = useTeamColors(); // Get team color and logo type
+  const theme = useTheme(); // Get the current theme
 
   // Extract team and participant data
   const team1 = mergedParticipants[0]?.roster?.team as Team | undefined;
@@ -114,27 +119,23 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
   }, [team2]);
 
   // 11. Access team-level stats
-  const team1Gold = team1?.matchStats?.goldEarned ?? 0;
-  const team2Gold = team2?.matchStats?.goldEarned ?? 0;
+  const team1Gold = useMemo(() => formatGold(team1?.matchStats?.goldEarned ?? 0), [team1]);
+  const team2Gold = useMemo(() => formatGold(team2?.matchStats?.goldEarned ?? 0), [team2]);
 
-  const team1Towers = team1?.matchStats?.turretsDestroyed ?? 0;
-  const team2Towers = team2?.matchStats?.turretsDestroyed ?? 0;
+  const team1Towers = useMemo(() => team1?.matchStats?.turretsDestroyed ?? 0, [team1]);
+  const team2Towers = useMemo(() => team2?.matchStats?.turretsDestroyed ?? 0, [team2]);
 
   // Determine the leading side based on Kills
   const leadingSide =
     team1Kills > team2Kills ? 'left' : team2Kills > team1Kills ? 'right' : null;
 
-  // Get team colors from the mapping, default to a color if not found
-  const team1Color = getTeamColor(team1Name);
-  const team2Color = getTeamColor(team2Name);
+  // Get team colors and logo types from the mapping
+  const { color: team1Color, logoType: team1LogoType } = getTeamColorAndLogoType(team1Name);
+  const { color: team2Color, logoType: team2LogoType } = getTeamColorAndLogoType(team2Name);
 
-  // Leading color (use team color)
-  const leadingColor =
-    leadingSide === 'left'
-      ? team1Color
-      : leadingSide === 'right'
-        ? team2Color
-        : '#A981FC';
+  // Determine if the logos are placeholders
+  const isTeam1Placeholder = team1Logo === placeholderTeam;
+  const isTeam2Placeholder = team2Logo === placeholderTeam;
 
   // Format string
   const bestOf = currentSeries.format?.bestOf
@@ -151,17 +152,22 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
     minute: 'numeric',
   });
 
-  // Adjust metric colors based on lifecycle
-  let metricColor = 'text-gray-700 dark:text-gray-300';
-
-  if (lifecycle === 'over') {
-    metricColor = leadingSide
-      ? 'text-gray-900 dark:text-gray-100'
-      : 'text-gray-700 dark:text-gray-300';
-  } else {
-    // For live or upcoming matches, metrics are dark mode responsive
-    metricColor = 'text-gray-900 dark:text-gray-100';
-  }
+  // Function to determine if a logo needs to be inverted
+  const getLogoFilter = (
+    logoType: 'black' | 'white' | 'color',
+    isPlaceholder: boolean,
+    currentTheme: string
+  ): string => {
+    if (isPlaceholder) {
+      return ''; // Do not invert placeholder logos
+    }
+    if (logoType === 'black' && currentTheme === 'dark') {
+      return 'invert'; // Invert black to white in dark mode
+    } else if (logoType === 'white' && currentTheme === 'light') {
+      return 'invert'; // Invert white to black in light mode
+    }
+    return ''; // No filter for colorful logos or irrelevant themes
+  };
 
   return (
     <div
@@ -170,19 +176,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
     >
       {/* Background and border styles */}
       <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />
-
-      {/* Leading gradient overlay */}
-      {leadingSide && (
-        <div
-          className="absolute inset-0 rounded-[5px] opacity-50"
-          style={{
-            backgroundImage:
-              leadingSide === 'left'
-                ? `linear-gradient(to right, ${leadingColor}, transparent)`
-                : `linear-gradient(to left, ${leadingColor}, transparent)`,
-          }}
-        />
-      )}
 
       {/* Title box at the top */}
       <div
@@ -194,7 +187,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
         }}
       >
         <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
-          {currentSeries.title}
+          {formattedTitle}
         </div>
       </div>
 
@@ -204,8 +197,13 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
         <div className="flex flex-col items-center w-1/3">
           {/* Logo Container */}
           <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+            {/* Apply conditional filter based on logoType and placeholder status */}
             <img
-              className="max-w-full max-h-full object-contain"
+              className={`max-w-full max-h-full object-contain ${getLogoFilter(
+                team1LogoType,
+                isTeam1Placeholder,
+                theme
+              )}`}
               src={team1Logo}
               alt={team1Name}
             />
@@ -224,28 +222,29 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
         </div>
 
         {/* Center Column */}
-        <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
+        <div className="flex flex-col items-center w-1/3 justify-center space-y-3">
           {/* Time */}
-          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100">
-            {lifecycle === 'over'
-              ? 'Final'
-              : lifecycle === 'live'
-                ? 'Live'
-                : formattedStartDate}
+          <div className="font-bold opacity-60 text-red-500 dark:text-red-500">
+            'Live'
           </div>
 
           {/* Metrics Container */}
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col space-y-2">
             {/* Kills Row */}
             <div className="flex items-center justify-between">
               {/* Team 1 Kills */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-right">
                 {team1Kills}
               </div>
               {/* Kills Icon */}
-              <img src={placeholderTeam} alt="Kills" className="w-6 h-6" />
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require('@tabler/icons/outline/swords.svg')}
+                  className="h-1.5 w-1.5 text-primary-500"
+                />
+              </div>
               {/* Team 2 Kills */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-left">
                 {team2Kills}
               </div>
             </div>
@@ -253,13 +252,18 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
             {/* Gold Row */}
             <div className="flex items-center justify-between">
               {/* Team 1 Gold */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-right">
                 {team1Gold}
               </div>
               {/* Gold Icon */}
-              <img src={placeholderTeam} alt="Gold" className="w-6 h-6" />
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require('@tabler/icons/outline/coin.svg')}
+                  className="h-1.5 w-1.5 text-primary-500"
+                />
+              </div>
               {/* Team 2 Gold */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-left">
                 {team2Gold}
               </div>
             </div>
@@ -267,16 +271,23 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
             {/* Towers Row */}
             <div className="flex items-center justify-between">
               {/* Team 1 Towers */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-right">
                 {team1Towers}
               </div>
               {/* Towers Icon */}
-              <img src={placeholderTeam} alt="Towers" className="w-6 h-6" />
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require('@tabler/icons/outline/tower.svg')}
+                  className="h-1.5 w-1.5 text-primary-500"
+                />
+              </div>
               {/* Team 2 Towers */}
-              <div className={`flex items-center ${metricColor}`}>
+              <div className="flex-1 text-left">
                 {team2Towers}
               </div>
             </div>
+
+
           </div>
 
           {/* Format */}
@@ -289,8 +300,13 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ series }) => {
         <div className="flex flex-col items-center w-1/3">
           {/* Logo Container */}
           <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+            {/* Apply conditional filter based on logoType and placeholder status */}
             <img
-              className="max-w-full max-h-full object-contain"
+              className={`max-w-full max-h-full object-contain ${getLogoFilter(
+                team2LogoType,
+                isTeam2Placeholder,
+                theme
+              )}`}
               src={team2Logo}
               alt={team2Name}
             />

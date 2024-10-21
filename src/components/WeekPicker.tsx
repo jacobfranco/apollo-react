@@ -1,9 +1,8 @@
-// WeekPicker.tsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { getAllMondays } from 'src/utils/weeks';
+import { getAllMondays } from 'src/utils/dates';
 import { format } from 'date-fns';
 import ArrowButton from './ArrowButton';
-import RangeIconButton from './RangeIconButton'; // Updated import
+import RangeIconButton from './RangeIconButton';
 
 interface WeekPickerProps {
   selectedDate: Date;

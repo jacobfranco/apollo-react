@@ -3,11 +3,12 @@ import { defineMessages, useIntl } from 'react-intl';
 import debounce from 'lodash/debounce';
 import { useAppDispatch, useAppSelector } from 'src/hooks';
 import { fetchAllSpaces, fetchFollowedSpaces, followSpace, unfollowSpace } from 'src/actions/spaces';
-import { changeSearch, clearSearch, clearSearchResults, showSearch } from 'src/actions/search';
+import { changeSearch, clearSearchResults, showSearch } from 'src/actions/search';
 import SpaceImageLink from 'src/components/SpaceImageLink';
 import Input from 'src/components/Input';
 import { SvgIcon } from 'src/components';
 import { Space } from 'src/types/entities';
+import { Column } from 'src/components/Column'; // Import the Column component
 
 const messages = defineMessages({
   heading: { id: 'column.spaces', defaultMessage: 'Spaces' },
@@ -19,17 +20,14 @@ const Spaces: React.FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log('Spaces component mounted');
     dispatch(fetchAllSpaces());
     dispatch(fetchFollowedSpaces());
   }, [dispatch]);
 
   const allSpaces = useAppSelector((state) => {
-    console.log('All spaces from state:', state.spaces.byName.valueSeq().toList().toJS());
     return state.spaces.byName.valueSeq().toList();
   });
   const followedSpaces = useAppSelector((state) => {
-    console.log('Followed spaces from state:', state.followed_spaces.items.toJS());
     return state.followed_spaces.items;
   });
   const searchValue = useAppSelector((state) => state.search.value);
@@ -43,26 +41,32 @@ const Spaces: React.FC = () => {
     return typeof obj.get === 'function' ? obj.get(prop) : obj[prop];
   };
 
-  const handleToggleFollow = useCallback((space: Space, isFollowed: boolean) => {
-    console.log('handleToggleFollow called with space:', space, 'isFollowed:', isFollowed);
-    const spaceUrl = getProperty(space, 'url');
-    console.log('spaceUrl:', spaceUrl);
-    if (!spaceUrl) {
-      console.error('Space URL is undefined');
-      return;
-    }
-    const cleanSpaceUrl = spaceUrl.replace(/^\/s\//, '');
-    console.log('Dispatching action for space:', cleanSpaceUrl, 'isFollowed:', isFollowed);
-    if (isFollowed) {
-      dispatch(unfollowSpace(cleanSpaceUrl));
-    } else {
-      dispatch(followSpace(cleanSpaceUrl));
-    }
-  }, [dispatch]);
+  const handleToggleFollow = useCallback(
+    (space: Space, isFollowed: boolean) => {
+      console.log('handleToggleFollow called with space:', space, 'isFollowed:', isFollowed);
+      const spaceUrl = getProperty(space, 'url');
+      console.log('spaceUrl:', spaceUrl);
+      if (!spaceUrl) {
+        console.error('Space URL is undefined');
+        return;
+      }
+      const cleanSpaceUrl = spaceUrl.replace(/^\/s\//, '');
+      console.log('Dispatching action for space:', cleanSpaceUrl, 'isFollowed:', isFollowed);
+      if (isFollowed) {
+        dispatch(unfollowSpace(cleanSpaceUrl));
+      } else {
+        dispatch(followSpace(cleanSpaceUrl));
+      }
+    },
+    [dispatch]
+  );
 
-  const debouncedSearch = useCallback(debounce(() => {
-    // You can dispatch any additional actions here if needed
-  }, 300), []);
+  const debouncedSearch = useCallback(
+    debounce(() => {
+      // You can dispatch any additional actions here if needed
+    }, 300),
+    []
+  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -89,8 +93,8 @@ const Spaces: React.FC = () => {
     .sort((a: Space, b: Space) => {
       const aName = getProperty(a, 'name');
       const bName = getProperty(b, 'name');
-      const aFollowed = followedSpaces.some(space => getProperty(space, 'name') === aName);
-      const bFollowed = followedSpaces.some(space => getProperty(space, 'name') === bName);
+      const aFollowed = followedSpaces.some((space) => getProperty(space, 'name') === aName);
+      const bFollowed = followedSpaces.some((space) => getProperty(space, 'name') === bName);
       if (aFollowed && !bFollowed) return -1;
       if (!aFollowed && bFollowed) return 1;
       return aName.localeCompare(bName);
@@ -100,8 +104,11 @@ const Spaces: React.FC = () => {
   console.log('Filtered spaces:', filteredSpaces);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{intl.formatMessage(messages.heading)}</h1>
+    <Column
+      label={intl.formatMessage(messages.heading)}
+      transparent={false} // Adjust as needed
+      withHeader={true} // Adjust as needed
+    >
       <div className="mb-6 relative">
         <Input
           type="text"
@@ -133,10 +140,10 @@ const Spaces: React.FC = () => {
       {filteredSpaces.length === 0 ? (
         <p className="text-center text-gray-500">No spaces found matching your search.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg:primary-300">
           {filteredSpaces.map((space: Space) => {
             const name = getProperty(space, 'name');
-            const isFollowed = followedSpaces.some(followedSpace => getProperty(followedSpace, 'name') === name);
+            const isFollowed = followedSpaces.some((followedSpace) => getProperty(followedSpace, 'name') === name);
             console.log('Rendering space:', name, 'isFollowed:', isFollowed);
             return (
               <SpaceImageLink
@@ -149,7 +156,7 @@ const Spaces: React.FC = () => {
           })}
         </div>
       )}
-    </div>
+    </Column>
   );
 };
 

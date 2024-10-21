@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Apollo Web Frontend",
-  "homepage": "https://yoapollo.com",
+  "homepage": "https://apollo.now",
   "repository": {
     "type": "git",
     "url": "https://github.com/jacobfranco/apollo-react"

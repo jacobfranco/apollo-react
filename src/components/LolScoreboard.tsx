@@ -53,9 +53,6 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
   // Format the start date
   const startDate = new Date(start * 1000);
   const formattedStartDate = startDate.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
   });
@@ -211,7 +208,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ series }) => {
         </div>
       </div>
 
-      {/* Divider line adjusted */}
+      {/* Divider line */}
       <div className="absolute left-[5%] right-[5%] bottom-[5%] h-0.5 opacity-10 border-t border-solid border-gray-900 dark:border-gray-100" />
     </div>
   );

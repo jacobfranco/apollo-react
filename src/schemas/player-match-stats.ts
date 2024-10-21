@@ -103,7 +103,7 @@ export const playerMatchStatsSchema = z.object({
         fallback: z.boolean(),
       })),
     }),
-  }).optional(),
+  }).optional().nullable(),
 });
 
 export type PlayerMatchStats = z.infer<typeof playerMatchStatsSchema>;

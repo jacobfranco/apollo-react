@@ -7,7 +7,7 @@ import ValorantScoreboard from 'src/components/ValorantScoreboard';
 import esportsConfig from 'src/esports-config';
 import { selectLolSeries, selectLolLoading, selectLolError } from 'src/selectors';
 import WeekPicker from 'src/components/WeekPicker';
-import { getAllMondays } from 'src/utils/weeks';
+import { getAllMondays, formatDate } from 'src/utils/dates';
 import { openModal, closeModal } from 'src/actions/modals';
 import { HStack } from 'src/components';
 import { Button } from 'src/components/Button';
@@ -88,17 +88,15 @@ const ScheduleTab: React.FC = () => {
   );
 
   // Function to group series by day
-  const groupSeriesByDay = (seriesList: Series[]): { [key: string]: Series[] } => {
-    return seriesList.reduce((groups, seriesItem) => {
-      const date = new Date(seriesItem.start * 1000); // Assuming 'start' is in seconds
-      const dayKey = date.toDateString(); // e.g., "Mon Oct 16 2023"
-      if (!groups[dayKey]) {
-        groups[dayKey] = [];
-      }
-      groups[dayKey].push(seriesItem);
-      return groups;
-    }, {} as { [key: string]: Series[] });
-  };
+  const groupedSeries = filteredSeries.reduce((groups, seriesItem) => {
+    const date = new Date(seriesItem.start * 1000);
+    const dayKey = date.toDateString();
+    if (!groups[dayKey]) {
+      groups[dayKey] = [];
+    }
+    groups[dayKey].push(seriesItem);
+    return groups;
+  }, {} as { [key: string]: Series[] });
 
   const renderScoresContent = () => {
     if (loading) {
@@ -109,76 +107,55 @@ const ScheduleTab: React.FC = () => {
       return <div className="text-center">No series available.</div>;
     }
 
-    // Group the series by day
-    const groupedSeries = groupSeriesByDay(filteredSeries);
-
-    // Sort the days chronologically
-    const sortedDays = Object.keys(groupedSeries).sort((a, b) => {
-      const dateA = new Date(a);
-      const dateB = new Date(b);
-      return dateA.getTime() - dateB.getTime();
-    });
-
     switch (game.path) {
       case 'lol': {
         return (
           <div className="space-y-8">
-            {sortedDays.map((day) => {
-              const seriesForDay = groupedSeries[day].sort((a, b) => a.start - b.start); // Sort series by start time
-              return (
-                <div key={day}>
-                  <h2 className="text-xl font-semibold mb-4">{day}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
-                    {seriesForDay.map((seriesItem) => { // Changed from 'series' to 'filteredSeries'
-                      const { id, lifecycle } = seriesItem;
+            {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
+              <div key={day}>
+                <h2 className="text-xl font-semibold mb-4">{formatDate(day)}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
+                  {seriesForDay.map((seriesItem) => {
+                    const { id, lifecycle } = seriesItem;
+                    const ScoreboardComponent = lifecycle === 'live' ? LolLiveScoreboard : LolScoreboard;
 
-                      let ScoreboardComponent = LolScoreboard;
-                      if (lifecycle === 'live') {
-                        ScoreboardComponent = LolLiveScoreboard;
-                      }
-
-                      return (
-                        <Link
-                          key={id}
-                          to={`/esports/${esportName}/series/${id}`}
-                          className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                          style={{ width: '100%', textDecoration: 'none' }}
-                        >
-                          <ScoreboardComponent series={seriesItem} />
-                        </Link>
-                      );
-                    })}
-                  </div>
+                    return (
+                      <Link
+                        key={id}
+                        to={`/esports/${esportName}/series/${id}`}
+                        className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
+                        style={{ width: '100%', textDecoration: 'none' }}
+                      >
+                        <ScoreboardComponent series={seriesItem} />
+                      </Link>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         );
       }
       case 'valorant': {
-        // Handle Valorant series when available
         return (
           <div className="space-y-8">
-            {sortedDays.map((day) => {
-              const seriesForDay = groupedSeries[day].sort((a, b) => a.start - b.start);
-              return (
-                <div key={day}>
-                  <h2 className="text-xl font-semibold mb-4">{day}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
-                    {seriesForDay.map((seriesItem) => (
-                      <Link
-                        key={seriesItem.id}
-                        to={`/esports/${esportName}/series/${seriesItem.id}`}
-                        className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                        style={{ width: '100%', textDecoration: 'none' }}
-                      >
-                        {/* <ValorantScoreboard series={seriesItem} /> */}
-                      </Link>
-                    ))}
-                  </div>
+            {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
+              <div key={day}>
+                <h2 className="text-xl font-semibold mb-4">{day}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
+                  {seriesForDay.map((seriesItem) => (
+                    <Link
+                      key={seriesItem.id}
+                      to={`/esports/${esportName}/series/${seriesItem.id}`}
+                      className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
+                      style={{ width: '100%', textDecoration: 'none' }}
+                    >
+                      {/* <ValorantScoreboard series={seriesItem} /> */}
+                    </Link>
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         );
       }
