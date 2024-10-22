@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-
 import { Tabs } from 'src/components';
-
+import { Column } from 'src/components/Column';
 import { EsportsTab, ScheduleTab, TeamsTab, PlayersTab, FantasyTab } from './AsyncComponents';
 import esportsConfig from 'src/esports-config';
 
@@ -25,7 +24,6 @@ const EsportPage = () => {
   }
 
   const [selectedTab, setSelectedTab] = useState('esports');
-
   const selectTab = (tab: string) => setSelectedTab(tab);
 
   const renderTabContent = () => {
@@ -86,13 +84,18 @@ const EsportPage = () => {
   };
 
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-6">{game.name}</h1>
-      {renderTabBar()}
-      <div className="tab-content">
-        {renderTabContent()}
+    <Column
+      label={game.name}
+      transparent={false}
+      withHeader={true}
+    >
+      <div className="space-y-6">
+        {renderTabBar()}
+        <div className="tab-content">
+          {renderTabContent()}
+        </div>
       </div>
-    </>
+    </Column>
   );
 };
 
