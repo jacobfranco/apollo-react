@@ -84,7 +84,6 @@ export const SpacePage = lazy(() => import('./SpacePage'));
 export const Spaces = lazy(() => import('./Spaces'));
 export const ESportPage = lazy(() => import('./ESportPage'));
 export const ESports = lazy(() => import('./ESports'));
-export const ScoreboardDetailPage = lazy(() => import('./ScoreboardDetailPage'));
 export const CommunityTab = lazy(() => import('./CommunityTab'));
 export const ScoreboardDetailsTab = lazy(() => import('./ScoreboardDetailsTab'));
 export const ScheduleTab = lazy(() => import('./ScheduleTab'));

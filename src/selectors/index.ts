@@ -7,7 +7,7 @@ import {
 } from 'immutable'
 
 import { RootState } from "src/store";
-import type { Account as AccountSchema, LiveMatch } from 'src/schemas';
+import type { Account as AccountSchema } from 'src/schemas';
 import { Entities } from 'src/entity-store/entities';
 import type { Account, Filter as FilterEntity, Notification, Status } from 'src/types/entities';
 import { EntityStore } from 'src/entity-store/types';
@@ -16,6 +16,7 @@ import type { ContextType } from 'src/normalizers/filter';
 import { shouldFilter } from 'src/utils/timelines';
 import { getSettings } from 'src/actions/settings';
 import { Series } from 'src/schemas/series';
+import { Match } from 'src/schemas/match';
 
 const normalizeId = (id: any): string => typeof id === 'string' ? id : '';
 
@@ -233,33 +234,33 @@ export const getAccountGallery = createSelector([
   }, ImmutableList());
 });
 
-export const selectLolScheduleState = (state: RootState) => state.lol_schedule;
+export const selectSeriesState = (state: RootState) => state.series;
 
-export const selectLolSeries = (state: RootState): ImmutableList<Series> => {
-  const lolScheduleState = selectLolScheduleState(state);
-  return lolScheduleState ? lolScheduleState.get('series') : ImmutableList();
+export const selectAllSeries = createSelector(
+  selectSeriesState,
+  (seriesState) => seriesState.get('series') as ImmutableList<Series>
+);
+
+export const selectSeriesLoading = createSelector(
+  selectSeriesState,
+  (seriesState) => seriesState.get('loading') as boolean
+);
+
+export const selectSeriesError = createSelector(
+  selectSeriesState,
+  (seriesState) => seriesState.get('error') as string | null
+);
+
+export const selectSeriesById = (state: RootState, seriesId: number): Series | undefined => {
+  const seriesList = selectAllSeries(state);
+  return seriesList.find((s: Series) => s.id === seriesId);
 };
 
-export const selectLolLoading = (state: RootState): boolean => {
-  const lolScheduleState = selectLolScheduleState(state);
-  return lolScheduleState ? lolScheduleState.get('loading') : false;
-};
+export const selectMatchesState = (state: RootState) => state.matches;
 
-export const selectLolError = (state: RootState): string | null => {
-  const lolScheduleState = selectLolScheduleState(state);
-  return lolScheduleState ? lolScheduleState.get('error') : null;
-};
-
-export const selectLiveMatchState = (state: RootState): { [key: number]: LiveMatch } =>
-  state.live_match;
-
-export const selectLiveMatchById = (
-  state: RootState,
-  matchId: number | string
-): LiveMatch | undefined => {
-  const liveMatchState = selectLiveMatchState(state);
-  const numericMatchId = Number(matchId);
-  return liveMatchState ? liveMatchState[numericMatchId] : undefined;
+export const selectMatchById = (state: RootState, matchId: number): Match | undefined => {
+  const matchesState = selectMatchesState(state);
+  return matchesState ? matchesState[matchId] : undefined;
 };
 
 

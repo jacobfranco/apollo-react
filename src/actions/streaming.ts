@@ -24,10 +24,11 @@ import {
 } from 'src/actions/timelines';
 
 import type { IStatContext } from 'src/contexts/stat-context';
-import { liveMatchSchema, type Relationship } from 'src/schemas';
+import { matchSchema, seriesSchema, type Relationship } from 'src/schemas';
 import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity, Chat, LiveMatch } from 'src/types/entities';
-import { addOrUpdateLiveMatch } from './live-match';
+import type { APIEntity, Chat, Match } from 'src/types/entities';
+import { addOrUpdateMatch } from './matches';
+import { updateSeries } from './series';
 
 const STREAMING_CHAT_UPDATE = 'STREAMING_CHAT_UPDATE';
 
@@ -213,24 +214,88 @@ const connectLiveMatchStream = (
           }
 
           // Validate data against the schema
-          const parseResult = liveMatchSchema.safeParse({ ...payload, sport });
+          const parseResult = matchSchema.safeParse({ ...payload, sport });
 
           if (!parseResult.success) {
             console.error('Invalid LiveMatch data received:', parseResult.error);
             return;
           }
 
-          const liveMatch: LiveMatch = parseResult.data;
+          const liveMatch: Match = parseResult.data;
 
           // Dispatch the action to update the Redux store
-          dispatch(addOrUpdateLiveMatch(liveMatch));
+          dispatch(addOrUpdateMatch(liveMatch));
         }
       }
     },
   };
 });
 
+export function connectSeriesUpdatesStream() {
+  return connectStream('series_updates', null, (dispatch: AppDispatch, getState: () => RootState) => {
+    return {
+      onConnect() {
+        console.log('Connected to series_updates stream');
+      },
+      onDisconnect() {
+        console.log('Disconnected from series_updates stream');
+      },
+      onReceive(websocket, data: any) {
+        if (data.event === 'series_update') {
+          let payload = data.payload;
+          if (typeof payload === 'string') {
+            try {
+              payload = JSON.parse(payload);
+            } catch (error) {
+              console.error('Failed to parse series_update payload:', error);
+              return;
+            }
+          }
 
+          const parseResult = seriesSchema.safeParse(payload);
+          if (parseResult.success) {
+            dispatch(updateSeries(parseResult.data));
+          } else {
+            console.error('Invalid series update:', parseResult.error);
+          }
+        }
+      },
+    };
+  });
+}
+
+export function connectMatchUpdatesStream() {
+  return connectStream('match_updates', null, (dispatch: AppDispatch, getState: () => RootState) => {
+    return {
+      onConnect() {
+        console.log('Connected to match_updates stream');
+      },
+      onDisconnect() {
+        console.log('Disconnected from match_updates stream');
+      },
+      onReceive(websocket, data: any) {
+        if (data.event === 'match_update') {
+          let payload = data.payload;
+          if (typeof payload === 'string') {
+            try {
+              payload = JSON.parse(payload);
+            } catch (error) {
+              console.error('Failed to parse match_update payload:', error);
+              return;
+            }
+          }
+
+          const parseResult = matchSchema.safeParse(payload);
+          if (parseResult.success) {
+            dispatch(addOrUpdateMatch(parseResult.data));
+          } else {
+            console.error('Invalid match update:', parseResult.error);
+          }
+        }
+      },
+    };
+  });
+}
 
 
 function followStateToRelationship(followState: string) {

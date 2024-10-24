@@ -17,5 +17,20 @@
         "url": "https://docs.renovatebot.com/renovate-schema.json"
       }
     ],
-    "scss.validate": false
+    "scss.validate": false,
+    "workbench.colorTheme": "poimandres",
+    "workbench.iconTheme": "quill-icons-minimal",
+    "workbench.productIconTheme": "icons-carbon",
+    "editor.renderWhitespace": "none",
+    "editor.minimap.renderCharacters": false,
+    "editor.fontSize": 13.5,
+    "editor.fontFamily": "Menlo",
+    "window.zoomLevel": 0.5,
+    "window.menuBarVisibility": "classic",
+    "editor.guides.indentation": false,
+    "terminal.integrated.fontFamily": "Hack Nerd Font"
+
+
+
+
   }

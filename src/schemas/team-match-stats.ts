@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const teamMatchStatsSchema = z.object({
   score: z.number(),
@@ -26,15 +26,27 @@ export const teamMatchStatsSchema = z.object({
     inhibitors: z.object({
       top: z.object({
         standing: z.boolean(),
-        respawnTime: z.number().nullable(),
+        respawnTime: z
+          .object({
+            milliseconds: z.number(),
+          })
+          .nullable(),
       }),
       mid: z.object({
         standing: z.boolean(),
-        respawnTime: z.number().nullable(),
+        respawnTime: z
+          .object({
+            milliseconds: z.number(),
+          })
+          .nullable(),
       }),
       bot: z.object({
         standing: z.boolean(),
-        respawnTime: z.number().nullable(),
+        respawnTime: z
+          .object({
+            milliseconds: z.number(),
+          })
+          .nullable(),
       }),
     }),
   }),

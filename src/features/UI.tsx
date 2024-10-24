@@ -260,7 +260,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       />
 
       <WrappedRoute
-        path="/esports/:esportName/scores/:matchId"
+        path="/esports/:esportName/series/:seriesId"
         page={ESportsPage}
         component={ScoreboardDetailsTab}
         content={children}

@@ -17,8 +17,7 @@ import followed_tags from './followed-tags'
 import group_memberships from './group-memberships';
 import group_relationships from './group-relationships';
 import groups from './groups';
-import live_match from './live-match'
-import lol_schedule from './lol-schedule'
+import matches from './matches'
 import me from './me'
 import meta from './meta'
 import modals from './modals'
@@ -34,6 +33,7 @@ import rules from './rules'
 import scheduled_statuses from './scheduled-statuses'
 import search from './search'
 import security from './security'
+import series from './series'
 import sidebar from './sidebar'
 import spaces from './spaces'
 import status_hover_card from './status-hover-card'
@@ -64,8 +64,7 @@ const reducers = {
   group_memberships,
   group_relationships,
   groups,
-  live_match,
-  lol_schedule,
+  matches,
   me,
   meta,
   modals,
@@ -81,6 +80,7 @@ const reducers = {
   scheduled_statuses,
   search,
   security,
+  series,
   settings,
   sidebar,
   spaces,

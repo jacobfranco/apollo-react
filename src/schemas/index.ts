@@ -5,7 +5,7 @@ export { groupSchema, type Group } from './group'
 export { groupMemberSchema, type GroupMember } from './group-member';
 export { groupRelationshipSchema, type GroupRelationship } from './group-relationship';
 export { groupTagSchema, type GroupTag } from './group-tag'
-export { liveMatchSchema, type LiveMatch } from './live-match'
+export { matchSchema, type Match } from './match'
 export { mentionSchema, type Mention } from './mention';
 export { participantSchema, type Participant } from './participant'
 export { playerSchema, type Player } from './player'

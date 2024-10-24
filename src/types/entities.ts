@@ -76,7 +76,7 @@ export type {
   Group,
   GroupMember,
   GroupRelationship,
-  LiveMatch,
+  Match,
   Poll,
   PollOption,
   Relationship

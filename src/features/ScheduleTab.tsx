@@ -5,26 +5,44 @@ import LolScoreboard from 'src/components/LolScoreboard';
 import LolLiveScoreboard from 'src/components/LolLiveScoreboard';
 import ValorantScoreboard from 'src/components/ValorantScoreboard';
 import esportsConfig from 'src/esports-config';
-import { selectLolSeries, selectLolLoading, selectLolError } from 'src/selectors';
+import {
+  selectAllSeries,
+  selectSeriesLoading,
+  selectSeriesError,
+} from 'src/selectors';
 import WeekPicker from 'src/components/WeekPicker';
 import { getAllMondays, formatDate } from 'src/utils/dates';
 import { openModal, closeModal } from 'src/actions/modals';
 import { HStack } from 'src/components';
 import { Button } from 'src/components/Button';
 import { Series } from 'src/schemas/series';
-import { fetchLolSchedule } from 'src/actions/lol-schedule';
+import { fetchSeries } from 'src/actions/series';
+import { connectSeriesUpdatesStream, connectMatchUpdatesStream } from 'src/actions/streaming';
 
 const ScheduleTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { esportName } = useParams<{ esportName: string }>();
   const game = esportsConfig.find((g) => g.path === esportName);
 
-  const series: Series[] = useAppSelector((state) => selectLolSeries(state).toArray());
-  const loading = useAppSelector(selectLolLoading);
-  const error = useAppSelector(selectLolError);
+  const seriesList: Series[] = useAppSelector((state) => selectAllSeries(state).toArray());
+  const loading = useAppSelector(selectSeriesLoading);
+  const error = useAppSelector(selectSeriesError);
+
+  useEffect(() => {
+    const disconnectSeriesUpdates = dispatch(connectSeriesUpdatesStream());
+    const disconnectMatchUpdates = dispatch(connectMatchUpdatesStream());
+
+    return () => {
+      if (disconnectSeriesUpdates) {
+        disconnectSeriesUpdates();
+      }
+      if (disconnectMatchUpdates) {
+        disconnectMatchUpdates();
+      }
+    };
+  }, [dispatch]);
 
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
-    // Initialize to the current week's Monday with time set to midnight
     const now = new Date();
     const year = 2024;
     const allMondays = getAllMondays(year);
@@ -32,7 +50,7 @@ const ScheduleTab: React.FC = () => {
 
     if (now.getFullYear() === year) {
       const day = now.getDay();
-      if (day === 1) { // If today is Monday
+      if (day === 1) {
         const alignedDate = new Date(now);
         alignedDate.setHours(0, 0, 0, 0);
         return alignedDate;
@@ -41,7 +59,6 @@ const ScheduleTab: React.FC = () => {
         const alignedDate = new Date(now);
         alignedDate.setDate(now.getDate() + diff);
         alignedDate.setHours(0, 0, 0, 0);
-        // Ensure the alignedDate is within 2024
         if (alignedDate.getFullYear() === year) {
           return alignedDate;
         }
@@ -54,10 +71,9 @@ const ScheduleTab: React.FC = () => {
 
   useEffect(() => {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
-    if (game?.path === 'lol') {
-      dispatch(fetchLolSchedule({ timestamp }));
+    if (game) {
+      dispatch(fetchSeries({ timestamp, gamePath: game.path }));
     }
-    // Implement similar dispatches for other games when needed
   }, [dispatch, selectedDate, game]);
 
   if (!game) {
@@ -69,25 +85,25 @@ const ScheduleTab: React.FC = () => {
   }
 
   const handleOpenFilterModal = () => {
-    dispatch(openModal('REGION_FILTER', {
-      onApplyFilter: (regions: string[]) => {
-        setSelectedRegions(regions);
-        dispatch(closeModal());
-      }
-    }));
+    dispatch(
+      openModal('REGION_FILTER', {
+        onApplyFilter: (regions: string[]) => {
+          setSelectedRegions(regions);
+          dispatch(closeModal());
+        },
+      }),
+    );
   };
 
-  // Updated filtering logic to exclude series with lifecycle "deleted"
-  const filteredSeries = series.filter((seriesItem: Series) =>
-    seriesItem.lifecycle !== 'deleted' &&
-    (selectedRegions.length === 0 ||
-      seriesItem.participants.some((participant) =>
-        selectedRegions.includes(participant.roster.team?.region?.abbreviation || '')
-      )
-    )
+  const filteredSeries = seriesList.filter(
+    (seriesItem: Series) =>
+      seriesItem.lifecycle !== 'deleted' &&
+      (selectedRegions.length === 0 ||
+        seriesItem.participants.some((participant) =>
+          selectedRegions.includes(participant.roster.team?.region?.abbreviation || ''),
+        )),
   );
 
-  // Function to group series by day
   const groupedSeries = filteredSeries.reduce((groups, seriesItem) => {
     const date = new Date(seriesItem.start * 1000);
     const dayKey = date.toDateString();
@@ -117,7 +133,8 @@ const ScheduleTab: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                   {seriesForDay.map((seriesItem) => {
                     const { id, lifecycle } = seriesItem;
-                    const ScoreboardComponent = lifecycle === 'live' ? LolLiveScoreboard : LolScoreboard;
+                    const ScoreboardComponent =
+                      lifecycle === 'live' ? LolLiveScoreboard : LolScoreboard;
 
                     return (
                       <Link
@@ -126,7 +143,7 @@ const ScheduleTab: React.FC = () => {
                         className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
                         style={{ width: '100%', textDecoration: 'none' }}
                       >
-                        <ScoreboardComponent series={seriesItem} />
+                        <ScoreboardComponent seriesId={id} />
                       </Link>
                     );
                   })}
@@ -150,7 +167,7 @@ const ScheduleTab: React.FC = () => {
                       className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
                       style={{ width: '100%', textDecoration: 'none' }}
                     >
-                      {/* <ValorantScoreboard series={seriesItem} /> */}
+                      {/* <ValorantScoreboard seriesId={seriesItem.id} /> */}
                     </Link>
                   ))}
                 </div>
@@ -168,9 +185,7 @@ const ScheduleTab: React.FC = () => {
     <div className="space-y-8 mt-4">
       <HStack justifyContent="center" alignItems="center" space={4} className="mb-4">
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
-        <Button onClick={handleOpenFilterModal}>
-          Filter Regions
-        </Button>
+        <Button onClick={handleOpenFilterModal}>Filter Regions</Button>
       </HStack>
       {renderScoresContent()}
     </div>

@@ -5,7 +5,7 @@ import { mapSchema } from './map';
 import { gameSchema } from './game';
 import { dateStringOrNumber } from 'src/utils/dates'
 
-export const liveMatchSchema = z.object({
+export const matchSchema = z.object({
   id: z.number(),
   map: mapSchema,
   lifecycle: z.enum(['upcoming', 'live', 'over', 'deleted', 'over-forfeited']),
@@ -20,4 +20,4 @@ export const liveMatchSchema = z.object({
   resourceVersion: z.number(),
 }).passthrough();
 
-export type LiveMatch = z.infer<typeof liveMatchSchema>;
+export type Match = z.infer<typeof matchSchema>;
