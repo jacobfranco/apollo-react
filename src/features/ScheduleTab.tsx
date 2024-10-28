@@ -1,30 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from 'src/hooks';
-import LolScoreboard from 'src/components/LolScoreboard';
-import LolLiveScoreboard from 'src/components/LolLiveScoreboard';
-import ValorantScoreboard from 'src/components/ValorantScoreboard';
-import esportsConfig from 'src/esports-config';
+// src/components/ScheduleTab.tsx
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "src/hooks";
+import LolScoreboard from "src/components/LolScoreboard";
+import LolLiveScoreboard from "src/components/LolLiveScoreboard";
+import ValorantScoreboard from "src/components/ValorantScoreboard";
+import esportsConfig from "src/esports-config";
 import {
   selectAllSeries,
   selectSeriesLoading,
   selectSeriesError,
-} from 'src/selectors';
-import WeekPicker from 'src/components/WeekPicker';
-import { getAllMondays, formatDate } from 'src/utils/dates';
-import { openModal, closeModal } from 'src/actions/modals';
-import { HStack } from 'src/components';
-import { Button } from 'src/components/Button';
-import { Series } from 'src/schemas/series';
-import { fetchSeries } from 'src/actions/series';
-import { connectSeriesUpdatesStream, connectMatchUpdatesStream } from 'src/actions/streaming';
+} from "src/selectors";
+import WeekPicker from "src/components/WeekPicker";
+import { getAllMondays, formatDate } from "src/utils/dates";
+import { openModal, closeModal } from "src/actions/modals";
+import { HStack, Spinner } from "src/components";
+import { Button } from "src/components/Button";
+import { Series } from "src/schemas/series";
+import { fetchSeries } from "src/actions/series";
+import {
+  connectSeriesUpdatesStream,
+  connectMatchUpdatesStream,
+} from "src/actions/streaming";
+import { mainRegions } from "src/regions";
 
 const ScheduleTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { esportName } = useParams<{ esportName: string }>();
   const game = esportsConfig.find((g) => g.path === esportName);
 
-  const seriesList: Series[] = useAppSelector((state) => selectAllSeries(state).toArray());
+  const seriesList: Series[] = useAppSelector((state) =>
+    selectAllSeries(state).toArray()
+  );
   const loading = useAppSelector(selectSeriesLoading);
   const error = useAppSelector(selectSeriesError);
 
@@ -67,7 +74,7 @@ const ScheduleTab: React.FC = () => {
     return firstMonday;
   });
 
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [selectedMainRegions, setSelectedMainRegions] = useState<string[]>([]);
 
   useEffect(() => {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
@@ -86,22 +93,60 @@ const ScheduleTab: React.FC = () => {
 
   const handleOpenFilterModal = () => {
     dispatch(
-      openModal('REGION_FILTER', {
+      openModal("REGION_FILTER", {
         onApplyFilter: (regions: string[]) => {
-          setSelectedRegions(regions);
+          setSelectedMainRegions(regions);
           dispatch(closeModal());
         },
-      }),
+      })
     );
   };
 
+  // Helper function to map main regions to API regions and/or countries
+  const getApiRegionsOrCountries = (
+    selectedKeys: string[]
+  ): { apiRegions: string[]; countries: string[] } => {
+    const apiRegions: string[] = [];
+    const countries: string[] = [];
+
+    selectedKeys.forEach((key) => {
+      const mainRegion = mainRegions.find((r) => r.key === key);
+      if (mainRegion) {
+        if (mainRegion.apiRegions) {
+          apiRegions.push(...mainRegion.apiRegions);
+        }
+        if (mainRegion.countries) {
+          countries.push(...mainRegion.countries);
+        }
+      }
+    });
+
+    return { apiRegions, countries };
+  };
+
+  const { apiRegions, countries } =
+    getApiRegionsOrCountries(selectedMainRegions);
+
   const filteredSeries = seriesList.filter(
     (seriesItem: Series) =>
-      seriesItem.lifecycle !== 'deleted' &&
-      (selectedRegions.length === 0 ||
-        seriesItem.participants.some((participant) =>
-          selectedRegions.includes(participant.roster.team?.region?.abbreviation || ''),
-        )),
+      seriesItem.lifecycle !== "deleted" &&
+      (selectedMainRegions.length === 0 ||
+        seriesItem.participants.some((participant) => {
+          const team = participant.roster.team;
+          if (!team || !team.region) return false;
+
+          const region = team.region;
+          const countryAbbr = team.region.country?.abbreviation;
+
+          // Check if the team's API region matches any selected API regions
+          const matchesApiRegion =
+            region.abbreviation && apiRegions.includes(region.abbreviation);
+
+          // Check if the team's country abbreviation matches any selected countries
+          const matchesCountry = countryAbbr && countries.includes(countryAbbr);
+
+          return matchesApiRegion || matchesCountry;
+        }))
   );
 
   const groupedSeries = filteredSeries.reduce((groups, seriesItem) => {
@@ -116,7 +161,7 @@ const ScheduleTab: React.FC = () => {
 
   const renderScoresContent = () => {
     if (loading) {
-      return <div className="text-center">Loading...</div>;
+      return <Spinner withText={false} />;
     }
 
     if (filteredSeries.length === 0) {
@@ -124,24 +169,26 @@ const ScheduleTab: React.FC = () => {
     }
 
     switch (game.path) {
-      case 'lol': {
+      case "lol": {
         return (
           <div className="space-y-8">
             {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
               <div key={day}>
-                <h2 className="text-xl font-semibold mb-4">{formatDate(day)}</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {formatDate(day)}
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                   {seriesForDay.map((seriesItem) => {
                     const { id, lifecycle } = seriesItem;
                     const ScoreboardComponent =
-                      lifecycle === 'live' ? LolLiveScoreboard : LolScoreboard;
+                      lifecycle === "live" ? LolLiveScoreboard : LolScoreboard;
 
                     return (
                       <Link
                         key={id}
                         to={`/esports/${esportName}/series/${id}`}
                         className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                        style={{ width: '100%', textDecoration: 'none' }}
+                        style={{ width: "100%", textDecoration: "none" }}
                       >
                         <ScoreboardComponent seriesId={id} />
                       </Link>
@@ -153,19 +200,21 @@ const ScheduleTab: React.FC = () => {
           </div>
         );
       }
-      case 'valorant': {
+      case "valorant": {
         return (
           <div className="space-y-8">
             {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
               <div key={day}>
-                <h2 className="text-xl font-semibold mb-4">{day}</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {formatDate(day)}
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
                   {seriesForDay.map((seriesItem) => (
                     <Link
                       key={seriesItem.id}
                       to={`/esports/${esportName}/series/${seriesItem.id}`}
                       className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                      style={{ width: '100%', textDecoration: 'none' }}
+                      style={{ width: "100%", textDecoration: "none" }}
                     >
                       {/* <ValorantScoreboard seriesId={seriesItem.id} /> */}
                     </Link>
@@ -183,7 +232,12 @@ const ScheduleTab: React.FC = () => {
 
   return (
     <div className="space-y-8 mt-4">
-      <HStack justifyContent="center" alignItems="center" space={4} className="mb-4">
+      <HStack
+        justifyContent="center"
+        alignItems="center"
+        space={4}
+        className="mb-4"
+      >
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
         <Button onClick={handleOpenFilterModal}>Filter Regions</Button>
       </HStack>

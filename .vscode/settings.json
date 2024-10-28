@@ -1,36 +1,32 @@
 {
-    "css.validate": false,
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2,
-    "files.associations": {
-      "*.conf.template": "properties"
+  "css.validate": false,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "files.associations": {
+    "*.conf.template": "properties"
+  },
+  "files.eol": "\n",
+  "files.insertFinalNewline": false,
+  "json.schemas": [
+    {
+      "fileMatch": [".lintstagedrc.json"],
+      "url": "https://json.schemastore.org/lintstagedrc.schema.json"
     },
-    "files.eol": "\n",
-    "files.insertFinalNewline": false,
-    "json.schemas": [
-      {
-        "fileMatch": [".lintstagedrc.json"],
-        "url": "https://json.schemastore.org/lintstagedrc.schema.json"
-      },
-      {
-        "fileMatch": ["renovate.json"],
-        "url": "https://docs.renovatebot.com/renovate-schema.json"
-      }
-    ],
-    "scss.validate": false,
-    "workbench.colorTheme": "poimandres",
-    "workbench.iconTheme": "quill-icons-minimal",
-    "workbench.productIconTheme": "icons-carbon",
-    "editor.renderWhitespace": "none",
-    "editor.minimap.renderCharacters": false,
-    "editor.fontSize": 13.5,
-    "editor.fontFamily": "Menlo",
-    "window.zoomLevel": 0.5,
-    "window.menuBarVisibility": "classic",
-    "editor.guides.indentation": false,
-    "terminal.integrated.fontFamily": "Hack Nerd Font"
-
-
-
-
-  }
+    {
+      "fileMatch": ["renovate.json"],
+      "url": "https://docs.renovatebot.com/renovate-schema.json"
+    }
+  ],
+  "scss.validate": false,
+  "workbench.colorTheme": "poimandres",
+  "workbench.iconTheme": "quill-icons-minimal",
+  "workbench.productIconTheme": "icons-carbon",
+  "editor.renderWhitespace": "none",
+  "editor.minimap.renderCharacters": false,
+  "editor.fontSize": 13.5,
+  "editor.fontFamily": "Menlo",
+  "window.zoomLevel": 0.5,
+  "window.menuBarVisibility": "classic",
+  "editor.guides.indentation": false,
+  "terminal.integrated.fontFamily": "Hack Nerd Font"
+}

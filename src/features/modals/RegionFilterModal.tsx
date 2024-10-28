@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
-import { Modal } from 'src/components';
-import { closeModal } from 'src/actions/modals';
-import { useAppDispatch } from 'src/hooks';
-import Button from 'src/components/Button';
+// src/components/RegionFilterModal.tsx
+import React, { useState } from "react";
+import { Modal } from "src/components";
+import { closeModal } from "src/actions/modals";
+import { useAppDispatch } from "src/hooks";
+import Button from "src/components/Button";
+import { mainRegions } from "src/regions";
 
 interface RegionFilterModalProps {
-  onApplyFilter: (selectedRegions: string[]) => void;
+  onApplyFilter: (selectedMainRegions: string[]) => void;
 }
 
-const RegionFilterModal: React.FC<RegionFilterModalProps> = ({ onApplyFilter }) => {
+const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
+  onApplyFilter,
+}) => {
   const dispatch = useAppDispatch();
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const regions = ['NA', 'EU']; // Hardcoded regions for now
+  const [selectedMainRegions, setSelectedMainRegions] = useState<string[]>([]);
 
-  const handleRegionToggle = (region: string) => {
-    setSelectedRegions(prev =>
-      prev.includes(region)
-        ? prev.filter(r => r !== region)
-        : [...prev, region]
+  const handleRegionToggle = (regionKey: string) => {
+    setSelectedMainRegions((prev) =>
+      prev.includes(regionKey)
+        ? prev.filter((r) => r !== regionKey)
+        : [...prev, regionKey]
     );
   };
 
   const handleApplyFilter = () => {
-    onApplyFilter(selectedRegions);
+    onApplyFilter(selectedMainRegions);
     dispatch(closeModal());
   };
 
@@ -40,14 +43,16 @@ const RegionFilterModal: React.FC<RegionFilterModalProps> = ({ onApplyFilter }) 
       cancelText="Cancel"
     >
       <div className="space-y-2">
-        {regions.map(region => (
+        {mainRegions.map((region) => (
           <Button
-            key={region}
-            onClick={() => handleRegionToggle(region)}
-            theme={selectedRegions.includes(region) ? 'primary' : 'secondary'}
+            key={region.key}
+            onClick={() => handleRegionToggle(region.key)}
+            theme={
+              selectedMainRegions.includes(region.key) ? "primary" : "secondary"
+            }
             block
           >
-            {region}
+            {region.name}
           </Button>
         ))}
       </div>

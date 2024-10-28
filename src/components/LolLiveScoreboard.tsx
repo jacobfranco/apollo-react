@@ -1,15 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
-import { useTeamColors } from 'src/team-colors';
-import AutoFitText from './AutoFitText';
-import placeholderTeam from 'src/assets/images/placeholder-team.png';
-import useLiveMatchStream from 'src/api/hooks/useLiveMatchStream';
-import { useAppSelector } from 'src/hooks';
-import { selectMatchById } from 'src/selectors';
-import { Participant, Team } from 'src/schemas';
-import { useTheme } from 'src/hooks/useTheme';
-import { formatScoreboardTitle, formatGold } from 'src/utils/scoreboards';
-import SvgIcon from './SvgIcon';
-import { selectSeriesById } from 'src/selectors';
+import React, { useEffect, useMemo } from "react";
+import { useTeamColors } from "src/team-colors";
+import AutoFitText from "./AutoFitText";
+import placeholderTeam from "src/assets/images/placeholder-team.png";
+import useLiveMatchStream from "src/api/hooks/useLiveMatchStream";
+import { useAppSelector } from "src/hooks";
+import { selectMatchById } from "src/selectors";
+import { Participant, Team } from "src/schemas";
+import { useTheme } from "src/hooks/useTheme";
+import { formatScoreboardTitle, formatGold } from "src/utils/scoreboards";
+import SvgIcon from "./SvgIcon";
+import { selectSeriesById } from "src/selectors";
 
 interface LolLiveScoreboardProps {
   seriesId: number;
@@ -31,7 +31,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
     const totalScore = series.participants.reduce(
       (acc, participant) => acc + (participant.score || 0),
-      0,
+      0
     );
     const currentMatchIndex = totalScore;
     return series.matchIds[currentMatchIndex] || null;
@@ -40,11 +40,14 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   useLiveMatchStream(currentMatchId);
 
   const liveMatch = useAppSelector((state) =>
-    currentMatchId ? selectMatchById(state, currentMatchId) : undefined,
+    currentMatchId ? selectMatchById(state, currentMatchId) : undefined
   );
 
   useEffect(() => {
-    console.log(`Component re-rendered. LiveMatch for matchId ${currentMatchId}:`, liveMatch);
+    console.log(
+      `Component re-rendered. LiveMatch for matchId ${currentMatchId}:`,
+      liveMatch
+    );
   }, [liveMatch, currentMatchId]);
 
   const currentSeries = series;
@@ -54,7 +57,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
     return currentSeries.participants.map((seriesParticipant: Participant) => {
       const liveParticipant = liveMatch.participants.find(
-        (lp: Participant) => lp.seed === seriesParticipant.seed,
+        (lp: Participant) => lp.seed === seriesParticipant.seed
       );
 
       if (liveParticipant) {
@@ -78,11 +81,14 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme();
 
-  const team1 = mergedParticipants[0]?.roster?.team as Team | undefined;
-  const team2 = mergedParticipants[1]?.roster?.team as Team | undefined;
+  const team1Participant = mergedParticipants[0];
+  const team2Participant = mergedParticipants[1];
 
-  const team1Name = team1?.name || 'Team 1';
-  const team2Name = team2?.name || 'Team 2';
+  const team1 = team1Participant?.roster?.team as Team | undefined;
+  const team2 = team2Participant?.roster?.team as Team | undefined;
+
+  const team1Name = team1?.name || "Team 1";
+  const team2Name = team2?.name || "Team 2";
 
   const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
@@ -95,61 +101,106 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     return team2?.matchStats?.score ?? 0;
   }, [team2]);
 
-  const team1Gold = useMemo(() => formatGold(team1?.matchStats?.goldEarned ?? 0), [team1]);
-  const team2Gold = useMemo(() => formatGold(team2?.matchStats?.goldEarned ?? 0), [team2]);
+  const team1Gold = useMemo(
+    () => formatGold(team1?.matchStats?.goldEarned ?? 0),
+    [team1]
+  );
+  const team2Gold = useMemo(
+    () => formatGold(team2?.matchStats?.goldEarned ?? 0),
+    [team2]
+  );
 
-  const team1Towers = useMemo(() => team1?.matchStats?.turretsDestroyed ?? 0, [team1]);
-  const team2Towers = useMemo(() => team2?.matchStats?.turretsDestroyed ?? 0, [team2]);
+  const team1Towers = useMemo(
+    () => team1?.matchStats?.turretsDestroyed ?? 0,
+    [team1]
+  );
+  const team2Towers = useMemo(
+    () => team2?.matchStats?.turretsDestroyed ?? 0,
+    [team2]
+  );
 
   const leadingSide =
-    team1Kills > team2Kills ? 'left' : team2Kills > team1Kills ? 'right' : null;
+    team1Kills > team2Kills ? "left" : team2Kills > team1Kills ? "right" : null;
 
-  const { color: team1Color, logoType: team1LogoType } = getTeamColorAndLogoType(team1Name);
-  const { color: team2Color, logoType: team2LogoType } = getTeamColorAndLogoType(team2Name);
+  const { color: team1Color, logoType: team1LogoType } =
+    getTeamColorAndLogoType(team1Name);
+  const { color: team2Color, logoType: team2LogoType } =
+    getTeamColorAndLogoType(team2Name);
 
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;
 
-  const bestOf = currentSeries.format?.bestOf ? `Best of ${currentSeries.format.bestOf}` : '';
+  const bestOf = currentSeries.format?.bestOf || 1;
 
   const startDate = new Date(start * 1000);
-  const formattedStartDate = startDate.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
+  const formattedStartDate = startDate.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
   });
 
   const getLogoFilter = (
-    logoType: 'black' | 'white' | 'color',
+    logoType: "black" | "white" | "color",
     isPlaceholder: boolean,
-    currentTheme: string,
+    currentTheme: string
   ): string => {
     if (isPlaceholder) {
-      return '';
+      return "";
     }
-    if (logoType === 'black' && currentTheme === 'dark') {
-      return 'invert';
-    } else if (logoType === 'white' && currentTheme === 'light') {
-      return 'invert';
+    if (logoType === "black" && currentTheme === "dark") {
+      return "invert";
+    } else if (logoType === "white" && currentTheme === "light") {
+      return "invert";
     }
-    return '';
+    return "";
   };
+
+  const winsNeeded = Math.ceil(bestOf / 2);
+
+  const renderScoreRectangles = (teamScore: number, teamColor: string) => {
+    const rectangles = [];
+    for (let i = 0; i < winsNeeded; i++) {
+      rectangles.push(
+        <div
+          key={i}
+          className="w-8 h-2 mx-0.5 rounded-sm"
+          style={{
+            backgroundColor:
+              i < teamScore
+                ? teamColor
+                : theme === "light"
+                ? "#e5e7eb"
+                : "#374151",
+          }}
+        ></div>
+      );
+    }
+    return <div className="flex justify-center mt-2">{rectangles}</div>;
+  };
+
+  const formattedClock = useMemo(() => {
+    if (!liveMatch?.clock?.milliseconds) return null;
+    const totalSeconds = Math.floor(liveMatch.clock.milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }, [liveMatch]);
 
   return (
     <div
       className="relative block w-full aspect-[2.5] text-center font-sans transform transition-transform duration-200 ease-in-out hover:scale-105"
-      style={{ textDecoration: 'none' }}
+      style={{ textDecoration: "none" }}
     >
       <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />
 
       <div
         className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-500 dark:bg-primary-600 rounded-b px-6 py-2 flex items-center justify-center"
         style={{
-          minWidth: '35%',
-          maxWidth: '100%',
-          height: '10%',
+          minWidth: "35%",
+          maxWidth: "100%",
+          height: "10%",
         }}
       >
         <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
@@ -158,119 +209,110 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
       </div>
 
       <div className="absolute inset-x-0 top-[12%] bottom-[12%] flex flex-row items-center justify-between px-4">
-        {/* Left Column */}
         <div className="flex flex-col items-center w-1/3">
-          {/* Logo Container */}
-          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-2">
             <img
               className={`max-w-full max-h-full object-contain ${getLogoFilter(
                 team1LogoType,
                 isTeam1Placeholder,
-                theme,
+                theme
               )}`}
               src={team1Logo}
               alt={team1Name}
             />
           </div>
-          {/* Team Name */}
-          <div className="flex items-center justify-center space-x-1 mt-2 w-full">
+          <div className="flex items-center justify-center space-x-1 mt-1 w-full">
             <AutoFitText
               text={team1Name}
               maxFontSize={16}
               minFontSize={8}
               maxLines={2}
               className="text-gray-900 dark:text-gray-100 font-normal"
-              style={{ width: '100%', textAlign: 'center' }}
+              style={{ width: "100%", textAlign: "center" }}
             />
           </div>
+          {renderScoreRectangles(team1Participant.score, team1Color)}
         </div>
 
-        {/* Center Column */}
         <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
-          {/* Time */}
-          <div className="font-bold opacity-60 text-red-500 dark:text-red-500">Live</div>
-
-          {/* Metrics Container */}
-          <div className="flex flex-col space-y-2">
-            {/* Kills Row */}
-            <div className="flex items-center justify-between">
-              {/* Team 1 Kills */}
-              <div className="flex-1 text-right">{team1Kills}</div>
-              {/* Kills Icon */}
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require('@tabler/icons/outline/swords.svg')}
-                  className="h-5 w-5 text-primary-500"
-                />
-              </div>
-              {/* Team 2 Kills */}
-              <div className="flex-1 text-left">{team2Kills}</div>
-            </div>
-
-            {/* Gold Row */}
-            <div className="flex items-center justify-between">
-              {/* Team 1 Gold */}
-              <div className="flex-1 text-right">{team1Gold}</div>
-              {/* Gold Icon */}
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require('@tabler/icons/outline/coin.svg')}
-                  className="h-5 w-5 text-primary-500"
-                />
-              </div>
-              {/* Team 2 Gold */}
-              <div className="flex-1 text-left">{team2Gold}</div>
-            </div>
-
-            {/* Towers Row */}
-            <div className="flex items-center justify-between">
-              {/* Team 1 Towers */}
-              <div className="flex-1 text-right">{team1Towers}</div>
-              {/* Towers Icon */}
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require('@tabler/icons/outline/tower.svg')}
-                  className="h-5 w-5 text-primary-500"
-                />
-              </div>
-              {/* Team 2 Towers */}
-              <div className="flex-1 text-left">{team2Towers}</div>
-            </div>
+          <div className="font-bold opacity-60 text-red-500 dark:text-red-500">
+            {formattedClock || "Live"}
           </div>
 
-          {/* Format */}
-          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100">{bestOf}</div>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Kills}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/swords.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Kills}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Gold}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/coins.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Gold}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Towers}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/tower.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Towers}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Column */}
         <div className="flex flex-col items-center w-1/3">
-          {/* Logo Container */}
-          <div className="w-[60px] h-[60px] flex items-center justify-center mb-4">
+          <div className="w-[60px] h-[60px] flex items-center justify-center mb-2">
             <img
               className={`max-w-full max-h-full object-contain ${getLogoFilter(
                 team2LogoType,
                 isTeam2Placeholder,
-                theme,
+                theme
               )}`}
               src={team2Logo}
               alt={team2Name}
             />
           </div>
-          {/* Team Name */}
-          <div className="flex items-center justify-center space-x-1 mt-2 w-full">
+          <div className="flex items-center justify-center space-x-1 mt-1 w-full">
             <AutoFitText
               text={team2Name}
               maxFontSize={16}
               minFontSize={8}
               maxLines={2}
               className="text-gray-900 dark:text-gray-100 font-normal"
-              style={{ width: '100%', textAlign: 'center' }}
+              style={{ width: "100%", textAlign: "center" }}
             />
           </div>
+          {renderScoreRectangles(team2Participant.score, team2Color)}
         </div>
       </div>
 
-      {/* Divider line */}
       <div className="absolute left-[5%] right-[5%] bottom-[5%] h-0.5 opacity-10 border-t border-solid border-gray-900 dark:border-gray-100" />
     </div>
   );
