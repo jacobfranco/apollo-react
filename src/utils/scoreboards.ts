@@ -1,4 +1,4 @@
-import { Series } from 'src/schemas/series';
+import { Series } from "src/schemas/series";
 
 /**
  * Combines tournament and series titles while omitting specified words
@@ -8,7 +8,7 @@ import { Series } from 'src/schemas/series';
  */
 export function formatScoreboardTitle(
   series: Series,
-  wordsToOmit: string[] = ['Bracket']
+  wordsToOmit: string[] = ["Bracket"]
 ): string {
   if (!series.tournament?.title) {
     return series.title;
@@ -16,18 +16,18 @@ export function formatScoreboardTitle(
 
   // Clean up the series title by removing specified words
   let cleanedSeriesTitle = series.title;
-  wordsToOmit.forEach(word => {
-    cleanedSeriesTitle = cleanedSeriesTitle.replace(word, '').trim();
+  wordsToOmit.forEach((word) => {
+    cleanedSeriesTitle = cleanedSeriesTitle.replace(word, "").trim();
   });
 
   // Remove any leading or trailing dashes and clean up extra spaces
-  cleanedSeriesTitle = cleanedSeriesTitle.replace(/^\s*-\s*|\s*-\s*$/g, '').trim();
+  cleanedSeriesTitle = cleanedSeriesTitle
+    .replace(/^\s*-\s*|\s*-\s*$/g, "")
+    .trim();
 
   // Combine the titles
   return `${series.tournament.title} - ${cleanedSeriesTitle}`;
 }
-
-// src/utils/scoreboards.ts
 
 /**
  * Formats a gold value into a string with one decimal followed by 'K'.

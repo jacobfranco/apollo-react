@@ -5,6 +5,7 @@ import { selectSeriesById } from "src/selectors";
 import LolScoreboardDetail from "src/components/LolScoreboardDetail";
 import { Column } from "src/components/Column"; // Import the Column component
 import esportsConfig from "src/esports-config"; // Import esportsConfig to get game details
+import { formatScoreboardTitle } from "src/utils/scoreboards";
 
 const ScoreboardDetailsTab: React.FC = () => {
   const { esportName, seriesId } = useParams<{
@@ -17,6 +18,11 @@ const ScoreboardDetailsTab: React.FC = () => {
   const seriesData = useAppSelector((state) =>
     selectSeriesById(state, seriesIdNumber)
   );
+
+  let formattedTitle = "";
+  if (seriesData) {
+    formattedTitle = formatScoreboardTitle(seriesData);
+  }
 
   if (!seriesData) {
     return (
@@ -46,11 +52,7 @@ const ScoreboardDetailsTab: React.FC = () => {
   }
 
   return (
-    <Column
-      label={""} // Use the game's name as the label
-      transparent={false}
-      withHeader={true}
-    >
+    <Column label={formattedTitle} transparent={false} withHeader={true}>
       <div className="space-y-6">
         {/* You can add additional consistent formatting here if needed */}
         <div className="scoreboard-content">
