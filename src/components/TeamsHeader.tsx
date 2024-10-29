@@ -119,12 +119,21 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   // **Helper function to determine text colors based on metric comparison**
   const getMetricClasses = (team1Value: number, team2Value: number) => {
     if (team1Value > team2Value) {
-      return { team1Class: "text-white", team2Class: "text-gray-500" };
+      return {
+        team1Class: "text-black dark:text-white",
+        team2Class: "text-gray-500",
+      };
     } else if (team2Value > team1Value) {
-      return { team1Class: "text-gray-500", team2Class: "text-white" };
+      return {
+        team1Class: "text-gray-500",
+        team2Class: "text-black dark:text-white",
+      };
     } else {
       // If values are equal, both are white
-      return { team1Class: "text-white", team2Class: "text-white" };
+      return {
+        team1Class: "text-black dark:text-white",
+        team2Class: "text-black dark:text-white",
+      };
     }
   };
 
