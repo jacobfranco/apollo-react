@@ -1,11 +1,9 @@
-// components/LolScoreboardDetail.tsx
 import React, { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById, selectMatchById } from "src/selectors";
 import { fetchMatch } from "src/actions/matches";
 import TeamsHeader from "./TeamsHeader";
 import PlayerRow from "./PlayerRow";
-import MatchDetails from "./MatchDetails";
 import { Tabs } from "src/components"; // Import Tabs component
 
 interface LolScoreboardDetailProps {
@@ -40,7 +38,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
         }
       });
     }
-  }, [dispatch, series, series?.matchIds, matches]);
+  }, [dispatch, series]);
 
   // Filter out matches where match.lifecycle === "deleted"
   const availableMatches = matches.filter(
@@ -59,8 +57,6 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
 
   // Participants from match data
   let team1, team2, team1Players, team2Players;
-  let matchDuration = "";
-  let matchLifecycle = "";
 
   if (selectedMatch) {
     team1 = selectedMatch.participants[0];
@@ -70,24 +66,15 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
       team1Players = team1.roster.players;
       team2Players = team2.roster.players;
     }
-
-    // Calculate match duration
-    if (
-      typeof selectedMatch.start === "number" &&
-      typeof selectedMatch.end === "number"
-    ) {
-      matchDuration = formatDuration(selectedMatch.end - selectedMatch.start);
-    }
-
-    matchLifecycle = selectedMatch.lifecycle.toUpperCase();
   }
 
-  const team1Score = series?.participants?.[0]?.score || 0;
-  const team2Score = series?.participants?.[1]?.score || 0;
+  // **Retrieve Series Scores**
+  const team1SeriesScore = series?.participants?.[0]?.score || 0;
+  const team2SeriesScore = series?.participants?.[1]?.score || 0;
 
   // Render component
   return (
-    <div className="text-white">
+    <div className="relative text-white">
       {/* Loading states */}
       {!series && <div>Loading series data...</div>}
       {series && matches.length === 0 && <div>Loading match data...</div>}
@@ -119,21 +106,13 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
               </div>
             </div>
 
-            {/* Match Details */}
-            <MatchDetails duration={matchDuration} status={matchLifecycle} />
-
-            {/* Teams Header */}
-            {team1 && team2 && (
-              <TeamsHeader
-                team1={team1}
-                team2={team2}
-                team1Score={team1Score}
-                team2Score={team2Score}
-                matchDuration={matchDuration}
-                matchLifecycle={matchLifecycle}
-                series={series}
-              />
-            )}
+            {/* Teams Header with Series Scores */}
+            <TeamsHeader
+              match={selectedMatch}
+              bestOf={series?.format?.bestOf || 1}
+              team1SeriesScore={team1SeriesScore}
+              team2SeriesScore={team2SeriesScore}
+            />
 
             {/* Players */}
             {team1Players && team2Players && (
