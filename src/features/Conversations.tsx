@@ -1,16 +1,23 @@
-import React, { useEffect } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import React, { useEffect } from "react";
+import { defineMessages, useIntl } from "react-intl";
 
-import { directComposeById } from 'src/actions/compose';
-import { mountConversations, unmountConversations, expandConversations } from 'src/actions/conversations';
-import { useDirectStream } from 'src/api/hooks';
-import { AccountSearch, ConversationsList } from 'src/components';
-import { Column } from 'src/components/Column'
-import { useAppDispatch } from 'src/hooks';
+import { directComposeById } from "src/actions/compose";
+import {
+  mountConversations,
+  unmountConversations,
+  expandConversations,
+} from "src/actions/conversations";
+import { useDirectStream } from "src/api/hooks/useDirectStream";
+import { AccountSearch, ConversationsList } from "src/components";
+import { Column } from "src/components/Column";
+import { useAppDispatch } from "src/hooks";
 
 const messages = defineMessages({
-  title: { id: 'column.direct', defaultMessage: 'Direct messages' },
-  searchPlaceholder: { id: 'direct.search_placeholder', defaultMessage: 'Send a message to…' },
+  title: { id: "column.direct", defaultMessage: "Direct messages" },
+  searchPlaceholder: {
+    id: "direct.search_placeholder",
+    defaultMessage: "Send a message to…",
+  },
 });
 
 const ConversationsTimeline = () => {

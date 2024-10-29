@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import React, { useEffect } from "react";
+import { defineMessages, useIntl } from "react-intl";
 
-import { fetchAccount } from 'src/actions/accounts';
-import { addToMentions, removeFromMentions } from 'src/actions/compose';
-import { useAccount } from 'src/api/hooks';
-import AccountComponent from 'src/components/Account';
-import { HStack, IconButton } from 'src/components';
-import { useAppDispatch, useCompose } from 'src/hooks';
+import { fetchAccount } from "src/actions/accounts";
+import { addToMentions, removeFromMentions } from "src/actions/compose";
+import { useAccount } from "src/api/hooks/useAccount";
+import AccountComponent from "src/components/Account";
+import { HStack, IconButton } from "src/components";
+import { useAppDispatch, useCompose } from "src/hooks";
 
 const messages = defineMessages({
-  remove: { id: 'reply_mentions.account.remove', defaultMessage: 'Remove from mentions' },
-  add: { id: 'reply_mentions.account.add', defaultMessage: 'Add to mentions' },
+  remove: {
+    id: "reply_mentions.account.remove",
+    defaultMessage: "Remove from mentions",
+  },
+  add: { id: "reply_mentions.account.add", defaultMessage: "Add to mentions" },
 });
 
 interface IAccount {
@@ -41,15 +44,38 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
   let button;
 
   if (added) {
-    button = <IconButton src={require('@tabler/icons/outline/x.svg')} iconClassName='h-5 w-5' title={intl.formatMessage(messages.remove)} onClick={onRemove} />;
+    button = (
+      <IconButton
+        src={require("@tabler/icons/outline/x.svg")}
+        iconClassName="h-5 w-5"
+        title={intl.formatMessage(messages.remove)}
+        onClick={onRemove}
+      />
+    );
   } else {
-    button = <IconButton src={require('@tabler/icons/outline/plus.svg')} iconClassName='h-5 w-5' title={intl.formatMessage(messages.add)} onClick={onAdd} />;
+    button = (
+      <IconButton
+        src={require("@tabler/icons/outline/plus.svg")}
+        iconClassName="h-5 w-5"
+        title={intl.formatMessage(messages.add)}
+        onClick={onAdd}
+      />
+    );
   }
 
   return (
-    <HStack space={1} alignItems='center' justifyContent='between' className='p-2.5'>
-      <div className='w-full'>
-        <AccountComponent account={account} withRelationship={false} withLinkToProfile={false} />
+    <HStack
+      space={1}
+      alignItems="center"
+      justifyContent="between"
+      className="p-2.5"
+    >
+      <div className="w-full">
+        <AccountComponent
+          account={account}
+          withRelationship={false}
+          withLinkToProfile={false}
+        />
       </div>
       {!author && button}
     </HStack>

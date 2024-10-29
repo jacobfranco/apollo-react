@@ -1,5 +1,5 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, useIntl } from "react-intl";
 
 import {
   blockAccount,
@@ -8,36 +8,45 @@ import {
   unmuteAccount,
   authorizeFollowRequest,
   rejectFollowRequest,
-} from 'src/actions/accounts';
-import { openModal } from 'src/actions/modals';
-import { useFollow } from 'src/api/hooks';
-import { HStack } from 'src/components';
-import Button from 'src/components/Button';
-import { useAppDispatch, useLoggedIn } from 'src/hooks';
+} from "src/actions/accounts";
+import { openModal } from "src/actions/modals";
+import { useFollow } from "src/api/hooks/useFollow";
+import { HStack } from "src/components";
+import Button from "src/components/Button";
+import { useAppDispatch, useLoggedIn } from "src/hooks";
 
-import type { Account } from 'src/schemas';
+import type { Account } from "src/schemas";
 
 const messages = defineMessages({
-  block: { id: 'account.block', defaultMessage: 'Block @{name}' },
-  blocked: { id: 'account.blocked', defaultMessage: 'Blocked' },
-  edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
-  follow: { id: 'account.follow', defaultMessage: 'Follow' },
-  mute: { id: 'account.mute', defaultMessage: 'Mute @{name}' },
-  remote_follow: { id: 'account.remote_follow', defaultMessage: 'Remote follow' }, // TODO: Remove
-  requested: { id: 'account.requested', defaultMessage: 'Awaiting approval. Click to cancel follow request' },
-  requested_small: { id: 'account.requested_small', defaultMessage: 'Awaiting approval' },
-  unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
-  unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
-  unmute: { id: 'account.unmute', defaultMessage: 'Unmute @{name}' },
-  authorize: { id: 'follow_request.authorize', defaultMessage: 'Authorize' },
-  reject: { id: 'follow_request.reject', defaultMessage: 'Reject' },
+  block: { id: "account.block", defaultMessage: "Block @{name}" },
+  blocked: { id: "account.blocked", defaultMessage: "Blocked" },
+  edit_profile: { id: "account.edit_profile", defaultMessage: "Edit profile" },
+  follow: { id: "account.follow", defaultMessage: "Follow" },
+  mute: { id: "account.mute", defaultMessage: "Mute @{name}" },
+  remote_follow: {
+    id: "account.remote_follow",
+    defaultMessage: "Remote follow",
+  }, // TODO: Remove
+  requested: {
+    id: "account.requested",
+    defaultMessage: "Awaiting approval. Click to cancel follow request",
+  },
+  requested_small: {
+    id: "account.requested_small",
+    defaultMessage: "Awaiting approval",
+  },
+  unblock: { id: "account.unblock", defaultMessage: "Unblock @{name}" },
+  unfollow: { id: "account.unfollow", defaultMessage: "Unfollow" },
+  unmute: { id: "account.unmute", defaultMessage: "Unmute @{name}" },
+  authorize: { id: "follow_request.authorize", defaultMessage: "Authorize" },
+  reject: { id: "follow_request.reject", defaultMessage: "Reject" },
 });
 
 interface IActionButton {
   /** Target account for the action. */
   account: Account;
   /** Type of action to prioritize, eg on Blocks and Mutes pages. */
-  actionType?: 'muting' | 'blocking' | 'follow_request';
+  actionType?: "muting" | "blocking" | "follow_request";
   /** Displays shorter text on the "Awaiting approval" button. */
   small?: boolean;
 }
@@ -47,7 +56,11 @@ interface IActionButton {
  * May say "Unblock" or something else, depending on the relationship and
  * `actionType` prop.
  */
-const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) => {
+const ActionButton: React.FC<IActionButton> = ({
+  account,
+  actionType,
+  small,
+}) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
@@ -87,11 +100,13 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   };
 
   const handleRemoteFollow = () => {
-    dispatch(openModal('UNAUTHORIZED', {
-      action: 'FOLLOW',
-      account: account.id,
-      ap_id: account.url,
-    }));
+    dispatch(
+      openModal("UNAUTHORIZED", {
+        action: "FOLLOW",
+        account: account.id,
+        ap_id: account.url,
+      })
+    );
   };
 
   /** Handles actionType='muting' */
@@ -102,8 +117,8 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
 
     return (
       <Button
-        theme={isMuted ? 'danger' : 'secondary'}
-        size='sm'
+        theme={isMuted ? "danger" : "secondary"}
+        size="sm"
         text={text}
         onClick={handleMute}
       />
@@ -118,8 +133,8 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
 
     return (
       <Button
-        theme={isBlocked ? 'danger' : 'secondary'}
-        size='sm'
+        theme={isBlocked ? "danger" : "secondary"}
+        size="sm"
         text={text}
         onClick={handleBlock}
       />
@@ -132,14 +147,14 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
     return (
       <HStack space={2}>
         <Button
-          theme='secondary'
-          size='sm'
+          theme="secondary"
+          size="sm"
           text={intl.formatMessage(messages.authorize)}
           onClick={handleAuthorize}
         />
         <Button
-          theme='danger'
-          size='sm'
+          theme="danger"
+          size="sm"
           text={intl.formatMessage(messages.reject)}
           onClick={handleReject}
         />
@@ -152,11 +167,11 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
     const blockedBy = account.relationship?.blocked_by as boolean;
 
     if (actionType) {
-      if (actionType === 'muting') {
+      if (actionType === "muting") {
         return mutingAction();
-      } else if (actionType === 'blocking') {
+      } else if (actionType === "blocking") {
         return blockingAction();
-      } else if (actionType === 'follow_request') {
+      } else if (actionType === "follow_request") {
         return followRequestAction();
       }
     }
@@ -168,36 +183,49 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
       // Awaiting acceptance
       return (
         <Button
-          size='sm'
-          theme='tertiary'
-          text={small ? intl.formatMessage(messages.requested_small) : intl.formatMessage(messages.requested)}
+          size="sm"
+          theme="tertiary"
+          text={
+            small
+              ? intl.formatMessage(messages.requested_small)
+              : intl.formatMessage(messages.requested)
+          }
           onClick={handleFollow}
         />
       );
-    } else if (!account.relationship?.blocking && !account.relationship?.muting) {
+    } else if (
+      !account.relationship?.blocking &&
+      !account.relationship?.muting
+    ) {
       // Follow & Unfollow
       return (
         <Button
-          size='sm'
+          size="sm"
           disabled={blockedBy}
-          theme={isFollowing ? 'secondary' : 'primary'}
-          icon={blockedBy ? require('@tabler/icons/outline/ban.svg') : (!isFollowing && require('@tabler/icons/outline/plus.svg'))}
+          theme={isFollowing ? "secondary" : "primary"}
+          icon={
+            blockedBy
+              ? require("@tabler/icons/outline/ban.svg")
+              : !isFollowing && require("@tabler/icons/outline/plus.svg")
+          }
           onClick={handleFollow}
         >
-          {isFollowing ? (
-            intl.formatMessage(messages.unfollow)
-          ) : (
-            intl.formatMessage(blockedBy ? messages.blocked : messages.follow)
-          )}
+          {isFollowing
+            ? intl.formatMessage(messages.unfollow)
+            : intl.formatMessage(
+                blockedBy ? messages.blocked : messages.follow
+              )}
         </Button>
       );
     } else if (account.relationship?.blocking) {
       // Unblock
       return (
         <Button
-          theme='danger'
-          size='sm'
-          text={intl.formatMessage(messages.unblock, { name: account.username })}
+          theme="danger"
+          size="sm"
+          text={intl.formatMessage(messages.unblock, {
+            name: account.username,
+          })}
           onClick={handleBlock}
         />
       );
@@ -206,10 +234,10 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
     // Edit profile
     return (
       <Button
-        theme='tertiary'
-        size='sm'
+        theme="tertiary"
+        size="sm"
         text={intl.formatMessage(messages.edit_profile)}
-        to='/settings/profile'
+        to="/settings/profile"
       />
     );
   }

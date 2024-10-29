@@ -1,21 +1,26 @@
-import clsx from 'clsx';
-import React from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import clsx from "clsx";
+import React from "react";
+import { defineMessages, FormattedMessage } from "react-intl";
 
-import { patchMe } from 'src/actions/me';
-import { BigCard, Spinner, Stack } from 'src/components';
-import { useAppDispatch, useOwnAccount } from 'src/hooks';
-import toast from 'src/toast';
-import { isDefaultAvatar } from 'src/utils/accounts';
-import resizeImage from 'src/utils/resize-image';
+import { patchMe } from "src/actions/me";
+import { Spinner, Stack } from "src/components";
+import { BigCard } from "src/components/BigCard";
+import { useAppDispatch, useOwnAccount } from "src/hooks";
+import toast from "src/toast";
+import { isDefaultAvatar } from "src/utils/accounts";
+import resizeImage from "src/utils/resize-image";
 
-import type { AxiosError } from 'axios';
-import Button from 'src/components/Button';
-import Icon from 'src/components/Icon';
-import Avatar from 'src/components/Avatar';
+import type { AxiosError } from "axios";
+import Button from "src/components/Button";
+import Icon from "src/components/Icon";
+import Avatar from "src/components/Avatar";
 
 const messages = defineMessages({
-  error: { id: 'onboarding.error', defaultMessage: 'An unexpected error occurred. Please try again or skip this step.' },
+  error: {
+    id: "onboarding.error",
+    defaultMessage:
+      "An unexpected error occurred. Please try again or skip this step.",
+  },
 });
 
 const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
@@ -38,78 +43,120 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
 
     if (!rawFile) return;
 
-    resizeImage(rawFile, maxPixels).then((file) => {
-      const url = file ? URL.createObjectURL(file) : account?.avatar as string;
+    resizeImage(rawFile, maxPixels)
+      .then((file) => {
+        const url = file
+          ? URL.createObjectURL(file)
+          : (account?.avatar as string);
 
-      setSelectedFile(url);
-      setSubmitting(true);
+        setSelectedFile(url);
+        setSubmitting(true);
 
-      const formData = new FormData();
-      formData.append('avatar', rawFile);
-      const credentials = dispatch(patchMe(formData));
+        const formData = new FormData();
+        formData.append("avatar", rawFile);
+        const credentials = dispatch(patchMe(formData));
 
-      Promise.all([credentials]).then(() => {
-        setDisabled(false);
-        setSubmitting(false);
-        onNext();
-      }).catch((error: AxiosError) => {
-        setSubmitting(false);
-        setDisabled(false);
-        setSelectedFile(null);
+        Promise.all([credentials])
+          .then(() => {
+            setDisabled(false);
+            setSubmitting(false);
+            onNext();
+          })
+          .catch((error: AxiosError) => {
+            setSubmitting(false);
+            setDisabled(false);
+            setSelectedFile(null);
 
-        if (error.response?.status === 422) {
-          toast.error((error.response.data as any).error.replace('Validation failed: ', ''));
-        } else {
-          toast.error(messages.error);
-        }
-      });
-    }).catch(console.error);
+            if (error.response?.status === 422) {
+              toast.error(
+                (error.response.data as any).error.replace(
+                  "Validation failed: ",
+                  ""
+                )
+              );
+            } else {
+              toast.error(messages.error);
+            }
+          });
+      })
+      .catch(console.error);
   };
 
   return (
     <BigCard
-      title={<FormattedMessage id='onboarding.avatar.title' defaultMessage='Choose a profile picture' />}
-      subtitle={<FormattedMessage id='onboarding.avatar.subtitle' defaultMessage='Just have fun with it.' />}
+      title={
+        <FormattedMessage
+          id="onboarding.avatar.title"
+          defaultMessage="Choose a profile picture"
+        />
+      }
+      subtitle={
+        <FormattedMessage
+          id="onboarding.avatar.subtitle"
+          defaultMessage="Just have fun with it."
+        />
+      }
     >
       <Stack space={10}>
-        <div className='relative mx-auto rounded-full bg-gray-200'>
+        <div className="relative mx-auto rounded-full bg-gray-200">
           {account && (
             <Avatar src={selectedFile || account.avatar} size={175} />
           )}
 
           {isSubmitting && (
-            <div className='absolute inset-0 flex items-center justify-center rounded-full bg-white/80 dark:bg-primary-900/80'>
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-white/80 dark:bg-primary-900/80">
               <Spinner withText={false} />
             </div>
           )}
 
           <button
             onClick={openFilePicker}
-            type='button'
+            type="button"
             className={clsx({
-              'absolute bottom-3 right-2 p-1 bg-primary-600 rounded-full ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700': true,
-              'opacity-50 pointer-events-none': isSubmitting,
+              "absolute bottom-3 right-2 p-1 bg-primary-600 rounded-full ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700":
+                true,
+              "opacity-50 pointer-events-none": isSubmitting,
             })}
             disabled={isSubmitting}
           >
-            <Icon src={require('@tabler/icons/outline/plus.svg')} className='h-5 w-5 text-white' />
+            <Icon
+              src={require("@tabler/icons/outline/plus.svg")}
+              className="h-5 w-5 text-white"
+            />
           </button>
 
-          <input type='file' className='hidden' ref={fileInput} onChange={handleFileChange} />
+          <input
+            type="file"
+            className="hidden"
+            ref={fileInput}
+            onChange={handleFileChange}
+          />
         </div>
 
-        <Stack justifyContent='center' space={2}>
-          <Button block theme='primary' type='button' onClick={onNext} disabled={isDefault && isDisabled || isSubmitting}>
+        <Stack justifyContent="center" space={2}>
+          <Button
+            block
+            theme="primary"
+            type="button"
+            onClick={onNext}
+            disabled={(isDefault && isDisabled) || isSubmitting}
+          >
             {isSubmitting ? (
-              <FormattedMessage id='onboarding.saving' defaultMessage='Saving…' />
+              <FormattedMessage
+                id="onboarding.saving"
+                defaultMessage="Saving…"
+              />
             ) : (
-              <FormattedMessage id='onboarding.next' defaultMessage='Next' />
+              <FormattedMessage id="onboarding.next" defaultMessage="Next" />
             )}
           </Button>
 
           {isDisabled && (
-            <Button block theme='tertiary' type='button' onClick={onNext}>
-              <FormattedMessage id='onboarding.skip' defaultMessage='Skip for now' />
+            <Button block theme="tertiary" type="button" onClick={onNext}>
+              <FormattedMessage
+                id="onboarding.skip"
+                defaultMessage="Skip for now"
+              />
             </Button>
           )}
         </Stack>

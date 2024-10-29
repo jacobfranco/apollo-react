@@ -1,17 +1,25 @@
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { patchMe } from 'src/actions/me';
-import { BigCard, FormGroup, Stack, Textarea } from 'src/components';
-import { useAppDispatch, useOwnAccount } from 'src/hooks';
-import toast from 'src/toast';
+import { patchMe } from "src/actions/me";
+import { FormGroup, Stack, Textarea } from "src/components";
+import { BigCard } from "src/components/BigCard";
+import { useAppDispatch, useOwnAccount } from "src/hooks";
+import toast from "src/toast";
 
-import type { AxiosError } from 'axios';
-import Button from 'src/components/Button';
+import type { AxiosError } from "axios";
+import Button from "src/components/Button";
 
 const messages = defineMessages({
-  bioPlaceholder: { id: 'onboarding.bio.placeholder', defaultMessage: 'Tell the world a little about yourself…' },
-  error: { id: 'onboarding.error', defaultMessage: 'An unexpected error occurred. Please try again or skip this step.' },
+  bioPlaceholder: {
+    id: "onboarding.bio.placeholder",
+    defaultMessage: "Tell the world a little about yourself…",
+  },
+  error: {
+    id: "onboarding.error",
+    defaultMessage:
+      "An unexpected error occurred. Please try again or skip this step.",
+  },
 });
 
 const BioStep = ({ onNext }: { onNext: () => void }) => {
@@ -19,7 +27,7 @@ const BioStep = ({ onNext }: { onNext: () => void }) => {
   const dispatch = useAppDispatch();
 
   const { account } = useOwnAccount();
-  const [value, setValue] = React.useState<string>(account?.note ?? '');
+  const [value, setValue] = React.useState<string>(account?.note ?? "");
   const [isSubmitting, setSubmitting] = React.useState<boolean>(false);
   const [errors, setErrors] = React.useState<string[]>([]);
 
@@ -32,11 +40,17 @@ const BioStep = ({ onNext }: { onNext: () => void }) => {
       .then(() => {
         setSubmitting(false);
         onNext();
-      }).catch((error: AxiosError) => {
+      })
+      .catch((error: AxiosError) => {
         setSubmitting(false);
 
         if (error.response?.status === 422) {
-          setErrors([(error.response.data as any).error.replace('Validation failed: ', '')]);
+          setErrors([
+            (error.response.data as any).error.replace(
+              "Validation failed: ",
+              ""
+            ),
+          ]);
         } else {
           toast.error(messages.error);
         }
@@ -45,14 +59,34 @@ const BioStep = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <BigCard
-      title={<FormattedMessage id='onboarding.note.title' defaultMessage='Write a short bio' />}
-      subtitle={<FormattedMessage id='onboarding.note.subtitle' defaultMessage='You can always edit this later.' />}
+      title={
+        <FormattedMessage
+          id="onboarding.note.title"
+          defaultMessage="Write a short bio"
+        />
+      }
+      subtitle={
+        <FormattedMessage
+          id="onboarding.note.subtitle"
+          defaultMessage="You can always edit this later."
+        />
+      }
     >
       <Stack space={5}>
         <div>
           <FormGroup
-            hintText={<FormattedMessage id='onboarding.bio.hint' defaultMessage='Max 500 characters' />}
-            labelText={<FormattedMessage id='edit_profile.fields.bio_label' defaultMessage='Bio' />}
+            hintText={
+              <FormattedMessage
+                id="onboarding.bio.hint"
+                defaultMessage="Max 500 characters"
+              />
+            }
+            labelText={
+              <FormattedMessage
+                id="edit_profile.fields.bio_label"
+                defaultMessage="Bio"
+              />
+            }
             errors={errors}
           >
             <Textarea
@@ -65,23 +99,29 @@ const BioStep = ({ onNext }: { onNext: () => void }) => {
         </div>
 
         <div>
-          <Stack justifyContent='center' space={2}>
+          <Stack justifyContent="center" space={2}>
             <Button
               block
-              theme='primary'
-              type='submit'
+              theme="primary"
+              type="submit"
               disabled={isSubmitting}
               onClick={handleSubmit}
             >
               {isSubmitting ? (
-                <FormattedMessage id='onboarding.saving' defaultMessage='Saving…' />
+                <FormattedMessage
+                  id="onboarding.saving"
+                  defaultMessage="Saving…"
+                />
               ) : (
-                <FormattedMessage id='onboarding.next' defaultMessage='Next' />
+                <FormattedMessage id="onboarding.next" defaultMessage="Next" />
               )}
             </Button>
 
-            <Button block theme='tertiary' type='button' onClick={onNext}>
-              <FormattedMessage id='onboarding.skip' defaultMessage='Skip for now' />
+            <Button block theme="tertiary" type="button" onClick={onNext}>
+              <FormattedMessage
+                id="onboarding.skip"
+                defaultMessage="Skip for now"
+              />
             </Button>
           </Stack>
         </div>

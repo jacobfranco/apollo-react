@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
 import { Tabs } from "src/components";
 import { Column } from "src/components/Column";
-import {
-  EsportsTab,
-  ScheduleTab,
-  TeamsTab,
-  PlayersTab,
-  FantasyTab,
-} from "./AsyncComponents";
 import esportsConfig from "src/esports-config";
+
+const EsportsTab = lazy(() => import("./EsportsTab"));
+const ScheduleTab = lazy(() => import("./ScheduleTab"));
+const TeamsTab = lazy(() => import("./TeamsTab"));
+const PlayersTab = lazy(() => import("./PlayersTab"));
+const FantasyTab = lazy(() => import("./FantasyTab"));
 
 const messages = defineMessages({
   esports: { id: "esports_page.esports", defaultMessage: "Esports" },

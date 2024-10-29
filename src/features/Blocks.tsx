@@ -1,23 +1,18 @@
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { useBlocks } from 'src/api/hooks';
-import { Account, ScrollableList, Spinner } from 'src/components';
-import { Column } from 'src/components/Column'
+import { useBlocks } from "src/api/hooks/useAccountList";
+import { Account, ScrollableList, Spinner } from "src/components";
+import { Column } from "src/components/Column";
 
 const messages = defineMessages({
-  heading: { id: 'column.blocks', defaultMessage: 'Blocks' },
+  heading: { id: "column.blocks", defaultMessage: "Blocks" },
 });
 
 const Blocks: React.FC = () => {
   const intl = useIntl();
 
-  const {
-    accounts,
-    hasNextPage,
-    fetchNextPage,
-    isLoading,
-  } = useBlocks();
+  const { accounts, hasNextPage, fetchNextPage, isLoading } = useBlocks();
 
   if (isLoading) {
     return (
@@ -27,20 +22,25 @@ const Blocks: React.FC = () => {
     );
   }
 
-  const emptyMessage = <FormattedMessage id='empty_column.blocks' defaultMessage="You haven't blocked any users yet." />;
+  const emptyMessage = (
+    <FormattedMessage
+      id="empty_column.blocks"
+      defaultMessage="You haven't blocked any users yet."
+    />
+  );
 
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        scrollKey='blocks'
+        scrollKey="blocks"
         onLoadMore={fetchNextPage}
         hasMore={hasNextPage}
         emptyMessage={emptyMessage}
         emptyMessageCard={false}
-        itemClassName='pb-4 last:pb-0'
+        itemClassName="pb-4 last:pb-0"
       >
         {accounts.map((account) => (
-          <Account key={account.id} account={account} actionType='blocking' />
+          <Account key={account.id} account={account} actionType="blocking" />
         ))}
       </ScrollableList>
     </Column>

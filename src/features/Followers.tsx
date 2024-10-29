@@ -1,12 +1,18 @@
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { useAccountLookup, useFollowers } from 'src/api/hooks';
-import { Account, MissingIndicator, ScrollableList, Spinner } from 'src/components';
-import { Column } from 'src/components/Column'
+import { useFollowers } from "src/api/hooks/useAccountList";
+import { useAccountLookup } from "src/api/hooks/useAccountLookup";
+import {
+  Account,
+  MissingIndicator,
+  ScrollableList,
+  Spinner,
+} from "src/components";
+import { Column } from "src/components/Column";
 
 const messages = defineMessages({
-  heading: { id: 'column.followers', defaultMessage: 'Followers' },
+  heading: { id: "column.followers", defaultMessage: "Followers" },
 });
 
 interface IFollowers {
@@ -21,29 +27,25 @@ const Followers: React.FC<IFollowers> = ({ params }) => {
 
   const { account, isUnavailable } = useAccountLookup(params?.username);
 
-  const {
-    accounts,
-    hasNextPage,
-    fetchNextPage,
-    isLoading,
-  } = useFollowers(account?.id);
+  const { accounts, hasNextPage, fetchNextPage, isLoading } = useFollowers(
+    account?.id
+  );
 
   if (isLoading) {
-    return (
-      <Spinner />
-    );
+    return <Spinner />;
   }
 
   if (!account) {
-    return (
-      <MissingIndicator />
-    );
+    return <MissingIndicator />;
   }
 
   if (isUnavailable) {
     return (
-      <div className='empty-column-indicator'>
-        <FormattedMessage id='empty_column.account_unavailable' defaultMessage='Profile unavailable' />
+      <div className="empty-column-indicator">
+        <FormattedMessage
+          id="empty_column.account_unavailable"
+          defaultMessage="Profile unavailable"
+        />
       </div>
     );
   }
@@ -51,15 +53,20 @@ const Followers: React.FC<IFollowers> = ({ params }) => {
   return (
     <Column label={intl.formatMessage(messages.heading)} transparent>
       <ScrollableList
-        scrollKey='followers'
+        scrollKey="followers"
         hasMore={hasNextPage}
         onLoadMore={fetchNextPage}
-        emptyMessage={<FormattedMessage id='account.followers.empty' defaultMessage='No one follows this user yet.' />}
-        itemClassName='pb-4'
+        emptyMessage={
+          <FormattedMessage
+            id="account.followers.empty"
+            defaultMessage="No one follows this user yet."
+          />
+        }
+        itemClassName="pb-4"
       >
-        {accounts.map((account) =>
-          <Account key={account.id} account={account} />,
-        )}
+        {accounts.map((account) => (
+          <Account key={account.id} account={account} />
+        ))}
       </ScrollableList>
     </Column>
   );

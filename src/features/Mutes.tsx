@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
+import React, { useState } from "react";
+import { defineMessages, useIntl, FormattedMessage } from "react-intl";
 
-import { useMutes, useGroupMutes } from 'src/api/hooks';
-import { MuteGroupListItem, ScrollableList, Stack, Tabs } from 'src/components';
-import { Column } from 'src/components/Column'
-import AccountContainer from 'src/containers/AccountContainer';
+import { useGroupMutes } from "src/api/hooks/useGroupMutes";
+import { useMutes } from "src/api/hooks/useAccountList";
+import { MuteGroupListItem, ScrollableList, Stack, Tabs } from "src/components";
+import { Column } from "src/components/Column";
+import AccountContainer from "src/containers/AccountContainer";
 
 const messages = defineMessages({
-  heading: { id: 'column.mutes', defaultMessage: 'Mutes' },
+  heading: { id: "column.mutes", defaultMessage: "Mutes" },
 });
 
 enum TabItems {
-  ACCOUNTS = 'ACCOUNTS',
-  GROUPS = 'GROUPS'
+  ACCOUNTS = "ACCOUNTS",
+  GROUPS = "GROUPS",
 }
 
 const Mutes: React.FC = () => {
@@ -37,8 +38,8 @@ const Mutes: React.FC = () => {
   const isAccountsTabSelected = activeItem === TabItems.ACCOUNTS;
 
   const scrollableListProps = {
-    itemClassName: 'pb-4 last:pb-0',
-    scrollKey: 'mutes',
+    itemClassName: "pb-4 last:pb-0",
+    scrollKey: "mutes",
     emptyMessageCard: false,
   };
 
@@ -48,12 +49,12 @@ const Mutes: React.FC = () => {
         <Tabs
           items={[
             {
-              text: 'Users',
+              text: "Users",
               action: () => setActiveItem(TabItems.ACCOUNTS),
               name: TabItems.ACCOUNTS,
             },
             {
-              text: 'Groups',
+              text: "Groups",
               action: () => setActiveItem(TabItems.GROUPS),
               name: TabItems.GROUPS,
             },
@@ -68,12 +69,19 @@ const Mutes: React.FC = () => {
             onLoadMore={fetchNextAccounts}
             hasMore={hasNextAccountsPage}
             emptyMessage={
-              <FormattedMessage id='empty_column.mutes' defaultMessage="You haven't muted any users yet." />
+              <FormattedMessage
+                id="empty_column.mutes"
+                defaultMessage="You haven't muted any users yet."
+              />
             }
           >
-            {accounts.map((accounts) =>
-              <AccountContainer key={accounts.id} id={accounts.id} actionType='muting' />,
-            )}
+            {accounts.map((accounts) => (
+              <AccountContainer
+                key={accounts.id}
+                id={accounts.id}
+                actionType="muting"
+              />
+            ))}
           </ScrollableList>
         ) : (
           <ScrollableList
@@ -82,14 +90,14 @@ const Mutes: React.FC = () => {
             onLoadMore={fetchNextGroups}
             hasMore={hasNextGroupsPage}
             emptyMessage={
-              <FormattedMessage id='mutes.empty.groups' defaultMessage="You haven't muted any groups yet." />
+              <FormattedMessage
+                id="mutes.empty.groups"
+                defaultMessage="You haven't muted any groups yet."
+              />
             }
           >
             {groupMutes.map((group) => (
-              <MuteGroupListItem
-                group={group}
-                onUnmute={fetchMutedGroups}
-              />
+              <MuteGroupListItem group={group} onUnmute={fetchMutedGroups} />
             ))}
           </ScrollableList>
         )}

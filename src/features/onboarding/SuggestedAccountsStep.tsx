@@ -1,14 +1,16 @@
-import debounce from 'lodash/debounce';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import debounce from "lodash/debounce";
+import React from "react";
+import { FormattedMessage } from "react-intl";
 
-import { BigCard, ScrollableList, Stack, Text } from 'src/components';
-import Button from 'src/components/Button';
-import AccountContainer from 'src/containers/AccountContainer';
-import { useOnboardingSuggestions } from 'src/queries/suggestions';
+import { ScrollableList, Stack, Text } from "src/components";
+import { BigCard } from "src/components/BigCard";
+import Button from "src/components/Button";
+import AccountContainer from "src/containers/AccountContainer";
+import { useOnboardingSuggestions } from "src/queries/suggestions";
 
 const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useOnboardingSuggestions();
+  const { data, fetchNextPage, hasNextPage, isFetching } =
+    useOnboardingSuggestions();
 
   const handleLoadMore = debounce(() => {
     if (isFetching) {
@@ -24,17 +26,17 @@ const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
     }
 
     return (
-      <div className='flex flex-col sm:pb-10 sm:pt-4'>
+      <div className="flex flex-col sm:pb-10 sm:pt-4">
         <ScrollableList
           isLoading={isFetching}
-          scrollKey='suggestions'
+          scrollKey="suggestions"
           onLoadMore={handleLoadMore}
           hasMore={hasNextPage}
           useWindowScroll={false}
           style={{ height: 320 }}
         >
           {data.map((suggestion) => (
-            <div key={suggestion.account.id} className='py-2'>
+            <div key={suggestion.account.id} className="py-2">
               <AccountContainer
                 id={suggestion.account.id}
                 showProfileHoverCard={false}
@@ -49,9 +51,12 @@ const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
 
   const renderEmpty = () => {
     return (
-      <div className='my-2 rounded-lg bg-primary-50 p-8 text-center dark:bg-gray-800'>
+      <div className="my-2 rounded-lg bg-primary-50 p-8 text-center dark:bg-gray-800">
         <Text>
-          <FormattedMessage id='empty_column.follow_recommendations' defaultMessage='Looks like no suggestions could be generated for you. You can try using search to look for people you might know or explore trending spaces or hashtags.' />
+          <FormattedMessage
+            id="empty_column.follow_recommendations"
+            defaultMessage="Looks like no suggestions could be generated for you. You can try using search to look for people you might know or explore trending spaces or hashtags."
+          />
         </Text>
       </div>
     );
@@ -67,23 +72,32 @@ const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <BigCard
-      title={<FormattedMessage id='onboarding.suggestions.title' defaultMessage='Suggested accounts' />}
-      subtitle={<FormattedMessage id='onboarding.suggestions.subtitle' defaultMessage='Here are a few of the most popular accounts you might like.' />}
+      title={
+        <FormattedMessage
+          id="onboarding.suggestions.title"
+          defaultMessage="Suggested accounts"
+        />
+      }
+      subtitle={
+        <FormattedMessage
+          id="onboarding.suggestions.subtitle"
+          defaultMessage="Here are a few of the most popular accounts you might like."
+        />
+      }
     >
       {renderBody()}
 
       <Stack>
-        <Stack justifyContent='center' space={2}>
-          <Button
-            block
-            theme='primary'
-            onClick={onNext}
-          >
-            <FormattedMessage id='onboarding.done' defaultMessage='Done' />
+        <Stack justifyContent="center" space={2}>
+          <Button block theme="primary" onClick={onNext}>
+            <FormattedMessage id="onboarding.done" defaultMessage="Done" />
           </Button>
 
-          <Button block theme='tertiary' type='button' onClick={onNext}>
-            <FormattedMessage id='onboarding.skip' defaultMessage='Skip for now' />
+          <Button block theme="tertiary" type="button" onClick={onNext}>
+            <FormattedMessage
+              id="onboarding.skip"
+              defaultMessage="Skip for now"
+            />
           </Button>
         </Stack>
       </Stack>

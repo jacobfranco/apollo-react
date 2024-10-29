@@ -1,24 +1,33 @@
-import clsx from 'clsx';
-import React, { useEffect, useRef } from 'react';
-import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
+import clsx from "clsx";
+import React, { useEffect, useRef } from "react";
+import { FormattedMessage, defineMessages, useIntl } from "react-intl";
 
-import { expandSearch, setFilter, setSearchAccount } from 'src/actions/search';
-import { fetchTrendingStatuses } from 'src/actions/trending-statuses';
-import { useAccount } from 'src/api/hooks';
-import { Hashtag, HStack, IconButton, ScrollableList, Spinner, Tabs, Text } from 'src/components';
-import AccountContainer from 'src/containers/AccountContainer';
-import StatusContainer from 'src/containers/StatusContainer';
-import { PlaceholderAccount, PlaceholderHashtag, PlaceholderStatus } from 'src/components';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { expandSearch, setFilter, setSearchAccount } from "src/actions/search";
+import { fetchTrendingStatuses } from "src/actions/trending-statuses";
+import { useAccount } from "src/api/hooks";
+import {
+  Hashtag,
+  HStack,
+  IconButton,
+  ScrollableList,
+  Spinner,
+  Tabs,
+  Text,
+} from "src/components";
+import AccountContainer from "src/containers/AccountContainer";
+import StatusContainer from "src/containers/StatusContainer";
+import PlaceholderStatus from "src/components/PlaceholderStatus";
+import { PlaceholderAccount, PlaceholderHashtag } from "src/components";
+import { useAppDispatch, useAppSelector } from "src/hooks";
 
-import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import type { VirtuosoHandle } from 'react-virtuoso';
-import type { SearchFilter } from 'src/reducers/search';
+import type { OrderedSet as ImmutableOrderedSet } from "immutable";
+import type { VirtuosoHandle } from "react-virtuoso";
+import type { SearchFilter } from "src/reducers/search";
 
 const messages = defineMessages({
-  accounts: { id: 'search_results.accounts', defaultMessage: 'People' },
-  statuses: { id: 'search_results.statuses', defaultMessage: 'Posts' },
-  hashtags: { id: 'search_results.hashtags', defaultMessage: 'Hashtags' },
+  accounts: { id: "search_results.accounts", defaultMessage: "People" },
+  statuses: { id: "search_results.statuses", defaultMessage: "Posts" },
+  hashtags: { id: "search_results.hashtags", defaultMessage: "Hashtags" },
 });
 
 const SearchResults = () => {
@@ -30,47 +39,50 @@ const SearchResults = () => {
   const value = useAppSelector((state) => state.search.submittedValue);
   const results = useAppSelector((state) => state.search.results);
   const suggestions = useAppSelector((state) => state.suggestions.items);
-  const trendingStatuses = useAppSelector((state) => state.trending_statuses.items);
+  const trendingStatuses = useAppSelector(
+    (state) => state.trending_statuses.items
+  );
   const trends = useAppSelector((state) => state.trends.items);
   const submitted = useAppSelector((state) => state.search.submitted);
   const selectedFilter = useAppSelector((state) => state.search.filter);
-  const filterByAccount = useAppSelector((state) => state.search.accountId || undefined);
+  const filterByAccount = useAppSelector(
+    (state) => state.search.accountId || undefined
+  );
   const { account } = useAccount(filterByAccount);
 
   const handleLoadMore = () => dispatch(expandSearch(selectedFilter));
 
   const handleUnsetAccount = () => dispatch(setSearchAccount(null));
 
-  const selectFilter = (newActiveFilter: SearchFilter) => dispatch(setFilter(newActiveFilter));
+  const selectFilter = (newActiveFilter: SearchFilter) =>
+    dispatch(setFilter(newActiveFilter));
 
   const renderFilterBar = () => {
     const items = [];
     items.push(
       {
         text: intl.formatMessage(messages.statuses),
-        action: () => selectFilter('statuses'),
-        name: 'statuses',
+        action: () => selectFilter("statuses"),
+        name: "statuses",
       },
       {
         text: intl.formatMessage(messages.accounts),
-        action: () => selectFilter('accounts'),
-        name: 'accounts',
-      },
+        action: () => selectFilter("accounts"),
+        name: "accounts",
+      }
     );
 
-    items.push(
-      {
-        text: intl.formatMessage(messages.hashtags),
-        action: () => selectFilter('hashtags'),
-        name: 'hashtags',
-      },
-    );
+    items.push({
+      text: intl.formatMessage(messages.hashtags),
+      action: () => selectFilter("hashtags"),
+      name: "hashtags",
+    });
 
     return <Tabs items={items} activeItem={selectedFilter} />;
   };
 
   const getCurrentIndex = (id: string): number => {
-    return resultsIds?.keySeq().findIndex(key => key === id);
+    return resultsIds?.keySeq().findIndex((key) => key === id);
   };
 
   const handleMoveUp = (id: string) => {
@@ -90,9 +102,11 @@ const SearchResults = () => {
   const selectChild = (index: number) => {
     node.current?.scrollIntoView({
       index,
-      behavior: 'smooth',
+      behavior: "smooth",
       done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#search-results [data-index="${index}"] .focusable`);
+        const element = document.querySelector<HTMLDivElement>(
+          `#search-results [data-index="${index}"] .focusable`
+        );
         element?.focus();
       },
     });
@@ -109,20 +123,24 @@ const SearchResults = () => {
   let placeholderComponent = PlaceholderStatus as React.ComponentType;
   let resultsIds: ImmutableOrderedSet<string>;
 
-  if (selectedFilter === 'accounts') {
+  if (selectedFilter === "accounts") {
     hasMore = results.accountsHasMore;
     loaded = results.accountsLoaded;
     placeholderComponent = PlaceholderAccount;
 
     if (results.accounts && results.accounts.size > 0) {
-      searchResults = results.accounts.map(accountId => <AccountContainer key={accountId} id={accountId} />);
+      searchResults = results.accounts.map((accountId) => (
+        <AccountContainer key={accountId} id={accountId} />
+      ));
     } else if (!submitted && suggestions && !suggestions.isEmpty()) {
-      searchResults = suggestions.map(suggestion => <AccountContainer key={suggestion.account} id={suggestion.account} />);
+      searchResults = suggestions.map((suggestion) => (
+        <AccountContainer key={suggestion.account} id={suggestion.account} />
+      ));
     } else if (loaded) {
       noResultsMessage = (
-        <div className='empty-column-indicator'>
+        <div className="empty-column-indicator">
           <FormattedMessage
-            id='empty_column.search.accounts'
+            id="empty_column.search.accounts"
             defaultMessage='There are no people results for "{term}"'
             values={{ term: value }}
           />
@@ -131,7 +149,7 @@ const SearchResults = () => {
     }
   }
 
-  if (selectedFilter === 'statuses') {
+  if (selectedFilter === "statuses") {
     hasMore = results.statusesHasMore;
     loaded = results.statusesLoaded;
 
@@ -159,9 +177,9 @@ const SearchResults = () => {
       resultsIds = trendingStatuses;
     } else if (loaded) {
       noResultsMessage = (
-        <div className='empty-column-indicator'>
+        <div className="empty-column-indicator">
           <FormattedMessage
-            id='empty_column.search.statuses'
+            id="empty_column.search.statuses"
             defaultMessage='There are no posts results for "{term}"'
             values={{ term: value }}
           />
@@ -172,20 +190,24 @@ const SearchResults = () => {
     }
   }
 
-  if (selectedFilter === 'hashtags') {
+  if (selectedFilter === "hashtags") {
     hasMore = results.hashtagsHasMore;
     loaded = results.hashtagsLoaded;
     placeholderComponent = PlaceholderHashtag;
 
     if (results.hashtags && results.hashtags.size > 0) {
-      searchResults = results.hashtags.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
+      searchResults = results.hashtags.map((hashtag) => (
+        <Hashtag key={hashtag.name} hashtag={hashtag} />
+      ));
     } else if (!submitted && suggestions && !suggestions.isEmpty()) {
-      searchResults = trends.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
+      searchResults = trends.map((hashtag) => (
+        <Hashtag key={hashtag.name} hashtag={hashtag} />
+      ));
     } else if (loaded) {
       noResultsMessage = (
-        <div className='empty-column-indicator'>
+        <div className="empty-column-indicator">
           <FormattedMessage
-            id='empty_column.search.hashtags'
+            id="empty_column.search.hashtags"
             defaultMessage='There are no hashtags results for "{term}"'
             values={{ term: value }}
           />
@@ -197,21 +219,34 @@ const SearchResults = () => {
   return (
     <>
       {filterByAccount ? (
-        <HStack className='mb-4 border-b border-solid border-gray-200 px-2 pb-4 dark:border-gray-800' space={2}>
-          <IconButton iconClassName='h-5 w-5' src={require('@tabler/icons/outline/x.svg')} onClick={handleUnsetAccount} />
+        <HStack
+          className="mb-4 border-b border-solid border-gray-200 px-2 pb-4 dark:border-gray-800"
+          space={2}
+        >
+          <IconButton
+            iconClassName="h-5 w-5"
+            src={require("@tabler/icons/outline/x.svg")}
+            onClick={handleUnsetAccount}
+          />
           <Text truncate>
             <FormattedMessage
-              id='search_results.filter_message'
-              defaultMessage='You are searching for posts from @{username}.'
-              values={{ username: <strong className='break-words'>{account?.username}</strong> }}
+              id="search_results.filter_message"
+              defaultMessage="You are searching for posts from @{username}."
+              values={{
+                username: (
+                  <strong className="break-words">{account?.username}</strong>
+                ),
+              }}
             />
           </Text>
         </HStack>
-      ) : renderFilterBar()}
+      ) : (
+        renderFilterBar()
+      )}
 
       {noResultsMessage || (
         <ScrollableList
-          id='search-results'
+          id="search-results"
           ref={node}
           key={selectedFilter}
           scrollKey={`${selectedFilter}:${value}`}
@@ -222,11 +257,12 @@ const SearchResults = () => {
           placeholderComponent={placeholderComponent}
           placeholderCount={20}
           listClassName={clsx({
-            'divide-gray-200 dark:divide-gray-800 divide-solid divide-y': selectedFilter === 'statuses',
+            "divide-gray-200 dark:divide-gray-800 divide-solid divide-y":
+              selectedFilter === "statuses",
           })}
           itemClassName={clsx({
-            'pb-4': selectedFilter === 'accounts',
-            'pb-3': selectedFilter === 'hashtags',
+            "pb-4": selectedFilter === "accounts",
+            "pb-3": selectedFilter === "hashtags",
           })}
         >
           {searchResults || []}

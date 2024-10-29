@@ -1,14 +1,21 @@
-import React, { useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useEffect } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { fetchHashtag, followHashtag, unfollowHashtag } from 'src/actions/tags';
-import { expandHashtagTimeline, clearTimeline } from 'src/actions/timelines';
-import { useHashtagStream } from 'src/api/hooks';
-import { List, ListItem, Toggle } from 'src/components';
-import { Column } from 'src/components/Column'
-import Timeline from 'src/features/Timeline';
-import { useAppDispatch, useAppSelector, useLoggedIn, useTheme } from 'src/hooks';
-import { useIsMobile } from 'src/hooks';
+import { fetchHashtag, followHashtag, unfollowHashtag } from "src/actions/tags";
+import { expandHashtagTimeline, clearTimeline } from "src/actions/timelines";
+import { useHashtagStream } from "src/api/hooks";
+import { Toggle } from "src/components";
+import List from "src/components/List";
+import { ListItem } from "src/components/List";
+import { Column } from "src/components/Column";
+import Timeline from "src/features/Timeline";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useLoggedIn,
+  useTheme,
+} from "src/hooks";
+import { useIsMobile } from "src/hooks";
 
 interface IHashtagTimeline {
   params?: {
@@ -17,11 +24,13 @@ interface IHashtagTimeline {
 }
 
 export const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
-  const id = params?.id || '';
+  const id = params?.id || "";
 
   const dispatch = useAppDispatch();
   const tag = useAppSelector((state) => state.tags.get(id));
-  const next = useAppSelector(state => state.timelines.get(`hashtag:${id}`)?.next);
+  const next = useAppSelector(
+    (state) => state.timelines.get(`hashtag:${id}`)?.next
+  );
   const { isLoggedIn } = useLoggedIn();
   const theme = useTheme();
   const isMobile = useIsMobile();
@@ -55,22 +64,29 @@ export const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
       {isLoggedIn && (
         <List>
           <ListItem
-            label={<FormattedMessage id='hashtag.follow' defaultMessage='Follow hashtag' />}
+            label={
+              <FormattedMessage
+                id="hashtag.follow"
+                defaultMessage="Follow hashtag"
+              />
+            }
           >
-            <Toggle
-              checked={tag?.following}
-              onChange={handleFollow}
-            />
+            <Toggle checked={tag?.following} onChange={handleFollow} />
           </ListItem>
         </List>
       )}
       <Timeline
-        className='black:p-4 black:sm:p-5'
-        scrollKey='hashtag_timeline'
+        className="black:p-4 black:sm:p-5"
+        scrollKey="hashtag_timeline"
         timelineId={`hashtag:${id}`}
         onLoadMore={handleLoadMore}
-        emptyMessage={<FormattedMessage id='empty_column.hashtag' defaultMessage='There is nothing in this hashtag yet.' />}
-        divideType={(theme === 'dark' || isMobile) ? 'border' : 'space'}
+        emptyMessage={
+          <FormattedMessage
+            id="empty_column.hashtag"
+            defaultMessage="There is nothing in this hashtag yet."
+          />
+        }
+        divideType={theme === "dark" || isMobile ? "border" : "space"}
       />
     </Column>
   );

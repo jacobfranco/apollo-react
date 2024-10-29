@@ -1,16 +1,19 @@
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
-import { getNextLink } from 'src/api';
-import { useApi } from 'src/hooks';
-import { Account } from 'src/types/entities';
-import { flattenPages, PaginatedResult } from 'src/utils/queries';
+import { getNextLink } from "src/api";
+import { useApi } from "src/hooks/useApi";
+import { Account } from "src/types/entities";
+import { flattenPages, PaginatedResult } from "src/utils/queries";
 
 export default function useAccountSearch(q: string) {
   const api = useApi();
 
-  const getAccountSearch = async(q: string, pageParam: { link?: string }): Promise<PaginatedResult<Account>> => {
+  const getAccountSearch = async (
+    q: string,
+    pageParam: { link?: string }
+  ): Promise<PaginatedResult<Account>> => {
     const nextPageLink = pageParam?.link;
-    const uri = nextPageLink || '/api/accounts/search';
+    const uri = nextPageLink || "/api/accounts/search";
 
     const response = await api.get(uri, {
       params: {
@@ -32,7 +35,7 @@ export default function useAccountSearch(q: string) {
   };
 
   const queryInfo = useInfiniteQuery({
-    queryKey: ['search', 'accounts', q],
+    queryKey: ["search", "accounts", q],
     queryFn: ({ pageParam }) => getAccountSearch(q, pageParam),
     placeholderData: keepPreviousData,
     initialPageParam: { link: undefined as string | undefined },

@@ -1,45 +1,66 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
-import clsx from 'clsx';
-import React, { useCallback } from 'react';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link, NavLink } from 'react-router-dom';
+import clsx from "clsx";
+import React, { useCallback } from "react";
+import { defineMessages, useIntl, FormattedMessage } from "react-intl";
+import { Link, NavLink } from "react-router-dom";
 
-import { fetchOwnAccounts, logOut, switchAccount } from 'src/actions/auth';
-import { getSettings } from 'src/actions/settings';
-import { closeSidebar } from 'src/actions/sidebar';
-import { useAccount } from 'src/api/hooks';
-import Account from 'src/components/Account';
-import { Stack, Divider, HStack, IconButton, Text } from 'src/components';
-import ProfileStats from './ProfileStats';
-import { useAppDispatch, useAppSelector, useGroupsPath } from 'src/hooks';
-import { makeGetOtherAccounts } from 'src/selectors';
+import { fetchOwnAccounts, logOut, switchAccount } from "src/actions/auth";
+import { getSettings } from "src/actions/settings";
+import { closeSidebar } from "src/actions/sidebar";
+import { useAccount } from "src/api/hooks/useAccount";
+import Account from "src/components/Account";
+import { Stack, Divider, HStack, IconButton, Text } from "src/components";
+import ProfileStats from "./ProfileStats";
+import { useAppDispatch, useAppSelector, useGroupsPath } from "src/hooks";
+import { makeGetOtherAccounts } from "src/selectors";
 
-import type { List as ImmutableList } from 'immutable';
-import type { Account as AccountEntity } from 'src/types/entities';
-import Icon from 'src/components/Icon';
+import type { List as ImmutableList } from "immutable";
+import type { Account as AccountEntity } from "src/types/entities";
+import Icon from "src/components/Icon";
 
 const messages = defineMessages({
-  followers: { id: 'account.followers', defaultMessage: 'Followers' },
-  follows: { id: 'account.follows', defaultMessage: 'Following' },
-  profile: { id: 'account.profile', defaultMessage: 'Profile' },
-  preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
-  blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocks' },
-  mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Mutes' },
-  filters: { id: 'navigation_bar.filters', defaultMessage: 'Filters' },
-  followedTags: { id: 'navigation_bar.followed_tags', defaultMessage: 'Followed hashtags' },
-  apolloConfig: { id: 'navigation_bar.apollo_config', defaultMessage: 'Apollo config' },
-  accountMigration: { id: 'navigation_bar.account_migration', defaultMessage: 'Move account' },
-  accountAliases: { id: 'navigation_bar.account_aliases', defaultMessage: 'Account aliases' },
-  logout: { id: 'navigation_bar.logout', defaultMessage: 'Logout' },
-  bookmarks: { id: 'column.bookmarks', defaultMessage: 'Bookmarks' },
-  lists: { id: 'column.lists', defaultMessage: 'Lists' },
-  groups: { id: 'column.groups', defaultMessage: 'Groups' },
-  events: { id: 'column.events', defaultMessage: 'Events' },
-  invites: { id: 'navigation_bar.invites', defaultMessage: 'Invites' },
-  developers: { id: 'navigation.developers', defaultMessage: 'Developers' },
-  addAccount: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
-  followRequests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
-  close: { id: 'lightbox.close', defaultMessage: 'Close' },
+  followers: { id: "account.followers", defaultMessage: "Followers" },
+  follows: { id: "account.follows", defaultMessage: "Following" },
+  profile: { id: "account.profile", defaultMessage: "Profile" },
+  preferences: {
+    id: "navigation_bar.preferences",
+    defaultMessage: "Preferences",
+  },
+  blocks: { id: "navigation_bar.blocks", defaultMessage: "Blocks" },
+  mutes: { id: "navigation_bar.mutes", defaultMessage: "Mutes" },
+  filters: { id: "navigation_bar.filters", defaultMessage: "Filters" },
+  followedTags: {
+    id: "navigation_bar.followed_tags",
+    defaultMessage: "Followed hashtags",
+  },
+  apolloConfig: {
+    id: "navigation_bar.apollo_config",
+    defaultMessage: "Apollo config",
+  },
+  accountMigration: {
+    id: "navigation_bar.account_migration",
+    defaultMessage: "Move account",
+  },
+  accountAliases: {
+    id: "navigation_bar.account_aliases",
+    defaultMessage: "Account aliases",
+  },
+  logout: { id: "navigation_bar.logout", defaultMessage: "Logout" },
+  bookmarks: { id: "column.bookmarks", defaultMessage: "Bookmarks" },
+  lists: { id: "column.lists", defaultMessage: "Lists" },
+  groups: { id: "column.groups", defaultMessage: "Groups" },
+  events: { id: "column.events", defaultMessage: "Events" },
+  invites: { id: "navigation_bar.invites", defaultMessage: "Invites" },
+  developers: { id: "navigation.developers", defaultMessage: "Developers" },
+  addAccount: {
+    id: "profile_dropdown.add_account",
+    defaultMessage: "Add an existing account",
+  },
+  followRequests: {
+    id: "navigation_bar.follow_requests",
+    defaultMessage: "Follow requests",
+  },
+  close: { id: "lightbox.close", defaultMessage: "Close" },
 });
 
 interface ISidebarLink {
@@ -50,27 +71,44 @@ interface ISidebarLink {
   onClick: React.EventHandler<React.MouseEvent>;
 }
 
-const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) => {
+const SidebarLink: React.FC<ISidebarLink> = ({
+  href,
+  to,
+  icon,
+  text,
+  onClick,
+}) => {
   const body = (
-    <HStack space={2} alignItems='center'>
-      <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
-        <Icon src={icon} className='h-5 w-5 text-primary-500' />
+    <HStack space={2} alignItems="center">
+      <div className="relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800">
+        <Icon src={icon} className="h-5 w-5 text-primary-500" />
       </div>
 
-      <Text tag='span' weight='medium' theme='inherit'>{text}</Text>
+      <Text tag="span" weight="medium" theme="inherit">
+        {text}
+      </Text>
     </HStack>
   );
 
   if (to) {
     return (
-      <NavLink className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' to={to} onClick={onClick}>
+      <NavLink
+        className="group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800"
+        to={to}
+        onClick={onClick}
+      >
         {body}
       </NavLink>
     );
   }
 
   return (
-    <a className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' href={href} target='_blank' onClick={onClick}>
+    <a
+      className="group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800"
+      href={href}
+      target="_blank"
+      onClick={onClick}
+    >
       {body}
     </a>
   );
@@ -83,10 +121,14 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const getOtherAccounts = useCallback(makeGetOtherAccounts(), []);
   const me = useAppSelector((state) => state.me);
   const { account } = useAccount(me || undefined);
-  const otherAccounts: ImmutableList<AccountEntity> = useAppSelector((state) => getOtherAccounts(state));
+  const otherAccounts: ImmutableList<AccountEntity> = useAppSelector((state) =>
+    getOtherAccounts(state)
+  );
   const sidebarOpen = useAppSelector((state) => state.sidebar.sidebarOpen);
   const settings = useAppSelector((state) => getSettings(state));
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+  const followRequestsCount = useAppSelector((state) =>
+    state.user_lists.follow_requests.items.count()
+  );
   const groupsPath = useGroupsPath();
 
   const closeButtonRef = React.useRef(null);
@@ -100,7 +142,9 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
     onClose();
   };
 
-  const handleSwitchAccount = (account: AccountEntity): React.MouseEventHandler => {
+  const handleSwitchAccount = (
+    account: AccountEntity
+  ): React.MouseEventHandler => {
     return (e) => {
       e.preventDefault();
       dispatch(switchAccount(account.id));
@@ -115,13 +159,23 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const handleSwitcherClick: React.MouseEventHandler = (e) => {
     e.preventDefault();
 
-    setSwitcher((prevState) => (!prevState));
+    setSwitcher((prevState) => !prevState);
   };
 
   const renderAccount = (account: AccountEntity) => (
-    <a href='#' className='block py-2' onClick={handleSwitchAccount(account)} key={account.id}>
-      <div className='pointer-events-none'>
-        <Account account={account} showProfileHoverCard={false} withRelationship={false} withLinkToProfile={false} />
+    <a
+      href="#"
+      className="block py-2"
+      onClick={handleSwitchAccount(account)}
+      key={account.id}
+    >
+      <div className="pointer-events-none">
+        <Account
+          account={account}
+          showProfileHoverCard={false}
+          withRelationship={false}
+          withLinkToProfile={false}
+        />
       </div>
     </a>
   );
@@ -135,83 +189,81 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   return (
     <div
       aria-expanded={sidebarOpen}
-      className={
-        clsx({
-          'z-[1000]': sidebarOpen,
-          hidden: !sidebarOpen,
-        })
-      }
+      className={clsx({
+        "z-[1000]": sidebarOpen,
+        hidden: !sidebarOpen,
+      })}
     >
       <div
-        className='fixed inset-0 bg-gray-500/90 dark:bg-gray-700/90'
-        role='button'
+        className="fixed inset-0 bg-gray-500/90 dark:bg-gray-700/90"
+        role="button"
         onClick={handleClose}
       />
 
-      <div className='fixed inset-0 z-[1000] flex'>
+      <div className="fixed inset-0 z-[1000] flex">
         <div
-          className={
-            clsx({
-              'flex flex-col flex-1 bg-white dark:bg-primary-900 -translate-x-full rtl:translate-x-full w-full max-w-xs': true,
-              '!translate-x-0': sidebarOpen,
-            })
-          }
+          className={clsx({
+            "flex flex-col flex-1 bg-white dark:bg-primary-900 -translate-x-full rtl:translate-x-full w-full max-w-xs":
+              true,
+            "!translate-x-0": sidebarOpen,
+          })}
         >
           <IconButton
             title={intl.formatMessage(messages.close)}
             onClick={handleClose}
-            src={require('@tabler/icons/outline/x.svg')}
+            src={require("@tabler/icons/outline/x.svg")}
             ref={closeButtonRef}
-            iconClassName='h-6 w-6'
-            className='absolute right-0 top-0 -mr-11 mt-2 text-gray-600 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300'
+            iconClassName="h-6 w-6"
+            className="absolute right-0 top-0 -mr-11 mt-2 text-gray-600 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
           />
 
-          <div className='relative h-full w-full overflow-auto overflow-y-scroll'>
-            <div className='p-4'>
+          <div className="relative h-full w-full overflow-auto overflow-y-scroll">
+            <div className="p-4">
               <Stack space={4}>
                 <Link to={`/@${account.username}`} onClick={onClose}>
-                  <Account account={account} showProfileHoverCard={false} withLinkToProfile={false} />
+                  <Account
+                    account={account}
+                    showProfileHoverCard={false}
+                    withLinkToProfile={false}
+                  />
                 </Link>
 
-                <ProfileStats
-                  account={account}
-                  onClickHandler={handleClose}
-                />
+                <ProfileStats account={account} onClickHandler={handleClose} />
 
                 <Stack space={4}>
                   <Divider />
 
                   <SidebarLink
                     to={`/@${account.username}`}
-                    icon={require('@tabler/icons/outline/user.svg')}
+                    icon={require("@tabler/icons/outline/user.svg")}
                     text={intl.formatMessage(messages.profile)}
                     onClick={onClose}
                   />
 
                   {(account.locked || followRequestsCount > 0) && (
                     <SidebarLink
-                      to='/follow_requests'
-                      icon={require('@tabler/icons/outline/user-plus.svg')}
+                      to="/follow_requests"
+                      icon={require("@tabler/icons/outline/user-plus.svg")}
                       text={intl.formatMessage(messages.followRequests)}
                       onClick={onClose}
                     />
                   )}
 
                   <SidebarLink
-                    to='/bookmarks'
-                    icon={require('@tabler/icons/outline/bookmark.svg')}
+                    to="/bookmarks"
+                    icon={require("@tabler/icons/outline/bookmark.svg")}
                     text={intl.formatMessage(messages.bookmarks)}
                     onClick={onClose}
                   />
 
                   <SidebarLink
                     to={groupsPath}
-                    icon={require('@tabler/icons/outline/circles.svg')}
+                    icon={require("@tabler/icons/outline/circles.svg")}
                     text={intl.formatMessage(messages.groups)}
                     onClick={onClose}
                   />
 
-                  { /* TODO: Idk if we will implement lists
+                  {/* TODO: Idk if we will implement lists
                   
                   features.lists && (
                     <SidebarLink
@@ -220,12 +272,12 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                       text={intl.formatMessage(messages.lists)}
                       onClick={onClose}
                     />
-                  ) */ }
+                  ) */}
 
-                  {settings.get('isDeveloper') && (
+                  {settings.get("isDeveloper") && (
                     <SidebarLink
-                      to='/developers'
-                      icon={require('@tabler/icons/outline/code.svg')}
+                      to="/developers"
+                      icon={require("@tabler/icons/outline/code.svg")}
                       text={intl.formatMessage(messages.developers)}
                       onClick={onClose}
                     />
@@ -234,44 +286,44 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   <Divider />
 
                   <SidebarLink
-                    to='/blocks'
-                    icon={require('@tabler/icons/outline/ban.svg')}
+                    to="/blocks"
+                    icon={require("@tabler/icons/outline/ban.svg")}
                     text={intl.formatMessage(messages.blocks)}
                     onClick={onClose}
                   />
 
                   <SidebarLink
-                    to='/mutes'
-                    icon={require('@tabler/icons/outline/circle-x.svg')}
+                    to="/mutes"
+                    icon={require("@tabler/icons/outline/circle-x.svg")}
                     text={intl.formatMessage(messages.mutes)}
                     onClick={onClose}
                   />
 
                   <SidebarLink
-                    to='/settings/preferences'
-                    icon={require('@tabler/icons/outline/settings.svg')}
+                    to="/settings/preferences"
+                    icon={require("@tabler/icons/outline/settings.svg")}
                     text={intl.formatMessage(messages.preferences)}
                     onClick={onClose}
                   />
 
                   <SidebarLink
-                    to='/filters'
-                    icon={require('@tabler/icons/outline/filter.svg')}
+                    to="/filters"
+                    icon={require("@tabler/icons/outline/filter.svg")}
                     text={intl.formatMessage(messages.filters)}
                     onClick={onClose}
                   />
 
                   <SidebarLink
-                    to='/followed_tags'
-                    icon={require('@tabler/icons/outline/hash.svg')}
+                    to="/followed_tags"
+                    icon={require("@tabler/icons/outline/hash.svg")}
                     text={intl.formatMessage(messages.followedTags)}
                     onClick={onClose}
                   />
 
                   {account.admin && (
                     <SidebarLink
-                      to='/soapbox/config'
-                      icon={require('@tabler/icons/outline/settings.svg')}
+                      to="/soapbox/config"
+                      icon={require("@tabler/icons/outline/settings.svg")}
                       text={intl.formatMessage(messages.apolloConfig)}
                       onClick={onClose}
                     />
@@ -280,8 +332,8 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   <Divider />
 
                   <SidebarLink
-                    to='/logout'
-                    icon={require('@tabler/icons/outline/logout.svg')}
+                    to="/logout"
+                    icon={require("@tabler/icons/outline/logout.svg")}
                     text={intl.formatMessage(messages.logout)}
                     onClick={onClickLogOut}
                   />
@@ -289,28 +341,47 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   <Divider />
 
                   <Stack space={4}>
-                    <button type='button' onClick={handleSwitcherClick} className='py-1'>
-                      <HStack alignItems='center' justifyContent='between'>
-                        <Text tag='span'>
-                          <FormattedMessage id='profile_dropdown.switch_account' defaultMessage='Switch accounts' />
+                    <button
+                      type="button"
+                      onClick={handleSwitcherClick}
+                      className="py-1"
+                    >
+                      <HStack alignItems="center" justifyContent="between">
+                        <Text tag="span">
+                          <FormattedMessage
+                            id="profile_dropdown.switch_account"
+                            defaultMessage="Switch accounts"
+                          />
                         </Text>
 
                         <Icon
-                          src={require('@tabler/icons/outline/chevron-down.svg')}
-                          className={clsx('h-4 w-4 text-gray-900 transition-transform dark:text-gray-100', {
-                            'rotate-180': switcher,
-                          })}
+                          src={require("@tabler/icons/outline/chevron-down.svg")}
+                          className={clsx(
+                            "h-4 w-4 text-gray-900 transition-transform dark:text-gray-100",
+                            {
+                              "rotate-180": switcher,
+                            }
+                          )}
                         />
                       </HStack>
                     </button>
 
                     {switcher && (
-                      <div className='border-t-2 border-solid border-gray-100 dark:border-gray-800'>
-                        {otherAccounts.map(account => renderAccount(account))}
+                      <div className="border-t-2 border-solid border-gray-100 dark:border-gray-800">
+                        {otherAccounts.map((account) => renderAccount(account))}
 
-                        <NavLink className='flex items-center space-x-1 py-2' to='/login/add' onClick={handleClose}>
-                          <Icon className='h-4 w-4 text-primary-500' src={require('@tabler/icons/outline/plus.svg')} />
-                          <Text size='sm' weight='medium'>{intl.formatMessage(messages.addAccount)}</Text>
+                        <NavLink
+                          className="flex items-center space-x-1 py-2"
+                          to="/login/add"
+                          onClick={handleClose}
+                        >
+                          <Icon
+                            className="h-4 w-4 text-primary-500"
+                            src={require("@tabler/icons/outline/plus.svg")}
+                          />
+                          <Text size="sm" weight="medium">
+                            {intl.formatMessage(messages.addAccount)}
+                          </Text>
                         </NavLink>
                       </div>
                     )}
@@ -322,11 +393,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
         </div>
 
         {/* Dummy element to keep Close Icon visible */}
-        <div
-          aria-hidden
-          className='w-14 shrink-0'
-          onClick={handleClose}
-        />
+        <div aria-hidden className="w-14 shrink-0" onClick={handleClose} />
       </div>
     </div>
   );

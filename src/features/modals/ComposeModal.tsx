@@ -1,20 +1,32 @@
-import clsx from 'clsx';
-import React, { useRef } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import clsx from "clsx";
+import React, { useRef } from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { cancelReplyCompose, setGroupTimelineVisible, uploadCompose } from 'src/actions/compose';
-import { openModal, closeModal } from 'src/actions/modals';
-import { useGroup } from 'src/api/hooks';
-import { checkComposeContent } from 'src/components/ModalRoot';
-import { HStack, Modal, Text, Toggle } from 'src/components';
-import { useAppDispatch, useAppSelector, useCompose, useDraggedFiles } from 'src/hooks';
+import {
+  cancelReplyCompose,
+  setGroupTimelineVisible,
+  uploadCompose,
+} from "src/actions/compose";
+import { openModal, closeModal } from "src/actions/modals";
+import { useGroup } from "src/api/hooks/useGroup";
+import { checkComposeContent } from "src/components/ModalRoot";
+import { HStack, Modal, Text, Toggle } from "src/components";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCompose,
+  useDraggedFiles,
+} from "src/hooks";
 
-import ComposeForm from 'src/features/compose/components/ComposeForm';
+import ComposeForm from "src/features/compose/components/ComposeForm";
 
 const messages = defineMessages({
-  close: { id: 'lightbox.close', defaultMessage: 'Close' },
-  confirm: { id: 'confirmations.cancel.confirm', defaultMessage: 'Discard' },
-  cancelEditing: { id: 'confirmations.cancel_editing.confirm', defaultMessage: 'Cancel editing' },
+  close: { id: "lightbox.close", defaultMessage: "Close" },
+  confirm: { id: "confirmations.cancel.confirm", defaultMessage: "Discard" },
+  cancelEditing: {
+    id: "confirmations.cancel_editing.confirm",
+    defaultMessage: "Cancel editing",
+  },
 });
 
 interface IComposeModal {
@@ -22,13 +34,22 @@ interface IComposeModal {
   composeId?: string;
 }
 
-const ComposeModal: React.FC<IComposeModal> = ({ onClose, composeId = 'compose-modal' }) => {
+const ComposeModal: React.FC<IComposeModal> = ({
+  onClose,
+  composeId = "compose-modal",
+}) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement>(null);
   const compose = useCompose(composeId);
 
-  const { id: statusId, privacy, in_reply_to: inReplyTo, quote, group_id: groupId } = compose!;
+  const {
+    id: statusId,
+    privacy,
+    in_reply_to: inReplyTo,
+    quote,
+    group_id: groupId,
+  } = compose!;
 
   const { isDragging, isDraggedOver } = useDraggedFiles(node, (files) => {
     dispatch(uploadCompose(composeId, files, intl));
@@ -36,40 +57,95 @@ const ComposeModal: React.FC<IComposeModal> = ({ onClose, composeId = 'compose-m
 
   const onClickClose = () => {
     if (checkComposeContent(compose)) {
-      dispatch(openModal('CONFIRM', {
-        icon: require('@tabler/icons/outline/trash.svg'),
-        heading: statusId
-          ? <FormattedMessage id='confirmations.cancel_editing.heading' defaultMessage='Cancel post editing' />
-          : <FormattedMessage id='confirmations.cancel.heading' defaultMessage='Discard post' />,
-        message: statusId
-          ? <FormattedMessage id='confirmations.cancel_editing.message' defaultMessage='Are you sure you want to cancel editing this post? All changes will be lost.' />
-          : <FormattedMessage id='confirmations.cancel.message' defaultMessage='Are you sure you want to cancel creating this post?' />,
-        confirm: intl.formatMessage(statusId ? messages.cancelEditing : messages.confirm),
-        onConfirm: () => {
-          dispatch(closeModal('COMPOSE'));
-          dispatch(cancelReplyCompose());
-        },
-      }));
+      dispatch(
+        openModal("CONFIRM", {
+          icon: require("@tabler/icons/outline/trash.svg"),
+          heading: statusId ? (
+            <FormattedMessage
+              id="confirmations.cancel_editing.heading"
+              defaultMessage="Cancel post editing"
+            />
+          ) : (
+            <FormattedMessage
+              id="confirmations.cancel.heading"
+              defaultMessage="Discard post"
+            />
+          ),
+          message: statusId ? (
+            <FormattedMessage
+              id="confirmations.cancel_editing.message"
+              defaultMessage="Are you sure you want to cancel editing this post? All changes will be lost."
+            />
+          ) : (
+            <FormattedMessage
+              id="confirmations.cancel.message"
+              defaultMessage="Are you sure you want to cancel creating this post?"
+            />
+          ),
+          confirm: intl.formatMessage(
+            statusId ? messages.cancelEditing : messages.confirm
+          ),
+          onConfirm: () => {
+            dispatch(closeModal("COMPOSE"));
+            dispatch(cancelReplyCompose());
+          },
+        })
+      );
     } else {
-      onClose('COMPOSE');
+      onClose("COMPOSE");
     }
   };
 
   const renderTitle = () => {
     if (statusId) {
-      return <FormattedMessage id='navigation_bar.compose_edit' defaultMessage='Edit post' />;
-    } else if (privacy === 'direct') {
-      return <FormattedMessage id='navigation_bar.compose_direct' defaultMessage='Direct message' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_edit"
+          defaultMessage="Edit post"
+        />
+      );
+    } else if (privacy === "direct") {
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_direct"
+          defaultMessage="Direct message"
+        />
+      );
     } else if (inReplyTo && groupId) {
-      return <FormattedMessage id='navigation_bar.compose_group_reply' defaultMessage='Reply to group post' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_group_reply"
+          defaultMessage="Reply to group post"
+        />
+      );
     } else if (groupId) {
-      return <FormattedMessage id='navigation_bar.compose_group' defaultMessage='Compose to group' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_group"
+          defaultMessage="Compose to group"
+        />
+      );
     } else if (inReplyTo) {
-      return <FormattedMessage id='navigation_bar.compose_reply' defaultMessage='Reply to post' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_reply"
+          defaultMessage="Reply to post"
+        />
+      );
     } else if (quote) {
-      return <FormattedMessage id='navigation_bar.compose_quote' defaultMessage='Quote post' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose_quote"
+          defaultMessage="Quote post"
+        />
+      );
     } else {
-      return <FormattedMessage id='navigation_bar.compose' defaultMessage='Compose a post' />;
+      return (
+        <FormattedMessage
+          id="navigation_bar.compose"
+          defaultMessage="Compose a post"
+        />
+      );
     }
   };
 
@@ -79,13 +155,15 @@ const ComposeModal: React.FC<IComposeModal> = ({ onClose, composeId = 'compose-m
       title={renderTitle()}
       onClose={onClickClose}
       className={clsx({
-        'border-2 border-primary-600 border-dashed !z-[99]': isDragging,
-        'ring-2 ring-offset-2 ring-primary-600': isDraggedOver,
+        "border-2 border-primary-600 border-dashed !z-[99]": isDragging,
+        "ring-2 ring-offset-2 ring-primary-600": isDraggedOver,
       })}
     >
       <ComposeForm
         id={composeId}
-        extra={<ComposeFormGroupToggle composeId={composeId} groupId={groupId} />}
+        extra={
+          <ComposeFormGroupToggle composeId={composeId} groupId={groupId} />
+        }
         autoFocus
       />
     </Modal>
@@ -97,11 +175,16 @@ interface IComposeFormGroupToggle {
   groupId: string | null;
 }
 
-const ComposeFormGroupToggle: React.FC<IComposeFormGroupToggle> = ({ composeId, groupId }) => {
+const ComposeFormGroupToggle: React.FC<IComposeFormGroupToggle> = ({
+  composeId,
+  groupId,
+}) => {
   const dispatch = useAppDispatch();
-  const { group } = useGroup(groupId || '', false);
+  const { group } = useGroup(groupId || "", false);
 
-  const groupTimelineVisible = useAppSelector((state) => !!state.compose.get(composeId)?.group_timeline_visible);
+  const groupTimelineVisible = useAppSelector(
+    (state) => !!state.compose.get(composeId)?.group_timeline_visible
+  );
 
   const handleToggleChange = () => {
     dispatch(setGroupTimelineVisible(composeId, !groupTimelineVisible));
@@ -113,17 +196,20 @@ const ComposeFormGroupToggle: React.FC<IComposeFormGroupToggle> = ({ composeId, 
   if (group.locked) return null;
 
   return (
-    <HStack alignItems='center' space={4}>
-      <label className='ml-auto cursor-pointer' htmlFor={labelId}>
-        <Text theme='muted'>
-          <FormattedMessage id='compose_group.share_to_followers' defaultMessage='Share with my followers' />
+    <HStack alignItems="center" space={4}>
+      <label className="ml-auto cursor-pointer" htmlFor={labelId}>
+        <Text theme="muted">
+          <FormattedMessage
+            id="compose_group.share_to_followers"
+            defaultMessage="Share with my followers"
+          />
         </Text>
       </label>
       <Toggle
         id={labelId}
         checked={groupTimelineVisible}
         onChange={handleToggleChange}
-        size='sm'
+        size="sm"
       />
     </HStack>
   );

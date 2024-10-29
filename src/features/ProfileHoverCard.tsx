@@ -1,39 +1,61 @@
-import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
-import { useIntl, FormattedMessage } from 'react-intl';
-import { usePopper } from 'react-popper';
-import { useHistory } from 'react-router-dom';
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
+import { usePopper } from "react-popper";
+import { useHistory } from "react-router-dom";
 
-import { fetchRelationships } from 'src/actions/accounts';
+import { fetchRelationships } from "src/actions/accounts";
 import {
   closeProfileHoverCard,
   updateProfileHoverCard,
-} from 'src/actions/profile-hover-card';
-import { useAccount } from 'src/api/hooks';
-import Badge from 'src/components/Badge';
-import ActionButton from 'src/features/ActionButton';
-import { UserPanel } from 'src/features/AsyncComponents';
-import { useAppSelector, useAppDispatch } from 'src/hooks';
+} from "src/actions/profile-hover-card";
+import { useAccount } from "src/api/hooks/useAccount";
+import Badge from "src/components/Badge";
+import ActionButton from "src/features/ActionButton";
+import { UserPanel } from "src/features/AsyncComponents";
+import { useAppSelector, useAppDispatch } from "src/hooks";
 
-import { showProfileHoverCard } from 'src/components/HoverRefWrapper';
-import { dateFormatOptions } from 'src/components/RelativeTimestamp';
-import { HStack, Stack, Text } from 'src/components';
-import { Card, CardBody } from 'src/components/Card'
+import { showProfileHoverCard } from "src/components/HoverRefWrapper";
+import { dateFormatOptions } from "src/components/RelativeTimestamp";
+import { HStack, Stack, Text } from "src/components";
+import { Card, CardBody } from "src/components/Card";
 
-import type { Account } from 'src/schemas';
-import type { AppDispatch } from 'src/store';
-import Icon from 'src/components/Icon';
+import type { Account } from "src/schemas";
+import type { AppDispatch } from "src/store";
+import Icon from "src/components/Icon";
 
 const getBadges = (
-  account?: Pick<Account, 'admin' | 'moderator'>,
+  account?: Pick<Account, "admin" | "moderator">
   // TODO: Prime user ? This was patron account so maybe go back through and replace all that
 ): JSX.Element[] => {
   const badges = [];
 
   if (account?.admin) {
-    badges.push(<Badge key='admin' slug='admin' title={<FormattedMessage id='account_moderation_modal.roles.admin' defaultMessage='Admin' />} />);
+    badges.push(
+      <Badge
+        key="admin"
+        slug="admin"
+        title={
+          <FormattedMessage
+            id="account_moderation_modal.roles.admin"
+            defaultMessage="Admin"
+          />
+        }
+      />
+    );
   } else if (account?.moderator) {
-    badges.push(<Badge key='moderator' slug='moderator' title={<FormattedMessage id='account_moderation_modal.roles.moderator' defaultMessage='Moderator' />} />);
+    badges.push(
+      <Badge
+        key="moderator"
+        slug="moderator"
+        title={
+          <FormattedMessage
+            id="account_moderation_modal.roles.moderator"
+            defaultMessage="Moderator"
+          />
+        }
+      />
+    );
   }
 
   return badges;
@@ -56,17 +78,23 @@ interface IProfileHoverCard {
 }
 
 /** Popup profile preview that appears when hovering avatars and display names. */
-export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }) => {
+export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({
+  visible = true,
+}) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const intl = useIntl();
 
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
 
-  const me = useAppSelector(state => state.me);
-  const accountId: string | undefined = useAppSelector(state => state.profile_hover_card.accountId || undefined);
+  const me = useAppSelector((state) => state.me);
+  const accountId: string | undefined = useAppSelector(
+    (state) => state.profile_hover_card.accountId || undefined
+  );
   const { account } = useAccount(accountId, { withRelationship: true });
-  const targetRef = useAppSelector(state => state.profile_hover_card.ref?.current);
+  const targetRef = useAppSelector(
+    (state) => state.profile_hover_card.ref?.current
+  );
   const badges = getBadges(account);
 
   useEffect(() => {
@@ -88,15 +116,19 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
 
   if (!account) return null;
   const accountBio = { __html: account.note_emojified };
-  const memberSinceDate = intl.formatDate(account.created_at, { month: 'long', year: 'numeric' });
-  const followedBy = me !== account.id && account.relationship?.followed_by === true;
+  const memberSinceDate = intl.formatDate(account.created_at, {
+    month: "long",
+    year: "numeric",
+  });
+  const followedBy =
+    me !== account.id && account.relationship?.followed_by === true;
 
   return (
     <div
       className={clsx({
-        'absolute transition-opacity w-[320px] z-[101] top-0 left-0': true,
-        'opacity-100': visible,
-        'opacity-0 pointer-events-none': !visible,
+        "absolute transition-opacity w-[320px] z-[101] top-0 left-0": true,
+        "opacity-100": visible,
+        "opacity-0 pointer-events-none": !visible,
       })}
       ref={setPopperElement}
       style={styles.popper}
@@ -104,7 +136,7 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
       onMouseEnter={handleMouseEnter(dispatch)}
       onMouseLeave={handleMouseLeave(dispatch)}
     >
-      <Card variant='rounded' className='relative isolate overflow-hidden'>
+      <Card variant="rounded" className="relative isolate overflow-hidden">
         <CardBody>
           <Stack space={2}>
             <UserPanel
@@ -113,15 +145,20 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
               badges={badges}
             />
 
-            <HStack alignItems='center' space={0.5}>
+            <HStack alignItems="center" space={0.5}>
               <Icon
-                src={require('@tabler/icons/outline/calendar.svg')}
-                className='h-4 w-4 text-gray-800 dark:text-gray-200'
+                src={require("@tabler/icons/outline/calendar.svg")}
+                className="h-4 w-4 text-gray-800 dark:text-gray-200"
               />
 
-              <Text size='sm' title={intl.formatDate(account.created_at, dateFormatOptions)}>
+              <Text
+                size="sm"
+                title={intl.formatDate(account.created_at, dateFormatOptions)}
+              >
                 <FormattedMessage
-                  id='account.member_since' defaultMessage='Joined {date}' values={{
+                  id="account.member_since"
+                  defaultMessage="Joined {date}"
+                  values={{
                     date: memberSinceDate,
                   }}
                 />
@@ -129,15 +166,20 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({ visible = true }
             </HStack>
 
             {account.note.length > 0 && (
-              <Text size='sm' dangerouslySetInnerHTML={accountBio} />
+              <Text size="sm" dangerouslySetInnerHTML={accountBio} />
             )}
           </Stack>
 
           {followedBy && (
-            <div className='absolute left-2 top-2'>
+            <div className="absolute left-2 top-2">
               <Badge
-                slug='opaque'
-                title={<FormattedMessage id='account.follows_you' defaultMessage='Follows you' />}
+                slug="opaque"
+                title={
+                  <FormattedMessage
+                    id="account.follows_you"
+                    defaultMessage="Follows you"
+                  />
+                }
               />
             </div>
           )}

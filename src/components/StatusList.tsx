@@ -1,17 +1,18 @@
-import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useRef, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import clsx from "clsx";
+import debounce from "lodash/debounce";
+import React, { useRef, useCallback } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { LoadGap, ScrollableList, PlaceholderStatus, PendingStatus }from 'src/components';
-import StatusContainer from 'src/containers/StatusContainer';
-import FeedSuggestions from 'src/features/FeedSuggestions';
+import { LoadGap, ScrollableList, PendingStatus } from "src/components";
+import PlaceholderStatus from "src/components/PlaceholderStatus";
+import StatusContainer from "src/containers/StatusContainer";
+import FeedSuggestions from "src/features/FeedSuggestions";
 
-import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import type { VirtuosoHandle } from 'react-virtuoso';
-import type { IScrollableList } from 'src/components/ScrollableList';
+import type { OrderedSet as ImmutableOrderedSet } from "immutable";
+import type { VirtuosoHandle } from "react-virtuoso";
+import type { IScrollableList } from "src/components/ScrollableList";
 
-interface IStatusList extends Omit<IScrollableList, 'onLoadMore' | 'children'> {
+interface IStatusList extends Omit<IScrollableList, "onLoadMore" | "children"> {
   /** Unique key to preserve the scroll position when navigating back. */
   scrollKey: string;
   /** List of status IDs to display. */
@@ -33,7 +34,7 @@ interface IStatusList extends Omit<IScrollableList, 'onLoadMore' | 'children'> {
   /** ID of the timeline in Redux. */
   timelineId?: string;
   /** Whether to display a gap or border between statuses in the list. */
-  divideType?: 'space' | 'border';
+  divideType?: "space" | "border";
   /** Whether to display ads. */
   showAds?: boolean;
   /** Whether to show group information. */
@@ -45,7 +46,7 @@ const StatusList: React.FC<IStatusList> = ({
   statusIds,
   lastStatusId,
   featuredStatusIds,
-  divideType = 'border',
+  divideType = "border",
   onLoadMore,
   timelineId,
   isLoading,
@@ -62,9 +63,12 @@ const StatusList: React.FC<IStatusList> = ({
 
   const getCurrentStatusIndex = (id: string, featured: boolean): number => {
     if (featured) {
-      return featuredStatusIds?.keySeq().findIndex(key => key === id) || 0;
+      return featuredStatusIds?.keySeq().findIndex((key) => key === id) || 0;
     } else {
-      return statusIds.keySeq().findIndex(key => key === id) + getFeaturedStatusCount();
+      return (
+        statusIds.keySeq().findIndex((key) => key === id) +
+        getFeaturedStatusCount()
+      );
     }
   };
 
@@ -78,19 +82,28 @@ const StatusList: React.FC<IStatusList> = ({
     selectChild(elementIndex);
   };
 
-  const handleLoadOlder = useCallback(debounce(() => {
-    const maxId = lastStatusId || statusIds.last();
-    if (onLoadMore && maxId) {
-      onLoadMore(maxId.replace('末suggestions-', ''));
-    }
-  }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.last()]);
+  const handleLoadOlder = useCallback(
+    debounce(
+      () => {
+        const maxId = lastStatusId || statusIds.last();
+        if (onLoadMore && maxId) {
+          onLoadMore(maxId.replace("末suggestions-", ""));
+        }
+      },
+      300,
+      { leading: true }
+    ),
+    [onLoadMore, lastStatusId, statusIds.last()]
+  );
 
   const selectChild = (index: number) => {
     node.current?.scrollIntoView({
       index,
-      behavior: 'smooth',
+      behavior: "smooth",
       done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#status-list [data-index="${index}"] .focusable`);
+        const element = document.querySelector<HTMLDivElement>(
+          `#status-list [data-index="${index}"] .focusable`
+        );
         element?.focus();
       },
     });
@@ -105,7 +118,7 @@ const StatusList: React.FC<IStatusList> = ({
 
     return (
       <LoadGap
-        key={'gap:' + nextId}
+        key={"gap:" + nextId}
         disabled={isLoading}
         maxId={prevId!}
         onClick={onLoadMore}
@@ -122,43 +135,40 @@ const StatusList: React.FC<IStatusList> = ({
         onMoveDown={handleMoveDown}
         contextType={timelineId}
         showGroup={showGroup}
-        variant={divideType === 'border' ? 'slim' : 'rounded'}
+        variant={divideType === "border" ? "slim" : "rounded"}
       />
     );
   };
 
   const renderPendingStatus = (statusId: string) => {
-    const idempotencyKey = statusId.replace(/^末pending-/, '');
+    const idempotencyKey = statusId.replace(/^末pending-/, "");
 
-    return (
-      <PendingStatus
-        key={statusId}
-        idempotencyKey={idempotencyKey}
-      />
-    );
+    return <PendingStatus key={statusId} idempotencyKey={idempotencyKey} />;
   };
 
   const renderFeaturedStatuses = (): React.ReactNode[] => {
     if (!featuredStatusIds) return [];
 
-    return featuredStatusIds.toArray().map(statusId => (
-      <StatusContainer
-        key={`f-${statusId}`}
-        id={statusId}
-        featured
-        onMoveUp={handleMoveUp}
-        onMoveDown={handleMoveDown}
-        contextType={timelineId}
-        showGroup={showGroup}
-        variant={divideType === 'border' ? 'slim' : 'default'}
-      />
-    ));
+    return featuredStatusIds
+      .toArray()
+      .map((statusId) => (
+        <StatusContainer
+          key={`f-${statusId}`}
+          id={statusId}
+          featured
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
+          contextType={timelineId}
+          showGroup={showGroup}
+          variant={divideType === "border" ? "slim" : "default"}
+        />
+      ));
   };
 
   const renderFeedSuggestions = (statusId: string): React.ReactNode => {
     return (
       <FeedSuggestions
-        key='suggestions'
+        key="suggestions"
         statusId={statusId}
         onMoveUp={handleMoveUp}
         onMoveDown={handleMoveDown}
@@ -175,9 +185,9 @@ const StatusList: React.FC<IStatusList> = ({
           if (gap) {
             acc.push(gap);
           }
-        } else if (statusId.startsWith('末suggestions-')) {
-            acc.push(renderFeedSuggestions(statusId));
-        } else if (statusId.startsWith('末pending-')) {
+        } else if (statusId.startsWith("末suggestions-")) {
+          acc.push(renderFeedSuggestions(statusId));
+        } else if (statusId.startsWith("末pending-")) {
           acc.push(renderPendingStatus(statusId));
         } else {
           acc.push(renderStatus(statusId));
@@ -203,11 +213,18 @@ const StatusList: React.FC<IStatusList> = ({
 
   if (isPartial) {
     return (
-      <div className='regeneration-indicator'>
+      <div className="regeneration-indicator">
         <div>
-          <div className='regeneration-indicator__label'>
-            <FormattedMessage id='regeneration_indicator.label' tagName='strong' defaultMessage='Loading…' />
-            <FormattedMessage id='regeneration_indicator.sublabel' defaultMessage='Your home feed is being prepared!' />
+          <div className="regeneration-indicator__label">
+            <FormattedMessage
+              id="regeneration_indicator.label"
+              tagName="strong"
+              defaultMessage="Loading…"
+            />
+            <FormattedMessage
+              id="regeneration_indicator.sublabel"
+              defaultMessage="Your home feed is being prepared!"
+            />
           </div>
         </div>
       </div>
@@ -216,19 +233,26 @@ const StatusList: React.FC<IStatusList> = ({
 
   return (
     <ScrollableList
-      id='status-list'
-      key='scrollable-list'
+      id="status-list"
+      key="scrollable-list"
       isLoading={isLoading}
       showLoading={isLoading && statusIds.size === 0}
       onLoadMore={handleLoadOlder}
-      placeholderComponent={() => <PlaceholderStatus variant={divideType === 'border' ? 'slim' : 'rounded'} />}
+      placeholderComponent={() => (
+        <PlaceholderStatus
+          variant={divideType === "border" ? "slim" : "rounded"}
+        />
+      )}
       placeholderCount={20}
       ref={node}
-      className={clsx('divide-y divide-solid divide-gray-200 dark:divide-gray-800', {
-        'divide-none': divideType !== 'border',
-      })}
+      className={clsx(
+        "divide-y divide-solid divide-gray-200 dark:divide-gray-800",
+        {
+          "divide-none": divideType !== "border",
+        }
+      )}
       itemClassName={clsx({
-        'pb-3': divideType !== 'border',
+        "pb-3": divideType !== "border",
       })}
       {...other}
     >

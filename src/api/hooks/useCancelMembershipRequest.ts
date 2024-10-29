@@ -1,8 +1,9 @@
-import { Entities } from 'src/entity-store/entities';
-import { useCreateEntity } from 'src/entity-store/hooks';
-import { useApi, useOwnAccount } from 'src/hooks';
+import { Entities } from "src/entity-store/entities";
+import { useCreateEntity } from "src/entity-store/hooks/useCreateEntity";
+import { useApi } from "src/hooks/useApi";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
 
-import type { Group } from 'src/schemas';
+import type { Group } from "src/schemas";
 
 function useCancelMembershipRequest(group: Group) {
   const api = useApi();
@@ -10,7 +11,8 @@ function useCancelMembershipRequest(group: Group) {
 
   const { createEntity, isSubmitting } = useCreateEntity(
     [Entities.GROUP_RELATIONSHIPS],
-    () => api.post(`/api/groups/${group.id}/membership_requests/${me?.id}/reject`),
+    () =>
+      api.post(`/api/groups/${group.id}/membership_requests/${me?.id}/reject`)
   );
 
   return {

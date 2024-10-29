@@ -1,9 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { authorizeFollowRequest, rejectFollowRequest } from 'src/actions/accounts';
-import { useAccount } from 'src/api/hooks';
-import { Account, AuthorizeRejectButtons } from 'src/components';
-import { useAppDispatch } from 'src/hooks';
+import {
+  authorizeFollowRequest,
+  rejectFollowRequest,
+} from "src/actions/accounts";
+import { useAccount } from "src/api/hooks/useAccount";
+import { Account, AuthorizeRejectButtons } from "src/components";
+import { useAppDispatch } from "src/hooks";
 
 interface IAccountAuthorize {
   id: string;
@@ -19,7 +22,7 @@ const AccountAuthorize: React.FC<IAccountAuthorize> = ({ id }) => {
   if (!account) return null;
 
   return (
-    <div className='p-2.5'>
+    <div className="p-2.5">
       <Account
         account={account}
         action={

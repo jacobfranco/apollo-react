@@ -1,38 +1,61 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { blockAccount } from 'src/actions/accounts';
-import { submitReport, submitReportSuccess, submitReportFail, ReportableEntities } from 'src/actions/reports';
-import { expandAccountTimeline } from 'src/actions/timelines';
-import { useAccount } from 'src/api/hooks';
-import { AttachmentThumbs, GroupCard, HStack, Modal, ProgressBar, Stack, Text } from 'src/components';
-import List, { ListItem } from 'src/components/List';
-import AccountContainer from 'src/containers/AccountContainer';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { blockAccount } from "src/actions/accounts";
+import {
+  submitReport,
+  submitReportSuccess,
+  submitReportFail,
+  ReportableEntities,
+} from "src/actions/reports";
+import { expandAccountTimeline } from "src/actions/timelines";
+import { useAccount } from "src/api/hooks/useAccount";
+import {
+  AttachmentThumbs,
+  GroupCard,
+  HStack,
+  Modal,
+  ProgressBar,
+  Stack,
+  Text,
+} from "src/components";
+import List, { ListItem } from "src/components/List";
+import AccountContainer from "src/containers/AccountContainer";
+import { useAppDispatch, useAppSelector } from "src/hooks";
 
-import ConfirmationStep from 'src/components/ReportConfirmation';
-import OtherActionsStep from 'src/components/ReportOtherActions';
-import ReasonStep from 'src/components/ReportReason';
-import Icon from 'src/components/Icon';
-import Avatar from 'src/components/Avatar';
-import StatusContent from 'src/components/StatusContent';
+import ConfirmationStep from "src/components/ReportConfirmation";
+import OtherActionsStep from "src/components/ReportOtherActions";
+import ReasonStep from "src/components/ReportReason";
+import Icon from "src/components/Icon";
+import Avatar from "src/components/Avatar";
+import StatusContent from "src/components/StatusContent";
 
 const messages = defineMessages({
-  blankslate: { id: 'report.reason.blankslate', defaultMessage: 'You have removed all statuses from being selected.' },
-  done: { id: 'report.done', defaultMessage: 'Done' },
-  next: { id: 'report.next', defaultMessage: 'Next' },
-  submit: { id: 'report.submit', defaultMessage: 'Submit' },
-  reportContext: { id: 'report.chatMessage.context', defaultMessage: 'When reporting a user’s message, the five messages before and five messages after the one selected will be passed along to our moderation team for context.' },
-  reportMessage: { id: 'report.chatMessage.title', defaultMessage: 'Report message' },
-  reportGroup: { id: 'report.group.title', defaultMessage: 'Report Group' },
-  cancel: { id: 'common.cancel', defaultMessage: 'Cancel' },
-  previous: { id: 'report.previous', defaultMessage: 'Previous' },
+  blankslate: {
+    id: "report.reason.blankslate",
+    defaultMessage: "You have removed all statuses from being selected.",
+  },
+  done: { id: "report.done", defaultMessage: "Done" },
+  next: { id: "report.next", defaultMessage: "Next" },
+  submit: { id: "report.submit", defaultMessage: "Submit" },
+  reportContext: {
+    id: "report.chatMessage.context",
+    defaultMessage:
+      "When reporting a user’s message, the five messages before and five messages after the one selected will be passed along to our moderation team for context.",
+  },
+  reportMessage: {
+    id: "report.chatMessage.title",
+    defaultMessage: "Report message",
+  },
+  reportGroup: { id: "report.group.title", defaultMessage: "Report Group" },
+  cancel: { id: "common.cancel", defaultMessage: "Cancel" },
+  previous: { id: "report.previous", defaultMessage: "Previous" },
 });
 
 enum Steps {
-  ONE = 'ONE',
-  TWO = 'TWO',
-  THREE = 'THREE',
+  ONE = "ONE",
+  TWO = "TWO",
+  THREE = "THREE",
 }
 
 const reportSteps = {
@@ -66,7 +89,7 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
   }
 
   return (
-    <Stack space={2} className='rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
+    <Stack space={2} className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
       <AccountContainer
         id={status.account as any}
         showProfileHoverCard={false}
@@ -75,10 +98,7 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
         hideActions
       />
 
-      <StatusContent
-        status={status}
-        collapsable
-      />
+      <StatusContent status={status} collapsable />
 
       {status.media_attachments.size > 0 && (
         <AttachmentThumbs
@@ -103,10 +123,14 @@ const ReportModal = ({ onClose }: IReportModal) => {
 
   const entityType = useAppSelector((state) => state.reports.new.entityType);
   const isBlocked = useAppSelector((state) => state.reports.new.block);
-  const isSubmitting = useAppSelector((state) => state.reports.new.isSubmitting);
+  const isSubmitting = useAppSelector(
+    (state) => state.reports.new.isSubmitting
+  );
   const rules = useAppSelector((state) => state.rules.items);
   const ruleIds = useAppSelector((state) => state.reports.new.rule_ids);
-  const selectedStatusIds = useAppSelector((state) => state.reports.new.status_ids);
+  const selectedStatusIds = useAppSelector(
+    (state) => state.reports.new.status_ids
+  );
   // const selectedChatMessage = useAppSelector((state) => state.reports.new.chat_message); TODO: Implement chats
   const selectedGroup = useAppSelector((state) => state.reports.new.group);
 
@@ -132,8 +156,8 @@ const ReportModal = ({ onClose }: IReportModal) => {
     switch (selectedStatusIds.size) {
       case 0:
         return (
-          <div className='flex w-full items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
-            <Text theme='muted'>{intl.formatMessage(messages.blankslate)}</Text>
+          <div className="flex w-full items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
+            <Text theme="muted">{intl.formatMessage(messages.blankslate)}</Text>
           </div>
         );
       default:
@@ -214,21 +238,32 @@ const ReportModal = ({ onClose }: IReportModal) => {
     if (account) {
       return (
         <Stack space={4}>
-          <HStack alignItems='center' space={4} className='rounded-md border border-solid border-gray-400 p-4 dark:border-2 dark:border-gray-800'>
+          <HStack
+            alignItems="center"
+            space={4}
+            className="rounded-md border border-solid border-gray-400 p-4 dark:border-2 dark:border-gray-800"
+          >
             <div>
-              <Avatar src={account.avatar} className='h-8 w-8' />
+              <Avatar src={account.avatar} className="h-8 w-8" />
             </div>
-            { /* TODO: Implement reports
+            {/* TODO: Implement reports
             <div className='grow rounded-md bg-gray-200 p-4 dark:bg-primary-800'>
               <Text dangerouslySetInnerHTML={{ __html: selectedChatMessage?.content as string }} />
             </div>  
-      */ }
+      */}
           </HStack>
           <List>
             <ListItem
-              label={<Icon src={require('@tabler/icons/outline/info-circle.svg')} className='text-gray-600' />}
+              label={
+                <Icon
+                  src={require("@tabler/icons/outline/info-circle.svg")}
+                  className="text-gray-600"
+                />
+              }
             >
-              <Text size='sm'>{intl.formatMessage(messages.reportContext)}</Text>
+              <Text size="sm">
+                {intl.formatMessage(messages.reportContext)}
+              </Text>
             </ListItem>
           </List>
         </Stack>
@@ -270,7 +305,13 @@ const ReportModal = ({ onClose }: IReportModal) => {
       case ReportableEntities.GROUP:
         return intl.formatMessage(messages.reportGroup);
       default:
-        return <FormattedMessage id='report.target' defaultMessage='Reporting {target}' values={{ target: <strong>@{account?.username}</strong> }} />;
+        return (
+          <FormattedMessage
+            id="report.target"
+            defaultMessage="Reporting {target}"
+            values={{ target: <strong>@{account?.username}</strong> }}
+          />
+        );
     }
   };
 
@@ -279,8 +320,19 @@ const ReportModal = ({ onClose }: IReportModal) => {
       return false;
     }
 
-    return isSubmitting || (shouldRequireRule && ruleIds.isEmpty()) || (isReportingStatus && selectedStatusIds.size === 0);
-  }, [currentStep, isSubmitting, shouldRequireRule, ruleIds, selectedStatusIds.size, isReportingStatus]);
+    return (
+      isSubmitting ||
+      (shouldRequireRule && ruleIds.isEmpty()) ||
+      (isReportingStatus && selectedStatusIds.size === 0)
+    );
+  }, [
+    currentStep,
+    isSubmitting,
+    shouldRequireRule,
+    ruleIds,
+    selectedStatusIds.size,
+    isReportingStatus,
+  ]);
 
   const calculateProgress = useCallback(() => {
     switch (currentStep) {
@@ -297,7 +349,9 @@ const ReportModal = ({ onClose }: IReportModal) => {
 
   useEffect(() => {
     if (account?.id) {
-      dispatch(expandAccountTimeline(account.id, { withReplies: true, maxId: null }));
+      dispatch(
+        expandAccountTimeline(account.id, { withReplies: true, maxId: null })
+      );
     }
   }, [account?.id]);
 
@@ -321,11 +375,11 @@ const ReportModal = ({ onClose }: IReportModal) => {
       <Stack space={4}>
         <ProgressBar progress={calculateProgress()} />
 
-        {(currentStep !== Steps.THREE && !isReportingAccount) && renderSelectedEntity()}
+        {currentStep !== Steps.THREE &&
+          !isReportingAccount &&
+          renderSelectedEntity()}
 
-        {StepToRender && (
-          <StepToRender account={account} />
-        )}
+        {StepToRender && <StepToRender account={account} />}
       </Stack>
     </Modal>
   );

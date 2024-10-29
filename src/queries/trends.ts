@@ -1,17 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { fetchTrendsSuccess } from 'src/actions/trends';
-import { useApi, useAppDispatch } from 'src/hooks';
-import { normalizeTag } from 'src/normalizers';
+import { fetchTrendsSuccess } from "src/actions/trends";
+import { useAppDispatch } from "src/hooks";
+import { useApi } from "src/hooks/useApi";
+import { normalizeTag } from "src/normalizers";
 
-import type { Tag } from 'src/types/entities';
+import type { Tag } from "src/types/entities";
 
 export default function useTrends() {
   const api = useApi();
   const dispatch = useAppDispatch();
 
   const getTrends = async () => {
-    const { data } = await api.get<any[]>('/api/trends');
+    const { data } = await api.get<any[]>("/api/trends");
 
     dispatch(fetchTrendsSuccess(data));
 
@@ -20,7 +21,7 @@ export default function useTrends() {
   };
 
   const result = useQuery<ReadonlyArray<Tag>>({
-    queryKey: ['trends'],
+    queryKey: ["trends"],
     queryFn: getTrends,
     placeholderData: [],
     staleTime: 600000, // 10 minutes
