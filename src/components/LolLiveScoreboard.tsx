@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useTeamColors } from "src/team-colors";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import useLiveMatchStream from "src/api/hooks/useLiveMatchStream";
 import { useAppSelector } from "src/hooks";
-import { selectMatchById } from "src/selectors";
+import { selectMatchById, selectSeriesById } from "src/selectors";
 import { Participant, Team } from "src/schemas";
 import { useTheme } from "src/hooks/useTheme";
 import { formatScoreboardTitle, formatGold } from "src/utils/scoreboards";
 import SvgIcon from "./SvgIcon";
-import { selectSeriesById } from "src/selectors";
 
 interface LolLiveScoreboardProps {
   seriesId: number;
@@ -180,13 +179,90 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     return <div className="flex justify-center mt-2">{rectangles}</div>;
   };
 
+  // **1. Initialize synchronization state**
+  const [baseServerTime, setBaseServerTime] = useState<number | null>(null);
+  const [baseLocalTime, setBaseLocalTime] = useState<number | null>(null);
+  const [displayTime, setDisplayTime] = useState<number | null>(null);
+
+  const threshold = 1000; // 1 second in milliseconds
+
+  // **2. Ref to store the interval ID**
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // **3. Effect to handle incoming payloads and set base times**
+  useEffect(() => {
+    if (liveMatch?.clock?.milliseconds != null) {
+      if (baseServerTime === null || baseLocalTime === null) {
+        // Initialize base times with the first payload
+        setBaseServerTime(liveMatch.clock.milliseconds);
+        setBaseLocalTime(Date.now());
+        setDisplayTime(liveMatch.clock.milliseconds);
+      } else {
+        // Calculate expected display time based on elapsed local time
+        const elapsed = Date.now() - (baseLocalTime || Date.now());
+        const expectedDisplay = (baseServerTime || 0) + elapsed;
+
+        const difference = Math.abs(
+          liveMatch.clock.milliseconds - expectedDisplay
+        );
+
+        if (difference > threshold) {
+          // If difference exceeds threshold, resynchronize
+          setBaseServerTime(liveMatch.clock.milliseconds);
+          setBaseLocalTime(Date.now());
+          setDisplayTime(liveMatch.clock.milliseconds);
+        }
+        // Else, do not resynchronize to allow smooth ticking
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveMatch?.clock?.milliseconds]);
+
+  // **4. Effect to update display time every second**
+  useEffect(() => {
+    if (baseServerTime === null || baseLocalTime === null) return;
+
+    // Start the interval and store its ID in the ref
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - (baseLocalTime || Date.now());
+      setDisplayTime((baseServerTime || 0) + elapsed);
+    }, 1000); // Update every second
+
+    // Cleanup function to clear the interval when dependencies change or component unmounts
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [baseServerTime, baseLocalTime]);
+
+  // **5. Effect to handle match end**
+  useEffect(() => {
+    const isMatchEnded = lifecycle === "over";
+
+    if (isMatchEnded) {
+      // Clear the interval to stop the clock
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
+      // Set the display time to the final payload clock value
+      if (liveMatch?.clock?.milliseconds != null) {
+        setDisplayTime(liveMatch.clock.milliseconds);
+      }
+    }
+  }, [lifecycle, liveMatch?.clock?.milliseconds]);
+
+  // **6. Format the display time**
   const formattedClock = useMemo(() => {
-    if (!liveMatch?.clock?.milliseconds) return null;
-    const totalSeconds = Math.floor(liveMatch.clock.milliseconds / 1000);
+    if (displayTime === null) return null;
+    const totalSeconds = Math.floor(displayTime / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }, [liveMatch]);
+  }, [displayTime]);
 
   return (
     <div
