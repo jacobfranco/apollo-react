@@ -7,7 +7,6 @@ import { fetchSpace, followSpace, unfollowSpace } from "src/actions/spaces";
 import SpaceTimeline from "./SpaceTimeline";
 import { Column } from "src/components/Column";
 
-const CommunityTab = lazy(() => import("./CommunityTab"));
 const MediaTab = lazy(() => import("./MediaTab"));
 
 const messages = defineMessages({

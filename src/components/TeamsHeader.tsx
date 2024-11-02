@@ -1,5 +1,3 @@
-// src/components/TeamsHeader.tsx
-
 import React from "react";
 import { Match } from "src/schemas/match";
 import AutoFitText from "./AutoFitText";
@@ -8,9 +6,12 @@ import { useTeamColors } from "src/team-colors";
 import { useTheme } from "src/hooks/useTheme";
 import SvgIcon from "./SvgIcon";
 import { formatGold } from "src/utils/scoreboards";
+import { TeamMatchStats } from "src/schemas/team-match-stats";
+import { Series } from "src/schemas/series";
 
 interface TeamsHeaderProps {
-  match: Match;
+  match?: Match;
+  series: Series; // Make series required
   bestOf: number;
   team1SeriesScore: number;
   team2SeriesScore: number;
@@ -18,6 +19,7 @@ interface TeamsHeaderProps {
 
 const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   match,
+  series,
   bestOf,
   team1SeriesScore,
   team2SeriesScore,
@@ -25,10 +27,19 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme();
 
-  // Extract teams data
-  const [team1Participant, team2Participant] = match.participants;
-  const team1 = team1Participant.roster.team;
-  const team2 = team2Participant.roster.team;
+  // Use participants from match if available, else from series
+  const participants = match?.participants || series.participants || [];
+
+  if (participants.length < 2) {
+    // Handle the case where there are not enough participants
+    return <div>Not enough participants</div>;
+  }
+
+  const [team1Participant, team2Participant] = participants;
+
+  // Use optional chaining and default values
+  const team1 = team1Participant.roster?.team;
+  const team2 = team2Participant.roster?.team;
 
   // Team names and logos
   const team1Name = team1?.name || "Team 1";
@@ -46,19 +57,19 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const isTeam2Placeholder = team2Logo === placeholderTeam;
 
   // Get match stats from team.matchStats
-  const team1MatchStats = team1?.matchStats;
-  const team2MatchStats = team2?.matchStats;
+  const team1MatchStats: TeamMatchStats | null | undefined = team1?.matchStats;
+  const team2MatchStats: TeamMatchStats | null | undefined = team2?.matchStats;
 
   // Match lifecycle and duration
-  const matchLifecycle = match.lifecycle.toUpperCase();
-  const matchDuration = match.clock
-    ? formatDuration(match.clock.milliseconds / 1000) // Assuming milliseconds
-    : "0:00";
+  const matchDuration =
+    match?.clock && match.clock.milliseconds
+      ? formatDuration(match.clock.milliseconds / 1000)
+      : "0:00";
 
-  // **Calculate wins needed based on bestOf**
+  // Calculate wins needed based on bestOf
   const winsNeeded = Math.ceil(bestOf / 2);
 
-  // **Function to render score rectangles for a team**
+  // Function to render score rectangles for a team
   const renderScoreRectangles = (teamScore: number, teamColor: string) => {
     const rectangles = [];
     for (let i = 0; i < winsNeeded; i++) {
@@ -84,25 +95,33 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     );
   };
 
-  // Get team match stats
-  const team1Kills = team1MatchStats?.score || 0;
-  const team2Kills = team2MatchStats?.score || 0;
+  type StatValue = number | string;
 
-  const team1Gold = formatGold(team1MatchStats?.goldEarned || 0);
-  const team2Gold = formatGold(team2MatchStats?.goldEarned || 0);
+  // Get team match stats or use '-' if not available
+  const team1Kills: StatValue = team1MatchStats?.score ?? "-";
+  const team2Kills: StatValue = team2MatchStats?.score ?? "-";
 
-  const team1Towers = team1MatchStats?.turretsDestroyed || 0;
-  const team2Towers = team2MatchStats?.turretsDestroyed || 0;
+  const team1GoldValue: number | undefined = team1MatchStats?.goldEarned;
+  const team2GoldValue: number | undefined = team2MatchStats?.goldEarned;
 
-  // **Determine status display**
+  const team1Gold: string =
+    team1GoldValue !== undefined ? formatGold(team1GoldValue) : "-";
+  const team2Gold: string =
+    team2GoldValue !== undefined ? formatGold(team2GoldValue) : "-";
+
+  const team1Towers: StatValue = team1MatchStats?.turretsDestroyed ?? "-";
+  const team2Towers: StatValue = team2MatchStats?.turretsDestroyed ?? "-";
+
+  // Determine status display
   let statusDisplay = "";
-  if (match.lifecycle === "over") {
-    // Find the winning participant
+
+  if (match?.lifecycle === "over") {
+    // Existing logic for when match is over
     const winnerParticipant = match.participants.find(
       (participant) => participant.winner
     );
 
-    if (winnerParticipant && winnerParticipant.roster.team) {
+    if (winnerParticipant && winnerParticipant.roster?.team) {
       const winnerTeam = winnerParticipant.roster.team;
       const winnerAbbr = winnerTeam.abbreviation || winnerTeam.name;
       statusDisplay = `${winnerAbbr} Win - ${matchDuration}`;
@@ -110,14 +129,26 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
       // Fallback if no winner is found
       statusDisplay = `Final - ${matchDuration}`;
     }
-  } else if (match.lifecycle === "upcoming") {
-    statusDisplay = "Upcoming";
-  } else if (match.lifecycle === "live") {
+  } else if (match?.lifecycle === "live") {
     statusDisplay = "Live";
+  } else if (match?.lifecycle === "upcoming" || !match) {
+    // Display the scheduled date and time
+    const startTime = series.start ? new Date(series.start * 1000) : null;
+    statusDisplay = startTime ? `${formatDateTime(startTime)}` : "Upcoming";
   }
 
-  // **Helper function to determine text colors based on metric comparison**
-  const getMetricClasses = (team1Value: number, team2Value: number) => {
+  // Helper function to determine text colors based on metric comparison
+  const getMetricClasses = (
+    team1Value: number | string,
+    team2Value: number | string
+  ) => {
+    if (typeof team1Value !== "number" || typeof team2Value !== "number") {
+      return {
+        team1Class: "text-gray-500",
+        team2Class: "text-gray-500",
+      };
+    }
+
     if (team1Value > team2Value) {
       return {
         team1Class: "text-black dark:text-white",
@@ -129,7 +160,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
         team2Class: "text-black dark:text-white",
       };
     } else {
-      // If values are equal, both are white
+      // If values are equal, both are highlighted
       return {
         team1Class: "text-black dark:text-white",
         team2Class: "text-black dark:text-white",
@@ -140,15 +171,13 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   // Get classes for each metric
   const killsClasses = getMetricClasses(team1Kills, team2Kills);
   const goldClasses = getMetricClasses(
-    team1MatchStats?.goldEarned || 0,
-    team2MatchStats?.goldEarned || 0
+    team1GoldValue ?? "-",
+    team2GoldValue ?? "-"
   );
   const towersClasses = getMetricClasses(team1Towers, team2Towers);
 
   return (
     <div className="relative flex justify-between items-start pt-4 pb-6 space-x-8">
-      {/* Added space-x-8 for horizontal spacing between sections */}
-
       {/* Team 1 */}
       <div className="flex flex-col items-center w-1/3">
         {/* Logo */}
@@ -163,11 +192,10 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             alt={team1Name}
           />
         </div>
-        {/* **Series Score Rectangles** */}
+        {/* Series Score Rectangles */}
         {renderScoreRectangles(team1SeriesScore, team1Color)}
         {/* Team Name */}
         <div className="mt-4">
-          {/* Increased margin-top */}
           <AutoFitText
             text={team1Name}
             maxFontSize={16}
@@ -181,9 +209,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
 
       {/* Metrics Container */}
       <div className="flex flex-col items-center w-1/3 space-y-4">
-        {/* Increased space-y from 2 to 4 for more vertical spacing */}
-
-        {/* Combined Status Display */}
+        {/* Status Display */}
         <div className="text-gray-500 font-bold">{statusDisplay}</div>
 
         {/* Kills Row */}
@@ -261,11 +287,10 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             alt={team2Name}
           />
         </div>
-        {/* **Series Score Rectangles** */}
+        {/* Series Score Rectangles */}
         {renderScoreRectangles(team2SeriesScore, team2Color)}
         {/* Team Name */}
         <div className="mt-4">
-          {/* Increased margin-top */}
           <AutoFitText
             text={team2Name}
             maxFontSize={16}
@@ -288,6 +313,18 @@ function formatDuration(seconds: number) {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+// Function to format date and time
+function formatDateTime(date: Date): string {
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 // Helper function to apply logo filters based on theme

@@ -35,20 +35,6 @@ const ScheduleTab: React.FC = () => {
   const loading = useAppSelector(selectSeriesLoading);
   const error = useAppSelector(selectSeriesError);
 
-  useEffect(() => {
-    const disconnectSeriesUpdates = dispatch(connectSeriesUpdatesStream());
-    const disconnectMatchUpdates = dispatch(connectMatchUpdatesStream());
-
-    return () => {
-      if (disconnectSeriesUpdates) {
-        disconnectSeriesUpdates();
-      }
-      if (disconnectMatchUpdates) {
-        disconnectMatchUpdates();
-      }
-    };
-  }, [dispatch]);
-
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const now = new Date();
     const year = 2024;

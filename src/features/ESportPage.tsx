@@ -1,11 +1,17 @@
-import React, { lazy, useState } from "react";
+import React, { lazy, useState, useEffect } from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
 import { Tabs } from "src/components";
 import { Column } from "src/components/Column";
 import esportsConfig from "src/esports-config";
+import { SpaceTimeline } from "./SpaceTimeline";
+import { useAppDispatch, useAppSelector } from "src/hooks";
+import { fetchSpace } from "src/actions/spaces";
+import {
+  connectMatchUpdatesStream,
+  connectSeriesUpdatesStream,
+} from "src/actions/streaming";
 
-const EsportsTab = lazy(() => import("./EsportsTab"));
 const ScheduleTab = lazy(() => import("./ScheduleTab"));
 const TeamsTab = lazy(() => import("./TeamsTab"));
 const PlayersTab = lazy(() => import("./PlayersTab"));
@@ -21,8 +27,36 @@ const messages = defineMessages({
 
 const EsportPage = () => {
   const intl = useIntl();
+  const dispatch = useAppDispatch();
   const { esportName } = useParams<{ esportName: string }>();
   const game = esportsConfig.find((g) => g.path === esportName);
+
+  const spacePath = esportName + "esports";
+
+  const space = useAppSelector(
+    (state) =>
+      state.spaces.byUrl.get(spacePath) || state.spaces.byName.get(spacePath)
+  );
+
+  useEffect(() => {
+    const disconnectSeriesUpdates = dispatch(connectSeriesUpdatesStream());
+    const disconnectMatchUpdates = dispatch(connectMatchUpdatesStream());
+
+    return () => {
+      if (disconnectSeriesUpdates) {
+        disconnectSeriesUpdates();
+      }
+      if (disconnectMatchUpdates) {
+        disconnectMatchUpdates();
+      }
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (spacePath && !space) {
+      dispatch(fetchSpace(spacePath));
+    }
+  }, [dispatch, spacePath, space]);
 
   if (!game) {
     return <div className="text-center text-red-500">Invalid esport name</div>;
@@ -34,7 +68,7 @@ const EsportPage = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case "esports":
-        return <EsportsTab />;
+        return <SpaceTimeline spacePath={spacePath} />;
       case "schedule":
         return game.hasApiSupport ? <ScheduleTab /> : null;
       case "teams":

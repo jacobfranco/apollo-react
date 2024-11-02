@@ -132,7 +132,7 @@ import {
   PlayersTab,
   TeamsTab,
   FantasyTab,
-  MediaTab
+  MediaTab,
 } from "./AsyncComponents";
 import GlobalHotkeys from "./GlobalHotkeys";
 import { WrappedRoute } from "src/utils/react-router-helpers";
@@ -243,7 +243,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         publicRoute
       />
 
-
       <WrappedRoute
         path="/s/:spaceName"
         page={DefaultPage}
@@ -266,7 +265,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
-
       <WrappedRoute
         path="/esports/:esportName"
         page={ESportsPage}
@@ -282,7 +280,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
         publicRoute
       />
-
 
       <WrappedRoute
         path="/suggestions"

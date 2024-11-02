@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+// components/LolScoreboardDetail.tsx
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById, selectMatchById } from "src/selectors";
 import { fetchMatch } from "src/actions/matches";
 import TeamsHeader from "./TeamsHeader";
 import PlayerRow from "./PlayerRow";
-import { Tabs } from "src/components"; // Import Tabs component
+import { Tabs } from "src/components";
+import useLiveMatchStream from "src/api/hooks/useLiveMatchStream";
+import { Participant } from "src/schemas";
+import {
+  connectSeriesUpdatesStream,
+  connectMatchUpdatesStream,
+} from "src/actions/streaming";
 
 interface LolScoreboardDetailProps {
   seriesId: number;
@@ -19,7 +26,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   const series = useAppSelector((state) => selectSeriesById(state, seriesId));
 
   // State to track selected tab (index of availableMatches)
-  const [selectedTab, setSelectedTab] = useState<number>(0); // Initialize with first match
+  const [selectedTab, setSelectedTab] = useState<number>(0);
 
   // Fetch match data for all matches in the series
   const matches = useAppSelector((state) =>
@@ -28,22 +35,37 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
       : []
   );
 
-  // Dispatch action to fetch match data if not available
+  // Ref to track fetched match IDs
+  const fetchedMatchIds = useRef(new Set<number>());
+
+  // Dispatch action to fetch match data if not available and series is not upcoming
   useEffect(() => {
-    if (series && series.matchIds && series.matchIds.length > 0) {
-      series.matchIds.forEach((matchId, index) => {
-        const match = matches[index];
-        if (!match) {
-          dispatch(fetchMatch(matchId));
-        }
+    if (
+      series &&
+      series.lifecycle !== "upcoming" &&
+      series.matchIds &&
+      series.matchIds.length > 0
+    ) {
+      const missingMatchIds = series.matchIds.filter(
+        (matchId) => !fetchedMatchIds.current.has(matchId)
+      );
+
+      missingMatchIds.forEach((matchId) => {
+        dispatch(fetchMatch(matchId));
+        fetchedMatchIds.current.add(matchId);
       });
     }
   }, [dispatch, series]);
 
   // Filter out matches where match.lifecycle === "deleted"
-  const availableMatches = matches.filter(
-    (match) => match && match.lifecycle !== "deleted"
-  );
+  const availableMatches = useMemo(() => {
+    if (!series) return [];
+    if (series.lifecycle === "upcoming") {
+      return [{ id: "preview", name: "Preview" }];
+    } else {
+      return matches.filter((match) => match && match.lifecycle !== "deleted");
+    }
+  }, [series, matches]);
 
   // Ensure selectedTab is within the bounds of availableMatches
   useEffect(() => {
@@ -52,25 +74,94 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     }
   }, [selectedTab, availableMatches.length]);
 
-  // Selected match based on selectedTab
-  const selectedMatch = availableMatches[selectedTab];
-
-  // Participants from match data
-  let team1, team2, team1Players, team2Players;
-
-  if (selectedMatch) {
-    team1 = selectedMatch.participants[0];
-    team2 = selectedMatch.participants[1];
-
-    if (team1.roster.team && team2.roster.team) {
-      team1Players = team1.roster.players;
-      team2Players = team2.roster.players;
-    }
+  if (!series) {
+    return <div>Series not found</div>;
   }
 
-  // **Retrieve Series Scores**
-  const team1SeriesScore = series?.participants?.[0]?.score || 0;
-  const team2SeriesScore = series?.participants?.[1]?.score || 0;
+  useEffect(() => {
+    const disconnectSeriesUpdates = dispatch(connectSeriesUpdatesStream());
+    const disconnectMatchUpdates = dispatch(connectMatchUpdatesStream());
+
+    return () => {
+      if (disconnectSeriesUpdates) {
+        disconnectSeriesUpdates();
+      }
+      if (disconnectMatchUpdates) {
+        disconnectMatchUpdates();
+      }
+    };
+  }, [dispatch]);
+
+  // Selected match based on selectedTab
+  const selectedMatch =
+    series.lifecycle === "upcoming" ? null : availableMatches[selectedTab];
+
+  // Use live match stream if the match is live
+  const matchId =
+    typeof selectedMatch?.id === "number" ? selectedMatch.id : null;
+  useLiveMatchStream(matchId);
+
+  // Fetch live match data
+  const liveMatch = useAppSelector((state) =>
+    matchId ? selectMatchById(state, matchId) : undefined
+  );
+
+  // Merge participants
+  const mergedParticipants: Participant[] = useMemo(() => {
+    if (series.lifecycle === "upcoming" && series.participants) {
+      return series.participants;
+    } else if (liveMatch) {
+      return liveMatch.participants;
+    } else if (
+      selectedMatch &&
+      "participants" in selectedMatch &&
+      selectedMatch.participants
+    ) {
+      return selectedMatch.participants;
+    } else {
+      return [];
+    }
+  }, [liveMatch, selectedMatch, series]);
+
+  // Participants from merged data
+  let team1, team2, team1Players, team2Players;
+
+  if (mergedParticipants.length >= 2) {
+    team1 = mergedParticipants[0];
+    team2 = mergedParticipants[1];
+
+    team1Players = team1?.roster?.players ? [...team1.roster.players] : [];
+    team2Players = team2?.roster?.players ? [...team2.roster.players] : [];
+  }
+
+  // Define position order
+  const positionOrder = ["top", "jungle", "mid", "bottom", "support"];
+
+  const getPositionIndex = (role: string) => {
+    const index = positionOrder.indexOf(role);
+    return index === -1 ? positionOrder.length : index;
+  };
+
+  // Sort players by position
+  if (team1Players) {
+    team1Players.sort((a, b) => {
+      const aPos = getPositionIndex(a.role || "unassigned");
+      const bPos = getPositionIndex(b.role || "unassigned");
+      return aPos - bPos;
+    });
+  }
+
+  if (team2Players) {
+    team2Players.sort((a, b) => {
+      const aPos = getPositionIndex(a.role || "unassigned");
+      const bPos = getPositionIndex(b.role || "unassigned");
+      return aPos - bPos;
+    });
+  }
+
+  // Retrieve Series Scores
+  const team1SeriesScore = series.participants?.[0]?.score || 0;
+  const team2SeriesScore = series.participants?.[1]?.score || 0;
 
   // Render component
   return (
@@ -82,22 +173,26 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
         <div>No available matches in this series.</div>
       )}
       {series &&
+        series.lifecycle !== "upcoming" &&
         matches.length > 0 &&
         availableMatches.length > 0 &&
         !selectedMatch && <div>Loading selected match data...</div>}
 
       {/* When data is available */}
       {series &&
-        matches.length > 0 &&
-        availableMatches.length > 0 &&
-        selectedMatch && (
-          <>
-            {/* Match Tabs */}
+      ((matches.length > 0 && availableMatches.length > 0 && selectedMatch) ||
+        series.participants) ? (
+        <>
+          {/* Match Tabs */}
+          {availableMatches.length > 0 && (
             <div className="flex justify-center items-center px-4">
               <div className="w-full max-w-md">
                 <Tabs
                   items={availableMatches.map((match, index) => ({
-                    text: (index + 1).toString(),
+                    text:
+                      series.lifecycle === "upcoming"
+                        ? "Preview"
+                        : (index + 1).toString(),
                     action: () => setSelectedTab(index),
                     name: index.toString(),
                   }))}
@@ -105,44 +200,52 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
                 />
               </div>
             </div>
+          )}
 
-            {/* Teams Header with Series Scores */}
-            <TeamsHeader
-              match={selectedMatch}
-              bestOf={series?.format?.bestOf || 1}
-              team1SeriesScore={team1SeriesScore}
-              team2SeriesScore={team2SeriesScore}
-            />
+          {/* Teams Header with Series Scores */}
+          <TeamsHeader
+            match={
+              selectedMatch && "lifecycle" in selectedMatch
+                ? selectedMatch
+                : undefined
+            }
+            series={series}
+            bestOf={series?.format?.bestOf || 1}
+            team1SeriesScore={team1SeriesScore}
+            team2SeriesScore={team2SeriesScore}
+          />
 
-            {/* Players */}
-            {team1Players && team2Players && (
-              <div className="flex">
-                {/* Team 1 Players */}
-                <div className="w-1/2">
-                  {team1Players.map((player) => (
-                    <PlayerRow key={player.id} player={player} />
-                  ))}
-                </div>
+          {/* Live Match Info */}
+          {liveMatch && (
+            <div className="live-match-info">
+              {/* Display live match stats */}
+            </div>
+          )}
 
-                {/* Team 2 Players */}
-                <div className="w-1/2">
-                  {team2Players.map((player) => (
-                    <PlayerRow key={player.id} player={player} />
-                  ))}
-                </div>
+          {/* Players */}
+          {team1Players && team2Players && (
+            <div className="flex">
+              {/* Team 1 Players */}
+              <div className="w-1/2">
+                {team1Players.map((player) => (
+                  <PlayerRow key={player.id} player={player} team={"left"} />
+                ))}
               </div>
-            )}
-          </>
-        )}
+
+              {/* Team 2 Players */}
+              <div className="w-1/2">
+                {team2Players.map((player) => (
+                  <PlayerRow key={player.id} player={player} team={"right"} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div>No data available.</div>
+      )}
     </div>
   );
 };
 
 export default LolScoreboardDetail;
-
-// Utility function to format duration
-function formatDuration(seconds: number) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
