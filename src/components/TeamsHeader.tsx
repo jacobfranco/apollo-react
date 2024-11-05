@@ -8,6 +8,7 @@ import SvgIcon from "./SvgIcon";
 import { formatGold } from "src/utils/scoreboards";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
+import { CreepsKills } from "src/schemas/creeps";
 
 interface TeamsHeaderProps {
   match?: Match;
@@ -95,6 +96,41 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     );
   };
 
+  const renderEliteCreepsKills = (
+    eliteCreepsKills: CreepsKills | undefined
+  ) => {
+    if (!eliteCreepsKills || !eliteCreepsKills.kills.perEliteType) return null;
+
+    return (
+      <div className="flex items-center justify-center mt-4 space-x-2">
+        {eliteCreepsKills.kills.perEliteType.map((eliteKill) => (
+          <div key={eliteKill.elite.id} className="flex items-center">
+            {eliteKill.elite.images && eliteKill.elite.images.length > 0 ? (
+              <img
+                src={eliteKill.elite.images[0].url}
+                alt={eliteKill.elite.name}
+                className="w-6 h-6 mr-1"
+              />
+            ) : (
+              <div className="w-6 h-6 mr-1"></div>
+            )}
+            {/* Only create additional icons if total is greater than 1 */}
+            {Array.from({ length: Math.max(0, eliteKill.total - 1) }).map(
+              (_, index) => (
+                <img
+                  key={`${eliteKill.elite.id}-${index}`}
+                  src={eliteKill.elite.images?.[0]?.url || ""}
+                  alt={eliteKill.elite.name}
+                  className="w-6 h-6 ml-1"
+                />
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   type StatValue = number | string;
 
   // Get team match stats or use '-' if not available
@@ -111,6 +147,9 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
 
   const team1Towers: StatValue = team1MatchStats?.turretsDestroyed ?? "-";
   const team2Towers: StatValue = team2MatchStats?.turretsDestroyed ?? "-";
+
+  const team1EliteCreepsKills = team1MatchStats?.creeps.neutrals;
+  const team2EliteCreepsKills = team2MatchStats?.creeps.neutrals;
 
   // Determine status display
   let statusDisplay = "";
@@ -205,6 +244,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
+        {renderEliteCreepsKills(team1EliteCreepsKills)}
       </div>
 
       {/* Metrics Container */}
@@ -300,6 +340,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
+        {renderEliteCreepsKills(team2EliteCreepsKills)}
       </div>
 
       {/* Divider line */}

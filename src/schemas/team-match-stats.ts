@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { creepsSchema } from "./creeps";
+
 export const teamMatchStatsSchema = z.object({
   score: z.number(),
   isWinner: z.boolean(),
@@ -50,6 +52,7 @@ export const teamMatchStatsSchema = z.object({
       }),
     }),
   }),
+  creeps: creepsSchema,
 });
 
 export type TeamMatchStats = z.infer<typeof teamMatchStatsSchema>;
