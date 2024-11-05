@@ -140,6 +140,7 @@ import { WrappedRoute } from "src/utils/react-router-helpers";
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import "src/components/Status";
+import { useUserStream } from "src/api/hooks/useUserStream";
 
 interface ISwitchingColumnsArea {
   children: React.ReactNode;
@@ -706,7 +707,7 @@ const UI: React.FC<IUI> = ({ children }) => {
     };
   }, []);
 
-  // useUserStream(); TODO: Implement user stream / req. notifications and timeline
+  useUserStream();
 
   // The user has logged in
   useEffect(() => {
