@@ -109,7 +109,16 @@ const Spaces: React.FC = () => {
   const filteredSpaces = allSpaces
     .filter((space: Space) => {
       const name = getProperty(space, "name");
-      return name && name.toLowerCase().includes(searchValue.toLowerCase());
+      if (!name) return false;
+
+      const lowerCaseName = name.toLowerCase();
+      const lowerCaseSearch = searchValue.toLowerCase();
+
+      // Exclude spaces whose name contains 'esports'
+      const containsEsports = lowerCaseName.includes("esports");
+
+      // Include spaces that match the search and do not contain 'esports'
+      return lowerCaseName.includes(lowerCaseSearch) && !containsEsports;
     })
     .sort((a: Space, b: Space) => {
       const aName = getProperty(a, "name");
