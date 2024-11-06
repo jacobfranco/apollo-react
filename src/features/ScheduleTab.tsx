@@ -18,10 +18,6 @@ import { HStack, Spinner } from "src/components";
 import { Button } from "src/components/Button";
 import { Series } from "src/schemas/series";
 import { fetchSeries } from "src/actions/series";
-import {
-  connectSeriesUpdatesStream,
-  connectMatchUpdatesStream,
-} from "src/actions/streaming";
 import { mainRegions } from "src/regions";
 
 const ScheduleTab: React.FC = () => {

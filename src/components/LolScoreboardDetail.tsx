@@ -1,7 +1,9 @@
-// components/LolScoreboardDetail.tsx
+// src/components/LolScoreboardDetail.tsx
+
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById, selectMatchById } from "src/selectors";
+import { fetchSeriesById } from "src/actions/series";
 import { fetchMatch } from "src/actions/matches";
 import TeamsHeader from "./TeamsHeader";
 import PlayerRow from "./PlayerRow";
@@ -15,18 +17,28 @@ import {
 
 interface LolScoreboardDetailProps {
   seriesId: number;
+  esportName: string;
 }
 
 const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   seriesId,
+  esportName,
 }) => {
   const dispatch = useAppDispatch();
 
   // Fetch series data
   const series = useAppSelector((state) => selectSeriesById(state, seriesId));
 
+  // Fetch the series if it's not available
+  useEffect(() => {
+    if (!series) {
+      dispatch(fetchSeriesById(seriesId, esportName));
+    }
+  }, [dispatch, series, seriesId, esportName]);
+
   // State to track selected tab (index of availableMatches)
   const [selectedTab, setSelectedTab] = useState<number>(0);
+  const [initialTabSet, setInitialTabSet] = useState(false);
 
   // Fetch match data for all matches in the series
   const matches = useAppSelector((state) =>
@@ -67,6 +79,36 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     }
   }, [series, matches]);
 
+  const getCurrentMatchIndex = useMemo(() => {
+    if (!series || series.lifecycle !== "live" || !availableMatches.length) {
+      return 0;
+    }
+
+    let totalScore1 = 0;
+    let totalScore2 = 0;
+
+    for (let i = 0; i < availableMatches.length; i++) {
+      totalScore1 += series.participants?.[0]?.score || 0;
+      totalScore2 += series.participants?.[1]?.score || 0;
+
+      if (totalScore1 > totalScore2) {
+        return i;
+      }
+    }
+
+    return availableMatches.length - 1;
+  }, [series, availableMatches]);
+
+  // Update the useEffect hook to set the initial tab based on the current match index
+  useEffect(() => {
+    if (!initialTabSet && availableMatches.length > 0) {
+      if (series?.lifecycle === "live") {
+        setSelectedTab(getCurrentMatchIndex);
+      }
+      setInitialTabSet(true);
+    }
+  }, [series, availableMatches, getCurrentMatchIndex, initialTabSet]);
+
   // Ensure selectedTab is within the bounds of availableMatches
   useEffect(() => {
     if (selectedTab >= availableMatches.length) {
@@ -75,7 +117,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   }, [selectedTab, availableMatches.length]);
 
   if (!series) {
-    return <div>Series not found</div>;
+    return <div>Loading series data...</div>;
   }
 
   useEffect(() => {
@@ -98,7 +140,9 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
 
   // Use live match stream if the match is live
   const matchId =
-    typeof selectedMatch?.id === "number" ? selectedMatch.id : null;
+    selectedMatch && typeof selectedMatch.id === "number"
+      ? selectedMatch.id
+      : null;
   useLiveMatchStream(matchId);
 
   // Fetch live match data
@@ -166,83 +210,60 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   // Render component
   return (
     <div className="relative text-white">
-      {/* Loading states */}
-      {!series && <div>Loading series data...</div>}
-      {series && matches.length === 0 && <div>Loading match data...</div>}
-      {series && matches.length > 0 && availableMatches.length === 0 && (
-        <div>No available matches in this series.</div>
+      {/* Match Tabs */}
+      {availableMatches.length > 0 && (
+        <div className="flex justify-center items-center px-4">
+          <div className="w-full max-w-md">
+            <Tabs
+              items={availableMatches.map((match, index) => ({
+                text:
+                  series.lifecycle === "upcoming"
+                    ? "Preview"
+                    : (index + 1).toString(),
+                action: () => setSelectedTab(index),
+                name: index.toString(),
+              }))}
+              activeItem={selectedTab.toString()}
+            />
+          </div>
+        </div>
       )}
-      {series &&
-        series.lifecycle !== "upcoming" &&
-        matches.length > 0 &&
-        availableMatches.length > 0 &&
-        !selectedMatch && <div>Loading selected match data...</div>}
 
-      {/* When data is available */}
-      {series &&
-      ((matches.length > 0 && availableMatches.length > 0 && selectedMatch) ||
-        series.participants) ? (
-        <>
-          {/* Match Tabs */}
-          {availableMatches.length > 0 && (
-            <div className="flex justify-center items-center px-4">
-              <div className="w-full max-w-md">
-                <Tabs
-                  items={availableMatches.map((match, index) => ({
-                    text:
-                      series.lifecycle === "upcoming"
-                        ? "Preview"
-                        : (index + 1).toString(),
-                    action: () => setSelectedTab(index),
-                    name: index.toString(),
-                  }))}
-                  activeItem={selectedTab.toString()}
-                />
-              </div>
-            </div>
-          )}
+      {/* Teams Header with Series Scores */}
+      <TeamsHeader
+        match={
+          selectedMatch && "lifecycle" in selectedMatch
+            ? selectedMatch
+            : undefined
+        }
+        series={series}
+        bestOf={series?.format?.bestOf || 1}
+        team1SeriesScore={team1SeriesScore}
+        team2SeriesScore={team2SeriesScore}
+      />
 
-          {/* Teams Header with Series Scores */}
-          <TeamsHeader
-            match={
-              selectedMatch && "lifecycle" in selectedMatch
-                ? selectedMatch
-                : undefined
-            }
-            series={series}
-            bestOf={series?.format?.bestOf || 1}
-            team1SeriesScore={team1SeriesScore}
-            team2SeriesScore={team2SeriesScore}
-          />
+      {/* Live Match Info */}
+      {liveMatch && (
+        <div className="live-match-info">{/* Display live match stats */}</div>
+      )}
 
-          {/* Live Match Info */}
-          {liveMatch && (
-            <div className="live-match-info">
-              {/* Display live match stats */}
-            </div>
-          )}
+      {/* Players */}
+      {team1Players && team2Players && (
+        <div className="flex">
+          {/* Team 1 Players */}
+          <div className="w-1/2">
+            {team1Players.map((player) => (
+              <PlayerRow key={player.id} player={player} team={"left"} />
+            ))}
+          </div>
 
-          {/* Players */}
-          {team1Players && team2Players && (
-            <div className="flex">
-              {/* Team 1 Players */}
-              <div className="w-1/2">
-                {team1Players.map((player) => (
-                  <PlayerRow key={player.id} player={player} team={"left"} />
-                ))}
-              </div>
-
-              {/* Team 2 Players */}
-              <div className="w-1/2">
-                {team2Players.map((player) => (
-                  <PlayerRow key={player.id} player={player} team={"right"} />
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <div>No data available.</div>
+          {/* Team 2 Players */}
+          <div className="w-1/2">
+            {team2Players.map((player) => (
+              <PlayerRow key={player.id} player={player} team={"right"} />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

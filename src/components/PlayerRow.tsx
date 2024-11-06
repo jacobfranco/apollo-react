@@ -60,14 +60,14 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
         isLeft ? "justify-start" : "justify-end"
       }`}
     >
-      <div className="flex items-center w-full max-w-md p-4 mx-2 bg-gray-800 rounded-lg">
+      <div className="flex items-center w-full max-w-md p-2 mx-2 bg-secondary-500 rounded-lg">
         {isLeft ? (
           <>
             {/* Left edge - Player Portrait */}
             <img
               src={player.images?.[0]?.url || "/placeholder.png"}
               alt=""
-              className="w-10 h-10 rounded shrink-0"
+              className="w-16 h-16 rounded shrink-0"
             />
             {/* Player Info - Flexible width */}
             <div className="ml-4 flex flex-col min-w-0 flex-shrink">
@@ -119,7 +119,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
               <img
                 src={championImageUrl}
                 alt=""
-                className="w-10 h-10 rounded"
+                className="w-16 h-16 rounded"
               />
             </div>
           </>
@@ -131,7 +131,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
               <img
                 src={championImageUrl}
                 alt=""
-                className="w-10 h-10 rounded"
+                className="w-16 h-16 rounded"
               />
               {/* Summoner Spells */}
               <div className="flex flex-col gap-1">
@@ -182,7 +182,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             <img
               src={player.images?.[0]?.url || "/placeholder.png"}
               alt=""
-              className="w-10 h-10 rounded shrink-0"
+              className="w-16 h-16 rounded shrink-0"
             />
           </>
         )}

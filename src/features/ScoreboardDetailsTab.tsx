@@ -1,13 +1,16 @@
-import React from "react";
+// components/ScoreboardDetailsTab.tsx
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAppSelector } from "src/hooks";
+import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById } from "src/selectors";
+import { fetchSeriesById } from "src/actions/series";
 import LolScoreboardDetail from "src/components/LolScoreboardDetail";
-import { Column } from "src/components/Column"; // Import the Column component
-import esportsConfig from "src/esports-config"; // Import esportsConfig to get game details
+import { Column } from "src/components/Column";
+import esportsConfig from "src/esports-config";
 import { formatScoreboardTitle } from "src/utils/scoreboards";
 
 const ScoreboardDetailsTab: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { esportName, seriesId } = useParams<{
     esportName: string;
     seriesId: string;
@@ -19,21 +22,16 @@ const ScoreboardDetailsTab: React.FC = () => {
     selectSeriesById(state, seriesIdNumber)
   );
 
+  // Fetch the series if it's not available
+  useEffect(() => {
+    if (!seriesData) {
+      dispatch(fetchSeriesById(seriesIdNumber, esportName));
+    }
+  }, [dispatch, seriesData, seriesIdNumber, esportName]);
+
   let formattedTitle = "";
   if (seriesData) {
     formattedTitle = formatScoreboardTitle(seriesData);
-  }
-
-  if (!seriesData) {
-    return (
-      <Column
-        label="Error" // You can customize the label as needed
-        transparent={false}
-        withHeader={true}
-      >
-        <div className="text-center text-red-500">Series not found.</div>
-      </Column>
-    );
   }
 
   // Find the game configuration based on esportName
@@ -41,12 +39,17 @@ const ScoreboardDetailsTab: React.FC = () => {
 
   if (!game) {
     return (
-      <Column
-        label="Error" // You can customize the label as needed
-        transparent={false}
-        withHeader={true}
-      >
+      <Column label="Error" transparent={false} withHeader={true}>
         <div className="text-center text-red-500">Invalid esport name.</div>
+      </Column>
+    );
+  }
+
+  // Handle loading state
+  if (!seriesData) {
+    return (
+      <Column label="Loading..." transparent={false} withHeader={true}>
+        <div className="text-center">Loading series data...</div>
       </Column>
     );
   }
@@ -54,18 +57,16 @@ const ScoreboardDetailsTab: React.FC = () => {
   return (
     <Column label={formattedTitle} transparent={false} withHeader={true}>
       <div className="space-y-6">
-        {/* You can add additional consistent formatting here if needed */}
         <div className="scoreboard-content">
           {(() => {
             switch (esportName) {
               case "lol":
-                // Render the League of Legends scoreboard detail component
-                return <LolScoreboardDetail seriesId={seriesIdNumber} />;
-              // Add cases for other games here
-              // case 'csgo':
-              //   return <CsgoScoreboardDetail seriesId={seriesIdNumber} />;
-              // case 'dota2':
-              //   return <Dota2ScoreboardDetail seriesId={seriesIdNumber} />;
+                return (
+                  <LolScoreboardDetail
+                    seriesId={seriesIdNumber}
+                    esportName={esportName}
+                  />
+                );
               default:
                 return (
                   <div className="text-center text-yellow-500">

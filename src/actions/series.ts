@@ -10,7 +10,12 @@ export const FETCH_SERIES_SUCCESS = "series/FETCH_SUCCESS";
 export const FETCH_SERIES_FAILURE = "series/FETCH_FAILURE";
 export const UPDATE_SERIES = "series/UPDATE_SERIES";
 
-// Existing actions renamed
+// New action types for fetching series by ID
+export const FETCH_SERIES_BY_ID_REQUEST = "series/FETCH_BY_ID_REQUEST";
+export const FETCH_SERIES_BY_ID_SUCCESS = "series/FETCH_BY_ID_SUCCESS";
+export const FETCH_SERIES_BY_ID_FAILURE = "series/FETCH_BY_ID_FAILURE";
+
+// Existing actions
 export const fetchSeriesRequest = () => ({ type: FETCH_SERIES_REQUEST });
 export const fetchSeriesSuccess = (series: Series[]) => ({
   type: FETCH_SERIES_SUCCESS,
@@ -27,7 +32,20 @@ export const updateSeries = (series: Series) => ({
   payload: series,
 });
 
-// Fetch series (could be per game or general)
+// New actions for fetching series by ID
+export const fetchSeriesByIdRequest = () => ({
+  type: FETCH_SERIES_BY_ID_REQUEST,
+});
+export const fetchSeriesByIdSuccess = (series: Series) => ({
+  type: FETCH_SERIES_BY_ID_SUCCESS,
+  payload: series,
+});
+export const fetchSeriesByIdFailure = (error: string) => ({
+  type: FETCH_SERIES_BY_ID_FAILURE,
+  payload: error,
+});
+
+// Fetch series by week
 export const fetchSeries = ({
   timestamp,
   gamePath,
@@ -54,6 +72,33 @@ export const fetchSeries = ({
         dispatch(fetchSeriesFailure("Invalid data format from API"));
       } else {
         dispatch(fetchSeriesFailure(error.message));
+      }
+    }
+  };
+};
+
+// Fetch series by ID
+export const fetchSeriesById = (
+  seriesId: number,
+  gamePath: string
+): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return async (dispatch, getState) => {
+    dispatch(fetchSeriesByIdRequest());
+    try {
+      const client = api(getState);
+      const response = await client.get(`/api/${gamePath}/series/${seriesId}`);
+
+      console.log("API Response Data:", response.data);
+
+      const parsedData = seriesSchema.parse(response.data);
+
+      dispatch(fetchSeriesByIdSuccess(parsedData));
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        console.error("Zod Validation Errors:", error.errors);
+        dispatch(fetchSeriesByIdFailure("Invalid data format from API"));
+      } else {
+        dispatch(fetchSeriesByIdFailure(error.message));
       }
     }
   };
