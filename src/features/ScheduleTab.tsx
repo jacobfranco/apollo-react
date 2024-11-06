@@ -1,4 +1,5 @@
 // src/components/ScheduleTab.tsx
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
@@ -7,7 +8,7 @@ import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import ValorantScoreboard from "src/components/ValorantScoreboard";
 import esportsConfig from "src/esports-config";
 import {
-  selectAllSeries,
+  selectSeriesByWeek,
   selectSeriesLoading,
   selectSeriesError,
 } from "src/selectors";
@@ -26,7 +27,7 @@ const ScheduleTab: React.FC = () => {
   const game = esportsConfig.find((g) => g.path === esportName);
 
   const seriesList: Series[] = useAppSelector((state) =>
-    selectAllSeries(state).toArray()
+    selectSeriesByWeek(state).toArray()
   );
   const loading = useAppSelector(selectSeriesLoading);
   const error = useAppSelector(selectSeriesError);

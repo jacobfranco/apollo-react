@@ -1,4 +1,5 @@
 // reducers/series.ts
+
 import { Record, Map as ImmutableMap } from "immutable";
 import { Series } from "src/schemas/series";
 import {
@@ -12,12 +13,14 @@ import {
 } from "src/actions/series";
 
 interface SeriesStateProps {
-  seriesById: ImmutableMap<number, Series>;
+  seriesByWeek: ImmutableMap<number, Series>; // For week-based series data
+  seriesById: ImmutableMap<number, Series>; // For individual series data
   loading: boolean;
   error: string | null;
 }
 
 const SeriesStateRecord = Record<SeriesStateProps>({
+  seriesByWeek: ImmutableMap<number, Series>(),
   seriesById: ImmutableMap<number, Series>(),
   loading: false,
   error: null,
@@ -38,12 +41,12 @@ export default function seriesReducer(
 
     case FETCH_SERIES_SUCCESS: {
       const seriesArray = action.payload as Series[];
-      let seriesById = state.get("seriesById");
+      let seriesByWeek = ImmutableMap<number, Series>(); // Reset seriesByWeek for new week data
       seriesArray.forEach((series) => {
-        seriesById = seriesById.set(series.id, series);
+        seriesByWeek = seriesByWeek.set(series.id, series);
       });
       return state.merge({
-        seriesById,
+        seriesByWeek,
         loading: false,
       }) as SeriesState;
     }

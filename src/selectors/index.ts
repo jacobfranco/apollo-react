@@ -288,9 +288,14 @@ export const getAccountGallery = createSelector(
 
 export const selectSeriesState = (state: RootState) => state.series;
 
-export const selectAllSeries = createSelector(
+export const selectSeriesByWeek = createSelector(
   selectSeriesState,
-  (seriesState) => seriesState.get("seriesById").toList()
+  (seriesState) => seriesState.get("seriesByWeek").toList()
+);
+
+export const selectSeriesByIdMap = createSelector(
+  selectSeriesState,
+  (seriesState) => seriesState.get("seriesById")
 );
 
 export const selectSeriesLoading = createSelector(
@@ -307,7 +312,9 @@ export const selectSeriesById = (
   state: RootState,
   seriesId: number
 ): Series | undefined => {
-  return state.series.get("seriesById").get(seriesId);
+  const seriesById = state.series.get("seriesById");
+  const seriesByWeek = state.series.get("seriesByWeek");
+  return seriesById.get(seriesId) || seriesByWeek.get(seriesId);
 };
 
 export const selectMatchesState = (state: RootState) => state.matches;
