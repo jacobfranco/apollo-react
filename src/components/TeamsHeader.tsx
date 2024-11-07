@@ -5,7 +5,7 @@ import placeholderTeam from "src/assets/images/placeholder-team.png";
 import { useTeamColors } from "src/team-colors";
 import { useTheme } from "src/hooks/useTheme";
 import SvgIcon from "./SvgIcon";
-import { formatGold } from "src/utils/scoreboards";
+import { formatGold, getCoverageFact } from "src/utils/scoreboards";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
 import { CreepsKills } from "src/schemas/creeps";
@@ -28,8 +28,15 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme();
 
-  // Use participants from match if available, else from series
-  const participants = match?.participants || series.participants || [];
+  const coverageFact = getCoverageFact(match);
+
+  // Use participants from match if coverage is available and participants are present, else use series participants
+  const participants =
+    coverageFact === "available" &&
+    match?.participants &&
+    match.participants.length >= 2
+      ? match.participants
+      : series.participants || [];
 
   if (participants.length < 2) {
     // Handle the case where there are not enough participants
@@ -57,9 +64,14 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;
 
-  // Get match stats from team.matchStats
-  const team1MatchStats: TeamMatchStats | null | undefined = team1?.matchStats;
-  const team2MatchStats: TeamMatchStats | null | undefined = team2?.matchStats;
+  // Get match stats from team.matchStats if coverage is available
+  let team1MatchStats: TeamMatchStats | null | undefined = null;
+  let team2MatchStats: TeamMatchStats | null | undefined = null;
+
+  if (coverageFact === "available") {
+    team1MatchStats = team1?.matchStats;
+    team2MatchStats = team2?.matchStats;
+  }
 
   // Match lifecycle and duration
   const matchDuration =
@@ -244,7 +256,8 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
-        {renderEliteCreepsKills(team1EliteCreepsKills)}
+        {coverageFact === "available" &&
+          renderEliteCreepsKills(team1EliteCreepsKills)}
       </div>
 
       {/* Metrics Container */}
@@ -252,65 +265,73 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
         {/* Status Display */}
         <div className="text-gray-500 font-bold">{statusDisplay}</div>
 
-        {/* Kills Row */}
-        <div className="flex items-center justify-between w-full">
-          <div
-            className={`flex-1 text-right text-lg font-bold ${killsClasses.team1Class}`}
-          >
-            {team1Kills}
-          </div>
-          <div className="flex-shrink-0 mx-2">
-            <SvgIcon
-              src={require("@tabler/icons/outline/swords.svg")}
-              className="h-6 w-6 text-primary-500"
-            />
-          </div>
-          <div
-            className={`flex-1 text-left text-lg font-bold ${killsClasses.team2Class}`}
-          >
-            {team2Kills}
-          </div>
-        </div>
+        {coverageFact === "available" ? (
+          <>
+            {/* Kills Row */}
+            <div className="flex items-center justify-between w-full">
+              <div
+                className={`flex-1 text-right text-lg font-bold ${killsClasses.team1Class}`}
+              >
+                {team1Kills}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/swords.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div
+                className={`flex-1 text-left text-lg font-bold ${killsClasses.team2Class}`}
+              >
+                {team2Kills}
+              </div>
+            </div>
 
-        {/* Gold Row */}
-        <div className="flex items-center justify-between w-full">
-          <div
-            className={`flex-1 text-right text-lg font-bold ${goldClasses.team1Class}`}
-          >
-            {team1Gold}
-          </div>
-          <div className="flex-shrink-0 mx-2">
-            <SvgIcon
-              src={require("@tabler/icons/outline/coins.svg")}
-              className="h-6 w-6 text-primary-500"
-            />
-          </div>
-          <div
-            className={`flex-1 text-left text-lg font-bold ${goldClasses.team2Class}`}
-          >
-            {team2Gold}
-          </div>
-        </div>
+            {/* Gold Row */}
+            <div className="flex items-center justify-between w-full">
+              <div
+                className={`flex-1 text-right text-lg font-bold ${goldClasses.team1Class}`}
+              >
+                {team1Gold}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/coins.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div
+                className={`flex-1 text-left text-lg font-bold ${goldClasses.team2Class}`}
+              >
+                {team2Gold}
+              </div>
+            </div>
 
-        {/* Towers Row */}
-        <div className="flex items-center justify-between w-full">
-          <div
-            className={`flex-1 text-right text-lg font-bold ${towersClasses.team1Class}`}
-          >
-            {team1Towers}
+            {/* Towers Row */}
+            <div className="flex items-center justify-between w-full">
+              <div
+                className={`flex-1 text-right text-lg font-bold ${towersClasses.team1Class}`}
+              >
+                {team1Towers}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/tower.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div
+                className={`flex-1 text-left text-lg font-bold ${towersClasses.team2Class}`}
+              >
+                {team2Towers}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="text-sm text-gray-500">
+            Coverage is not currently available. Please check back later.
           </div>
-          <div className="flex-shrink-0 mx-2">
-            <SvgIcon
-              src={require("@tabler/icons/outline/tower.svg")}
-              className="h-6 w-6 text-primary-500"
-            />
-          </div>
-          <div
-            className={`flex-1 text-left text-lg font-bold ${towersClasses.team2Class}`}
-          >
-            {team2Towers}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Team 2 */}
@@ -340,7 +361,8 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
-        {renderEliteCreepsKills(team2EliteCreepsKills)}
+        {coverageFact === "available" &&
+          renderEliteCreepsKills(team2EliteCreepsKills)}
       </div>
 
       {/* Divider line */}

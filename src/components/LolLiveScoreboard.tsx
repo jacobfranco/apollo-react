@@ -7,7 +7,11 @@ import { useAppSelector } from "src/hooks";
 import { selectMatchById, selectSeriesById } from "src/selectors";
 import { Participant, Team } from "src/schemas";
 import { useTheme } from "src/hooks/useTheme";
-import { formatScoreboardTitle, formatGold } from "src/utils/scoreboards";
+import {
+  formatScoreboardTitle,
+  formatGold,
+  getCoverageFact,
+} from "src/utils/scoreboards";
 import SvgIcon from "./SvgIcon";
 
 interface LolLiveScoreboardProps {
@@ -42,6 +46,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     currentMatchId ? selectMatchById(state, currentMatchId) : undefined
   );
 
+  const coverageFact = getCoverageFact(liveMatch);
+
   useEffect(() => {
     console.log(
       `Component re-rendered. LiveMatch for matchId ${currentMatchId}:`,
@@ -51,27 +57,19 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
   const currentSeries = series;
 
+  // Use participants from live match if coverage is available and participants are present, else use series participants
   const mergedParticipants: Participant[] = useMemo(() => {
-    if (!liveMatch) return currentSeries.participants;
-
-    return currentSeries.participants.map((seriesParticipant: Participant) => {
-      const liveParticipant = liveMatch.participants.find(
-        (lp: Participant) => lp.seed === seriesParticipant.seed
-      );
-
-      if (liveParticipant) {
-        return {
-          ...seriesParticipant,
-          roster: {
-            ...liveParticipant.roster,
-            players: liveParticipant.roster.players || [],
-          },
-        };
-      } else {
-        return seriesParticipant;
-      }
-    });
-  }, [currentSeries.participants, liveMatch]);
+    if (
+      coverageFact === "available" &&
+      liveMatch &&
+      liveMatch.participants &&
+      liveMatch.participants.length >= 2
+    ) {
+      return liveMatch.participants;
+    } else {
+      return currentSeries.participants || [];
+    }
+  }, [currentSeries.participants, liveMatch, coverageFact]);
 
   const lifecycle = liveMatch?.lifecycle || currentSeries.lifecycle;
 
@@ -79,6 +77,10 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme();
+
+  if (mergedParticipants.length < 2) {
+    return <div>Not enough participants</div>;
+  }
 
   const team1Participant = mergedParticipants[0];
   const team2Participant = mergedParticipants[1];
@@ -92,34 +94,30 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
 
-  const team1Kills = useMemo(() => {
-    return team1?.matchStats?.score ?? 0;
-  }, [team1]);
+  // Initialize match stats variables
+  let team1Kills: number | string = "-";
+  let team2Kills: number | string = "-";
 
-  const team2Kills = useMemo(() => {
-    return team2?.matchStats?.score ?? 0;
-  }, [team2]);
+  let team1Gold: string = "-";
+  let team2Gold: string = "-";
 
-  const team1Gold = useMemo(
-    () => formatGold(team1?.matchStats?.goldEarned ?? 0),
-    [team1]
-  );
-  const team2Gold = useMemo(
-    () => formatGold(team2?.matchStats?.goldEarned ?? 0),
-    [team2]
-  );
+  let team1Towers: number | string = "-";
+  let team2Towers: number | string = "-";
 
-  const team1Towers = useMemo(
-    () => team1?.matchStats?.turretsDestroyed ?? 0,
-    [team1]
-  );
-  const team2Towers = useMemo(
-    () => team2?.matchStats?.turretsDestroyed ?? 0,
-    [team2]
-  );
+  // Only populate stats if coverage is available
+  if (coverageFact === "available") {
+    const team1MatchStats = team1?.matchStats;
+    const team2MatchStats = team2?.matchStats;
 
-  const leadingSide =
-    team1Kills > team2Kills ? "left" : team2Kills > team1Kills ? "right" : null;
+    team1Kills = team1MatchStats?.score ?? "-";
+    team2Kills = team2MatchStats?.score ?? "-";
+
+    team1Gold = formatGold(team1MatchStats?.goldEarned ?? 0);
+    team2Gold = formatGold(team2MatchStats?.goldEarned ?? 0);
+
+    team1Towers = team1MatchStats?.turretsDestroyed ?? "-";
+    team2Towers = team2MatchStats?.turretsDestroyed ?? "-";
+  }
 
   const { color: team1Color, logoType: team1LogoType } =
     getTeamColorAndLogoType(team1Name);
@@ -179,18 +177,30 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     return <div className="flex justify-center mt-2">{rectangles}</div>;
   };
 
-  // **1. Initialize synchronization state**
+  // Initialize synchronization state
   const [baseServerTime, setBaseServerTime] = useState<number | null>(null);
   const [baseLocalTime, setBaseLocalTime] = useState<number | null>(null);
   const [displayTime, setDisplayTime] = useState<number | null>(null);
 
   const threshold = 1000; // 1 second in milliseconds
 
-  // **2. Ref to store the interval ID**
+  // Ref to store the interval ID
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // **3. Effect to handle incoming payloads and set base times**
+  // Effect to handle incoming payloads and set base times
   useEffect(() => {
+    if (coverageFact !== "available") {
+      // If coverage is not available, do not start the clock
+      setBaseServerTime(null);
+      setBaseLocalTime(null);
+      setDisplayTime(null);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
     if (liveMatch?.clock?.milliseconds != null) {
       if (baseServerTime === null || baseLocalTime === null) {
         // Initialize base times with the first payload
@@ -216,9 +226,9 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveMatch?.clock?.milliseconds]);
+  }, [liveMatch?.clock?.milliseconds, coverageFact]);
 
-  // **4. Effect to update display time every second**
+  // Effect to update display time every second
   useEffect(() => {
     if (baseServerTime === null || baseLocalTime === null) return;
 
@@ -237,7 +247,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     };
   }, [baseServerTime, baseLocalTime]);
 
-  // **5. Effect to handle match end**
+  // Effect to handle match end
   useEffect(() => {
     const isMatchEnded = lifecycle === "over";
 
@@ -255,14 +265,14 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     }
   }, [lifecycle, liveMatch?.clock?.milliseconds]);
 
-  // **6. Format the display time**
+  // Format the display time
   const formattedClock = useMemo(() => {
-    if (displayTime === null) return null;
+    if (displayTime === null || coverageFact !== "available") return "Live";
     const totalSeconds = Math.floor(displayTime / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }, [displayTime]);
+  }, [displayTime, coverageFact]);
 
   return (
     <div
@@ -312,55 +322,61 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
         <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
           <div className="font-bold opacity-60 text-red-500 dark:text-red-500">
-            {formattedClock || "Live"}
+            {formattedClock}
           </div>
 
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 text-right text-lg font-bold">
-                {team1Kills}
+          {coverageFact === "available" ? (
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 text-right text-lg font-bold">
+                  {team1Kills}
+                </div>
+                <div className="flex-shrink-0 mx-2">
+                  <SvgIcon
+                    src={require("@tabler/icons/outline/swords.svg")}
+                    className="h-6 w-6 text-primary-500"
+                  />
+                </div>
+                <div className="flex-1 text-left text-lg font-bold">
+                  {team2Kills}
+                </div>
               </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/swords.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div className="flex-1 text-left text-lg font-bold">
-                {team2Kills}
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex-1 text-right text-lg font-bold">
-                {team1Gold}
+              <div className="flex items-center justify-between">
+                <div className="flex-1 text-right text-lg font-bold">
+                  {team1Gold}
+                </div>
+                <div className="flex-shrink-0 mx-2">
+                  <SvgIcon
+                    src={require("@tabler/icons/outline/coins.svg")}
+                    className="h-6 w-6 text-primary-500"
+                  />
+                </div>
+                <div className="flex-1 text-left text-lg font-bold">
+                  {team2Gold}
+                </div>
               </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/coins.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div className="flex-1 text-left text-lg font-bold">
-                {team2Gold}
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex-1 text-right text-lg font-bold">
-                {team1Towers}
-              </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/tower.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div className="flex-1 text-left text-lg font-bold">
-                {team2Towers}
+              <div className="flex items-center justify-between">
+                <div className="flex-1 text-right text-lg font-bold">
+                  {team1Towers}
+                </div>
+                <div className="flex-shrink-0 mx-2">
+                  <SvgIcon
+                    src={require("@tabler/icons/outline/tower.svg")}
+                    className="h-6 w-6 text-primary-500"
+                  />
+                </div>
+                <div className="flex-1 text-left text-lg font-bold">
+                  {team2Towers}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-sm text-gray-500">
+              Live data is not currently available. Please check back later.
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col items-center w-1/3">

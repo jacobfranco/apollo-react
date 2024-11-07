@@ -1,4 +1,5 @@
 import { Series } from "src/schemas/series";
+import { Match } from "src/schemas/match";
 
 /**
  * Combines tournament and series titles while omitting specified words
@@ -44,3 +45,7 @@ export function formatGold(gold: number): string {
   }
   return gold.toString();
 }
+
+export const getCoverageFact = (match: Match | undefined): string => {
+  return match?.coverage?.data?.live?.cv?.fact || "unknown";
+};

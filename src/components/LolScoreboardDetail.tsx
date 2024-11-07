@@ -1,5 +1,3 @@
-// src/components/LolScoreboardDetail.tsx
-
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById, selectMatchById } from "src/selectors";
@@ -14,6 +12,8 @@ import {
   connectSeriesUpdatesStream,
   connectMatchUpdatesStream,
 } from "src/actions/streaming";
+import { Match } from "src/schemas/match";
+import { getCoverageFact } from "src/utils/scoreboards";
 
 interface LolScoreboardDetailProps {
   seriesId: number;
@@ -150,22 +150,23 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     matchId ? selectMatchById(state, matchId) : undefined
   );
 
+  const coverageFact = getCoverageFact(liveMatch);
+
   // Merge participants
   const mergedParticipants: Participant[] = useMemo(() => {
-    if (series.lifecycle === "upcoming" && series.participants) {
-      return series.participants;
-    } else if (liveMatch) {
-      return liveMatch.participants;
-    } else if (
-      selectedMatch &&
-      "participants" in selectedMatch &&
-      selectedMatch.participants
+    if (
+      coverageFact === "available" &&
+      liveMatch &&
+      liveMatch.participants &&
+      liveMatch.participants.length >= 2
     ) {
-      return selectedMatch.participants;
+      return liveMatch.participants;
+    } else if (series.participants && series.participants.length >= 2) {
+      return series.participants;
     } else {
       return [];
     }
-  }, [liveMatch, selectedMatch, series]);
+  }, [liveMatch, series.participants, coverageFact]);
 
   // Participants from merged data
   let team1, team2, team1Players, team2Players;
@@ -176,6 +177,9 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
 
     team1Players = team1?.roster?.players ? [...team1.roster.players] : [];
     team2Players = team2?.roster?.players ? [...team2.roster.players] : [];
+  } else {
+    // Handle the case where participants are not available
+    return <div>Participants data is not available.</div>;
   }
 
   // Define position order
@@ -233,7 +237,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
       <TeamsHeader
         match={
           selectedMatch && "lifecycle" in selectedMatch
-            ? selectedMatch
+            ? (selectedMatch as Match)
             : undefined
         }
         series={series}
@@ -243,8 +247,11 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
       />
 
       {/* Live Match Info */}
-      {liveMatch && (
-        <div className="live-match-info">{/* Display live match stats */}</div>
+      {coverageFact === "available" && liveMatch && (
+        <div className="live-match-info">
+          {/* Display live match stats */}
+          {/* You can include more detailed stats here if desired */}
+        </div>
       )}
 
       {/* Players */}
