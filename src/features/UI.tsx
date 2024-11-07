@@ -141,6 +141,7 @@ import { WrappedRoute } from "src/utils/react-router-helpers";
 // Without this it ends up in ~8 very commonly used bundles.
 import "src/components/Status";
 import { useUserStream } from "src/api/hooks/useUserStream";
+import DetailPage from "src/pages/DetailPage";
 
 interface ISwitchingColumnsArea {
   children: React.ReactNode;
@@ -261,7 +262,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
 
       <WrappedRoute
         path="/esports/:esportName/series/:seriesId"
-        page={ESportsPage}
+        page={DetailPage}
         component={ScoreboardDetailsTab}
         content={children}
         publicRoute
@@ -751,13 +752,7 @@ const UI: React.FC<IUI> = ({ children }) => {
         <div className="z-10 flex flex-col">
           <Navbar />
 
-          <Layout>
-            <Layout.Sidebar>
-              <SidebarNavigation />
-            </Layout.Sidebar>
-
-            <SwitchingColumnsArea>{children}</SwitchingColumnsArea>
-          </Layout>
+          <SwitchingColumnsArea>{children}</SwitchingColumnsArea>
 
           {me && !shouldHideFAB() && (
             <div className="fixed bottom-24 right-4 z-40 transition-all lg:hidden rtl:left-4 rtl:right-auto">

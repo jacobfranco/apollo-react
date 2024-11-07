@@ -5,6 +5,7 @@ import StickyBox from "react-sticky-box";
 interface ISidebar {
   children: React.ReactNode;
 }
+
 interface IAside {
   children?: React.ReactNode;
 }
@@ -13,9 +14,14 @@ interface ILayout {
   children: React.ReactNode;
 }
 
+interface IMainProps extends React.HTMLAttributes<HTMLDivElement> {
+  noAside?: boolean;
+  fullWidth?: boolean;
+}
+
 interface LayoutComponent extends React.FC<ILayout> {
   Sidebar: React.FC<ISidebar>;
-  Main: React.FC<React.HTMLAttributes<HTMLDivElement>>;
+  Main: React.FC<IMainProps>;
   Aside: React.FC<IAside>;
 }
 
@@ -38,22 +44,25 @@ const Sidebar: React.FC<ISidebar> = ({ children }) => (
 );
 
 /** Center column container in the UI. */
-const Main: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  children,
-  className,
-}) => (
-  <main
-    className={clsx(
-      {
-        "md:col-span-12 lg:col-span-9 xl:col-span-6 pb-36 black:border-gray-800 lg:black:border-l xl:black:border-r":
-          true,
-      },
-      className
-    )}
-  >
-    {children}
-  </main>
-);
+const Main: React.FC<
+  React.HTMLAttributes<HTMLDivElement> & {
+    noAside?: boolean;
+    fullWidth?: boolean;
+  }
+> = ({ children, className, noAside = false, fullWidth = false }) => {
+  const mainClasses = clsx(
+    "pb-36 black:border-gray-800",
+    {
+      "md:col-span-12 lg:col-span-9 xl:col-span-6 lg:black:border-l xl:black:border-r":
+        !noAside && !fullWidth,
+      "md:col-span-12 lg:col-span-9 xl:col-span-9 lg:black:border-l":
+        noAside && !fullWidth,
+      "md:col-span-12 lg:col-span-12": fullWidth,
+    },
+    className
+  );
+  return <main className={mainClasses}>{children}</main>;
+};
 
 /** Right sidebar container in the UI. */
 const Aside: React.FC<IAside> = ({ children }) => (

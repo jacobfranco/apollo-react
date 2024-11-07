@@ -1,49 +1,46 @@
-import React from 'react';
+import React from "react";
 
-import LinkFooter from 'src/features/LinkFooter';
+import LinkFooter from "src/features/LinkFooter";
 import {
   WhoToFollowPanel,
   TrendsPanel,
   SignUpPanel,
   CtaBanner,
   SuggestedGroupsPanel,
-} from 'src/features/AsyncComponents';
-import { useAppSelector } from 'src/hooks';
+} from "src/features/AsyncComponents";
+import { useAppSelector } from "src/hooks";
 
-import { Layout } from 'src/components';
+import { Layout, SidebarNavigation } from "src/components";
 
 interface ISearchPage {
   children: React.ReactNode;
 }
 
 const SearchPage: React.FC<ISearchPage> = ({ children }) => {
-  const me = useAppSelector(state => state.me);
+  const me = useAppSelector((state) => state.me);
 
   return (
-    <>
+    <Layout>
+      <Layout.Sidebar>
+        <SidebarNavigation />
+      </Layout.Sidebar>
       <Layout.Main>
         {children}
 
-        {!me && (
-          <CtaBanner />
-        )}
+        {!me && <CtaBanner />}
       </Layout.Main>
 
       <Layout.Aside>
-        {!me && (
-          <SignUpPanel />
-        )}
-          <TrendsPanel limit={5} />
+        {!me && <SignUpPanel />}
+        <TrendsPanel limit={5} />
 
-        {me && (
-          <WhoToFollowPanel limit={3} />
-        )}
+        {me && <WhoToFollowPanel limit={3} />}
 
-          <SuggestedGroupsPanel />
+        <SuggestedGroupsPanel />
 
         <LinkFooter />
       </Layout.Aside>
-    </>
+    </Layout>
   );
 };
 

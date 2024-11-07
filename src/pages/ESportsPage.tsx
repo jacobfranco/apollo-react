@@ -1,5 +1,6 @@
-import React from 'react';
-import LayoutNoAside from 'src/components/LayoutNoAside';
+import React from "react";
+import { SidebarNavigation } from "src/components";
+import Layout from "src/components/Layout";
 
 interface IEsportPage {
   children: React.ReactNode;
@@ -7,11 +8,13 @@ interface IEsportPage {
 
 const ESportsPage: React.FC<IEsportPage> = ({ children }) => {
   return (
-    <>
-      <LayoutNoAside.Main>
-        {children}
-      </LayoutNoAside.Main>
-    </>
+    <Layout>
+      <Layout.Sidebar>
+        <SidebarNavigation />
+      </Layout.Sidebar>
+
+      <Layout.Main noAside>{children}</Layout.Main>
+    </Layout>
   );
 };
 

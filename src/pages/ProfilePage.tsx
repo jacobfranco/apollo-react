@@ -3,7 +3,7 @@ import { FormattedMessage } from "react-intl";
 import { Redirect, useHistory } from "react-router-dom";
 
 import { useAccountLookup } from "src/api/hooks/useAccountLookup";
-import { Header, Layout, Tabs } from "src/components";
+import { Header, Layout, SidebarNavigation, Tabs } from "src/components";
 import { Column as Column } from "src/components/Column";
 import {
   WhoToFollowPanel,
@@ -88,7 +88,10 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
   );
 
   return (
-    <>
+    <Layout>
+      <Layout.Sidebar>
+        <SidebarNavigation />
+      </Layout.Sidebar>
       <Layout.Main>
         <Column
           size="lg"
@@ -124,7 +127,7 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
         {me && <WhoToFollowPanel limit={3} />}
         <LinkFooter key="link-footer" />
       </Layout.Aside>
-    </>
+    </Layout>
   );
 };
 
