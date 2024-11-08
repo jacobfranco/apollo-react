@@ -60,7 +60,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
         isLeft ? "justify-start" : "justify-end"
       }`}
     >
-      <div className="flex items-center p-2 bg-secondary-500 rounded-lg relative">
+      <div className="flex items-center p-2 bg-primary-200 dark:bg-secondary-500 rounded-lg relative">
         {isLeft ? (
           <>
             {/* Player Portrait - Fixed width */}
@@ -73,13 +73,15 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             </div>
             {/* Player Info - Fixed width */}
             <div className="w-40 ml-4 flex flex-col min-w-0">
-              <div className="flex items-center text-sm font-bold uppercase truncate">
+              <div className="flex items-center text-md font-bold text-black dark:text-white uppercase truncate">
                 {player.nickName}
-                <span className="ml-1 text-xs text-gray-400">
+                <span className="ml-1 text-sm text-gray-400">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
               </div>
-              <div className="text-xs text-gray-500 truncate">{fullName}</div>
+              <div className="text-xs text-gray-500 truncate mt-1">
+                {fullName}
+              </div>
             </div>
             {/* KDA and CS - Fixed position in center */}
             <div className="flex flex-col items-center w-32">
@@ -88,14 +90,16 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
                   src={require("@tabler/icons/outline/sword.svg")}
                   className="h-6 w-6 text-primary-500"
                 />
-                <div className="ml-1">{`${kills} / ${deaths} / ${assists}`}</div>
+                <div className="ml-1 text-black dark:text-white">{`${kills} / ${deaths} / ${assists}`}</div>
               </div>
               <div className="flex items-center text-sm mt-1">
                 <SvgIcon
                   src={require("@tabler/icons/outline/ghost.svg")}
                   className="h-5 w-5 text-primary-500"
                 />
-                <div className="ml-1">{totalCreepScore}</div>
+                <div className="ml-1 text-black dark:text-white">
+                  {totalCreepScore}
+                </div>
               </div>
             </div>
             {/* Items and Trinket - Reduced size and spacing */}
@@ -150,14 +154,16 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* KDA and CS - Fixed position in center */}
             <div className="flex flex-col items-center w-32">
               <div className="flex items-center text-xl">
-                <div className="mr-1">{`${kills} / ${deaths} / ${assists}`}</div>
+                <div className="mr-1 text-black dark:text-white">{`${kills} / ${deaths} / ${assists}`}</div>
                 <SvgIcon
                   src={require("@tabler/icons/outline/sword.svg")}
                   className="h-6 w-6 text-primary-500"
                 />
               </div>
               <div className="flex items-center text-md mt-1">
-                <div className="mr-1">{totalCreepScore}</div>
+                <div className="mr-1 text-black dark:text-white">
+                  {totalCreepScore}
+                </div>
                 <SvgIcon
                   src={require("@tabler/icons/outline/ghost.svg")}
                   className="h-5 w-5 text-primary-500"
@@ -166,13 +172,15 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             </div>
             {/* Player Info - Fixed width */}
             <div className="w-40 mr-4 flex flex-col items-end min-w-0">
-              <div className="flex items-center text-sm font-bold uppercase truncate">
-                <span className="text-gray-400 mr-1">
+              <div className="flex items-center text-md text-black dark:text-white font-bold uppercase truncate">
+                <span className="text-gray-400 text-sm mr-1">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
                 {player.nickName}
               </div>
-              <div className="text-xs text-gray-500 truncate">{fullName}</div>
+              <div className="text-xs text-gray-500 truncate mt-1">
+                {fullName}
+              </div>
             </div>
             {/* Player Portrait - Fixed width */}
             <div className="w-16 shrink-0">
