@@ -256,16 +256,16 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
 
       {/* Players */}
       {team1Players && team2Players && (
-        <div className="flex">
+        <div className="grid grid-cols-2 gap-12">
           {/* Team 1 Players */}
-          <div className="w-1/2">
+          <div className="flex flex-col space-y-2">
             {team1Players.map((player) => (
               <PlayerRow key={player.id} player={player} team={"left"} />
             ))}
           </div>
 
           {/* Team 2 Players */}
-          <div className="w-1/2">
+          <div className="flex flex-col space-y-2">
             {team2Players.map((player) => (
               <PlayerRow key={player.id} player={player} team={"right"} />
             ))}

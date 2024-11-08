@@ -8,7 +8,7 @@ import SvgIcon from "./SvgIcon";
 import { formatGold, getCoverageFact } from "src/utils/scoreboards";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
-import { CreepsKills } from "src/schemas/creeps";
+import TeamElites from "./TeamElites";
 
 interface TeamsHeaderProps {
   match?: Match;
@@ -108,41 +108,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     );
   };
 
-  const renderEliteCreepsKills = (
-    eliteCreepsKills: CreepsKills | undefined
-  ) => {
-    if (!eliteCreepsKills || !eliteCreepsKills.kills.perEliteType) return null;
-
-    return (
-      <div className="flex items-center justify-center mt-4 space-x-2">
-        {eliteCreepsKills.kills.perEliteType.map((eliteKill) => (
-          <div key={eliteKill.elite.id} className="flex items-center">
-            {eliteKill.elite.images && eliteKill.elite.images.length > 0 ? (
-              <img
-                src={eliteKill.elite.images[0].url}
-                alt={eliteKill.elite.name}
-                className="w-6 h-6 mr-1"
-              />
-            ) : (
-              <div className="w-6 h-6 mr-1"></div>
-            )}
-            {/* Only create additional icons if total is greater than 1 */}
-            {Array.from({ length: Math.max(0, eliteKill.total - 1) }).map(
-              (_, index) => (
-                <img
-                  key={`${eliteKill.elite.id}-${index}`}
-                  src={eliteKill.elite.images?.[0]?.url || ""}
-                  alt={eliteKill.elite.name}
-                  className="w-6 h-6 ml-1"
-                />
-              )
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   type StatValue = number | string;
 
   // Get team match stats or use '-' if not available
@@ -159,6 +124,11 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
 
   const team1Towers: StatValue = team1MatchStats?.turretsDestroyed ?? "-";
   const team2Towers: StatValue = team2MatchStats?.turretsDestroyed ?? "-";
+
+  const team1Inhibitors: StatValue =
+    team1MatchStats?.inhibitorsDestroyed ?? "-";
+  const team2Inhibitors: StatValue =
+    team2MatchStats?.inhibitorsDestroyed ?? "-";
 
   const team1EliteCreepsKills = team1MatchStats?.creeps.neutrals;
   const team2EliteCreepsKills = team2MatchStats?.creeps.neutrals;
@@ -226,6 +196,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     team2GoldValue ?? "-"
   );
   const towersClasses = getMetricClasses(team1Towers, team2Towers);
+  const inhibitorsClasses = getMetricClasses(team1Inhibitors, team2Inhibitors);
 
   return (
     <div className="relative flex justify-between items-start pt-4 pb-6 space-x-8">
@@ -256,8 +227,15 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
-        {coverageFact === "available" &&
-          renderEliteCreepsKills(team1EliteCreepsKills)}
+        {/* Team Elites with added padding */}
+        {coverageFact === "available" && team1EliteCreepsKills && (
+          <TeamElites
+            creepsKills={team1EliteCreepsKills}
+            teamSide="left"
+            theme={theme}
+            className="mt-4 mb-2"
+          />
+        )}
       </div>
 
       {/* Metrics Container */}
@@ -326,6 +304,26 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
                 {team2Towers}
               </div>
             </div>
+
+            {/* Inhibitors Destroyed Row */}
+            <div className="flex items-center justify-between w-full">
+              <div
+                className={`flex-1 text-right text-lg font-bold ${inhibitorsClasses.team1Class}`}
+              >
+                {team1Inhibitors}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/focus.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div
+                className={`flex-1 text-left text-lg font-bold ${inhibitorsClasses.team2Class}`}
+              >
+                {team2Inhibitors}
+              </div>
+            </div>
           </>
         ) : (
           <div className="text-sm text-gray-500">
@@ -361,8 +359,15 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             style={{ width: "100%" }}
           />
         </div>
-        {coverageFact === "available" &&
-          renderEliteCreepsKills(team2EliteCreepsKills)}
+        {/* Team Elites with added padding */}
+        {coverageFact === "available" && team2EliteCreepsKills && (
+          <TeamElites
+            creepsKills={team2EliteCreepsKills}
+            teamSide="right"
+            theme={theme}
+            className="mt-4 mb-2"
+          />
+        )}
       </div>
 
       {/* Divider line */}

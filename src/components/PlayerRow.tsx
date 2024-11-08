@@ -56,21 +56,23 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
 
   return (
     <div
-      className={`flex items-center py-2 ${
+      className={`flex items-center py-1 w-full ${
         isLeft ? "justify-start" : "justify-end"
       }`}
     >
-      <div className="flex items-center w-full max-w-md p-2 mx-2 bg-secondary-500 rounded-lg">
+      <div className="flex items-center p-2 bg-secondary-500 rounded-lg relative">
         {isLeft ? (
           <>
-            {/* Left edge - Player Portrait */}
-            <img
-              src={player.images?.[0]?.url || "/placeholder.png"}
-              alt=""
-              className="w-16 h-16 rounded shrink-0"
-            />
-            {/* Player Info - Flexible width */}
-            <div className="ml-4 flex flex-col min-w-0 flex-shrink">
+            {/* Player Portrait - Fixed width */}
+            <div className="w-16 shrink-0">
+              <img
+                src={player.images?.[0]?.url || "/placeholder.png"}
+                alt=""
+                className="w-16 h-16 rounded"
+              />
+            </div>
+            {/* Player Info - Fixed width */}
+            <div className="w-40 ml-4 flex flex-col min-w-0">
               <div className="flex items-center text-sm font-bold uppercase truncate">
                 {player.nickName}
                 <span className="ml-1 text-xs text-gray-400">
@@ -79,43 +81,40 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
               </div>
               <div className="text-xs text-gray-500 truncate">{fullName}</div>
             </div>
-            {/* Fixed position elements */}
-            <div className="flex items-center gap-4 ml-auto">
-              {/* Stacked KDA and CS */}
-              <div className="flex flex-col justify-center items-center">
-                <div className="flex items-center">
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/sword.svg")}
-                    className="h-5 w-5 text-primary-500"
-                  />
-                  <div className="text-sm ml-1">{`${kills} / ${deaths} / ${assists}`}</div>
-                </div>
-                <div className="flex items-center mt-1">
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/ghost.svg")}
-                    className="h-5 w-5 text-primary-500"
-                  />
-                  <div className="text-sm ml-1">{totalCreepScore}</div>
-                </div>
+            {/* KDA and CS - Fixed position in center */}
+            <div className="flex flex-col items-center w-32">
+              <div className="flex items-center text-xl">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/sword.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+                <div className="ml-1">{`${kills} / ${deaths} / ${assists}`}</div>
               </div>
-              {/* Items Grid and Trinket */}
-              <div className="flex flex-col gap-1">
-                <div className="grid grid-cols-3 grid-rows-2 gap-1">
-                  {itemImageUrls.map((url, index) => (
-                    <img key={index} src={url} alt={``} className="w-5 h-5" />
-                  ))}
-                </div>
-                <div className="flex justify-center">
-                  <img src={trinketImageUrl} alt="" className="w-5 h-5" />
-                </div>
+              <div className="flex items-center text-sm mt-1">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/ghost.svg")}
+                  className="h-5 w-5 text-primary-500"
+                />
+                <div className="ml-1">{totalCreepScore}</div>
               </div>
-              {/* Summoner Spells */}
-              <div className="flex flex-col gap-1">
-                {summonerSpellUrls.map((url, index) => (
-                  <img key={index} src={url} alt={``} className="w-5 h-5" />
+            </div>
+            {/* Items and Trinket - Reduced size and spacing */}
+            <div className="flex items-center gap-1 w-28 ml-4">
+              <div className="grid grid-cols-3 grid-rows-2 gap-0.5">
+                {itemImageUrls.map((url, index) => (
+                  <img key={index} src={url} alt="" className="w-6 h-6" />
                 ))}
               </div>
-              {/* Champion Portrait */}
+              <img src={trinketImageUrl} alt="" className="w-6 h-6" />
+            </div>
+            {/* Summoner Spells - Reduced size */}
+            <div className="flex flex-col gap-0.5 mx-2">
+              {summonerSpellUrls.map((url, index) => (
+                <img key={index} src={url} alt="" className="w-6 h-6" />
+              ))}
+            </div>
+            {/* Champion Portrait - Fixed width */}
+            <div className="w-16 shrink-0">
               <img
                 src={championImageUrl}
                 alt=""
@@ -125,51 +124,48 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
           </>
         ) : (
           <>
-            {/* Right side - mirror of left side */}
-            <div className="flex items-center gap-4 mr-auto">
-              {/* Champion Portrait */}
+            {/* Champion Portrait - Fixed width */}
+            <div className="w-16 shrink-0">
               <img
                 src={championImageUrl}
                 alt=""
                 className="w-16 h-16 rounded"
               />
-              {/* Summoner Spells */}
-              <div className="flex flex-col gap-1">
-                {summonerSpellUrls.map((url, index) => (
-                  <img key={index} src={url} alt={``} className="w-5 h-5" />
+            </div>
+            {/* Summoner Spells - Reduced size */}
+            <div className="flex flex-col gap-0.5 mx-2">
+              {summonerSpellUrls.map((url, index) => (
+                <img key={index} src={url} alt="" className="w-6 h-6" />
+              ))}
+            </div>
+            {/* Items and Trinket - Reduced size and spacing */}
+            <div className="flex items-center gap-1 w-28 mr-4">
+              <div className="grid grid-cols-3 grid-rows-2 gap-0.5">
+                {itemImageUrls.map((url, index) => (
+                  <img key={index} src={url} alt="" className="w-6 h-6" />
                 ))}
               </div>
-              {/* Items Grid and Trinket */}
-              <div className="flex flex-col gap-1">
-                <div className="grid grid-cols-3 grid-rows-2 gap-1">
-                  {itemImageUrls.map((url, index) => (
-                    <img key={index} src={url} alt={``} className="w-5 h-5" />
-                  ))}
-                </div>
-                <div className="flex justify-center">
-                  <img src={trinketImageUrl} alt="" className="w-5 h-5" />
-                </div>
+              <img src={trinketImageUrl} alt="" className="w-6 h-6" />
+            </div>
+            {/* KDA and CS - Fixed position in center */}
+            <div className="flex flex-col items-center w-32">
+              <div className="flex items-center text-xl">
+                <div className="mr-1">{`${kills} / ${deaths} / ${assists}`}</div>
+                <SvgIcon
+                  src={require("@tabler/icons/outline/sword.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
               </div>
-              {/* Stacked KDA and CS */}
-              <div className="flex flex-col justify-center items-center">
-                <div className="flex items-center">
-                  <div className="text-sm mr-1">{`${kills} / ${deaths} / ${assists}`}</div>
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/sword.svg")}
-                    className="h-5 w-5 text-primary-500"
-                  />
-                </div>
-                <div className="flex items-center mt-1">
-                  <div className="text-sm mr-1">{totalCreepScore}</div>
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/ghost.svg")}
-                    className="h-5 w-5 text-primary-500"
-                  />
-                </div>
+              <div className="flex items-center text-md mt-1">
+                <div className="mr-1">{totalCreepScore}</div>
+                <SvgIcon
+                  src={require("@tabler/icons/outline/ghost.svg")}
+                  className="h-5 w-5 text-primary-500"
+                />
               </div>
             </div>
-            {/* Player Info - Flexible width */}
-            <div className="mr-4 flex flex-col items-end min-w-0 flex-shrink">
+            {/* Player Info - Fixed width */}
+            <div className="w-40 mr-4 flex flex-col items-end min-w-0">
               <div className="flex items-center text-sm font-bold uppercase truncate">
                 <span className="text-gray-400 mr-1">
                   {roleAbbreviations[playerRole] || playerRole}
@@ -178,12 +174,14 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
               </div>
               <div className="text-xs text-gray-500 truncate">{fullName}</div>
             </div>
-            {/* Right edge - Player Portrait */}
-            <img
-              src={player.images?.[0]?.url || "/placeholder.png"}
-              alt=""
-              className="w-16 h-16 rounded shrink-0"
-            />
+            {/* Player Portrait - Fixed width */}
+            <div className="w-16 shrink-0">
+              <img
+                src={player.images?.[0]?.url || "/placeholder.png"}
+                alt=""
+                className="w-16 h-16 rounded"
+              />
+            </div>
           </>
         )}
       </div>
