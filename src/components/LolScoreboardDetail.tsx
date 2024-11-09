@@ -183,7 +183,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   }
 
   // Define position order
-  const positionOrder = ["top", "jungle", "mid", "bottom", "support"];
+  const positionOrder = ["top", "jungle", "mid", "bot", "support"];
 
   const getPositionIndex = (role: string) => {
     const index = positionOrder.indexOf(role);

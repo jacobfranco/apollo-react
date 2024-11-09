@@ -27,7 +27,7 @@ interface LayoutComponent extends React.FC<ILayout> {
 
 /** Layout container, to hold Sidebar, Main, and Aside. */
 const Layout: LayoutComponent = ({ children }) => (
-  <div className="relative flex grow flex-col black:pt-0 sm:pt-4">
+  <div className="relative flex grow flex-col sm:pt-4">
     <div className="mx-auto w-full max-w-3xl grow sm:px-6 md:grid md:max-w-7xl md:grid-cols-12 md:gap-8 md:px-8">
       {children}
     </div>
@@ -51,12 +51,10 @@ const Main: React.FC<
   }
 > = ({ children, className, noAside = false, fullWidth = false }) => {
   const mainClasses = clsx(
-    "pb-36 black:border-gray-800",
+    "pb-36",
     {
-      "md:col-span-12 lg:col-span-9 xl:col-span-6 lg:black:border-l xl:black:border-r":
-        !noAside && !fullWidth,
-      "md:col-span-12 lg:col-span-9 xl:col-span-9 lg:black:border-l":
-        noAside && !fullWidth,
+      "md:col-span-12 lg:col-span-9 xl:col-span-6": !noAside && !fullWidth,
+      "md:col-span-12 lg:col-span-9 xl:col-span-9": noAside && !fullWidth,
       "md:col-span-12 lg:col-span-12": fullWidth,
     },
     className

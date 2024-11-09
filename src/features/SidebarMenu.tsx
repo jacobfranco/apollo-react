@@ -322,7 +322,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   {account.admin && (
                     <SidebarLink
-                      to="/soapbox/config"
+                      to="/apollo/config"
                       icon={require("@tabler/icons/outline/settings.svg")}
                       text={intl.formatMessage(messages.apolloConfig)}
                       onClick={onClose}

@@ -17,7 +17,7 @@ interface LayoutNoAsideComponent extends React.FC<ILayout> {
 
 /** Layout container without Aside */
 const LayoutNoAside: LayoutNoAsideComponent = ({ children }) => (
-  <div className="relative flex grow flex-col black:pt-0 sm:pt-4">
+  <div className="relative flex grow flex-col sm:pt-4">
     <div className="mx-auto w-full max-w-3xl grow sm:px-6 md:grid md:max-w-7xl md:grid-cols-12 md:gap-8 md:px-8">
       {children}
     </div>
@@ -40,7 +40,7 @@ const Main: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => (
   <main
     className={clsx(
-      "md:col-span-12 lg:col-span-9 xl:col-span-9 pb-36 black:border-gray-800 lg:black:border-l", // Adjust col-span to take up Sidebar and previous Aside columns
+      "md:col-span-12 lg:col-span-9 xl:col-span-9 pb-36", // Adjust col-span to take up Sidebar and previous Aside columns
       className
     )}
   >
