@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const imageSchema = z.object({
   id: z.number(),
   type: z.string(),
-  url: z.string().url(),
-  thumbnail: z.string().url(),
+  url: z.string().url().or(z.literal("")), // Allow empty string or valid URL
+  thumbnail: z.string().url().or(z.literal("")), // Allow empty string or valid URL
   fallback: z.boolean(),
 });
 
