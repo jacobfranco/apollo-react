@@ -9,6 +9,7 @@ import { formatGold, getCoverageFact } from "src/utils/scoreboards";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
 import TeamElites from "./TeamElites";
+import ScoreboardClock from "./ScoreboardClock";
 
 interface TeamsHeaderProps {
   match?: Match;
@@ -240,8 +241,11 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
 
       {/* Metrics Container */}
       <div className="flex flex-col items-center w-1/3 space-y-4">
-        {/* Status Display */}
-        <div className="text-gray-500 font-bold">{statusDisplay}</div>
+        {match?.lifecycle === "live" ? (
+          <ScoreboardClock liveMatch={match} coverageFact={coverageFact} />
+        ) : (
+          <div className="text-gray-500 font-bold">{statusDisplay}</div>
+        )}
 
         {coverageFact === "available" ? (
           <>
@@ -327,7 +331,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
           </>
         ) : (
           <div className="text-sm text-gray-500">
-            Coverage is not currently available. Please check back later.
+            Stats are currently unavailable, please check again later
           </div>
         )}
       </div>

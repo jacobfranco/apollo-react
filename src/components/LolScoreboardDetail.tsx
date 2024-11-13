@@ -7,13 +7,14 @@ import TeamsHeader from "./TeamsHeader";
 import PlayerRow from "./PlayerRow";
 import { Tabs } from "src/components";
 import useLiveMatchStream from "src/api/hooks/useLiveMatchStream";
-import { Participant } from "src/schemas";
+import { Participant, Player } from "src/schemas";
 import {
   connectSeriesUpdatesStream,
   connectMatchUpdatesStream,
 } from "src/actions/streaming";
 import { Match } from "src/schemas/match";
 import { getCoverageFact } from "src/utils/scoreboards";
+import { openModal } from "src/actions/modals";
 
 interface LolScoreboardDetailProps {
   seriesId: number;
@@ -182,36 +183,55 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     return <div>Participants data is not available.</div>;
   }
 
-  // Define position order
-  const positionOrder = ["top", "jungle", "mid", "bot", "support"];
+  type Position = "top" | "jungle" | "mid" | "bot" | "support";
 
-  const getPositionIndex = (role: string) => {
-    const index = positionOrder.indexOf(role);
-    return index === -1 ? positionOrder.length : index;
-  };
+  const positionOrder: Position[] = ["top", "jungle", "mid", "bot", "support"];
 
-  // Sort players by position
-  if (team1Players) {
-    team1Players.sort((a, b) => {
-      const aPos = getPositionIndex(a.role || "unassigned");
-      const bPos = getPositionIndex(b.role || "unassigned");
-      return aPos - bPos;
-    });
+  function isPosition(role: any): role is Position {
+    return positionOrder.includes(role);
   }
 
-  if (team2Players) {
-    team2Players.sort((a, b) => {
-      const aPos = getPositionIndex(a.role || "unassigned");
-      const bPos = getPositionIndex(b.role || "unassigned");
-      return aPos - bPos;
+  function assignPlayersToPositions(players: Player[]): (Player | null)[] {
+    const positions: Partial<Record<Position, Player>> = {};
+    const unassignedPlayers: Player[] = [];
+
+    players.forEach((player: Player) => {
+      const role = player.role;
+      if (isPosition(role) && !positions[role]) {
+        positions[role] = player;
+      } else {
+        unassignedPlayers.push(player);
+      }
     });
+
+    // Fill empty positions with unassigned players
+    positionOrder.forEach((role) => {
+      if (!positions[role] && unassignedPlayers.length > 0) {
+        positions[role] = unassignedPlayers.shift() || undefined;
+      }
+    });
+
+    // Return the players in position order
+    return positionOrder.map((role) => positions[role] || null);
   }
+
+  const team1PlayersInOrder = assignPlayersToPositions(team1Players);
+  const team2PlayersInOrder = assignPlayersToPositions(team2Players);
 
   // Retrieve Series Scores
   const team1SeriesScore = series.participants?.[0]?.score || 0;
   const team2SeriesScore = series.participants?.[1]?.score || 0;
 
-  // Render component
+  // Function to handle opening the stream modal
+  const handleOpenStream = () => {
+    console.log("handleOpenStream - Button clicked to open modal");
+    if (series.broadcasters && series.broadcasters.length > 0) {
+      dispatch(openModal("STREAM", { broadcasters: series.broadcasters }));
+    } else {
+      // Handle cases with no broadcasters if necessary
+    }
+  };
+
   return (
     <div className="relative text-white">
       {/* Match Tabs */}
@@ -246,30 +266,34 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
         team2SeriesScore={team2SeriesScore}
       />
 
-      {/* Live Match Info */}
-      {coverageFact === "available" && liveMatch && (
-        <div className="live-match-info">
-          {/* Display live match stats */}
-          {/* You can include more detailed stats here if desired */}
-        </div>
-      )}
-
       {/* Players */}
-      {team1Players && team2Players && (
+      {team1PlayersInOrder && team2PlayersInOrder && (
         <div className="grid grid-cols-2 gap-12">
           {/* Team 1 Players */}
           <div className="flex flex-col space-y-2">
-            {team1Players.map((player) => (
-              <PlayerRow key={player.id} player={player} team={"left"} />
+            {team1PlayersInOrder.map((player) => (
+              <PlayerRow key={player?.id} player={player} team={"left"} />
             ))}
           </div>
 
           {/* Team 2 Players */}
           <div className="flex flex-col space-y-2">
-            {team2Players.map((player) => (
-              <PlayerRow key={player.id} player={player} team={"right"} />
+            {team2PlayersInOrder.map((player) => (
+              <PlayerRow key={player?.id} player={player} team={"right"} />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Stream Button */}
+      {series.broadcasters && series.broadcasters.length > 0 && (
+        <div className="flex justify-center my-4">
+          <button
+            onClick={handleOpenStream}
+            className="px-4 py-2 bg-purple-600 rounded text-white hover:bg-purple-700 focus:outline-none"
+          >
+            Watch Live Stream
+          </button>
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import { Player } from "src/schemas/player";
 import SvgIcon from "./SvgIcon";
 
 interface PlayerRowProps {
-  player: Player;
+  player: Player | null;
   team: "left" | "right";
 }
 
@@ -19,9 +19,11 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
     items = [],
     trinketSlot = [],
     summonerSpells = [],
-  } = player.matchStats || {};
+  } = player?.matchStats || {};
 
-  const fullName = `${player.firstName || ""} ${player.lastName || ""}`.trim();
+  const fullName = `${player?.firstName || ""} ${
+    player?.lastName || ""
+  }`.trim();
 
   const championImageUrl =
     champion?.champ.images?.[0]?.url || "/placeholder_champion.png";
@@ -52,7 +54,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
     unassigned: "N/A",
   };
 
-  const playerRole = player.role || "unassigned";
+  const playerRole = player?.role || "unassigned";
 
   return (
     <div
@@ -66,7 +68,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* Player Portrait - Fixed width */}
             <div className="w-16 shrink-0">
               <img
-                src={player.images?.[0]?.url || "/placeholder.png"}
+                src={player?.images?.[0]?.url || "/placeholder.png"}
                 alt=""
                 className="w-16 h-16 rounded"
               />
@@ -74,7 +76,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* Player Info - Fixed width */}
             <div className="w-40 ml-4 flex flex-col min-w-0">
               <div className="flex items-center text-md font-bold text-black dark:text-white uppercase truncate">
-                {player.nickName}
+                {player?.nickName}
                 <span className="ml-1 text-sm text-gray-400">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
@@ -176,7 +178,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
                 <span className="text-gray-400 text-sm mr-1">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
-                {player.nickName}
+                {player?.nickName}
               </div>
               <div className="text-xs text-gray-500 truncate mt-1">
                 {fullName}
@@ -185,7 +187,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* Player Portrait - Fixed width */}
             <div className="w-16 shrink-0">
               <img
-                src={player.images?.[0]?.url || "/placeholder.png"}
+                src={player?.images?.[0]?.url || "/placeholder.png"}
                 alt=""
                 className="w-16 h-16 rounded"
               />

@@ -115,7 +115,7 @@ const ScheduleTab: React.FC = () => {
       seriesItem.lifecycle !== "deleted" &&
       (selectedMainRegions.length === 0 ||
         seriesItem.participants.some((participant) => {
-          const team = participant.roster.team;
+          const team = participant.roster?.team;
           if (!team || !team.region) return false;
 
           const region = team.region;
