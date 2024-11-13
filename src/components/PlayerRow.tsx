@@ -58,11 +58,11 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
 
   return (
     <div
-      className={`flex items-center py-1 w-full ${
+      className={`flex items-center w-full ${
         isLeft ? "justify-start" : "justify-end"
       }`}
     >
-      <div className="flex items-center p-2 bg-primary-200 dark:bg-secondary-500 rounded-lg relative">
+      <div className="flex items-center p-2 bg-primary-200 dark:bg-secondary-500 rounded-sm relative">
         {isLeft ? (
           <>
             {/* Player Portrait - Fixed width */}

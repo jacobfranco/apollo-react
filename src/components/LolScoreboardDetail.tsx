@@ -14,7 +14,6 @@ import {
 } from "src/actions/streaming";
 import { Match } from "src/schemas/match";
 import { getCoverageFact } from "src/utils/scoreboards";
-import { openModal } from "src/actions/modals";
 
 interface LolScoreboardDetailProps {
   seriesId: number;
@@ -222,16 +221,6 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
   const team1SeriesScore = series.participants?.[0]?.score || 0;
   const team2SeriesScore = series.participants?.[1]?.score || 0;
 
-  // Function to handle opening the stream modal
-  const handleOpenStream = () => {
-    console.log("handleOpenStream - Button clicked to open modal");
-    if (series.broadcasters && series.broadcasters.length > 0) {
-      dispatch(openModal("STREAM", { broadcasters: series.broadcasters }));
-    } else {
-      // Handle cases with no broadcasters if necessary
-    }
-  };
-
   return (
     <div className="relative text-white">
       {/* Match Tabs */}
@@ -268,32 +257,20 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
 
       {/* Players */}
       {team1PlayersInOrder && team2PlayersInOrder && (
-        <div className="grid grid-cols-2 gap-12">
+        <div className="grid grid-cols-2">
           {/* Team 1 Players */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-1">
             {team1PlayersInOrder.map((player) => (
               <PlayerRow key={player?.id} player={player} team={"left"} />
             ))}
           </div>
 
           {/* Team 2 Players */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-1">
             {team2PlayersInOrder.map((player) => (
               <PlayerRow key={player?.id} player={player} team={"right"} />
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Stream Button */}
-      {series.broadcasters && series.broadcasters.length > 0 && (
-        <div className="flex justify-center my-4">
-          <button
-            onClick={handleOpenStream}
-            className="px-4 py-2 bg-purple-600 rounded text-white hover:bg-purple-700 focus:outline-none"
-          >
-            Watch Live Stream
-          </button>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 
-import Base from 'src/components/ModalRoot';
+import Base from "src/components/ModalRoot";
 
 import {
   AccountModerationModal,
@@ -22,33 +22,35 @@ import {
   RepostsModal,
   ReplyMentionsModal,
   ReportModal,
+  StreamModal,
   UnauthorizedModal,
   // VideoModal,
-} from 'src/features/AsyncComponents';
+} from "src/features/AsyncComponents";
 
-import ModalLoading from 'src/components/ModalLoading';
+import ModalLoading from "src/components/ModalLoading";
 
 /* eslint sort-keys: "error" */
 const MODAL_COMPONENTS: Record<string, React.LazyExoticComponent<any>> = {
-  'ACCOUNT_MODERATION': AccountModerationModal,
-  'ACTIONS': ActionsModal,
-  'BOOST': BoostModal,
-  'COMPOSE': ComposeModal,
-  'CONFIRM': ConfirmationModal,
+  ACCOUNT_MODERATION: AccountModerationModal,
+  ACTIONS: ActionsModal,
+  BOOST: BoostModal,
+  COMPOSE: ComposeModal,
+  CONFIRM: ConfirmationModal,
   // 'EMBED': EmbedModal,
   // 'FAMILIAR_FOLLOWERS': FamiliarFollowersModal,
-  'HOTKEYS': HotkeysModal,
+  HOTKEYS: HotkeysModal,
   // 'LANDING_PAGE': LandingPageModal,
-  'LIKES': LikesModal,
-  'MEDIA': MediaModal,
-  'MENTIONS': MentionsModal,
-  'MISSING_DESCRIPTION': MissingDescriptionModal,
-  'MUTE': MuteModal,
-  'REGION_FILTER': RegionFilterModal,
-  'REPOSTS': RepostsModal,
-  'REPLY_MENTIONS': ReplyMentionsModal,
-  'REPORT': ReportModal,
-  'UNAUTHORIZED': UnauthorizedModal,
+  LIKES: LikesModal,
+  MEDIA: MediaModal,
+  MENTIONS: MentionsModal,
+  MISSING_DESCRIPTION: MissingDescriptionModal,
+  MUTE: MuteModal,
+  REGION_FILTER: RegionFilterModal,
+  REPOSTS: RepostsModal,
+  REPLY_MENTIONS: ReplyMentionsModal,
+  REPORT: ReportModal,
+  UNAUTHORIZED: UnauthorizedModal,
+  STREAM: StreamModal,
   // 'VIDEO': VideoModal,
 };
 
@@ -61,21 +63,24 @@ interface IModalRoot {
 }
 
 export default class ModalRoot extends React.PureComponent<IModalRoot> {
-
   getSnapshotBeforeUpdate() {
     return { visible: !!this.props.type };
   }
 
   componentDidUpdate(prevProps: IModalRoot, prevState: any, { visible }: any) {
     if (visible) {
-      document.body.classList.add('with-modals');
+      document.body.classList.add("with-modals");
     } else {
-      document.body.classList.remove('with-modals');
+      document.body.classList.remove("with-modals");
     }
   }
 
   renderLoading = (modalId: string) => {
-    return !['MEDIA', 'VIDEO', 'BOOST', 'CONFIRM', 'ACTIONS'].includes(modalId) ? <ModalLoading /> : null;
+    return !["MEDIA", "VIDEO", "BOOST", "CONFIRM", "ACTIONS"].includes(
+      modalId
+    ) ? (
+      <ModalLoading />
+    ) : null;
   };
 
   onClickClose = (_?: ModalType) => {
@@ -89,7 +94,7 @@ export default class ModalRoot extends React.PureComponent<IModalRoot> {
 
     return (
       <Base onClose={this.onClickClose} type={type}>
-        {(Component && !!type) && (
+        {Component && !!type && (
           <Suspense fallback={this.renderLoading(type)}>
             <Component {...props} onClose={this.onClickClose} />
           </Suspense>
@@ -97,5 +102,4 @@ export default class ModalRoot extends React.PureComponent<IModalRoot> {
       </Base>
     );
   }
-
 }

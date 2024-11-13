@@ -1,5 +1,6 @@
-import { isBlurhashValid } from 'blurhash';
-import { z } from 'zod';
+import { isBlurhashValid } from "blurhash";
+import { z } from "zod";
+import { broadcasterSchema } from "./broadcaster";
 
 const blurhashSchema = z.string().superRefine((value, ctx) => {
   const r = isBlurhashValid(value);
@@ -14,77 +15,99 @@ const blurhashSchema = z.string().superRefine((value, ctx) => {
 
 const baseAttachmentSchema = z.object({
   blurhash: blurhashSchema.nullable().catch(null),
-  description: z.string().catch(''),
+  description: z.string().catch(""),
   id: z.string(),
-  preview_url: z.string().url().catch(''),
+  preview_url: z.string().url().catch(""),
   remote_url: z.string().url().nullable().catch(null),
   type: z.string(),
   url: z.string().url(),
 });
 
-const imageMetaSchema = z.object({
-  width: z.number(),
-  height: z.number(),
-  aspect: z.number().optional().catch(undefined),
-}).transform((meta) => ({
-  ...meta,
-  aspect: typeof meta.aspect === 'number' ? meta.aspect : meta.width / meta.height,
-}));
+const imageMetaSchema = z
+  .object({
+    width: z.number(),
+    height: z.number(),
+    aspect: z.number().optional().catch(undefined),
+  })
+  .transform((meta) => ({
+    ...meta,
+    aspect:
+      typeof meta.aspect === "number" ? meta.aspect : meta.width / meta.height,
+  }));
 
 const imageAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal('image'),
-  meta: z.object({
-    original: imageMetaSchema.optional().catch(undefined),
-  }).catch({}),
+  type: z.literal("image"),
+  meta: z
+    .object({
+      original: imageMetaSchema.optional().catch(undefined),
+    })
+    .catch({}),
 });
 
 const videoAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal('video'),
-  meta: z.object({
-    duration: z.number().optional().catch(undefined),
-    original: imageMetaSchema.optional().catch(undefined),
-  }).catch({}),
+  type: z.literal("video"),
+  meta: z
+    .object({
+      duration: z.number().optional().catch(undefined),
+      original: imageMetaSchema.optional().catch(undefined),
+    })
+    .catch({}),
 });
 
 const gifvAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal('gifv'),
-  meta: z.object({
-    duration: z.number().optional().catch(undefined),
-    original: imageMetaSchema.optional().catch(undefined),
-  }).catch({}),
+  type: z.literal("gifv"),
+  meta: z
+    .object({
+      duration: z.number().optional().catch(undefined),
+      original: imageMetaSchema.optional().catch(undefined),
+    })
+    .catch({}),
 });
 
 const audioAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal('audio'),
-  meta: z.object({
-    duration: z.number().optional().catch(undefined),
-    colors: z.object({
-      background: z.string().optional().catch(undefined),
-      foreground: z.string().optional().catch(undefined),
-      accent: z.string().optional().catch(undefined),
+  type: z.literal("audio"),
+  meta: z
+    .object({
       duration: z.number().optional().catch(undefined),
-    }).optional().catch(undefined),
-  }).catch({}),
+      colors: z
+        .object({
+          background: z.string().optional().catch(undefined),
+          foreground: z.string().optional().catch(undefined),
+          accent: z.string().optional().catch(undefined),
+          duration: z.number().optional().catch(undefined),
+        })
+        .optional()
+        .catch(undefined),
+    })
+    .catch({}),
+});
+
+const streamAttachmentSchema = baseAttachmentSchema.extend({
+  type: z.literal("stream"),
+  broadcaster: broadcasterSchema,
 });
 
 const unknownAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal('unknown'),
+  type: z.literal("unknown"),
 });
 
 /** https://docs.joinmastodon.org/entities/attachment */
-const attachmentSchema = z.discriminatedUnion('type', [
-  imageAttachmentSchema,
-  videoAttachmentSchema,
-  gifvAttachmentSchema,
-  audioAttachmentSchema,
-  unknownAttachmentSchema,
-]).transform((attachment) => {
-  if (!attachment.preview_url) {
-    attachment.preview_url = attachment.url;
-  }
+const attachmentSchema = z
+  .discriminatedUnion("type", [
+    imageAttachmentSchema,
+    videoAttachmentSchema,
+    gifvAttachmentSchema,
+    audioAttachmentSchema,
+    streamAttachmentSchema,
+    unknownAttachmentSchema,
+  ])
+  .transform((attachment) => {
+    if (!attachment.preview_url) {
+      attachment.preview_url = attachment.url;
+    }
 
-  return attachment;
-});
+    return attachment;
+  });
 
 type Attachment = z.infer<typeof attachmentSchema>;
 

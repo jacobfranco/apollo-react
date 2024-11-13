@@ -1,4 +1,5 @@
 import React from "react";
+import { List as ImmutableList, Map as ImmutableMap } from "immutable";
 import { Match } from "src/schemas/match";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
@@ -10,10 +11,12 @@ import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
 import TeamElites from "./TeamElites";
 import ScoreboardClock from "./ScoreboardClock";
+import { openModal } from "src/actions/modals";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
 
 interface TeamsHeaderProps {
   match?: Match;
-  series: Series; // Make series required
+  series: Series;
   bestOf: number;
   team1SeriesScore: number;
   team2SeriesScore: number;
@@ -26,6 +29,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   team1SeriesScore,
   team2SeriesScore,
 }) => {
+  const dispatch = useAppDispatch();
   const getTeamColorAndLogoType = useTeamColors();
   const theme = useTheme();
 
@@ -199,6 +203,34 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const towersClasses = getMetricClasses(team1Towers, team2Towers);
   const inhibitorsClasses = getMetricClasses(team1Inhibitors, team2Inhibitors);
 
+  // Function to handle opening the stream modal
+  const handleOpenStream = () => {
+    if (series.broadcasters && series.broadcasters.length > 0) {
+      // Create attachment objects representing the streams
+      const streamAttachments = series.broadcasters.map((broadcaster) => ({
+        id: `stream-${broadcaster.broadcasterId}`,
+        type: "stream",
+        url: null,
+        preview_url: null, // You can set a logo or placeholder if available
+        remote_url: null,
+        description: broadcaster.broadcasterName,
+        blurhash: null,
+        meta: ImmutableMap(), // Ensure meta is initialized
+        broadcaster,
+      }));
+
+      // Dispatch an action to open MediaModal with these attachments
+      dispatch(
+        openModal("MEDIA", {
+          media: ImmutableList(streamAttachments),
+          index: 0,
+        })
+      );
+    } else {
+      // Handle cases with no broadcasters if necessary
+    }
+  };
+
   return (
     <div className="relative flex justify-between items-start pt-4 pb-6 space-x-8">
       {/* Team 1 */}
@@ -328,6 +360,18 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
                 {team2Inhibitors}
               </div>
             </div>
+
+            {/* Stream Button */}
+            {series.broadcasters && series.broadcasters.length > 0 && (
+              <div className="flex justify-center my- pb-2">
+                <button
+                  onClick={handleOpenStream}
+                  className="px-4 py-2 bg-primary-300 dark:bg-secondary-600 rounded text-black dark:text-white hover:bg-primary-500 dark:hover:bg-secondary-800 focus:outline-none border dark:border-primary-700"
+                >
+                  Watch
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <div className="text-sm text-gray-500">

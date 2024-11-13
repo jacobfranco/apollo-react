@@ -26,6 +26,7 @@ import { makeGetStatus } from "src/selectors";
 import type { List as ImmutableList } from "immutable";
 import type { Attachment, Status } from "src/types/entities";
 import Icon from "src/components/Icon";
+import LiveStreamEmbed from "src/components/LiveStreamEmbed";
 
 const messages = defineMessages({
   close: { id: "lightbox.close", defaultMessage: "Close" },
@@ -210,6 +211,13 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
             key={attachment.preview_url}
             alt={attachment.description}
             onClick={toggleNavigation}
+          />
+        );
+      } else if (attachment.type === "stream") {
+        return (
+          <LiveStreamEmbed
+            broadcaster={attachment.broadcaster}
+            key={attachment.id}
           />
         );
       }

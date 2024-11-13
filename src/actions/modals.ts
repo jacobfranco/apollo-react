@@ -1,8 +1,8 @@
-import { AppDispatch } from 'src/store';
-import type { ModalType } from 'src/features/ModalRoot';
+import { AppDispatch } from "src/store";
+import type { ModalType } from "src/features/ModalRoot";
 
-export const MODAL_OPEN  = 'MODAL_OPEN';
-export const MODAL_CLOSE = 'MODAL_CLOSE';
+export const MODAL_OPEN = "MODAL_OPEN";
+export const MODAL_CLOSE = "MODAL_CLOSE";
 
 /** Open a modal of the given type */
 export function openModal(type: ModalType, props?: any) {
@@ -18,11 +18,10 @@ const openModalSuccess = (type: ModalType, props?: any) => ({
   modalProps: props,
 });
 
-
 /** Close the modal */
 export function closeModal(type?: ModalType) {
-    return {
-      type: MODAL_CLOSE,
-      modalType: type,
-    };
-  }
+  return {
+    type: MODAL_CLOSE,
+    modalType: type,
+  };
+}
