@@ -1,10 +1,10 @@
-import clsx from 'clsx';
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import clsx from "clsx";
+import React from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
-import { Text } from 'src/components';
-import IconWithCounter from 'src/components/IconWithCounter'
-import Icon from './Icon';
+import { Text } from "src/components";
+import IconWithCounter from "src/components/IconWithCounter";
+import Icon from "./Icon";
 
 interface IThumbNavigationLink {
   count?: number;
@@ -17,12 +17,21 @@ interface IThumbNavigationLink {
   paths?: Array<string>;
 }
 
-const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({ count, countMax, src, activeSrc, text, to, exact, paths }): JSX.Element => {
+const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
+  count,
+  countMax,
+  src,
+  activeSrc,
+  text,
+  to,
+  exact,
+  paths,
+}): JSX.Element => {
   const { pathname } = useLocation();
 
   const isActive = (): boolean => {
     if (paths) {
-      return paths.some(path => pathname.startsWith(path));
+      return paths.some((path) => pathname.startsWith(path));
     } else {
       return exact ? pathname === to : pathname.startsWith(to);
     }
@@ -33,14 +42,14 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({ count, countMax, 
   const icon = (active && activeSrc) || src;
 
   return (
-    <NavLink to={to} exact={exact} className='thumb-navigation__link'>
+    <NavLink to={to} exact={exact} className="thumb-navigation__link">
       {count !== undefined ? (
         <IconWithCounter
           src={icon}
           className={clsx({
-            'h-5 w-5': true,
-            'text-gray-600': !active,
-            'text-primary-500': active,
+            "h-5 w-5": true,
+            "text-gray-600": !active,
+            "text-primary-500": active,
           })}
           count={count}
           countMax={countMax}
@@ -49,20 +58,20 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({ count, countMax, 
         <Icon
           src={icon}
           className={clsx({
-            'h-5 w-5': true,
-            'text-gray-600': !active,
-            'text-primary-500': active,
+            "h-5 w-5": true,
+            "text-gray-600": !active,
+            "text-primary-500": active,
           })}
         />
       )}
 
       <Text
-        tag='span'
-        size='xs'
-        weight='medium'
+        tag="span"
+        size="xs"
+        weight="medium"
         className={clsx({
-          'text-gray-600': !active,
-          'text-primary-500': active,
+          "text-gray-600": !active,
+          "text-primary-500": active,
         })}
       >
         {text}

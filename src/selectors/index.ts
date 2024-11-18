@@ -326,3 +326,27 @@ export const selectMatchById = (
   const matchesState = selectMatchesState(state);
   return matchesState ? matchesState[matchId] : undefined;
 };
+
+export const selectTeamsState = (state: RootState) => state.teams;
+
+export const selectTeamsById = createSelector(selectTeamsState, (teamsState) =>
+  teamsState.get("teamsById")
+);
+
+export const selectTeamsLoading = createSelector(
+  selectTeamsState,
+  (teamsState) => teamsState.get("loading")
+);
+
+export const selectTeamsError = createSelector(selectTeamsState, (teamsState) =>
+  teamsState.get("error")
+);
+
+export const selectTeamsList = createSelector(selectTeamsById, (teamsById) =>
+  teamsById.toList().toArray()
+);
+
+export const selectTeamById = (state: RootState, teamId: number) => {
+  const teamsById = selectTeamsById(state);
+  return teamsById.get(teamId);
+};

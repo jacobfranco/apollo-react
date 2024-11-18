@@ -18,7 +18,7 @@ export const matchSchema = z
       "over-forfeited",
     ]),
     order: z.number(),
-    series: z.object({ id: z.number() }).passthrough(), // Adjusted series schema
+    seriesId: z.number(),
     deletedAt: dateStringOrNumber,
     game: gameSchema,
     participants: z.array(participantSchema),

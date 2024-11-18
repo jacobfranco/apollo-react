@@ -1,12 +1,12 @@
-import { z } from 'zod';
-import { imageSchema } from './image';
-import { regionSchema } from './region';
-import { socialMediaAccountSchema } from './social-media-account';
-import { standingRosterSchema } from './standing-roster';
+import { z } from "zod";
+import { imageSchema } from "./image";
+import { regionSchema } from "./region";
+import { socialMediaAccountSchema } from "./social-media-account";
+import { standingRosterSchema } from "./standing-roster";
 
-
-import { dateStringOrNumber } from 'src/utils/dates'
-import { teamMatchStatsSchema } from './team-match-stats';
+import { dateStringOrNumber } from "src/utils/dates";
+import { teamMatchStatsSchema } from "./team-match-stats";
+import { teamAggStatsSchema } from "./team-agg-stats";
 
 export const teamSchema = z.object({
   id: z.number(),
@@ -23,7 +23,8 @@ export const teamSchema = z.object({
   organizationId: z.number().optional(),
   resourceVersion: z.number().optional(),
   matchStats: teamMatchStatsSchema.optional().nullable(),
-  lolSeasonStats: z.any().optional().nullable(),
+  lolSeasonStats: z.array(teamMatchStatsSchema).optional().nullable(),
+  aggStats: teamAggStatsSchema.optional().nullable(),
 });
 
 export type Team = z.infer<typeof teamSchema>;

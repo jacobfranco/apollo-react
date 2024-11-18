@@ -49,3 +49,21 @@ export function formatGold(gold: number): string {
 export const getCoverageFact = (match: Match | undefined): string => {
   return match?.coverage?.data?.live?.cv?.fact || "unknown";
 };
+
+/**
+ * Formats a numerical stat to two decimal places.
+ * If the input is null or undefined, returns a fallback string.
+ *
+ * @param value - The numerical value to format.
+ * @param fallback - The fallback string if value is null or undefined.
+ * @returns The formatted string or fallback.
+ */
+export const formatStat = (
+  value: number | null | undefined,
+  fallback: string = "-"
+): string => {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+  return value.toFixed(2);
+};

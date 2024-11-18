@@ -4,11 +4,7 @@ import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import { Stack } from "src/components";
 import { useStatContext } from "src/contexts/stat-context";
 import ComposeButton from "src/features/ComposeButton";
-import {
-  useAppSelector,
-  useGroupsPath,
-  useOwnAccount,
-} from "src/hooks";
+import { useAppSelector, useGroupsPath, useOwnAccount } from "src/hooks";
 
 import DropdownMenu, { Menu } from "./dropdown-menu";
 import SidebarNavigationLink from "./SidebarNavigationLink";
@@ -86,7 +82,12 @@ const SidebarNavigation = () => {
         icon={require("@tabler/icons/outline/messages.svg")}
         count={unreadChatsCount}
         countMax={9}
-        text={<FormattedMessage id="navigation.direct_messages" defaultMessage="Messages" />}
+        text={
+          <FormattedMessage
+            id="navigation.direct_messages"
+            defaultMessage="Messages"
+          />
+        }
       />
     );
 
@@ -127,13 +128,17 @@ const SidebarNavigation = () => {
         <SidebarNavigationLink
           to="/s"
           icon={require("@tabler/icons/outline/planet.svg")}
-          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Spaces" />}
+          text={
+            <FormattedMessage id="tabs_bar.games" defaultMessage="Spaces" />
+          }
         />
 
         <SidebarNavigationLink
           to="/esports"
           icon={require("@tabler/icons/outline/device-gamepad-2.svg")}
-          text={<FormattedMessage id="tabs_bar.games" defaultMessage="Esports" />}
+          text={
+            <FormattedMessage id="tabs_bar.games" defaultMessage="Esports" />
+          }
         />
 
         {account && (
@@ -151,11 +156,10 @@ const SidebarNavigation = () => {
               }
             />
 
-            {
-              renderMessagesLink() /* TODO: Maybe just replace with the component defined in the function */
-            }
+            {/*
+              renderMessagesLink() TODO: Maybe just replace with the component defined in the function */}
 
-            { /* TODO: Put this back
+            {/* TODO: Put this back
 
             <SidebarNavigationLink
               to={groupsPath}
@@ -168,7 +172,7 @@ const SidebarNavigation = () => {
                 />
               }
             />
-            */ }
+            */}
 
             <SidebarNavigationLink
               to={`/@${account.username}`}
