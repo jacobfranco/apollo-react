@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+// src/components/AutoFitText.tsx
+
+import React, { useRef, useEffect, useState } from "react";
 
 interface AutoFitTextProps {
   text: string;
@@ -7,6 +9,7 @@ interface AutoFitTextProps {
   maxLines: number;
   style?: React.CSSProperties;
   className?: string;
+  textAlign?: "left" | "center" | "right"; // New prop for text alignment
 }
 
 const AutoFitText: React.FC<AutoFitTextProps> = ({
@@ -15,7 +18,8 @@ const AutoFitText: React.FC<AutoFitTextProps> = ({
   minFontSize,
   maxLines,
   style = {},
-  className = '',
+  className = "",
+  textAlign = "center", // Default alignment
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -30,7 +34,8 @@ const AutoFitText: React.FC<AutoFitTextProps> = ({
       textEl.style.fontSize = `${currentFontSize}px`;
 
       while (
-        (textEl.scrollHeight > container.offsetHeight || textEl.scrollWidth > container.offsetWidth) &&
+        (textEl.scrollHeight > container.offsetHeight ||
+          textEl.scrollWidth > container.offsetWidth) &&
         currentFontSize > minFontSize
       ) {
         currentFontSize -= 0.5; // Decrease font size incrementally
@@ -46,10 +51,10 @@ const AutoFitText: React.FC<AutoFitTextProps> = ({
       ref={containerRef}
       style={{
         ...style,
-        overflow: 'hidden',
-        display: 'block', // Changed from 'flex' to 'block' to allow natural text wrapping
-        alignItems: 'center',
-        justifyContent: 'center',
+        overflow: "hidden",
+        display: "block",
+        alignItems: "center",
+        justifyContent: "center",
       }}
       className={className}
     >
@@ -57,14 +62,14 @@ const AutoFitText: React.FC<AutoFitTextProps> = ({
         ref={textRef}
         style={{
           fontSize: `${fontSize}px`,
-          textAlign: 'center',
+          textAlign: textAlign, // Apply text alignment based on prop
           maxHeight: `${fontSize * maxLines}px`,
           lineHeight: `${fontSize}px`,
-          overflow: 'hidden',
-          display: '-webkit-box',
+          overflow: "hidden",
+          display: "-webkit-box",
           WebkitLineClamp: maxLines,
-          WebkitBoxOrient: 'vertical',
-          wordWrap: 'break-word',
+          WebkitBoxOrient: "vertical",
+          wordWrap: "break-word",
         }}
       >
         {text}

@@ -1,34 +1,54 @@
+// src/components/LolTeamRow.tsx
+
 import React from "react";
 import { Team } from "src/schemas/team";
 import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
+import AutoFitText from "src/components/AutoFitText"; // Ensure the path is correct
 
 interface LolTeamRowProps {
   team: Team;
   columns: Array<{ label: string; key: string }>;
+  gridTemplateColumns: string;
 }
 
-const LolTeamRow: React.FC<LolTeamRowProps> = ({ team, columns }) => {
+const LolTeamRow: React.FC<LolTeamRowProps> = ({
+  team,
+  columns,
+  gridTemplateColumns,
+}) => {
   const { name, images, aggStats } = team;
 
   const logoUrl = images && images.length > 0 ? images[0].url : placeholderTeam;
 
   return (
-    <div className="grid grid-cols-[2fr_repeat(9,1fr)] gap-2 p-4 bg-primary-200 dark:bg-secondary-500 rounded-md mb-2 shadow">
+    <div
+      className={`grid ${gridTemplateColumns} gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
+    >
       {columns.map((column) => {
         let value;
+        const isNameColumn = column.key === "name";
 
-        if (column.key === "name") {
+        if (isNameColumn) {
           return (
-            <div key={column.key} className="flex items-center">
+            <div
+              key={column.key}
+              className="flex items-center justify-start pr-2"
+            >
               <img
                 src={logoUrl}
                 alt={`${name} logo`}
-                className="w-12 h-12 rounded-full mr-4"
+                className="w-10 h-10 rounded-full mr-4"
               />
-              <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                {name}
-              </span>
+              <AutoFitText
+                text={name}
+                maxFontSize={16}
+                minFontSize={10}
+                maxLines={1}
+                className="text-gray-800 dark:text-gray-200 font-bold"
+                style={{ flex: 1 }}
+                textAlign="left" // Align text to the left
+              />
             </div>
           );
         } else if (column.key === "winRate") {
@@ -60,8 +80,13 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({ team, columns }) => {
         }
 
         return (
-          <div key={column.key} className="flex items-center justify-center">
-            <span className="text-lg font-bold text-gray-800 dark:text-gray-200">
+          <div
+            key={column.key}
+            className={`flex items-center ${
+              isNameColumn ? "justify-start pl-4" : "justify-center"
+            }`}
+          >
+            <span className="text-md font-medium text-gray-800 dark:text-gray-200">
               {value}
             </span>
           </div>

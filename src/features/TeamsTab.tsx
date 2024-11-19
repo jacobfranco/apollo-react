@@ -32,10 +32,14 @@ const TeamsTab: React.FC = () => {
   const loading = useAppSelector(selectTeamsLoading);
   const error = useAppSelector(selectTeamsError);
 
+  // Initialize sortConfig to sort by winRate in descending order
   const [sortConfig, setSortConfig] = useState<{
     key: SortKey;
     direction: "asc" | "desc";
-  } | null>(null);
+  }>({
+    key: "winRate",
+    direction: "desc",
+  });
 
   useEffect(() => {
     if (esportName) {
@@ -45,25 +49,24 @@ const TeamsTab: React.FC = () => {
 
   const columns: Array<{ label: string; key: SortKey }> = [
     { label: "Team", key: "name" },
-    { label: "Matches", key: "totalMatches" },
     { label: "Wins", key: "totalWins" },
     { label: "Losses", key: "totalLosses" },
     { label: "WR%", key: "winRate" },
     { label: "Streak", key: "currentWinStreak" },
     { label: "Gold", key: "averageGoldEarned" },
     { label: "Kills", key: "averageScore" },
-    { label: "Turrets", key: "averageTurretsDestroyed" },
+    { label: "Towers", key: "averageTurretsDestroyed" },
     { label: "Inhibs", key: "averageInhibitorsDestroyed" },
   ];
 
   const handleSort = (key: SortKey) => {
-    let direction: "asc" | "desc" = "asc";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "asc"
-    ) {
-      direction = "desc";
+    let direction: "asc" | "desc";
+    if (sortConfig && sortConfig.key === key) {
+      // Toggle direction
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    } else {
+      // Start with 'asc' for 'name', 'desc' for others
+      direction = key === "name" ? "asc" : "desc";
     }
     setSortConfig({ key, direction });
   };
@@ -110,22 +113,27 @@ const TeamsTab: React.FC = () => {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
+  // Define the shared grid template
+  const gridTemplateColumns = "grid-cols-[200px_repeat(8,1fr)]";
+
   return (
     <div>
       {/* Sorting Controls */}
-      <div className="grid grid-cols-[2fr_repeat(9,1fr)] gap-2">
+      <div className={`grid ${gridTemplateColumns} gap-0`}>
         {columns.map((column) => (
-          <div key={column.key} className="flex items-center justify-center">
-            <button
-              onClick={() => handleSort(column.key as SortKey)}
-              className="w-full px-3 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-bold rounded hover:bg-primary-300 flex items-center justify-center"
-            >
-              {column.label}
+          <button
+            key={column.key}
+            onClick={() => handleSort(column.key as SortKey)}
+            className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
+          >
+            <span className="text-sm font-bold">{column.label}</span>
+            <span className="ml-1 text-xs">
               {sortConfig?.key === column.key ? (
                 sortConfig.direction === "asc" ? (
+                  // Up Arrow
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
+                    className="h-3 w-3 inline-block"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -138,9 +146,10 @@ const TeamsTab: React.FC = () => {
                     />
                   </svg>
                 ) : (
+                  // Down Arrow
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
+                    className="h-3 w-3 inline-block"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -153,18 +162,26 @@ const TeamsTab: React.FC = () => {
                     />
                   </svg>
                 )
-              ) : null}
-            </button>
-          </div>
+              ) : (
+                // Dash as placeholder
+                <span className="text-xs font-thin">—</span>
+              )}
+            </span>
+          </button>
         ))}
       </div>
 
       {/* Padding between sort buttons and team rows */}
-      <div className="my-4"></div>
+      <div className="my-2"></div>
 
       {/* Team Rows */}
       {sortedTeams.map((team) => (
-        <LolTeamRow key={team.id} team={team} columns={columns} />
+        <LolTeamRow
+          key={team.id}
+          team={team}
+          columns={columns}
+          gridTemplateColumns={gridTemplateColumns}
+        />
       ))}
     </div>
   );
