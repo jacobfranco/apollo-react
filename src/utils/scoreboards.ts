@@ -67,3 +67,20 @@ export const formatStat = (
   }
   return value.toFixed(2);
 };
+
+/**
+ * Converts a discrete number into a formatted streak string.
+ *
+ * @param streak - The number representing the streak. Positive for wins, negative for losses.
+ * @returns A string formatted as "W<number>" for wins or "L<number>" for losses.
+ *          Returns "N/A" if the streak is zero.
+ */
+export function formatStreak(streak: number): string {
+  if (streak > 0) {
+    return `W${streak}`;
+  } else if (streak < 0) {
+    return `L${Math.abs(streak)}`;
+  } else {
+    return "N/A"; // Represents no current streak
+  }
+}

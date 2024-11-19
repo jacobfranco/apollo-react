@@ -1,11 +1,12 @@
-import { z } from 'zod';
-import { imageSchema } from './image';
-import { regionSchema } from './region';
-import { ageSchema } from './age';
-import { socialMediaAccountSchema } from './social-media-account';
+import { z } from "zod";
+import { imageSchema } from "./image";
+import { regionSchema } from "./region";
+import { ageSchema } from "./age";
+import { socialMediaAccountSchema } from "./social-media-account";
 
-import { dateStringOrNumber } from 'src/utils/dates'
-import { playerMatchStatsSchema } from './player-match-stats';
+import { dateStringOrNumber } from "src/utils/dates";
+import { playerMatchStatsSchema } from "./player-match-stats";
+import { playerAggStatsSchema } from "./player-agg-stats";
 
 export const playerSchema = z.object({
   id: z.number(),
@@ -27,6 +28,7 @@ export const playerSchema = z.object({
   lolStats: z.any().optional().nullable(),
   matchStats: playerMatchStatsSchema.optional().nullable(),
   lolSeasonStats: z.any().optional().nullable(),
+  aggStats: playerAggStatsSchema.optional().nullable(),
 });
 
 export type Player = z.infer<typeof playerSchema>;

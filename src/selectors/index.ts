@@ -7,7 +7,7 @@ import {
 } from "immutable";
 
 import { RootState } from "src/store";
-import type { Account as AccountSchema } from "src/schemas";
+import type { Account as AccountSchema, Player } from "src/schemas";
 import { Entities } from "src/entity-store/entities";
 import type {
   Account,
@@ -349,4 +349,37 @@ export const selectTeamsList = createSelector(selectTeamsById, (teamsById) =>
 export const selectTeamById = (state: RootState, teamId: number) => {
   const teamsById = selectTeamsById(state);
   return teamsById.get(teamId);
+};
+
+// Select Players State
+export const selectPlayersState = (state: RootState) => state.players;
+
+// Select Players by ID
+export const selectPlayersById = createSelector(
+  selectPlayersState,
+  (playersState) => playersState.get("playersById")
+);
+
+// Select Loading State
+export const selectPlayersLoading = createSelector(
+  selectPlayersState,
+  (playersState) => playersState.get("loading")
+);
+
+// Select Error State
+export const selectPlayersError = createSelector(
+  selectPlayersState,
+  (playersState) => playersState.get("error")
+);
+
+// Select Players List as Array
+export const selectPlayersList = createSelector(
+  selectPlayersById,
+  (playersById) => playersById.toList().toArray()
+);
+
+// Select Player by ID
+export const selectPlayerById = (state: RootState, playerId: number) => {
+  const playersById = selectPlayersById(state);
+  return playersById.get(playerId);
 };

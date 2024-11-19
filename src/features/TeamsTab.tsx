@@ -48,7 +48,7 @@ const TeamsTab: React.FC = () => {
     { label: "Matches", key: "totalMatches" },
     { label: "Wins", key: "totalWins" },
     { label: "Losses", key: "totalLosses" },
-    { label: "WR%", key: "winRate" }, // Changed "Win Rate" to "WR%"
+    { label: "WR%", key: "winRate" },
     { label: "Streak", key: "currentWinStreak" },
     { label: "Gold", key: "averageGoldEarned" },
     { label: "Kills", key: "averageScore" },

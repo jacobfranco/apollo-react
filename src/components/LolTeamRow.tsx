@@ -1,8 +1,6 @@
-// src/components/LolTeamRow.tsx
-
 import React from "react";
 import { Team } from "src/schemas/team";
-import { formatGold, formatStat } from "src/utils/scoreboards";
+import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 
 interface LolTeamRowProps {
@@ -38,6 +36,10 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({ team, columns }) => {
             ? (aggStats.totalWins / aggStats.totalMatches) * 100
             : 0;
           value = `${winRate.toFixed(2)}%`;
+        } else if (column.key === "currentWinStreak") {
+          // Handle currentWinStreak
+          const streak = aggStats?.currentWinStreak ?? 0;
+          value = formatStreak(streak);
         } else {
           const statKey = column.key as keyof typeof aggStats;
           if (aggStats && aggStats[statKey] !== undefined) {

@@ -25,6 +25,7 @@ import mutes from "./mutes";
 import notifications from "./notifications";
 import onboarding from "./onboarding";
 import pending_statuses from "./pending-statuses";
+import players from "./players";
 import polls from "./polls";
 import profile_hover_card from "./profile-hover-card";
 import relationships from "./relationships";
@@ -73,6 +74,7 @@ const reducers = {
   notifications,
   onboarding,
   pending_statuses,
+  players,
   polls,
   profile_hover_card,
   relationships,
