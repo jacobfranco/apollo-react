@@ -5,6 +5,8 @@ import { Team } from "src/schemas/team";
 import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import AutoFitText from "src/components/AutoFitText";
+import { useTeamColors } from "src/team-colors";
+import { useTheme } from "src/hooks/useTheme";
 
 interface LolTeamRowProps {
   team: Team;
@@ -20,6 +22,29 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
   const { name, images, aggStats } = team;
 
   const logoUrl = images && images.length > 0 ? images[0].url : placeholderTeam;
+
+  // Get team color and logo type
+  const getTeamColorAndLogoType = useTeamColors();
+  const theme = useTheme();
+  const { logoType } = getTeamColorAndLogoType(name);
+  const isPlaceholder = logoUrl === placeholderTeam;
+
+  // Function to apply logo filter based on logo type and theme
+  const getLogoFilter = (
+    logoType: "black" | "white" | "color",
+    isPlaceholder: boolean,
+    currentTheme: string
+  ): string => {
+    if (isPlaceholder) {
+      return "";
+    }
+    if (logoType === "black" && currentTheme === "dark") {
+      return "invert";
+    } else if (logoType === "white" && currentTheme === "light") {
+      return "invert";
+    }
+    return "";
+  };
 
   return (
     <div
@@ -39,7 +64,11 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
               <img
                 src={logoUrl}
                 alt={`${name} logo`}
-                className="w-10 h-10 rounded-full mr-4"
+                className={`w-10 h-10 rounded-full mr-4 ${getLogoFilter(
+                  logoType,
+                  isPlaceholder,
+                  theme
+                )}`}
               />
               <AutoFitText
                 text={name}
@@ -48,7 +77,7 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
                 maxLines={1}
                 className="text-gray-800 dark:text-gray-200 font-bold"
                 style={{ flex: 1 }}
-                textAlign="left" // Align text to the left
+                textAlign="left"
               />
             </div>
           );
@@ -66,7 +95,6 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
             : 0;
           value = `${winRate.toFixed(2)}%`;
         } else if (column.key === "currentWinStreak") {
-          // Handle currentWinStreak
           const streak = aggStats?.currentWinStreak ?? 0;
           value = formatStreak(streak);
         } else {

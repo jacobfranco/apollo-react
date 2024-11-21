@@ -56,7 +56,7 @@ const teamColorData: { [key: string]: ThemeColors } = {
   "Kawaii Kiwis": { light: "#64FD01", dark: "#64FD01", logoType: "color" },
   "Parakeet Gaming": { light: "#F21D53", dark: "#F21D53", logoType: "color" },
   "GIANTX Academy": { light: "#000000", dark: "#FFFFFF", logoType: "black" },
-  eQuizers: { light: "#FFFC00", dark: "#FFFC00", logoType: "black" },
+  eQuizers: { light: "#FFFC00", dark: "#FFFC00", logoType: "white" },
   "Joker Strike": { light: "#A13A8E", dark: "#A13A8E", logoType: "color" },
   "AvaTrade PixelPenny": {
     light: "#FDBF29",

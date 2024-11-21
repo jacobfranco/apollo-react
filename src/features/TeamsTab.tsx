@@ -9,8 +9,11 @@ import {
   selectTeamsLoading,
   selectTeamsError,
 } from "src/selectors";
+import { Team } from "src/schemas/team";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
 import LolTeamRow from "src/components/LolTeamRow";
+import { openModal, closeModal } from "src/actions/modals";
+import { mainRegions } from "src/regions";
 
 type SortKey =
   | "name"
@@ -47,6 +50,12 @@ const TeamsTab: React.FC = () => {
 
   // State to toggle between basic and advanced stats
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
+
+  // State to toggle between combined and separated views
+  const [isCombined, setIsCombined] = useState(true);
+
+  // State for selected regions in the filter
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   useEffect(() => {
     if (esportName) {
@@ -90,10 +99,53 @@ const TeamsTab: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  const sortedTeams = React.useMemo(() => {
-    if (!sortConfig) return teams;
+  const getApiRegionsOrCountries = (
+    selectedKeys: string[]
+  ): { apiRegions: string[]; countries: string[] } => {
+    const apiRegions: string[] = [];
+    const countries: string[] = [];
 
-    return [...teams].sort((a, b) => {
+    selectedKeys.forEach((key) => {
+      const mainRegion = mainRegions.find((r) => r.key === key);
+      if (mainRegion) {
+        if (mainRegion.apiRegions) {
+          apiRegions.push(...mainRegion.apiRegions);
+        }
+        if (mainRegion.countries) {
+          countries.push(...mainRegion.countries);
+        }
+      }
+    });
+
+    return { apiRegions, countries };
+  };
+
+  const { apiRegions, countries } = getApiRegionsOrCountries(selectedRegions);
+
+  const filteredTeams = teams.filter((team) => {
+    if (selectedRegions.length === 0) return true;
+    const region = team.region;
+    if (!region) return false;
+    const regionAbbr = region.abbreviation;
+    const countryAbbr = region.country?.abbreviation;
+    const matchesApiRegion = regionAbbr && apiRegions.includes(regionAbbr);
+    const matchesCountry = countryAbbr && countries.includes(countryAbbr);
+    return matchesApiRegion || matchesCountry;
+  });
+
+  const teamsByRegion = filteredTeams.reduce((acc, team) => {
+    const regionAbbr = team.region?.abbreviation || "Unknown";
+    if (!acc[regionAbbr]) {
+      acc[regionAbbr] = [];
+    }
+    acc[regionAbbr].push(team);
+    return acc;
+  }, {} as { [region: string]: Team[] });
+
+  const getSortedTeams = (teamsToSort: Team[]) => {
+    if (!sortConfig) return teamsToSort;
+
+    return [...teamsToSort].sort((a, b) => {
       let aValue: any, bValue: any;
 
       if (sortConfig.key === "name") {
@@ -146,7 +198,7 @@ const TeamsTab: React.FC = () => {
       }
       return 0;
     });
-  }, [teams, sortConfig]);
+  };
 
   if (loading) {
     return <div className="text-center">Loading teams...</div>;
@@ -161,8 +213,31 @@ const TeamsTab: React.FC = () => {
 
   return (
     <div>
-      {/* Toggle Button */}
-      <div className="flex justify-end mb-2">
+      {/* Toggle Buttons */}
+      <div className="flex justify-between mb-2">
+        <div>
+          <button
+            onClick={() => setIsCombined((prev) => !prev)}
+            className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 mr-2"
+          >
+            {isCombined ? "Separate by Region" : "Combine All Teams"}
+          </button>
+          <button
+            onClick={() =>
+              dispatch(
+                openModal("REGION_FILTER", {
+                  onApplyFilter: (regions: string[]) => {
+                    setSelectedRegions(regions);
+                    dispatch(closeModal());
+                  },
+                })
+              )
+            }
+            className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
+          >
+            Filter Regions
+          </button>
+        </div>
         <button
           onClick={() => setShowAdvancedStats((prev) => !prev)}
           className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
@@ -171,71 +246,150 @@ const TeamsTab: React.FC = () => {
         </button>
       </div>
 
-      {/* Sorting Controls */}
-      <div className={`grid gap-0`} style={{ gridTemplateColumns }}>
-        {columns.map((column) => (
-          <button
-            key={column.key}
-            onClick={() => handleSort(column.key as SortKey)}
-            className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
-          >
-            <span className="text-sm font-bold">{column.label}</span>
-            <span className="ml-1 text-xs">
-              {sortConfig?.key === column.key ? (
-                sortConfig.direction === "asc" ? (
-                  // Up Arrow
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-3 w-3 inline-block"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                ) : (
-                  // Down Arrow
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-3 w-3 inline-block"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                )
-              ) : (
-                // Dash as placeholder
-                <span className="text-xs font-thin">—</span>
-              )}
-            </span>
-          </button>
-        ))}
-      </div>
+      {/* Render Teams */}
+      {isCombined ? (
+        <>
+          {/* Sorting Controls */}
+          <div className={`grid gap-0`} style={{ gridTemplateColumns }}>
+            {columns.map((column) => (
+              <button
+                key={column.key}
+                onClick={() => handleSort(column.key as SortKey)}
+                className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
+              >
+                <span className="text-sm font-bold">{column.label}</span>
+                <span className="ml-1 text-xs">
+                  {sortConfig?.key === column.key ? (
+                    sortConfig.direction === "asc" ? (
+                      // Up Arrow
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3 inline-block"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 15l7-7 7 7"
+                        />
+                      </svg>
+                    ) : (
+                      // Down Arrow
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3 inline-block"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    )
+                  ) : (
+                    // Dash as placeholder
+                    <span className="text-xs font-thin">—</span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
 
-      {/* Padding between sort buttons and team rows */}
-      <div className="my-2"></div>
+          {/* Padding between sort buttons and team rows */}
+          <div className="my-2"></div>
 
-      {/* Team Rows */}
-      {sortedTeams.map((team) => (
-        <LolTeamRow
-          key={team.id}
-          team={team}
-          columns={columns}
-          gridTemplateColumns={gridTemplateColumns}
-        />
-      ))}
+          {/* Team Rows */}
+          {getSortedTeams(filteredTeams).map((team) => (
+            <LolTeamRow
+              key={team.id}
+              team={team}
+              columns={columns}
+              gridTemplateColumns={gridTemplateColumns}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {Object.entries(teamsByRegion).map(([region, teamsInRegion]) => (
+            <div key={region} className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">{region}</h2>
+
+              {/* Sorting Controls */}
+              <div className={`grid gap-0`} style={{ gridTemplateColumns }}>
+                {columns.map((column) => (
+                  <button
+                    key={column.key}
+                    onClick={() => handleSort(column.key as SortKey)}
+                    className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
+                  >
+                    <span className="text-sm font-bold">{column.label}</span>
+                    <span className="ml-1 text-xs">
+                      {sortConfig?.key === column.key ? (
+                        sortConfig.direction === "asc" ? (
+                          // Up Arrow
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3 w-3 inline-block"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 15l7-7 7 7"
+                            />
+                          </svg>
+                        ) : (
+                          // Down Arrow
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3 w-3 inline-block"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        )
+                      ) : (
+                        // Dash as placeholder
+                        <span className="text-xs font-thin">—</span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Padding between sort buttons and team rows */}
+              <div className="my-2"></div>
+
+              {/* Team Rows */}
+              {getSortedTeams(teamsInRegion).map((team) => (
+                <LolTeamRow
+                  key={team.id}
+                  team={team}
+                  columns={columns}
+                  gridTemplateColumns={gridTemplateColumns}
+                />
+              ))}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 };
