@@ -4,7 +4,7 @@ import React from "react";
 import { Team } from "src/schemas/team";
 import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
-import AutoFitText from "src/components/AutoFitText"; // Ensure the path is correct
+import AutoFitText from "src/components/AutoFitText";
 
 interface LolTeamRowProps {
   team: Team;
@@ -23,7 +23,8 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
 
   return (
     <div
-      className={`grid ${gridTemplateColumns} gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
+      className={`grid gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
+      style={{ gridTemplateColumns }}
     >
       {columns.map((column) => {
         let value;
@@ -51,6 +52,14 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
               />
             </div>
           );
+        } else if (column.key === "seriesRecord") {
+          const seriesWins = aggStats?.totalSeriesWins ?? 0;
+          const seriesLosses = aggStats?.totalSeriesLosses ?? 0;
+          value = `${seriesWins} - ${seriesLosses}`;
+        } else if (column.key === "totalWins") {
+          value = aggStats?.totalWins ?? 0;
+        } else if (column.key === "totalLosses") {
+          value = aggStats?.totalLosses ?? 0;
         } else if (column.key === "winRate") {
           const winRate = aggStats?.totalMatches
             ? (aggStats.totalWins / aggStats.totalMatches) * 100
@@ -68,7 +77,11 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
             } else if (
               statKey === "averageScore" ||
               statKey === "averageTurretsDestroyed" ||
-              statKey === "averageInhibitorsDestroyed"
+              statKey === "averageInhibitorsDestroyed" ||
+              statKey === "averageDragonKills" ||
+              statKey === "averageBaronKills" ||
+              statKey === "averageHeraldKills" ||
+              statKey === "averageVoidGrubKills"
             ) {
               value = formatStat(aggStats[statKey]);
             } else {

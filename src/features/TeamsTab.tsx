@@ -14,7 +14,7 @@ import LolTeamRow from "src/components/LolTeamRow";
 
 type SortKey =
   | "name"
-  | "totalMatches"
+  | "seriesRecord"
   | "totalWins"
   | "totalLosses"
   | "winRate"
@@ -22,7 +22,11 @@ type SortKey =
   | "averageGoldEarned"
   | "averageScore"
   | "averageTurretsDestroyed"
-  | "averageInhibitorsDestroyed";
+  | "averageInhibitorsDestroyed"
+  | "averageDragonKills"
+  | "averageBaronKills"
+  | "averageHeraldKills"
+  | "averageVoidGrubKills";
 
 const TeamsTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,14 +36,17 @@ const TeamsTab: React.FC = () => {
   const loading = useAppSelector(selectTeamsLoading);
   const error = useAppSelector(selectTeamsError);
 
-  // Initialize sortConfig to sort by winRate in descending order
+  // Initialize sortConfig to sort by seriesRecord in descending order
   const [sortConfig, setSortConfig] = useState<{
     key: SortKey;
     direction: "asc" | "desc";
   }>({
-    key: "winRate",
+    key: "seriesRecord",
     direction: "desc",
   });
+
+  // State to toggle between basic and advanced stats
+  const [showAdvancedStats, setShowAdvancedStats] = useState(false);
 
   useEffect(() => {
     if (esportName) {
@@ -47,17 +54,29 @@ const TeamsTab: React.FC = () => {
     }
   }, [dispatch, esportName]);
 
-  const columns: Array<{ label: string; key: SortKey }> = [
+  // Define the columns for basic and advanced stats
+  const basicColumns: Array<{ label: string; key: SortKey }> = [
     { label: "Team", key: "name" },
+    { label: "Record", key: "seriesRecord" },
     { label: "Wins", key: "totalWins" },
     { label: "Losses", key: "totalLosses" },
     { label: "WR%", key: "winRate" },
     { label: "Streak", key: "currentWinStreak" },
+  ];
+
+  const advancedColumns: Array<{ label: string; key: SortKey }> = [
+    { label: "Team", key: "name" },
     { label: "Gold", key: "averageGoldEarned" },
     { label: "Kills", key: "averageScore" },
     { label: "Towers", key: "averageTurretsDestroyed" },
     { label: "Inhibs", key: "averageInhibitorsDestroyed" },
+    { label: "Barons", key: "averageBaronKills" },
+    { label: "Dragons", key: "averageDragonKills" },
+    { label: "Heralds", key: "averageHeraldKills" },
+    { label: "Voidgrubs", key: "averageVoidGrubKills" },
   ];
+
+  const columns = showAdvancedStats ? advancedColumns : basicColumns;
 
   const handleSort = (key: SortKey) => {
     let direction: "asc" | "desc";
@@ -80,6 +99,27 @@ const TeamsTab: React.FC = () => {
       if (sortConfig.key === "name") {
         aValue = a.name.toLowerCase();
         bValue = b.name.toLowerCase();
+      } else if (sortConfig.key === "seriesRecord") {
+        const aSeriesWins = a.aggStats?.totalSeriesWins ?? 0;
+        const aSeriesLosses = a.aggStats?.totalSeriesLosses ?? 0;
+        const bSeriesWins = b.aggStats?.totalSeriesWins ?? 0;
+        const bSeriesLosses = b.aggStats?.totalSeriesLosses ?? 0;
+        const aSeriesWinRate =
+          aSeriesWins + aSeriesLosses > 0
+            ? aSeriesWins / (aSeriesWins + aSeriesLosses)
+            : 0;
+        const bSeriesWinRate =
+          bSeriesWins + bSeriesLosses > 0
+            ? bSeriesWins / (bSeriesWins + bSeriesLosses)
+            : 0;
+        aValue = aSeriesWinRate;
+        bValue = bSeriesWinRate;
+      } else if (sortConfig.key === "totalWins") {
+        aValue = a.aggStats?.totalWins ?? 0;
+        bValue = b.aggStats?.totalWins ?? 0;
+      } else if (sortConfig.key === "totalLosses") {
+        aValue = a.aggStats?.totalLosses ?? 0;
+        bValue = b.aggStats?.totalLosses ?? 0;
       } else if (sortConfig.key === "winRate") {
         const aWinRate = a.aggStats?.totalMatches
           ? a.aggStats.totalWins / a.aggStats.totalMatches
@@ -89,6 +129,9 @@ const TeamsTab: React.FC = () => {
           : 0;
         aValue = aWinRate;
         bValue = bWinRate;
+      } else if (sortConfig.key === "currentWinStreak") {
+        aValue = a.aggStats?.currentWinStreak ?? 0;
+        bValue = b.aggStats?.currentWinStreak ?? 0;
       } else {
         const statKey = sortConfig.key as keyof TeamAggStats;
         aValue = a.aggStats ? a.aggStats[statKey] ?? 0 : 0;
@@ -113,13 +156,23 @@ const TeamsTab: React.FC = () => {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  // Define the shared grid template
-  const gridTemplateColumns = "grid-cols-[200px_repeat(8,1fr)]";
+  // Calculate grid template columns with fixed first column
+  const gridTemplateColumns = `200px repeat(${columns.length - 1}, 1fr)`;
 
   return (
     <div>
+      {/* Toggle Button */}
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() => setShowAdvancedStats((prev) => !prev)}
+          className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
+        >
+          {showAdvancedStats ? "Show Standings" : "Show Stats"}
+        </button>
+      </div>
+
       {/* Sorting Controls */}
-      <div className={`grid ${gridTemplateColumns} gap-0`}>
+      <div className={`grid gap-0`} style={{ gridTemplateColumns }}>
         {columns.map((column) => (
           <button
             key={column.key}

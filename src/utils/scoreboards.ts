@@ -51,7 +51,7 @@ export const getCoverageFact = (match: Match | undefined): string => {
 };
 
 /**
- * Formats a numerical stat to two decimal places.
+ * Formats a numerical stat to one decimal place.
  * If the input is null or undefined, returns a fallback string.
  *
  * @param value - The numerical value to format.
@@ -65,7 +65,7 @@ export const formatStat = (
   if (value === null || value === undefined) {
     return fallback;
   }
-  return value.toFixed(2);
+  return value.toFixed(1);
 };
 
 /**
@@ -73,7 +73,7 @@ export const formatStat = (
  *
  * @param streak - The number representing the streak. Positive for wins, negative for losses.
  * @returns A string formatted as "W<number>" for wins or "L<number>" for losses.
- *          Returns "N/A" if the streak is zero.
+ *          Returns "W0" if the streak is zero.
  */
 export function formatStreak(streak: number): string {
   if (streak > 0) {
@@ -81,6 +81,6 @@ export function formatStreak(streak: number): string {
   } else if (streak < 0) {
     return `L${Math.abs(streak)}`;
   } else {
-    return "N/A"; // Represents no current streak
+    return "W0"; // Represents no current streak
   }
 }

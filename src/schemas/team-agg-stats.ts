@@ -13,6 +13,17 @@ export const teamAggStatsSchema = z.object({
   averageTurretsDestroyed: z.number(),
   averageInhibitorsDestroyed: z.number(),
   currentWinStreak: z.number(),
+  totalDragonKills: z.number(),
+  totalBaronKills: z.number(),
+  totalHeraldKills: z.number(),
+  totalVoidGrubKills: z.number(),
+  averageDragonKills: z.number(),
+  averageBaronKills: z.number(),
+  averageHeraldKills: z.number(),
+  averageVoidGrubKills: z.number(),
+  totalSeries: z.number(),
+  totalSeriesWins: z.number(),
+  totalSeriesLosses: z.number(),
 });
 
 export type TeamAggStats = z.infer<typeof teamAggStatsSchema>;
