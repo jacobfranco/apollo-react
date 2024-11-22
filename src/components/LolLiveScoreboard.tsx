@@ -1,7 +1,7 @@
 // src/components/LolLiveScoreboard.tsx
 
 import React, { useEffect, useMemo } from "react";
-import { useTeamColors } from "src/team-colors";
+import { useTeamData } from "src/teams";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import useLiveMatchStream from "src/api/hooks/useLiveMatchStream";
@@ -78,7 +78,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
   const start = currentSeries.start;
 
-  const getTeamColorAndLogoType = useTeamColors();
+  const getTeamData = useTeamData();
   const theme = useTheme();
 
   if (mergedParticipants.length < 2) {
@@ -122,10 +122,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
     team2Towers = team2MatchStats?.turretsDestroyed ?? "-";
   }
 
-  const { color: team1Color, logoType: team1LogoType } =
-    getTeamColorAndLogoType(team1Name);
-  const { color: team2Color, logoType: team2LogoType } =
-    getTeamColorAndLogoType(team2Name);
+  const { color: team1Color, logoType: team1LogoType } = getTeamData(team1Name);
+  const { color: team2Color, logoType: team2LogoType } = getTeamData(team2Name);
 
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;

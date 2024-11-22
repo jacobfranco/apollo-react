@@ -25,6 +25,7 @@ export const teamSchema = z.object({
   matchStats: teamMatchStatsSchema.optional().nullable(),
   lolSeasonStats: z.array(teamMatchStatsSchema).optional().nullable(),
   aggStats: teamAggStatsSchema.optional().nullable(),
+  league: z.string().optional(),
 });
 
 export type Team = z.infer<typeof teamSchema>;

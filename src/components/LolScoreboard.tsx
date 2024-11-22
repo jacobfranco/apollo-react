@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppSelector } from "src/hooks";
 import { selectSeriesById } from "src/selectors";
-import { useTeamColors } from "src/team-colors";
+import { useTeamData } from "src/teams";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import { useTheme } from "src/hooks/useTheme";
@@ -22,7 +22,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
 
   const formattedTitle = formatScoreboardTitle(series);
 
-  const getTeamColorAndLogoType = useTeamColors();
+  const getTeamData = useTeamData();
   const theme = useTheme();
 
   const team1 = participants[0]?.roster?.team;
@@ -40,10 +40,8 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
   const winningSide =
     score1 > score2 ? "left" : score2 > score1 ? "right" : null;
 
-  const { color: team1Color, logoType: team1LogoType } =
-    getTeamColorAndLogoType(team1Name);
-  const { color: team2Color, logoType: team2LogoType } =
-    getTeamColorAndLogoType(team2Name);
+  const { color: team1Color, logoType: team1LogoType } = getTeamData(team1Name);
+  const { color: team2Color, logoType: team2LogoType } = getTeamData(team2Name);
 
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;

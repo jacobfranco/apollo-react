@@ -1,3 +1,5 @@
+// src/actions/teams.ts
+
 import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { RootState } from "src/store";
@@ -19,6 +21,8 @@ export const fetchTeamsFailure = (error: string) => ({
   payload: error,
 });
 
+// Removed useTeamData from here
+
 // Thunk action to fetch teams
 export const fetchTeams = (
   gamePath: string
@@ -30,6 +34,8 @@ export const fetchTeams = (
       const response = await client.get(`/api/${gamePath}/teams`);
       console.log("API Response Data:", response.data);
       const parsedData = teamSchema.array().parse(response.data);
+
+      // Dispatch without enhancing
       dispatch(fetchTeamsSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {

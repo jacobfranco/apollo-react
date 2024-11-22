@@ -3,7 +3,7 @@ import { List as ImmutableList, Map as ImmutableMap } from "immutable";
 import { Match } from "src/schemas/match";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
-import { useTeamColors } from "src/team-colors";
+import { useTeamData } from "src/teams";
 import { useTheme } from "src/hooks/useTheme";
 import SvgIcon from "./SvgIcon";
 import { formatGold, getCoverageFact } from "src/utils/scoreboards";
@@ -30,7 +30,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   team2SeriesScore,
 }) => {
   const dispatch = useAppDispatch();
-  const getTeamColorAndLogoType = useTeamColors();
+  const getTeamData = useTeamData();
   const theme = useTheme();
 
   const coverageFact = getCoverageFact(match);
@@ -61,10 +61,8 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
 
   // Team colors and logo types
-  const { color: team1Color, logoType: team1LogoType } =
-    getTeamColorAndLogoType(team1Name);
-  const { color: team2Color, logoType: team2LogoType } =
-    getTeamColorAndLogoType(team2Name);
+  const { color: team1Color, logoType: team1LogoType } = getTeamData(team1Name);
+  const { color: team2Color, logoType: team2LogoType } = getTeamData(team2Name);
 
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;

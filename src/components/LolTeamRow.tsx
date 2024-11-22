@@ -5,7 +5,7 @@ import { Team } from "src/schemas/team";
 import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import AutoFitText from "src/components/AutoFitText";
-import { useTeamColors } from "src/team-colors";
+import { useTeamData } from "src/teams";
 import { useTheme } from "src/hooks/useTheme";
 
 interface LolTeamRowProps {
@@ -24,9 +24,9 @@ const LolTeamRow: React.FC<LolTeamRowProps> = ({
   const logoUrl = images && images.length > 0 ? images[0].url : placeholderTeam;
 
   // Get team color and logo type
-  const getTeamColorAndLogoType = useTeamColors();
+  const getTeamData = useTeamData();
   const theme = useTheme();
-  const { logoType } = getTeamColorAndLogoType(name);
+  const { logoType } = getTeamData(name);
   const isPlaceholder = logoUrl === placeholderTeam;
 
   // Function to apply logo filter based on logo type and theme

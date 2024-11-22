@@ -1,11 +1,8 @@
-// src/components/ScheduleTab.tsx
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import LolScoreboard from "src/components/LolScoreboard";
 import LolLiveScoreboard from "src/components/LolLiveScoreboard";
-import ValorantScoreboard from "src/components/ValorantScoreboard";
 import esportsConfig from "src/esports-config";
 import {
   selectSeriesByWeek,
@@ -17,9 +14,9 @@ import { getAllMondays, formatDate } from "src/utils/dates";
 import { openModal, closeModal } from "src/actions/modals";
 import { HStack, Spinner } from "src/components";
 import { Button } from "src/components/Button";
-import { Series } from "src/schemas/series";
+import { Series, Participant } from "src/schemas";
 import { fetchSeries } from "src/actions/series";
-import { mainRegions } from "src/regions";
+import { teamData } from "src/teams";
 
 const ScheduleTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +31,7 @@ const ScheduleTab: React.FC = () => {
 
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const now = new Date();
-    const year = 2024;
+    const year = now.getFullYear();
     const allMondays = getAllMondays(year);
     const firstMonday = allMondays[0];
 
@@ -57,7 +54,7 @@ const ScheduleTab: React.FC = () => {
     return firstMonday;
   });
 
-  const [selectedMainRegions, setSelectedMainRegions] = useState<string[]>([]);
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
 
   useEffect(() => {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
@@ -77,60 +74,31 @@ const ScheduleTab: React.FC = () => {
   const handleOpenFilterModal = () => {
     dispatch(
       openModal("REGION_FILTER", {
-        onApplyFilter: (regions: string[]) => {
-          setSelectedMainRegions(regions);
+        onApplyFilter: (leagues: string[]) => {
+          setSelectedLeagues(leagues);
           dispatch(closeModal());
         },
       })
     );
   };
 
-  // Helper function to map main regions to API regions and/or countries
-  const getApiRegionsOrCountries = (
-    selectedKeys: string[]
-  ): { apiRegions: string[]; countries: string[] } => {
-    const apiRegions: string[] = [];
-    const countries: string[] = [];
+  // Filter series based on selected leagues
+  const filteredSeries = seriesList.filter((seriesItem: Series) => {
+    if (selectedLeagues.length === 0) return true;
 
-    selectedKeys.forEach((key) => {
-      const mainRegion = mainRegions.find((r) => r.key === key);
-      if (mainRegion) {
-        if (mainRegion.apiRegions) {
-          apiRegions.push(...mainRegion.apiRegions);
-        }
-        if (mainRegion.countries) {
-          countries.push(...mainRegion.countries);
-        }
-      }
+    return seriesItem.participants.some((participant: Participant) => {
+      const team = participant.roster?.team;
+      if (!team) return false;
+
+      const teamName = team.name;
+      const teamInfo = teamData[teamName];
+      const teamLeague = teamInfo?.league ?? "Unknown";
+
+      const matchesLeague = teamLeague && selectedLeagues.includes(teamLeague);
+
+      return matchesLeague;
     });
-
-    return { apiRegions, countries };
-  };
-
-  const { apiRegions, countries } =
-    getApiRegionsOrCountries(selectedMainRegions);
-
-  const filteredSeries = seriesList.filter(
-    (seriesItem: Series) =>
-      seriesItem.lifecycle !== "deleted" &&
-      (selectedMainRegions.length === 0 ||
-        seriesItem.participants.some((participant) => {
-          const team = participant.roster?.team;
-          if (!team || !team.region) return false;
-
-          const region = team.region;
-          const countryAbbr = team.region.country?.abbreviation;
-
-          // Check if the team's API region matches any selected API regions
-          const matchesApiRegion =
-            region.abbreviation && apiRegions.includes(region.abbreviation);
-
-          // Check if the team's country abbreviation matches any selected countries
-          const matchesCountry = countryAbbr && countries.includes(countryAbbr);
-
-          return matchesApiRegion || matchesCountry;
-        }))
-  );
+  });
 
   const groupedSeries = filteredSeries.reduce((groups, seriesItem) => {
     const date = new Date(seriesItem.start * 1000);
@@ -183,31 +151,6 @@ const ScheduleTab: React.FC = () => {
           </div>
         );
       }
-      case "valorant": {
-        return (
-          <div className="space-y-8">
-            {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
-              <div key={day}>
-                <h2 className="text-xl font-semibold mb-4">
-                  {formatDate(day)}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
-                  {seriesForDay.map((seriesItem) => (
-                    <Link
-                      key={seriesItem.id}
-                      to={`/esports/${esportName}/series/${seriesItem.id}`}
-                      className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                      style={{ width: "100%", textDecoration: "none" }}
-                    >
-                      {/* <ValorantScoreboard seriesId={seriesItem.id} /> */}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-      }
       default:
         return <div>Unsupported game type for scores content</div>;
     }
@@ -222,7 +165,7 @@ const ScheduleTab: React.FC = () => {
         className="mb-4"
       >
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
-        <Button onClick={handleOpenFilterModal}>Filter Regions</Button>
+        <Button onClick={handleOpenFilterModal}>Filter Leagues</Button>
       </HStack>
       {renderScoresContent()}
     </div>

@@ -1,5 +1,3 @@
-// src/components/TeamsTab.tsx
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
@@ -13,7 +11,7 @@ import { Team } from "src/schemas/team";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
 import LolTeamRow from "src/components/LolTeamRow";
 import { openModal, closeModal } from "src/actions/modals";
-import { mainRegions } from "src/regions";
+import { teamData } from "src/teams";
 
 type SortKey =
   | "name"
@@ -54,8 +52,8 @@ const TeamsTab: React.FC = () => {
   // State to toggle between combined and separated views
   const [isCombined, setIsCombined] = useState(true);
 
-  // State for selected regions in the filter
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  // State for selected leagues
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
 
   useEffect(() => {
     if (esportName) {
@@ -99,48 +97,34 @@ const TeamsTab: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  const getApiRegionsOrCountries = (
-    selectedKeys: string[]
-  ): { apiRegions: string[]; countries: string[] } => {
-    const apiRegions: string[] = [];
-    const countries: string[] = [];
-
-    selectedKeys.forEach((key) => {
-      const mainRegion = mainRegions.find((r) => r.key === key);
-      if (mainRegion) {
-        if (mainRegion.apiRegions) {
-          apiRegions.push(...mainRegion.apiRegions);
-        }
-        if (mainRegion.countries) {
-          countries.push(...mainRegion.countries);
-        }
-      }
-    });
-
-    return { apiRegions, countries };
-  };
-
-  const { apiRegions, countries } = getApiRegionsOrCountries(selectedRegions);
-
-  const filteredTeams = teams.filter((team) => {
-    if (selectedRegions.length === 0) return true;
-    const region = team.region;
-    if (!region) return false;
-    const regionAbbr = region.abbreviation;
-    const countryAbbr = region.country?.abbreviation;
-    const matchesApiRegion = regionAbbr && apiRegions.includes(regionAbbr);
-    const matchesCountry = countryAbbr && countries.includes(countryAbbr);
-    return matchesApiRegion || matchesCountry;
+  // Map over teams to assign league from teamData
+  const teamsWithLeague = teams.map((team) => {
+    const teamInfo = teamData[team.name];
+    return {
+      ...team,
+      league: teamInfo?.league ?? "Unknown",
+    };
   });
 
-  const teamsByRegion = filteredTeams.reduce((acc, team) => {
-    const regionAbbr = team.region?.abbreviation || "Unknown";
-    if (!acc[regionAbbr]) {
-      acc[regionAbbr] = [];
+  // Filter teams based on selected leagues
+  const filteredTeams = teamsWithLeague.filter((team) => {
+    if (selectedLeagues.length === 0) return true;
+
+    const teamLeague = team.league;
+    const matchesLeague = teamLeague && selectedLeagues.includes(teamLeague);
+
+    return matchesLeague;
+  });
+
+  // Group teams by league
+  const teamsByLeague = filteredTeams.reduce((acc, team) => {
+    const league = team.league || "Unknown";
+    if (!acc[league]) {
+      acc[league] = [];
     }
-    acc[regionAbbr].push(team);
+    acc[league].push(team);
     return acc;
-  }, {} as { [region: string]: Team[] });
+  }, {} as { [league: string]: Team[] });
 
   const getSortedTeams = (teamsToSort: Team[]) => {
     if (!sortConfig) return teamsToSort;
@@ -220,14 +204,14 @@ const TeamsTab: React.FC = () => {
             onClick={() => setIsCombined((prev) => !prev)}
             className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 mr-2"
           >
-            {isCombined ? "Separate by Region" : "Combine All Teams"}
+            {isCombined ? "Separate by League" : "Combine All Teams"}
           </button>
           <button
             onClick={() =>
               dispatch(
                 openModal("REGION_FILTER", {
-                  onApplyFilter: (regions: string[]) => {
-                    setSelectedRegions(regions);
+                  onApplyFilter: (leagues: string[]) => {
+                    setSelectedLeagues(leagues);
                     dispatch(closeModal());
                   },
                 })
@@ -235,7 +219,7 @@ const TeamsTab: React.FC = () => {
             }
             className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
           >
-            Filter Regions
+            Filter
           </button>
         </div>
         <button
@@ -317,9 +301,9 @@ const TeamsTab: React.FC = () => {
         </>
       ) : (
         <>
-          {Object.entries(teamsByRegion).map(([region, teamsInRegion]) => (
-            <div key={region} className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">{region}</h2>
+          {Object.entries(teamsByLeague).map(([league, teamsInLeague]) => (
+            <div key={league} className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">{league}</h2>
 
               {/* Sorting Controls */}
               <div className={`grid gap-0`} style={{ gridTemplateColumns }}>
@@ -378,7 +362,7 @@ const TeamsTab: React.FC = () => {
               <div className="my-2"></div>
 
               {/* Team Rows */}
-              {getSortedTeams(teamsInRegion).map((team) => (
+              {getSortedTeams(teamsInLeague).map((team) => (
                 <LolTeamRow
                   key={team.id}
                   team={team}
