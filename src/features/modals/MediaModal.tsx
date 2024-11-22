@@ -284,6 +284,11 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
     }
   };
 
+  // Get the current media item
+  const currentMediaItem = hasMultipleImages
+    ? media.get(getIndex())
+    : media.get(0);
+
   return (
     <div className="media-modal pointer-events-auto fixed inset-0 z-[9999] h-full bg-gray-900/90">
       <div className="absolute inset-0" role="presentation">
@@ -313,13 +318,16 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
             />
 
             <HStack alignItems="center" space={2}>
-              <IconButton
-                src={require("@tabler/icons/outline/download.svg")}
-                theme="dark"
-                className="!p-1.5 hover:scale-105 hover:bg-gray-900"
-                iconClassName="h-5 w-5"
-                onClick={handleDownload}
-              />
+              {/* Conditionally render the download button */}
+              {currentMediaItem?.type !== "stream" && (
+                <IconButton
+                  src={require("@tabler/icons/outline/download.svg")}
+                  theme="dark"
+                  className="!p-1.5 hover:scale-105 hover:bg-gray-900"
+                  iconClassName="h-5 w-5"
+                  onClick={handleDownload}
+                />
+              )}
 
               {status && (
                 <IconButton

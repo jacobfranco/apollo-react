@@ -1,3 +1,5 @@
+// src/components/LolScoreboardDetail.tsx
+
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { selectSeriesById, selectMatchById } from "src/selectors";
@@ -175,6 +177,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     team1 = mergedParticipants[0];
     team2 = mergedParticipants[1];
 
+    // Use players from Participant.roster.players
     team1Players = team1?.roster?.players ? [...team1.roster.players] : [];
     team2Players = team2?.roster?.players ? [...team2.roster.players] : [];
   } else {
@@ -182,6 +185,7 @@ const LolScoreboardDetail: React.FC<LolScoreboardDetailProps> = ({
     return <div>Participants data is not available.</div>;
   }
 
+  // Sort players by position
   type Position = "top" | "jungle" | "mid" | "bot" | "support";
 
   const positionOrder: Position[] = ["top", "jungle", "mid", "bot", "support"];

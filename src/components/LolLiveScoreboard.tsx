@@ -15,7 +15,7 @@ import {
   getCoverageFact,
 } from "src/utils/scoreboards";
 import SvgIcon from "./SvgIcon";
-import ScoreboardClock from "./ScoreboardClock"; // Import the new component
+import ScoreboardClock from "./ScoreboardClock";
 
 interface LolLiveScoreboardProps {
   seriesId: number;
@@ -50,13 +50,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   );
 
   const coverageFact = getCoverageFact(liveMatch);
-
-  useEffect(() => {
-    console.log(
-      `Component re-rendered. LiveMatch for matchId ${currentMatchId}:`,
-      liveMatch
-    );
-  }, [liveMatch, currentMatchId]);
 
   const currentSeries = series;
 
@@ -97,7 +90,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   const team1Logo = team1?.images?.[0]?.url || placeholderTeam;
   const team2Logo = team2?.images?.[0]?.url || placeholderTeam;
 
-  // Initialize match stats variables
+  // Initialize match stats variables with placeholders
   let team1Kills: number | string = "-";
   let team2Kills: number | string = "-";
 
@@ -226,58 +219,53 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
         <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
           <ScoreboardClock liveMatch={liveMatch} coverageFact={coverageFact} />
-          {coverageFact === "available" ? (
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 text-right text-lg font-bold">
-                  {team1Kills}
-                </div>
-                <div className="flex-shrink-0 mx-2">
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/swords.svg")}
-                    className="h-6 w-6 text-primary-500"
-                  />
-                </div>
-                <div className="flex-1 text-left text-lg font-bold">
-                  {team2Kills}
-                </div>
+          {/* Always display the stats containers with placeholder values if stats are unavailable */}
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Kills}
               </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1 text-right text-lg font-bold">
-                  {team1Gold}
-                </div>
-                <div className="flex-shrink-0 mx-2">
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/coins.svg")}
-                    className="h-6 w-6 text-primary-500"
-                  />
-                </div>
-                <div className="flex-1 text-left text-lg font-bold">
-                  {team2Gold}
-                </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/swords.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
               </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex-1 text-right text-lg font-bold">
-                  {team1Towers}
-                </div>
-                <div className="flex-shrink-0 mx-2">
-                  <SvgIcon
-                    src={require("@tabler/icons/outline/tower.svg")}
-                    className="h-6 w-6 text-primary-500"
-                  />
-                </div>
-                <div className="flex-1 text-left text-lg font-bold">
-                  {team2Towers}
-                </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Kills}
               </div>
             </div>
-          ) : (
-            <div className="text-sm text-gray-500">
-              Stats are currently unavailable, please check again later
+
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Gold}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/coins.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Gold}
+              </div>
             </div>
-          )}
+
+            <div className="flex items-center justify-between">
+              <div className="flex-1 text-right text-lg font-bold">
+                {team1Towers}
+              </div>
+              <div className="flex-shrink-0 mx-2">
+                <SvgIcon
+                  src={require("@tabler/icons/outline/tower.svg")}
+                  className="h-6 w-6 text-primary-500"
+                />
+              </div>
+              <div className="flex-1 text-left text-lg font-bold">
+                {team2Towers}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col items-center w-1/3">

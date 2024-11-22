@@ -1,3 +1,5 @@
+// src/components/PlayerRow.tsx
+
 import React from "react";
 import { Player } from "src/schemas/player";
 import SvgIcon from "./SvgIcon";
@@ -11,10 +13,10 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
   const isLeft = team === "left";
 
   const {
-    kills = 0,
-    deaths = 0,
-    assists = 0,
-    totalCreepScore = 0,
+    kills = "-",
+    deaths = "-",
+    assists = "-",
+    totalCreepScore = "-",
     champion,
     items = [],
     trinketSlot = [],
@@ -49,7 +51,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
     top: "top",
     jungle: "jng",
     mid: "mid",
-    bottom: "bot",
+    bot: "bot",
     support: "sup",
     unassigned: "N/A",
   };
@@ -76,13 +78,13 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* Player Info - Fixed width */}
             <div className="w-40 ml-4 flex flex-col min-w-0">
               <div className="flex items-center text-md font-bold text-black dark:text-white uppercase truncate">
-                {player?.nickName}
+                {player?.nickName || "Player"}
                 <span className="ml-1 text-sm text-gray-400">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
               </div>
               <div className="text-xs text-gray-500 truncate mt-1">
-                {fullName}
+                {fullName || "Full Name"}
               </div>
             </div>
             {/* KDA and CS - Fixed position in center */}
@@ -178,10 +180,10 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
                 <span className="text-gray-400 text-sm mr-1">
                   {roleAbbreviations[playerRole] || playerRole}
                 </span>
-                {player?.nickName}
+                {player?.nickName || "Player"}
               </div>
               <div className="text-xs text-gray-500 truncate mt-1">
-                {fullName}
+                {fullName || "Full Name"}
               </div>
             </div>
             {/* Player Portrait - Fixed width */}

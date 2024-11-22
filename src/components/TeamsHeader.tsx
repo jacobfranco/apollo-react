@@ -1,3 +1,5 @@
+// src/components/TeamsHeader.tsx
+
 import React from "react";
 import { List as ImmutableList, Map as ImmutableMap } from "immutable";
 import { Match } from "src/schemas/match";
@@ -112,7 +114,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   };
 
   type StatValue = number | string;
-
   // Get team match stats or use '-' if not available
   const team1Kills: StatValue = team1MatchStats?.score ?? "-";
   const team2Kills: StatValue = team2MatchStats?.score ?? "-";
@@ -127,11 +128,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
 
   const team1Towers: StatValue = team1MatchStats?.turretsDestroyed ?? "-";
   const team2Towers: StatValue = team2MatchStats?.turretsDestroyed ?? "-";
-
-  const team1Inhibitors: StatValue =
-    team1MatchStats?.inhibitorsDestroyed ?? "-";
-  const team2Inhibitors: StatValue =
-    team2MatchStats?.inhibitorsDestroyed ?? "-";
 
   const team1EliteCreepsKills = team1MatchStats?.creeps.neutrals;
   const team2EliteCreepsKills = team2MatchStats?.creeps.neutrals;
@@ -160,7 +156,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     const startTime = series.start ? new Date(series.start * 1000) : null;
     statusDisplay = startTime ? `${formatDateTime(startTime)}` : "Upcoming";
   }
-
   // Helper function to determine text colors based on metric comparison
   const getMetricClasses = (
     team1Value: number | string,
@@ -199,7 +194,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     team2GoldValue ?? "-"
   );
   const towersClasses = getMetricClasses(team1Towers, team2Towers);
-  const inhibitorsClasses = getMetricClasses(team1Inhibitors, team2Inhibitors);
 
   // Function to handle opening the stream modal
   const handleOpenStream = () => {
@@ -259,7 +253,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
           />
         </div>
         {/* Team Elites with added padding */}
-        {coverageFact === "available" && team1EliteCreepsKills && (
+        {team1EliteCreepsKills !== undefined && (
           <TeamElites
             creepsKills={team1EliteCreepsKills}
             teamSide="left"
@@ -277,105 +271,80 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
           <div className="text-gray-500 font-bold">{statusDisplay}</div>
         )}
 
-        {coverageFact === "available" ? (
-          <>
-            {/* Kills Row */}
-            <div className="flex items-center justify-between w-full">
-              <div
-                className={`flex-1 text-right text-lg font-bold ${killsClasses.team1Class}`}
-              >
-                {team1Kills}
-              </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/swords.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div
-                className={`flex-1 text-left text-lg font-bold ${killsClasses.team2Class}`}
-              >
-                {team2Kills}
-              </div>
+        {/* Always display the metrics containers with placeholder values */}
+        <>
+          {/* Kills Row */}
+          <div className="flex items-center justify-between w-full">
+            <div
+              className={`flex-1 text-right text-lg font-bold ${killsClasses.team1Class}`}
+            >
+              {team1Kills}
             </div>
-
-            {/* Gold Row */}
-            <div className="flex items-center justify-between w-full">
-              <div
-                className={`flex-1 text-right text-lg font-bold ${goldClasses.team1Class}`}
-              >
-                {team1Gold}
-              </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/coins.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div
-                className={`flex-1 text-left text-lg font-bold ${goldClasses.team2Class}`}
-              >
-                {team2Gold}
-              </div>
+            <div className="flex-shrink-0 mx-2">
+              <SvgIcon
+                src={require("@tabler/icons/outline/swords.svg")}
+                className="h-6 w-6 text-primary-500"
+              />
             </div>
-
-            {/* Towers Row */}
-            <div className="flex items-center justify-between w-full">
-              <div
-                className={`flex-1 text-right text-lg font-bold ${towersClasses.team1Class}`}
-              >
-                {team1Towers}
-              </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/tower.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div
-                className={`flex-1 text-left text-lg font-bold ${towersClasses.team2Class}`}
-              >
-                {team2Towers}
-              </div>
+            <div
+              className={`flex-1 text-left text-lg font-bold ${killsClasses.team2Class}`}
+            >
+              {team2Kills}
             </div>
-
-            {/* Inhibitors Destroyed Row */}
-            <div className="flex items-center justify-between w-full">
-              <div
-                className={`flex-1 text-right text-lg font-bold ${inhibitorsClasses.team1Class}`}
-              >
-                {team1Inhibitors}
-              </div>
-              <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/focus.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
-              </div>
-              <div
-                className={`flex-1 text-left text-lg font-bold ${inhibitorsClasses.team2Class}`}
-              >
-                {team2Inhibitors}
-              </div>
-            </div>
-
-            {/* Stream Button */}
-            {series.broadcasters && series.broadcasters.length > 0 && (
-              <div className="flex justify-center my- pb-2">
-                <button
-                  onClick={handleOpenStream}
-                  className="px-4 py-2 bg-primary-300 dark:bg-secondary-600 rounded text-black dark:text-white hover:bg-primary-500 dark:hover:bg-secondary-800 focus:outline-none border dark:border-primary-700"
-                >
-                  Watch
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-sm text-gray-500">
-            Stats are currently unavailable, please check again later
           </div>
-        )}
+
+          {/* Gold Row */}
+          <div className="flex items-center justify-between w-full">
+            <div
+              className={`flex-1 text-right text-lg font-bold ${goldClasses.team1Class}`}
+            >
+              {team1Gold}
+            </div>
+            <div className="flex-shrink-0 mx-2">
+              <SvgIcon
+                src={require("@tabler/icons/outline/coins.svg")}
+                className="h-6 w-6 text-primary-500"
+              />
+            </div>
+            <div
+              className={`flex-1 text-left text-lg font-bold ${goldClasses.team2Class}`}
+            >
+              {team2Gold}
+            </div>
+          </div>
+
+          {/* Towers Row */}
+          <div className="flex items-center justify-between w-full">
+            <div
+              className={`flex-1 text-right text-lg font-bold ${towersClasses.team1Class}`}
+            >
+              {team1Towers}
+            </div>
+            <div className="flex-shrink-0 mx-2">
+              <SvgIcon
+                src={require("@tabler/icons/outline/tower.svg")}
+                className="h-6 w-6 text-primary-500"
+              />
+            </div>
+            <div
+              className={`flex-1 text-left text-lg font-bold ${towersClasses.team2Class}`}
+            >
+              {team2Towers}
+            </div>
+          </div>
+
+          {/* Stream Button */}
+          {series.broadcasters && series.broadcasters.length > 0 && (
+            <div className="flex justify-center my- pb-2">
+              <button
+                onClick={handleOpenStream}
+                className="px-4 py-2 bg-primary-300 dark:bg-secondary-600 rounded text-black dark:text-white hover:bg-primary-500 dark:hover:bg-secondary-800 focus:outline-none border dark:border-primary-700"
+              >
+                Watch
+              </button>
+            </div>
+          )}
+        </>
       </div>
 
       {/* Team 2 */}
@@ -406,7 +375,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
           />
         </div>
         {/* Team Elites with added padding */}
-        {coverageFact === "available" && team2EliteCreepsKills && (
+        {team2EliteCreepsKills !== undefined && (
           <TeamElites
             creepsKills={team2EliteCreepsKills}
             teamSide="right"
