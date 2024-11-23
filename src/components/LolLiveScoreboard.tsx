@@ -150,6 +150,10 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
 
   const winsNeeded = Math.ceil(bestOf / 2);
 
+  // Extract scores from the series participants
+  const seriesTeam1Score = currentSeries.participants[0]?.score || 0;
+  const seriesTeam2Score = currentSeries.participants[1]?.score || 0;
+
   const renderScoreRectangles = (teamScore: number, teamColor: string) => {
     const rectangles = [];
     for (let i = 0; i < winsNeeded; i++) {
@@ -214,7 +218,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
               style={{ width: "100%", textAlign: "center" }}
             />
           </div>
-          {renderScoreRectangles(team1Participant.score, team1Color)}
+          {/* Use series scores instead of participant scores */}
+          {renderScoreRectangles(seriesTeam1Score, team1Color)}
         </div>
 
         <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
@@ -290,7 +295,8 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
               style={{ width: "100%", textAlign: "center" }}
             />
           </div>
-          {renderScoreRectangles(team2Participant.score, team2Color)}
+          {/* Use series scores instead of participant scores */}
+          {renderScoreRectangles(seriesTeam2Score, team2Color)}
         </div>
       </div>
 

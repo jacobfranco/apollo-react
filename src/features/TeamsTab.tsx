@@ -296,6 +296,7 @@ const TeamsTab: React.FC = () => {
               team={team}
               columns={columns}
               gridTemplateColumns={gridTemplateColumns}
+              esportName={esportName}
             />
           ))}
         </>
@@ -368,6 +369,7 @@ const TeamsTab: React.FC = () => {
                   team={team}
                   columns={columns}
                   gridTemplateColumns={gridTemplateColumns}
+                  esportName={esportName}
                 />
               ))}
             </div>

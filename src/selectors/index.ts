@@ -351,6 +351,16 @@ export const selectTeamById = (state: RootState, teamId: number) => {
   return teamsById.get(teamId);
 };
 
+export const selectTeamLoading = (state: RootState, teamId: number) => {
+  const loadingTeamIds = state.teams.get("loadingTeamIds");
+  return loadingTeamIds.has(teamId);
+};
+
+export const selectTeamError = (state: RootState, teamId: number) => {
+  const teamErrors = state.teams.get("teamErrors");
+  return teamErrors.get(teamId);
+};
+
 // Select Players State
 export const selectPlayersState = (state: RootState) => state.players;
 
