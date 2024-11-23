@@ -197,7 +197,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "Liga Portuguesa",
   },
-  "Kawaii Kiwis": { light: "#64FD01", dark: "#64FD01", logoType: "color" },
+  "Kawaii Kiwis": {
+    light: "#64FD01",
+    dark: "#64FD01",
+    logoType: "color",
+    league: "Liga Nexo",
+  },
   "Parakeet Gaming": {
     light: "#F21D53",
     dark: "#F21D53",
@@ -210,7 +215,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "black",
     league: "SuperLiga",
   },
-  eQuizers: { light: "#FFFC00", dark: "#FFFC00", logoType: "white" },
+  eQuizers: {
+    light: "#FFFC00",
+    dark: "#FFFC00",
+    logoType: "white",
+    league: "Liga Nexo",
+  },
   "Joker Strike": { light: "#A13A8E", dark: "#A13A8E", logoType: "color" },
   "AvaTrade PixelPenny": {
     light: "#FDBF29",
@@ -239,7 +249,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#17DBB4",
     dark: "#17DBB4",
     logoType: "color",
-    league: "SuperLiga 2nd Division",
+    league: "Liga Nexo",
   },
   "Bilibili Gaming": {
     light: "#36CFF2",
@@ -265,7 +275,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "SuperLiga",
   },
-  "Guinea Pink": { light: "#DC2597", dark: "#DC2597", logoType: "color" },
+  "Guinea Pink": {
+    light: "#DC2597",
+    dark: "#DC2597",
+    logoType: "color",
+    league: "Liga Nexo",
+  },
   Guasones: {
     light: "#83027C",
     dark: "#83027C",
@@ -408,13 +423,13 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#FF0A07",
     dark: "#FF0A07",
     logoType: "color",
-    league: "LCK Challengers",
+    league: "LCK Academy Series",
   },
-  "OKSavingsBank BRION Challengers": {
+  "OKSavingsBank BRION Academy": {
     light: "#004C29",
     dark: "#004C29",
     logoType: "color",
-    league: "LCK Challengers",
+    league: "LCK Academy Series",
   },
   "Kanga Esports": {
     light: "#FE6A00",
@@ -446,11 +461,11 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LCK Challengers",
   },
-  "T1 Esports Academy": {
+  "T1 Academy": {
     light: "#EC012D",
     dark: "#EC012D",
     logoType: "color",
-    league: "LCK Challengers",
+    league: "LCK Academy Series",
   },
   "GRP Esports": {
     light: "#3AD6D1",
@@ -670,7 +685,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "PCS",
   },
-  "Deep Cross Gaming": { light: "#0B5DC2", dark: "#0B5DC2", logoType: "color" },
+  "Deep Cross Gaming": {
+    light: "#0B5DC2",
+    dark: "#0B5DC2",
+    logoType: "color",
+    league: "PCS",
+  },
   "Burning Core Toyama": {
     light: "#125CA3",
     dark: "#125CA3",
@@ -683,7 +703,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LJL",
   },
-  "J Team": { light: "#E8517C", dark: "#E8517C", logoType: "color" },
+  "J Team": {
+    light: "#E8517C",
+    dark: "#E8517C",
+    logoType: "color",
+    league: "PCS",
+  },
   "Frank Esports": {
     light: "#000000",
     dark: "#FFFFFF",
@@ -749,7 +774,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#000000",
     dark: "#FFFFFF",
     logoType: "black",
-    league: "LTA",
+    league: "LTA South",
   },
   "FURIA Esports": {
     light: "#000000",
@@ -757,8 +782,18 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "black",
     league: "LTA South",
   },
-  Liberty: { light: "#00EBEB", dark: "#00EBEB", logoType: "color" },
-  INTZ: { light: "#FFFFFF", dark: "#000000", logoType: "white" },
+  Liberty: {
+    light: "#00EBEB",
+    dark: "#00EBEB",
+    logoType: "color",
+    league: "CBLOL",
+  },
+  INTZ: {
+    light: "#FFFFFF",
+    dark: "#000000",
+    logoType: "white",
+    league: "CBLOL",
+  },
   "100 Thieves": {
     light: "#BF1D30",
     dark: "#BF1D30",
@@ -777,7 +812,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LTA North",
   },
-  "NRG Esports": { light: "#000000", dark: "#FFFFFF", logoType: "black" },
+  "NRG Esports": {
+    light: "#000000",
+    dark: "#FFFFFF",
+    logoType: "black",
+    league: "LCS",
+  },
   "Shopify Rebellion": {
     light: "#97E901",
     dark: "#97E901",
@@ -790,7 +830,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LTA North",
   },
-  Immortals: { light: "#02B1AA", dark: "#02B1AA", logoType: "color" },
+  Immortals: {
+    light: "#02B1AA",
+    dark: "#02B1AA",
+    logoType: "color",
+    league: "LCS",
+  },
   "FlyQuest NZXT": { light: "#0B8A4D", dark: "#0B8A4D", logoType: "color" },
   Disguised: {
     light: "#F4C35E",
@@ -941,7 +986,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "NLC",
   },
-  LionsCreed: { light: "#E95B10", dark: "#E95B10", logoType: "color" },
+  LionsCreed: {
+    light: "#E95B10",
+    dark: "#E95B10",
+    logoType: "color",
+    league: "NLC",
+  },
   "Team Refuse": {
     light: "#45FC44",
     dark: "#45FC44",
@@ -1020,7 +1070,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "Liga Portuguesa",
   },
-  "Byteway Esports": { light: "#E8602F", dark: "#E8602F", logoType: "color" },
+  "Byteway Esports": {
+    light: "#E8602F",
+    dark: "#E8602F",
+    logoType: "color",
+    league: "Liga Portuguesa",
+  },
   "BoostGate Esports": {
     light: "#872E88",
     dark: "#872E88",
@@ -1129,7 +1184,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LPL",
   },
-  Supernova: { light: "#AE8929", dark: "#AE8929", logoType: "color" },
+  Supernova: {
+    light: "#AE8929",
+    dark: "#AE8929",
+    logoType: "color",
+    league: "NACL",
+  },
   Entropiq: {
     light: "#00FF93",
     dark: "#00FF93",
@@ -1148,14 +1208,24 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "Elite Series",
   },
-  BeFive: { light: "#BE0434", dark: "#BE0434", logoType: "color" },
+  BeFive: {
+    light: "#BE0434",
+    dark: "#BE0434",
+    logoType: "color",
+    league: "EBL",
+  },
   "Lundqvist Lightside": {
     light: "#00DCE6",
     dark: "#00DCE6",
     logoType: "color",
     league: "NLC",
   },
-  "Lupus Esports": { light: "#00C6AC", dark: "#00C6AC", logoType: "color" },
+  "Lupus Esports": {
+    light: "#00C6AC",
+    dark: "#00C6AC",
+    logoType: "color",
+    league: "EBL",
+  },
   "Diamant Esports": {
     light: "#F17E02",
     dark: "#F17E02",
@@ -1190,6 +1260,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#FED042",
     dark: "#FED042",
     logoType: "color",
+    league: "NACL",
   },
   "Furia Academy": {
     light: "#000000",
@@ -1203,7 +1274,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "America's Challengers",
   },
-  "KaBuM! Academy": { light: "#FC5402", dark: "#FC5402", logoType: "color" },
+  "KaBuM! Academy": {
+    light: "#FC5402",
+    dark: "#FC5402",
+    logoType: "color",
+    league: "CBLOL",
+  },
   "RED Academy": {
     light: "#ED324C",
     dark: "#ED324C",
@@ -1238,6 +1314,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#FF5D00",
     dark: "#FF5D00",
     logoType: "color",
+    league: "CBLOL",
   },
   "Ankora Gaming": {
     light: "#ED671E",
@@ -1267,6 +1344,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#5081D5",
     dark: "#5081D5",
     logoType: "color",
+    league: "LDL",
   },
   "LNG Academy": { light: "#0395FF", dark: "#0395FF", logoType: "color" },
   "Ji Jie Hao": { light: "#C93333", dark: "#C93333", logoType: "color" },
@@ -1284,9 +1362,20 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#FE3D24",
     dark: "#FE3D24",
     logoType: "color",
+    league: "LDL",
   },
-  "LGD Gaming Young": { light: "#E4080E", dark: "#E4080E", logoType: "color" },
-  "MAX E-Sports Club": { light: "#64A7D3", dark: "#64A7D3", logoType: "color" },
+  "LGD Gaming Young": {
+    light: "#E4080E",
+    dark: "#E4080E",
+    logoType: "color",
+    league: "LDL",
+  },
+  "MAX E-Sports Club": {
+    light: "#64A7D3",
+    dark: "#64A7D3",
+    logoType: "color",
+    league: "LDL",
+  },
   "Invictus Gaming Young": {
     light: "#58C9F9",
     dark: "#58C9F9",
@@ -1302,6 +1391,7 @@ export const teamData: { [key: string]: TeamProps } = {
     light: "#87D249",
     dark: "#87D249",
     logoType: "color",
+    league: "LDL",
   },
   "EDward Gaming": {
     light: "#221814",
@@ -1309,9 +1399,19 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "LPL",
   },
-  "Oh My God Academy": { light: "#FC9E33", dark: "#FC9E33", logoType: "color" },
+  "Oh My God Academy": {
+    light: "#FC9E33",
+    dark: "#FC9E33",
+    logoType: "color",
+    league: "LDL",
+  },
   "Royal Club": { light: "#B39368", dark: "#B39368", logoType: "color" },
-  "Team WE Academy": { light: "#E6061F", dark: "#E6061F", logoType: "color" },
+  "Team WE Academy": {
+    light: "#E6061F",
+    dark: "#E6061F",
+    logoType: "color",
+    league: "LDL",
+  },
   "Partizan Esports": {
     light: "#EA151C",
     dark: "#EA151C",
@@ -1324,7 +1424,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "SuperLiga 2nd Division",
   },
-  "IZI Dream": { light: "#0779B6", dark: "#0779B6", logoType: "color" },
+  "IZI Dream": {
+    light: "#0779B6",
+    dark: "#0779B6",
+    logoType: "color",
+    league: "LFL Division 2",
+  },
   Fuego: {
     light: "#E75617",
     dark: "#E75617",
@@ -1349,11 +1454,17 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "America's Challengers",
   },
-  "Blue Otter": { light: "#00639F", dark: "#00639F", logoType: "color" },
+  "Blue Otter": {
+    light: "#00639F",
+    dark: "#00639F",
+    logoType: "color",
+    league: "NACL",
+  },
   "Winthrop University": {
     light: "#FFB80E",
     dark: "#FFB80E",
     logoType: "color",
+    league: "UPL",
   },
   "Ilha das Lendas": {
     light: "#CF76FC",
@@ -1361,7 +1472,7 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "CBLOL Academy",
   },
-  MAX: { light: "#64A7D3", dark: "#64A7D3", logoType: "color" },
+  MAX: { light: "#64A7D3", dark: "#64A7D3", logoType: "color", league: "LDL" },
   "Geekay Esports": {
     light: "#ECD023",
     dark: "#ECD023",
@@ -1374,11 +1485,17 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "black",
     league: "CBLOL Academy",
   },
-  "CCG Esports": { light: "#D34B29", dark: "#D34B29", logoType: "color" },
+  "CCG Esports": {
+    light: "#D34B29",
+    dark: "#D34B29",
+    logoType: "color",
+    league: "NACL",
+  },
   "Weibo Gaming Youth Team": {
     light: "#D22E2E",
     dark: "#D22E2E",
     logoType: "color",
+    league: "LDL",
   },
   "Team Flash VN": {
     light: "#F47620",
@@ -1453,16 +1570,23 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "Arabian League",
   },
-  MiaoJing: { light: "#A9242A", dark: "#A9242A", logoType: "color" },
+  MiaoJing: {
+    light: "#A9242A",
+    dark: "#A9242A",
+    logoType: "color",
+    league: "LDL",
+  },
   "Anyone's Legend.Young": {
     light: "#C22A2A",
     dark: "#C22A2A",
     logoType: "color",
+    league: "LDL",
   },
   "ThunderTalk Gaming Young": {
     light: "#20B9F4",
     dark: "#20B9F4",
     logoType: "color",
+    league: "LDL",
   },
   "Rare Atom Period": { light: "#AE4DC3", dark: "#AE4DC3", logoType: "color" },
   "DMG Esports": {
@@ -1471,9 +1595,30 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "NLC",
   },
-  "Ceuta Guardians": { light: "#000000", dark: "#FFFFFF", logoType: "black" },
-  "Kiedyś Miałem Fun": { light: "#FEE700", dark: "#FEE700", logoType: "color" },
-  Regem: { light: "#DC424E", dark: "#DC424E", logoType: "color" },
+  "Team Axelent69": {
+    light: "#000000",
+    dark: "#FFFFFF",
+    logoType: "color",
+    league: "Esports Balkan League",
+  },
+  "Ceuta Guardians": {
+    light: "#000000",
+    dark: "#FFFFFF",
+    logoType: "black",
+    league: "Liga Nexo",
+  },
+  "Kiedyś Miałem Fun": {
+    light: "#FEE700",
+    dark: "#FEE700",
+    logoType: "color",
+    league: "Ultraliga",
+  },
+  Regem: {
+    light: "#DC424E",
+    dark: "#DC424E",
+    logoType: "color",
+    league: "NLC",
+  },
 };
 
 export const useTeamData = () => {
