@@ -12,6 +12,7 @@ import { TeamAggStats } from "src/schemas/team-agg-stats";
 import LolTeamRow from "src/components/LolTeamRow";
 import { openModal, closeModal } from "src/actions/modals";
 import { teamData } from "src/teams";
+import Spinner from "src/components/Spinner";
 
 type SortKey =
   | "name"
@@ -198,7 +199,7 @@ const TeamsTab: React.FC = () => {
   );
 
   if (loading) {
-    return <div className="text-center">Loading teams...</div>;
+    return <Spinner withText={false} />;
   }
 
   if (error) {

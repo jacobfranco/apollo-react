@@ -128,6 +128,7 @@ import {
   ESports,
   ScoreboardDetailsTab,
   TeamDetail,
+  PlayerDetail,
 } from "./AsyncComponents";
 import GlobalHotkeys from "./GlobalHotkeys";
 import { WrappedRoute } from "src/utils/react-router-helpers";
@@ -259,6 +260,14 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         path="/esports/:esportName/series/:seriesId"
         page={DetailPage}
         component={ScoreboardDetailsTab}
+        content={children}
+        publicRoute
+      />
+
+      <WrappedRoute
+        path="/esports/:esportName/player/:playerId"
+        page={DetailPage}
+        component={PlayerDetail}
         content={children}
         publicRoute
       />

@@ -5,12 +5,36 @@ import api from "src/api";
 import { playerSchema, Player } from "src/schemas/player";
 import { ZodError } from "zod";
 
-// Action Types
+export const FETCH_PLAYER_REQUEST = "players/FETCH_PLAYER_REQUEST";
+export const FETCH_PLAYER_SUCCESS = "players/FETCH_PLAYER_SUCCESS";
+export const FETCH_PLAYER_FAILURE = "players/FETCH_PLAYER_FAILURE";
+
 export const FETCH_PLAYERS_REQUEST = "players/FETCH_REQUEST";
 export const FETCH_PLAYERS_SUCCESS = "players/FETCH_SUCCESS";
 export const FETCH_PLAYERS_FAILURE = "players/FETCH_FAILURE";
 
-// Action Creators
+export const FETCH_PLAYERS_BY_ROSTER_REQUEST =
+  "players/FETCH_BY_ROSTER_REQUEST";
+export const FETCH_PLAYERS_BY_ROSTER_SUCCESS =
+  "players/FETCH_BY_ROSTER_SUCCESS";
+export const FETCH_PLAYERS_BY_ROSTER_FAILURE =
+  "players/FETCH_BY_ROSTER_FAILURE";
+
+export const fetchPlayerRequest = (playerId: number) => ({
+  type: FETCH_PLAYER_REQUEST,
+  payload: playerId,
+});
+
+export const fetchPlayerSuccess = (player: Player) => ({
+  type: FETCH_PLAYER_SUCCESS,
+  payload: player,
+});
+
+export const fetchPlayerFailure = (playerId: number, error: string) => ({
+  type: FETCH_PLAYER_FAILURE,
+  payload: { playerId, error },
+});
+
 export const fetchPlayersRequest = () => ({ type: FETCH_PLAYERS_REQUEST });
 
 export const fetchPlayersSuccess = (players: Player[]) => ({
@@ -23,7 +47,48 @@ export const fetchPlayersFailure = (error: string) => ({
   payload: error,
 });
 
-// Thunk Action to Fetch Players
+export const fetchPlayersByRosterRequest = (rosterId: number) => ({
+  type: FETCH_PLAYERS_BY_ROSTER_REQUEST,
+  payload: rosterId,
+});
+
+export const fetchPlayersByRosterSuccess = (
+  rosterId: number,
+  players: Player[]
+) => ({
+  type: FETCH_PLAYERS_BY_ROSTER_SUCCESS,
+  payload: { rosterId, players },
+});
+
+export const fetchPlayersByRosterFailure = (
+  rosterId: number,
+  error: string
+) => ({
+  type: FETCH_PLAYERS_BY_ROSTER_FAILURE,
+  payload: { rosterId, error },
+});
+
+export const fetchPlayerById = (
+  gamePath: string,
+  playerId: number
+): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return async (dispatch, getState) => {
+    dispatch(fetchPlayerRequest(playerId));
+    try {
+      const client = api(getState);
+      const response = await client.get(`/api/${gamePath}/players/${playerId}`);
+      const parsedData = playerSchema.parse(response.data);
+      dispatch(fetchPlayerSuccess(parsedData));
+    } catch (error: any) {
+      const errorMessage =
+        error instanceof ZodError
+          ? "Invalid data format from API"
+          : error.message;
+      dispatch(fetchPlayerFailure(playerId, errorMessage));
+    }
+  };
+};
+
 export const fetchPlayers = (
   gamePath: string
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
@@ -42,6 +107,26 @@ export const fetchPlayers = (
       } else {
         dispatch(fetchPlayersFailure(error.message));
       }
+    }
+  };
+};
+
+export const fetchPlayersByRosterId = (
+  rosterId: number
+): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return async (dispatch, getState) => {
+    dispatch(fetchPlayersByRosterRequest(rosterId));
+    try {
+      const client = api(getState);
+      const response = await client.get(`/api/rosters/${rosterId}/players`);
+      const parsedData = playerSchema.array().parse(response.data);
+      dispatch(fetchPlayersByRosterSuccess(rosterId, parsedData));
+    } catch (error: any) {
+      const errorMessage =
+        error instanceof ZodError
+          ? "Invalid data format from API"
+          : error.message;
+      dispatch(fetchPlayersByRosterFailure(rosterId, errorMessage));
     }
   };
 };

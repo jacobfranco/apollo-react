@@ -393,3 +393,31 @@ export const selectPlayerById = (state: RootState, playerId: number) => {
   const playersById = selectPlayersById(state);
   return playersById.get(playerId);
 };
+
+export const selectPlayersByRosterId = (state: RootState, rosterId: number) => {
+  const playersByRosterId = state.players.get("playersByRosterId");
+  const playerIds = playersByRosterId.get(rosterId) || [];
+  const playersById = state.players.get("playersById");
+  return playerIds.map((id) => playersById.get(id)).filter(Boolean);
+};
+
+export const selectRosterPlayersLoading = (
+  state: RootState,
+  rosterId: number
+): boolean => {
+  return (state.players.getIn(["rosterLoading", rosterId]) as boolean) ?? false;
+};
+
+export const selectRosterPlayersError = (
+  state: RootState,
+  rosterId: number
+): string | null => {
+  return (state.players.getIn(["rosterError", rosterId]) as string) ?? null;
+};
+
+export const hasFetchedPlayersByRosterId = (
+  state: RootState,
+  rosterId: number
+): boolean => {
+  return state.players.get("playersByRosterId").has(rosterId);
+};

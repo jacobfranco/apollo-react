@@ -117,6 +117,7 @@ export const RegionFilterModal = lazy(
 );
 export const StreamModal = lazy(() => import("./modals/StreamModal"));
 export const TeamDetail = lazy(() => import("./TeamDetail"));
+export const PlayerDetail = lazy(() => import("./PlayerDetail"));
 // export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
 // export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement
