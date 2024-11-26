@@ -7,7 +7,7 @@ import {
   selectTeamById,
   selectTeamLoading,
   selectTeamError,
-  hasFetchedPlayersByRosterId, // Import the new selector
+  hasFetchedPlayersByRosterId,
   selectPlayersByRosterId,
   selectRosterPlayersLoading,
   selectRosterPlayersError,
@@ -76,10 +76,15 @@ const TeamDetail: React.FC = () => {
 
   // **Fetch Team Data if Needed**
   React.useEffect(() => {
-    if (!team && !loading) {
+    if (
+      (!team || !team.lolSeasonStats || team.lolSeasonStats.length === 0) &&
+      !loading
+    ) {
       dispatch(fetchTeamById(esportName, teamIdNumber));
     }
   }, [dispatch, team, loading, esportName, teamIdNumber]);
+
+  console.log("Team Data:", team);
 
   // **Fetch Roster Players if Needed**
   React.useEffect(() => {
@@ -433,6 +438,59 @@ const TeamDetail: React.FC = () => {
             <p className="text-gray-500">No series history available</p>
           </CardBody>
         </Card>
+
+        {/* Season Stats Section */}
+        {team.lolSeasonStats && team.lolSeasonStats.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle title="Season Match Stats" />
+            </CardHeader>
+            <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
+              <div className="space-y-4">
+                {team.lolSeasonStats.map((matchStat, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-white dark:bg-gray-800 rounded-md shadow"
+                  >
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex justify-between items-center">
+                        <p className="text-lg font-semibold">
+                          Match {index + 1}:{" "}
+                          {matchStat.isWinner ? "Win" : "Loss"}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Score: {matchStat.score}
+                        </p>
+                      </div>
+                      {/* Render additional stats as needed */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Gold Earned:
+                          </span>
+                          <span className="text-md font-medium text-gray-800 dark:text-gray-200">
+                            {matchStat.goldEarned}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Turrets Destroyed:
+                          </span>
+                          <span className="text-md font-medium text-gray-800 dark:text-gray-200">
+                            {matchStat.turretsDestroyed}
+                          </span>
+                        </div>
+                        {/* Add other stats like inhibitorsDestroyed, etc. */}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardBody>
+          </Card>
+        ) : (
+          <p>No season stats available</p>
+        )}
       </div>
     </Column>
   );
