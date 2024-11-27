@@ -1,6 +1,6 @@
 // TeamDetail.tsx
 
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import {
@@ -24,8 +24,9 @@ import { useTheme } from "src/hooks/useTheme";
 import { useTeamData } from "src/teams";
 import PlayerPreview from "src/components/PlayerPreview";
 import { Player } from "src/schemas/player";
-import { formatDate } from "src/utils/dates";
+import { formatShortDate } from "src/utils/dates"; // Import the new function
 import { TeamMatchStats } from "src/schemas/team-match-stats";
+import StatsTable from "src/components/StatsTable";
 
 type TeamDetailParams = {
   esportName: string;
@@ -54,7 +55,7 @@ const TeamDetail: React.FC = () => {
 
   // UI and Theme Hooks
   const getTeamData = useTeamData();
-  const [showAverages, setShowAverages] = React.useState(true);
+  const [showAverages, setShowAverages] = useState(true);
   const theme = useTheme();
 
   // Derive rosterId (can be undefined)
@@ -76,8 +77,35 @@ const TeamDetail: React.FC = () => {
     rosterId ? hasFetchedPlayersByRosterId(state, rosterId) : false
   );
 
+  // Add sorting state for season stats
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  }>({
+    key: "start", // Default sort by "start" date
+    direction: "desc", // Default to descending order
+  });
+
+  const handleSort = (key: string) => {
+    setSortConfig((prevSortConfig) => {
+      if (prevSortConfig && prevSortConfig.key === key) {
+        // Toggle direction
+        return {
+          key,
+          direction: prevSortConfig.direction === "asc" ? "desc" : "asc",
+        };
+      } else {
+        // New sort key, default to "desc"
+        return {
+          key,
+          direction: "desc",
+        };
+      }
+    });
+  };
+
   // **Fetch Team Data if Needed**
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       (!team || !team.lolSeasonStats || team.lolSeasonStats.length === 0) &&
       !loading
@@ -86,10 +114,8 @@ const TeamDetail: React.FC = () => {
     }
   }, [dispatch, team, loading, esportName, teamIdNumber]);
 
-  console.log("Team Data:", team);
-
   // **Fetch Roster Players if Needed**
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       rosterId &&
       !rosterLoading &&
@@ -99,6 +125,31 @@ const TeamDetail: React.FC = () => {
       dispatch(fetchPlayersByRosterId(rosterId));
     }
   }, [dispatch, rosterId, rosterLoading, hasFetchedRosterPlayers, rosterError]);
+
+  // **Compute validSeasonStats**
+  const validSeasonStats = useMemo(() => {
+    const seasonStats = team?.lolSeasonStats ?? [];
+    return seasonStats.filter(
+      (matchStat): matchStat is TeamMatchStats =>
+        matchStat !== null && matchStat !== undefined
+    );
+  }, [team?.lolSeasonStats]);
+
+  const sortedSeasonStats = useMemo<TeamMatchStats[]>(() => {
+    if (!sortConfig) return validSeasonStats;
+    return [...validSeasonStats].sort((a, b) => {
+      const aValue = (a as any)[sortConfig.key];
+      const bValue = (b as any)[sortConfig.key];
+
+      if (aValue < bValue) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      } else if (aValue > bValue) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      } else {
+        return 0;
+      }
+    });
+  }, [validSeasonStats, sortConfig]);
 
   // **Conditional Returns After All Hooks**
   if (!team && !loading) {
@@ -242,10 +293,39 @@ const TeamDetail: React.FC = () => {
     },
   ];
 
-  const validSeasonStats = (team.lolSeasonStats ?? []).filter(
-    (matchStat): matchStat is TeamMatchStats =>
-      matchStat !== null && matchStat !== undefined
-  );
+  const seasonStatsColumns = [
+    {
+      label: "Date",
+      key: "start",
+      render: (matchStat: TeamMatchStats) =>
+        matchStat.start ? formatShortDate(matchStat.start) : "",
+    },
+    {
+      label: "Opponent",
+      key: "opponent",
+      render: (matchStat: TeamMatchStats) =>
+        matchStat.opponent ? matchStat.opponent.name : "Unknown",
+    },
+    {
+      label: "Result",
+      key: "isWinner",
+      render: (matchStat: TeamMatchStats) =>
+        matchStat.isWinner ? "Win" : "Loss",
+    },
+    {
+      label: "Score",
+      key: "score",
+    },
+    {
+      label: "Gold Earned",
+      key: "goldEarned",
+    },
+    {
+      label: "Turrets Destroyed",
+      key: "turretsDestroyed",
+    },
+    // Add other columns as needed
+  ];
 
   return (
     <Column
@@ -274,29 +354,24 @@ const TeamDetail: React.FC = () => {
                 </div>
                 {/* Info */}
                 <div className="flex flex-col space-y-2 ml-4 flex-1">
-                  {/* Modified Section: Team Name and Series Record arranged vertically */}
-                  <div className="flex flex-col items-start space-y-1 w-full">
-                    {/* Team Name and Abbreviation on the same line */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-                        {team.name}
+                  {/* Team Name and Abbreviation on the same line */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+                      {team.name}
+                    </span>
+                    {team.abbreviation && (
+                      <span className="text-gray-500">
+                        ({team.abbreviation})
                       </span>
-                      {team.abbreviation && (
-                        <span className="text-gray-500">
-                          ({team.abbreviation})
-                        </span>
-                      )}
-                    </div>
-                    {/* Series Record underneath the team name */}
-                    {aggStats && (
-                      <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                        Series Record: {aggStats.totalSeriesWins} -{" "}
-                        {aggStats.totalSeriesLosses}
-                      </div>
                     )}
                   </div>
-                  {/* End of Modified Section */}
-
+                  {/* Series Record */}
+                  {aggStats && (
+                    <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                      Series Record: {aggStats.totalSeriesWins} -{" "}
+                      {aggStats.totalSeriesLosses}
+                    </div>
+                  )}
                   {/* Country and League Information */}
                   {team.region?.country && (
                     <div className="flex items-center space-x-2">
@@ -313,7 +388,6 @@ const TeamDetail: React.FC = () => {
                       )}
                     </div>
                   )}
-
                   {/* Social Media */}
                   {team.socialMediaAccounts &&
                     team.socialMediaAccounts.length > 0 && (
@@ -335,7 +409,7 @@ const TeamDetail: React.FC = () => {
             </CardBody>
           </Card>
 
-          {/* Updated Basic Stats Card: Match Record, Win Percentage, Streak */}
+          {/* Basic Stats Card */}
           {aggStats && (
             <Card className="flex-1">
               <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
@@ -453,58 +527,14 @@ const TeamDetail: React.FC = () => {
               <CardTitle title="Season Match Stats" />
             </CardHeader>
             <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
-              <div className="space-y-4">
-                {validSeasonStats?.map((matchStat, index) => (
-                  <div
-                    key={index}
-                    className="p-4 bg-white dark:bg-gray-800 rounded-md shadow"
-                  >
-                    <div className="flex flex-col space-y-2">
-                      <div className="flex justify-between items-center">
-                        <p className="text-lg font-semibold">
-                          Match {index + 1}:{" "}
-                          {matchStat.isWinner ? "Win" : "Loss"}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Score: {matchStat.score}
-                        </p>
-                      </div>
-                      {/* Display Start Time and Opponent */}
-                      <div className="flex justify-between items-center">
-                        <p className="text-sm text-gray-500">
-                          Date: {matchStat.start?.toString()}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Opponent:{" "}
-                          {matchStat.opponent
-                            ? matchStat.opponent.name
-                            : "Unknown"}
-                        </p>
-                      </div>
-                      {/* Render additional stats as needed */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Gold Earned:
-                          </span>
-                          <span className="text-md font-medium text-gray-800 dark:text-gray-200">
-                            {matchStat.goldEarned}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Turrets Destroyed:
-                          </span>
-                          <span className="text-md font-medium text-gray-800 dark:text-gray-200">
-                            {matchStat.turretsDestroyed}
-                          </span>
-                        </div>
-                        {/* Add other stats like inhibitorsDestroyed, etc. */}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <StatsTable<TeamMatchStats>
+                columns={seasonStatsColumns}
+                data={sortedSeasonStats}
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
+                rowKey={(matchStat, index) => index}
+              />
             </CardBody>
           </Card>
         ) : (

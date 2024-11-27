@@ -1,3 +1,5 @@
+// TeamsTab.tsx
+
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
@@ -13,22 +15,9 @@ import LolTeamRow from "src/components/LolTeamRow";
 import { openModal, closeModal } from "src/actions/modals";
 import { teamData } from "src/teams";
 import Spinner from "src/components/Spinner";
+import StatsTable from "src/components/StatsTable";
 
-type SortKey =
-  | "name"
-  | "seriesRecord"
-  | "totalWins"
-  | "totalLosses"
-  | "winRate"
-  | "currentWinStreak"
-  | "averageGoldEarned"
-  | "averageScore"
-  | "averageTurretsDestroyed"
-  | "averageInhibitorsDestroyed"
-  | "averageDragonKills"
-  | "averageBaronKills"
-  | "averageHeraldKills"
-  | "averageVoidGrubKills";
+type SortKey = string;
 
 // Cache for computed values
 interface TeamWithComputedValues extends Team {
@@ -48,7 +37,7 @@ const TeamsTab: React.FC = () => {
   const error = useAppSelector(selectTeamsError);
 
   const [sortConfig, setSortConfig] = useState<{
-    key: SortKey;
+    key: string;
     direction: "asc" | "desc";
   }>({
     key: "seriesRecord",
@@ -67,7 +56,7 @@ const TeamsTab: React.FC = () => {
 
   // Memoize columns configuration
   const columns = useMemo(() => {
-    const basicColumns: Array<{ label: string; key: SortKey }> = [
+    const basicColumns: Array<{ label: string; key: string }> = [
       { label: "Team", key: "name" },
       { label: "Record", key: "seriesRecord" },
       { label: "Wins", key: "totalWins" },
@@ -76,7 +65,7 @@ const TeamsTab: React.FC = () => {
       { label: "Streak", key: "currentWinStreak" },
     ];
 
-    const advancedColumns: Array<{ label: string; key: SortKey }> = [
+    const advancedColumns: Array<{ label: string; key: string }> = [
       { label: "Team", key: "name" },
       { label: "Gold", key: "averageGoldEarned" },
       { label: "Kills", key: "averageScore" },
@@ -180,14 +169,20 @@ const TeamsTab: React.FC = () => {
     [sortConfig]
   );
 
-  const handleSort = useCallback((key: SortKey) => {
-    setSortConfig((prevConfig) => ({
-      key,
-      direction:
-        prevConfig.key === key && prevConfig.direction === "asc"
-          ? "desc"
-          : "asc",
-    }));
+  const handleSort = useCallback((key: string) => {
+    setSortConfig((prevConfig) => {
+      if (prevConfig && prevConfig.key === key) {
+        return {
+          key,
+          direction: prevConfig.direction === "asc" ? "desc" : "asc",
+        };
+      } else {
+        return {
+          key,
+          direction: "desc",
+        };
+      }
+    });
   }, []);
 
   const handleLeagueFilter = useCallback(
@@ -240,15 +235,14 @@ const TeamsTab: React.FC = () => {
       </div>
 
       {isCombined ? (
-        <>
-          <SortingHeaders
-            columns={columns}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            gridTemplateColumns={gridTemplateColumns}
-          />
-          <div className="my-2" />
-          {getSortedTeams(filteredTeams).map((team) => (
+        <StatsTable<TeamWithComputedValues>
+          columns={columns}
+          data={getSortedTeams(filteredTeams)}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+          gridTemplateColumns={gridTemplateColumns}
+          rowKey={(team) => team.id}
+          renderRow={(team) => (
             <LolTeamRow
               key={team.id}
               team={team}
@@ -256,90 +250,34 @@ const TeamsTab: React.FC = () => {
               gridTemplateColumns={gridTemplateColumns}
               esportName={esportName}
             />
-          ))}
-        </>
+          )}
+        />
       ) : (
         Object.entries(teamsByLeague).map(([league, teamsInLeague]) => (
           <div key={league} className="mb-8">
             <h2 className="text-xl font-semibold mb-4">{league}</h2>
-            <SortingHeaders
+            <StatsTable<TeamWithComputedValues>
               columns={columns}
+              data={getSortedTeams(teamsInLeague)}
               sortConfig={sortConfig}
               onSort={handleSort}
               gridTemplateColumns={gridTemplateColumns}
+              rowKey={(team) => team.id}
+              renderRow={(team) => (
+                <LolTeamRow
+                  key={team.id}
+                  team={team}
+                  columns={columns}
+                  gridTemplateColumns={gridTemplateColumns}
+                  esportName={esportName}
+                />
+              )}
             />
-            <div className="my-2" />
-            {getSortedTeams(teamsInLeague).map((team) => (
-              <LolTeamRow
-                key={team.id}
-                team={team}
-                columns={columns}
-                gridTemplateColumns={gridTemplateColumns}
-                esportName={esportName}
-              />
-            ))}
           </div>
         ))
       )}
     </div>
   );
 };
-
-// Extracted sorting headers component for reuse
-const SortingHeaders: React.FC<{
-  columns: Array<{ label: string; key: SortKey }>;
-  sortConfig: { key: SortKey; direction: "asc" | "desc" };
-  onSort: (key: SortKey) => void;
-  gridTemplateColumns: string;
-}> = React.memo(({ columns, sortConfig, onSort, gridTemplateColumns }) => (
-  <div className="grid gap-0" style={{ gridTemplateColumns }}>
-    {columns.map((column) => (
-      <button
-        key={column.key}
-        onClick={() => onSort(column.key)}
-        className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
-      >
-        <span className="text-sm font-bold">{column.label}</span>
-        <span className="ml-1 text-xs">
-          {sortConfig?.key === column.key ? (
-            sortConfig.direction === "asc" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3 inline-block"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 15l7-7 7 7"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3 inline-block"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            )
-          ) : (
-            <span className="text-xs font-thin">—</span>
-          )}
-        </span>
-      </button>
-    ))}
-  </div>
-));
 
 export default TeamsTab;
