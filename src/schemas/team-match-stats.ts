@@ -1,8 +1,44 @@
+// src/schemas/team-match-stats.ts
+
 import { z } from "zod";
+import { creepsSchema, Creeps } from "./creeps";
+import type { Team } from "./team"; // Type-only import
+import { teamSchema } from "./team"; // For z.lazy()
 
-import { creepsSchema } from "./creeps";
+// Define the interface
+export interface TeamMatchStats {
+  matchId: number;
+  start?: string | number | Date | null;
+  opponent?: Team | null;
+  score: number;
+  isWinner: boolean;
+  goldEarned: number;
+  turretsDestroyed: number;
+  inhibitorsDestroyed: number;
+  faction: {
+    factionName: string;
+  };
+  structures: {
+    turrets: Record<string, { standing: boolean }>;
+    inhibitors: Record<
+      string,
+      {
+        standing: boolean;
+        respawnTime: { milliseconds: number } | null;
+      }
+    >;
+  };
+  creeps: Creeps;
+}
 
-export const teamMatchStatsSchema = z.object({
+// Annotate the schema
+export const teamMatchStatsSchema: z.ZodType<TeamMatchStats> = z.object({
+  matchId: z.number(),
+  start: z.union([z.string(), z.number(), z.date()]).optional().nullable(),
+  opponent: z
+    .lazy(() => teamSchema)
+    .optional()
+    .nullable(),
   score: z.number(),
   isWinner: z.boolean(),
   goldEarned: z.number(),
@@ -12,47 +48,17 @@ export const teamMatchStatsSchema = z.object({
     factionName: z.string(),
   }),
   structures: z.object({
-    turrets: z.object({
-      topOuter: z.object({ standing: z.boolean() }),
-      topInner: z.object({ standing: z.boolean() }),
-      topInhibitor: z.object({ standing: z.boolean() }),
-      topNexus: z.object({ standing: z.boolean() }),
-      midOuter: z.object({ standing: z.boolean() }),
-      midInner: z.object({ standing: z.boolean() }),
-      midInhibitor: z.object({ standing: z.boolean() }),
-      botOuter: z.object({ standing: z.boolean() }),
-      botInner: z.object({ standing: z.boolean() }),
-      botInhibitor: z.object({ standing: z.boolean() }),
-      botNexus: z.object({ standing: z.boolean() }),
-    }),
-    inhibitors: z.object({
-      top: z.object({
+    turrets: z.record(z.object({ standing: z.boolean() })),
+    inhibitors: z.record(
+      z.object({
         standing: z.boolean(),
         respawnTime: z
           .object({
             milliseconds: z.number(),
           })
           .nullable(),
-      }),
-      mid: z.object({
-        standing: z.boolean(),
-        respawnTime: z
-          .object({
-            milliseconds: z.number(),
-          })
-          .nullable(),
-      }),
-      bot: z.object({
-        standing: z.boolean(),
-        respawnTime: z
-          .object({
-            milliseconds: z.number(),
-          })
-          .nullable(),
-      }),
-    }),
+      })
+    ),
   }),
   creeps: creepsSchema,
 });
-
-export type TeamMatchStats = z.infer<typeof teamMatchStatsSchema>;

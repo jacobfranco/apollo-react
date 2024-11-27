@@ -1,8 +1,38 @@
+// src/schemas/creeps.ts
+
 import { z } from "zod";
 import { imageSchema } from "./image";
 import { gameSchema } from "./game";
 
-export const eliteSchema = z.object({
+// Define interfaces
+export interface Elite {
+  id: number;
+  name: string;
+  category: string;
+  subcategory: string | null;
+  externalId: number | null;
+  game: z.infer<typeof gameSchema>;
+  images: z.infer<typeof imageSchema>[];
+}
+
+export interface CreepsKill {
+  elite: Elite;
+  total: number;
+}
+
+export interface CreepsKills {
+  kills: {
+    perEliteType?: CreepsKill[] | null;
+  };
+}
+
+export interface Creeps {
+  overall: CreepsKills;
+  neutrals: CreepsKills;
+}
+
+// Annotate schemas with interfaces
+export const eliteSchema: z.ZodType<Elite> = z.object({
   id: z.number(),
   name: z.string(),
   category: z.string(),
@@ -12,27 +42,18 @@ export const eliteSchema = z.object({
   images: z.array(imageSchema),
 });
 
-export type Elite = z.infer<typeof eliteSchema>;
+export const creepsKillSchema: z.ZodType<CreepsKill> = z.object({
+  elite: eliteSchema,
+  total: z.number(),
+});
 
-export const creepsKillsSchema = z.object({
+export const creepsKillsSchema: z.ZodType<CreepsKills> = z.object({
   kills: z.object({
-    perEliteType: z
-      .array(
-        z.object({
-          elite: eliteSchema,
-          total: z.number(),
-        })
-      )
-      .optional()
-      .nullable(),
+    perEliteType: z.array(creepsKillSchema).optional().nullable(),
   }),
 });
 
-export type CreepsKills = z.infer<typeof creepsKillsSchema>;
-
-export const creepsSchema = z.object({
+export const creepsSchema: z.ZodType<Creeps> = z.object({
   overall: creepsKillsSchema,
   neutrals: creepsKillsSchema,
 });
-
-export type Creeps = z.infer<typeof creepsSchema>;

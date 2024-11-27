@@ -24,6 +24,8 @@ import { useTheme } from "src/hooks/useTheme";
 import { useTeamData } from "src/teams";
 import PlayerPreview from "src/components/PlayerPreview";
 import { Player } from "src/schemas/player";
+import { formatDate } from "src/utils/dates";
+import { TeamMatchStats } from "src/schemas/team-match-stats";
 
 type TeamDetailParams = {
   esportName: string;
@@ -240,6 +242,11 @@ const TeamDetail: React.FC = () => {
     },
   ];
 
+  const validSeasonStats = (team.lolSeasonStats ?? []).filter(
+    (matchStat): matchStat is TeamMatchStats =>
+      matchStat !== null && matchStat !== undefined
+  );
+
   return (
     <Column
       label=""
@@ -440,14 +447,14 @@ const TeamDetail: React.FC = () => {
         </Card>
 
         {/* Season Stats Section */}
-        {team.lolSeasonStats && team.lolSeasonStats.length > 0 ? (
+        {validSeasonStats.length > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle title="Season Match Stats" />
             </CardHeader>
             <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
               <div className="space-y-4">
-                {team.lolSeasonStats.map((matchStat, index) => (
+                {validSeasonStats?.map((matchStat, index) => (
                   <div
                     key={index}
                     className="p-4 bg-white dark:bg-gray-800 rounded-md shadow"
@@ -460,6 +467,18 @@ const TeamDetail: React.FC = () => {
                         </p>
                         <p className="text-sm text-gray-500">
                           Score: {matchStat.score}
+                        </p>
+                      </div>
+                      {/* Display Start Time and Opponent */}
+                      <div className="flex justify-between items-center">
+                        <p className="text-sm text-gray-500">
+                          Date: {matchStat.start?.toString()}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Opponent:{" "}
+                          {matchStat.opponent
+                            ? matchStat.opponent.name
+                            : "Unknown"}
                         </p>
                       </div>
                       {/* Render additional stats as needed */}
