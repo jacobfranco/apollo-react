@@ -7,7 +7,7 @@ export const rosterSchema = z.object({
   teamId: z.number(),
   playerIds: z.array(z.number()).optional(), // Adjusted to be optional
   gameId: z.number(),
-  team: teamSchema.nullable(), // Results from improper JSON response I think -- TODO: Investigate
+  team: z.lazy(() => teamSchema).nullable(),
   players: z.array(playerSchema).optional().nullable(), // Adjusted to be optional
 });
 

@@ -317,6 +317,18 @@ export const selectSeriesById = (
   return seriesById.get(seriesId) || seriesByWeek.get(seriesId);
 };
 
+export const selectSeriesListByIds = (
+  state: RootState,
+  ids: number[]
+): Series[] => {
+  const seriesById = state.series.get("seriesById");
+  const seriesByWeek = state.series.get("seriesByWeek");
+
+  return ids
+    .map((id) => seriesById.get(id) || seriesByWeek.get(id))
+    .filter((series): series is Series => series !== undefined);
+};
+
 export const selectMatchesState = (state: RootState) => state.matches;
 
 export const selectMatchById = (

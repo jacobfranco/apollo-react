@@ -1,7 +1,7 @@
 // TeamDetail.tsx
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import {
   selectTeamById,
@@ -11,6 +11,7 @@ import {
   selectPlayersByRosterId,
   selectRosterPlayersLoading,
   selectRosterPlayersError,
+  selectSeriesById,
 } from "src/selectors";
 import { fetchTeamById } from "src/actions/teams";
 import { fetchPlayersByRosterId } from "src/actions/players";
@@ -27,6 +28,10 @@ import { Player } from "src/schemas/player";
 import { formatShortDate } from "src/utils/dates"; // Import the new function
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import StatsTable from "src/components/StatsTable";
+import { Series } from "src/schemas/series";
+import LolLiveScoreboard from "src/components/LolLiveScoreboard";
+import LolScoreboard from "src/components/LolScoreboard";
+import { fetchSeriesById } from "src/actions/series";
 
 type TeamDetailParams = {
   esportName: string;
@@ -150,6 +155,25 @@ const TeamDetail: React.FC = () => {
       }
     });
   }, [validSeasonStats, sortConfig]);
+
+  // Extract series IDs
+  const seriesIds = team?.schedule || [];
+
+  // Fetch series data
+  useEffect(() => {
+    seriesIds.forEach((id) => {
+      dispatch(fetchSeriesById(id, esportName));
+    });
+  }, [dispatch, seriesIds, esportName]);
+
+  const seriesByIdMap = useAppSelector((state) =>
+    state.series.get("seriesById")
+  );
+
+  // Collect series data
+  const seriesList = seriesIds
+    .map((id) => seriesByIdMap.get(id))
+    .filter((series): series is Series => series !== undefined);
 
   // **Conditional Returns After All Hooks**
   if (!team && !loading) {
@@ -516,7 +540,32 @@ const TeamDetail: React.FC = () => {
             <CardTitle title="Series History" />
           </CardHeader>
           <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
-            <p className="text-gray-500">No series history available</p>
+            {seriesList && seriesList.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
+                {seriesList.map((seriesItem) => {
+                  const { id, lifecycle } = seriesItem;
+                  const ScoreboardComponent =
+                    lifecycle === "live" ? LolLiveScoreboard : LolScoreboard;
+
+                  return (
+                    <Link
+                      key={id}
+                      to={`/esports/${esportName}/series/${id}`}
+                      className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
+                      style={{ width: "100%", textDecoration: "none" }}
+                    >
+                      <ScoreboardComponent seriesId={id} />
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-gray-500">
+                {seriesIds.length > 0
+                  ? "Loading series history..."
+                  : "No series history available"}
+              </p>
+            )}
           </CardBody>
         </Card>
 

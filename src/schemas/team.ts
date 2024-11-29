@@ -7,6 +7,7 @@ import { socialMediaAccountSchema } from "./social-media-account";
 import { standingRosterSchema } from "./standing-roster";
 import { dateStringOrNumber } from "src/utils/dates";
 import type { TeamMatchStats } from "./team-match-stats"; // Type-only import
+import { seriesSchema, type Series } from "./series";
 import { teamMatchStatsSchema } from "./team-match-stats";
 import { teamAggStatsSchema } from "./team-agg-stats";
 
@@ -29,6 +30,7 @@ export interface Team {
   lolSeasonStats?: (TeamMatchStats | null)[] | null;
   aggStats?: z.infer<typeof teamAggStatsSchema> | null;
   league?: string;
+  schedule?: number[] | null;
 }
 
 // Annotate the schema
@@ -56,4 +58,5 @@ export const teamSchema: z.ZodType<Team> = z.object({
     .nullable(),
   aggStats: teamAggStatsSchema.optional().nullable(),
   league: z.string().optional(),
+  schedule: z.array(z.number()).nullable().optional(),
 });
