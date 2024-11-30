@@ -381,15 +381,7 @@ const TeamDetail: React.FC = () => {
             {/* Statistics Section with Toggle Button */}
             {aggStats ? (
               <Card>
-                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
-                  <CardTitle title="Statistics" />
-                  <button
-                    onClick={handleToggle}
-                    className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                  >
-                    {showAverages ? "Show Totals" : "Show Averages"}
-                  </button>
-                </CardHeader>
+                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0"></CardHeader>
                 <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
                   <div className="grid grid-cols-2 md:grid-cols-8 gap-6 p-4">
                     {stats.map(({ label, avgKey, totalKey, formatter }) => (
@@ -409,15 +401,19 @@ const TeamDetail: React.FC = () => {
                     ))}
                   </div>
                 </CardBody>
+                <button
+                  onClick={handleToggle}
+                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                >
+                  {showAverages ? "Show Totals" : "Show Averages"}
+                </button>
               </Card>
             ) : null}
 
             {/* Season Stats Section */}
             {validSeasonStats.length > 0 ? (
               <Card>
-                <CardHeader>
-                  <CardTitle title="Season Match Stats" />
-                </CardHeader>
+                <CardHeader></CardHeader>
                 <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
                   <StatsTable<TeamMatchStats>
                     columns={seasonStatsColumns}
@@ -439,9 +435,7 @@ const TeamDetail: React.FC = () => {
           <>
             {/* Series History Section */}
             <Card>
-              <CardHeader>
-                <CardTitle title="Series History" />
-              </CardHeader>
+              <CardHeader></CardHeader>
               <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
                 {seriesList && seriesList.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
@@ -508,23 +502,31 @@ const TeamDetail: React.FC = () => {
                 {/* Info */}
                 <div className="flex flex-col space-y-2 ml-4 flex-1">
                   {/* Team Name and Abbreviation on the same line */}
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-                      {team.name}
-                    </span>
-                    {team.abbreviation && (
-                      <span className="text-gray-500">
-                        ({team.abbreviation})
+                  <div className="flex flex-col">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+                        {team.name}
+                      </span>
+                      {team.abbreviation && (
+                        <span className="text-gray-500">
+                          ({team.abbreviation})
+                        </span>
+                      )}
+                    </div>
+                    {/* Record */}
+                    {aggStats && (
+                      <span>
+                        <span className="text-lg text-black dark:text-white">
+                          {aggStats.totalSeriesWins}-
+                          {aggStats.totalSeriesLosses}
+                        </span>{" "}
+                        <span className="text-lg text-gray-700 dark:text-gray-300">
+                          ({aggStats.totalWins}-{aggStats.totalLosses})
+                        </span>
                       </span>
                     )}
                   </div>
-                  {/* Series Record */}
-                  {aggStats && (
-                    <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                      Series Record: {aggStats.totalSeriesWins} -{" "}
-                      {aggStats.totalSeriesLosses}
-                    </div>
-                  )}
+
                   {/* Country and League Information */}
                   {team.region?.country && (
                     <div className="flex items-center space-x-2">
@@ -562,72 +564,61 @@ const TeamDetail: React.FC = () => {
             </CardBody>
           </Card>
 
-          {/* Basic Stats Card */}
-          {aggStats && (
-            <Card className="flex-1">
-              <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
-                  {/* Match Record */}
-                  <div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Match Record
-                    </div>
-                    <div className="text-lg font-semibold">
-                      {aggStats.totalWins} - {aggStats.totalLosses}
-                    </div>
-                  </div>
-                  {/* Win Percentage */}
-                  <div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Win Percentage
-                    </div>
-                    <div className="text-lg font-semibold">{winPercentage}</div>
-                  </div>
-                  {/* Current Streak */}
-                  <div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Current Streak
-                    </div>
-                    <div className="text-lg font-semibold">
-                      {formatStreak(aggStats.currentWinStreak)}
-                    </div>
-                  </div>
+          {/* Roster */}
+          <Card className="flex-1 pt-4 pr-6">
+            <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+              {rosterLoading && <p>Loading roster players...</p>}
+              {rosterError && <p className="text-red-500">{rosterError}</p>}
+              {rosterPlayers.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4">
+                  {rosterPlayers
+                    .filter(
+                      (player): player is Player =>
+                        player !== undefined && player !== null
+                    )
+                    .sort((a, b) => {
+                      const roleOrder = [
+                        "Top",
+                        "Jungle",
+                        "Mid",
+                        "Bot",
+                        "Support",
+                      ];
+                      const normalizeRole = (role: string | undefined) =>
+                        role
+                          ? role.charAt(0).toUpperCase() +
+                            role.slice(1).toLowerCase()
+                          : ""; // Normalize roles
+                      const roleA = normalizeRole(a.role);
+                      const roleB = normalizeRole(b.role);
+                      return (
+                        roleOrder.indexOf(roleA) - roleOrder.indexOf(roleB)
+                      );
+                    })
+                    .map((player) => (
+                      <PlayerPreview
+                        key={player.id}
+                        player={{
+                          ...player,
+                          role: player.role
+                            ? player.role.charAt(0).toUpperCase() +
+                              player.role.slice(1).toLowerCase()
+                            : "",
+                        }} // Capitalize role for display
+                        esportName={esportName}
+                      />
+                    ))}
                 </div>
-              </CardBody>
-            </Card>
-          )}
+              ) : (
+                <p className="text-gray-500">
+                  {rosterLoading
+                    ? "Loading players..."
+                    : "No players available"}
+                </p>
+              )}
+            </CardBody>
+          </Card>
         </div>
-
-        {/* Roster Section moved directly below Team Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle title="Roster" />
-          </CardHeader>
-          <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-            {rosterLoading && <p>Loading roster players...</p>}
-            {rosterError && <p className="text-red-500">{rosterError}</p>}
-            {rosterPlayers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4">
-                {rosterPlayers
-                  .filter(
-                    (player): player is Player =>
-                      player !== undefined && player !== null
-                  )
-                  .map((player) => (
-                    <PlayerPreview
-                      key={player.id}
-                      player={player}
-                      esportName={esportName}
-                    />
-                  ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">
-                {rosterLoading ? "Loading players..." : "No players available"}
-              </p>
-            )}
-          </CardBody>
-        </Card>
 
         {/* Tabs Section */}
         <Tabs items={tabItems} activeItem={selectedTab} />

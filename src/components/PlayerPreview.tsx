@@ -14,12 +14,14 @@ const PlayerPreview: React.FC<PlayerPreviewProps> = ({
   return (
     <Link
       to={`/esports/${esportName}/player/${player.id}`}
-      className="block p-2"
+      className="block pt-4 hover:brightness-110 dark:hover:brightness-150 transition-all duration-200"
     >
-      <div className="flex items-center space-x-2">
+      <div className="bg-primary-200 dark:bg-secondary-500 rounded-lg p-2 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-2">
+        <div className="text-md text-primary-500 font-bold text-center uppercase">
+          {player.role}
+        </div>
         <div>
-          <div className="text-sm font-medium">{player.nickName}</div>
-          <div className="text-xs text-gray-500">{player.role}</div>
+          <div className="text-md font-medium">{player.nickName}</div>
         </div>
       </div>
     </Link>
