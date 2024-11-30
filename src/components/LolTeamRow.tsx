@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Team } from "src/schemas/team";
-import { formatGold, formatStat, formatStreak } from "src/utils/scoreboards";
+import { formatGold, formatStat, formatStreak } from "src/utils/esports";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import AutoFitText from "src/components/AutoFitText";
 import { useTeamData } from "src/teams";

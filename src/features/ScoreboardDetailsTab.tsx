@@ -7,7 +7,7 @@ import { fetchSeriesById } from "src/actions/series";
 import LolScoreboardDetail from "src/components/LolScoreboardDetail";
 import { Column } from "src/components/Column";
 import esportsConfig from "src/esports-config";
-import { formatScoreboardTitle } from "src/utils/scoreboards";
+import { formatScoreboardTitle } from "src/utils/esports";
 
 const ScoreboardDetailsTab: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -19,19 +19,20 @@ import { Card, CardBody, CardHeader, CardTitle } from "src/components/Card";
 import { Column } from "src/components/Column";
 import SvgIcon from "src/components/SvgIcon";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
-import { formatStreak, formatStat, formatGold } from "src/utils/scoreboards";
+import { formatStreak, formatStat, formatGold } from "src/utils/esports";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
 import { useTheme } from "src/hooks/useTheme";
 import { useTeamData } from "src/teams";
 import PlayerPreview from "src/components/PlayerPreview";
 import { Player } from "src/schemas/player";
-import { formatShortDate } from "src/utils/dates"; // Import the new function
+import { formatShortDate } from "src/utils/dates";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import StatsTable from "src/components/StatsTable";
 import { Series } from "src/schemas/series";
 import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import LolScoreboard from "src/components/LolScoreboard";
 import { fetchSeriesById } from "src/actions/series";
+import { Tabs } from "src/components"; // Ensure Tabs is correctly imported
 
 type TeamDetailParams = {
   esportName: string;
@@ -90,6 +91,23 @@ const TeamDetail: React.FC = () => {
     key: "start", // Default sort by "start" date
     direction: "desc", // Default to descending order
   });
+
+  // Tabs State
+  const [selectedTab, setSelectedTab] = useState("stats"); // Initialize to "stats"
+
+  // Define Tab Items
+  const tabItems = [
+    {
+      text: "Stats",
+      action: () => setSelectedTab("stats"),
+      name: "stats",
+    },
+    {
+      text: "Schedule",
+      action: () => setSelectedTab("schedule"),
+      name: "schedule",
+    },
+  ];
 
   const handleSort = (key: string) => {
     setSortConfig((prevSortConfig) => {
@@ -171,9 +189,11 @@ const TeamDetail: React.FC = () => {
   );
 
   // Collect series data
-  const seriesList = seriesIds
-    .map((id) => seriesByIdMap.get(id))
-    .filter((series): series is Series => series !== undefined);
+  const seriesList = useMemo(() => {
+    return seriesIds
+      .map((id) => seriesByIdMap.get(id))
+      .filter((series): series is Series => series !== undefined);
+  }, [seriesIds, seriesByIdMap]);
 
   // **Conditional Returns After All Hooks**
   if (!team && !loading) {
@@ -341,15 +361,124 @@ const TeamDetail: React.FC = () => {
       key: "score",
     },
     {
-      label: "Gold Earned",
+      label: "Gold",
       key: "goldEarned",
     },
     {
-      label: "Turrets Destroyed",
+      label: "Turrets",
       key: "turretsDestroyed",
     },
+
     // Add other columns as needed
   ];
+
+  // **Render Tab Content**
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case "stats":
+        return (
+          <>
+            {/* Statistics Section with Toggle Button */}
+            {aggStats ? (
+              <Card>
+                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
+                  <CardTitle title="Statistics" />
+                  <button
+                    onClick={handleToggle}
+                    className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                  >
+                    {showAverages ? "Show Totals" : "Show Averages"}
+                  </button>
+                </CardHeader>
+                <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+                  <div className="grid grid-cols-2 md:grid-cols-8 gap-6 p-4">
+                    {stats.map(({ label, avgKey, totalKey, formatter }) => (
+                      <div
+                        key={label}
+                        className="flex flex-col items-center justify-center"
+                      >
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {label}
+                        </span>
+                        <span className="text-md font-medium text-gray-800 dark:text-gray-200">
+                          {formatter(
+                            aggStats[showAverages ? avgKey : totalKey] || 0
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            ) : null}
+
+            {/* Season Stats Section */}
+            {validSeasonStats.length > 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle title="Season Match Stats" />
+                </CardHeader>
+                <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+                  <StatsTable<TeamMatchStats>
+                    columns={seasonStatsColumns}
+                    data={sortedSeasonStats}
+                    sortConfig={sortConfig}
+                    onSort={handleSort}
+                    gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
+                    rowKey={(matchStat, index) => index}
+                  />
+                </CardBody>
+              </Card>
+            ) : (
+              <p>No season stats available</p>
+            )}
+          </>
+        );
+      case "schedule":
+        return (
+          <>
+            {/* Series History Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle title="Series History" />
+              </CardHeader>
+              <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+                {seriesList && seriesList.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
+                    {seriesList.map((seriesItem) => {
+                      const { id, lifecycle } = seriesItem;
+                      const ScoreboardComponent =
+                        lifecycle === "live"
+                          ? LolLiveScoreboard
+                          : LolScoreboard;
+
+                      return (
+                        <Link
+                          key={id}
+                          to={`/esports/${esportName}/series/${id}`}
+                          className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
+                          style={{ width: "100%", textDecoration: "none" }}
+                        >
+                          <ScoreboardComponent seriesId={id} />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    {seriesIds.length > 0
+                      ? "Loading series history..."
+                      : "No series history available"}
+                  </p>
+                )}
+              </CardBody>
+            </Card>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <Column
@@ -362,7 +491,7 @@ const TeamDetail: React.FC = () => {
         <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
           {/* Team Info Card */}
           <Card className="flex-1">
-            <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
+            <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
               <div className="flex items-start">
                 {/* Logo */}
                 <div className="w-32 h-32 flex-shrink-0">
@@ -436,7 +565,7 @@ const TeamDetail: React.FC = () => {
           {/* Basic Stats Card */}
           {aggStats && (
             <Card className="flex-1">
-              <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
+              <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
                   {/* Match Record */}
                   <div>
@@ -469,50 +598,16 @@ const TeamDetail: React.FC = () => {
           )}
         </div>
 
-        {/* Statistics Section with Toggle Button */}
-        {aggStats ? (
-          <Card>
-            <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
-              <CardTitle title="Statistics" />
-              <button
-                onClick={handleToggle}
-                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-              >
-                {showAverages ? "Show Totals" : "Show Averages"}
-              </button>
-            </CardHeader>
-            <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
-              <div className="grid grid-cols-2 md:grid-cols-8 gap-6 p-4">
-                {stats.map(({ label, avgKey, totalKey, formatter }) => (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center justify-center"
-                  >
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {label}
-                    </span>
-                    <span className="text-md font-medium text-gray-800 dark:text-gray-200">
-                      {formatter(
-                        aggStats[showAverages ? avgKey : totalKey] || 0
-                      )}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardBody>
-          </Card>
-        ) : null}
-
-        {/* Roster Section */}
+        {/* Roster Section moved directly below Team Info */}
         <Card>
           <CardHeader>
             <CardTitle title="Roster" />
           </CardHeader>
-          <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
+          <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
             {rosterLoading && <p>Loading roster players...</p>}
             {rosterError && <p className="text-red-500">{rosterError}</p>}
             {rosterPlayers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4">
                 {rosterPlayers
                   .filter(
                     (player): player is Player =>
@@ -534,61 +629,11 @@ const TeamDetail: React.FC = () => {
           </CardBody>
         </Card>
 
-        {/* Series History Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle title="Series History" />
-          </CardHeader>
-          <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
-            {seriesList && seriesList.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
-                {seriesList.map((seriesItem) => {
-                  const { id, lifecycle } = seriesItem;
-                  const ScoreboardComponent =
-                    lifecycle === "live" ? LolLiveScoreboard : LolScoreboard;
+        {/* Tabs Section */}
+        <Tabs items={tabItems} activeItem={selectedTab} />
 
-                  return (
-                    <Link
-                      key={id}
-                      to={`/esports/${esportName}/series/${id}`}
-                      className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
-                      style={{ width: "100%", textDecoration: "none" }}
-                    >
-                      <ScoreboardComponent seriesId={id} />
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-gray-500">
-                {seriesIds.length > 0
-                  ? "Loading series history..."
-                  : "No series history available"}
-              </p>
-            )}
-          </CardBody>
-        </Card>
-
-        {/* Season Stats Section */}
-        {validSeasonStats.length > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle title="Season Match Stats" />
-            </CardHeader>
-            <CardBody className="bg-primary-200 dark:bg-secondary-500 rounded-md">
-              <StatsTable<TeamMatchStats>
-                columns={seasonStatsColumns}
-                data={sortedSeasonStats}
-                sortConfig={sortConfig}
-                onSort={handleSort}
-                gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
-                rowKey={(matchStat, index) => index}
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <p>No season stats available</p>
-        )}
+        {/* Tab Content */}
+        {renderTabContent()}
       </div>
     </Column>
   );

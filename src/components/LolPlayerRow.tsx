@@ -1,6 +1,6 @@
 import React from "react";
 import { Player } from "src/schemas/player";
-import { formatStat } from "src/utils/scoreboards";
+import { formatStat } from "src/utils/esports";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 
 interface LolPlayerRowProps {

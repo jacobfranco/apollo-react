@@ -5,7 +5,7 @@ import { useTeamData } from "src/teams";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
 import { useTheme } from "src/hooks/useTheme";
-import { formatScoreboardTitle } from "src/utils/scoreboards";
+import { formatScoreboardTitle } from "src/utils/esports";
 
 interface LolScoreboardProps {
   seriesId: number;

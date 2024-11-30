@@ -15,7 +15,7 @@ import {
   connectMatchUpdatesStream,
 } from "src/actions/streaming";
 import { Match } from "src/schemas/match";
-import { getCoverageFact } from "src/utils/scoreboards";
+import { getCoverageFact } from "src/utils/esports";
 
 interface LolScoreboardDetailProps {
   seriesId: number;

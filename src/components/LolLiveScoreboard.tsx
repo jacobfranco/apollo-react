@@ -13,7 +13,7 @@ import {
   formatScoreboardTitle,
   formatGold,
   getCoverageFact,
-} from "src/utils/scoreboards";
+} from "src/utils/esports";
 import SvgIcon from "./SvgIcon";
 import ScoreboardClock from "./ScoreboardClock";
 

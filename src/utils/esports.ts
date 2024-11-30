@@ -1,5 +1,6 @@
 import { Series } from "src/schemas/series";
 import { Match } from "src/schemas/match";
+import { TeamMatchStats } from "src/schemas/team-match-stats";
 
 /**
  * Combines tournament and series titles while omitting specified words

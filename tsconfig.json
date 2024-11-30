@@ -5,10 +5,7 @@
     "sourceMap": true,
     "strict": true,
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "jsx": "react",
     "allowJs": true,
@@ -17,15 +14,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "src/*": [
-        "src/*"
-      ]
+      "src/*": ["src/*"]
     },
-    "typeRoots": [
-      "./src/types",
-      "./node_modules/@types",
-      "./node_modules"
-    ],
+    "typeRoots": ["./src/types", "./node_modules/@types", "./node_modules"],
     "types": [
       "vite/client",
       "vitest/globals",

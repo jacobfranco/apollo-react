@@ -8,7 +8,7 @@ import placeholderTeam from "src/assets/images/placeholder-team.png";
 import { useTeamData } from "src/teams";
 import { useTheme } from "src/hooks/useTheme";
 import SvgIcon from "./SvgIcon";
-import { formatGold, getCoverageFact } from "src/utils/scoreboards";
+import { formatGold, getCoverageFact } from "src/utils/esports";
 import { TeamMatchStats } from "src/schemas/team-match-stats";
 import { Series } from "src/schemas/series";
 import TeamElites from "./TeamElites";
