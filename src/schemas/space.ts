@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const historySchema = z.object({
   accounts: z.coerce.number(),
@@ -7,8 +7,8 @@ const historySchema = z.object({
 
 const spaceSchema = z.object({
   name: z.string().min(1),
-  url: z.string().url().catch(''),
-  imageUrl: z.string().url().catch(''),
+  url: z.string().url().catch(""),
+  imageUrl: z.string().url().catch(""),
   history: z.array(historySchema).nullable().catch(null),
   following: z.boolean().catch(false),
 });

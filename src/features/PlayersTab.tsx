@@ -1,3 +1,5 @@
+// src/components/PlayersTab.tsx
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
@@ -12,15 +14,14 @@ import LolPlayerRow from "src/components/LolPlayerRow";
 type SortKey =
   | "role"
   | "name"
-  | "matches"
-  | "wins"
-  | "losses"
-  | "winRate"
-  | "kills"
-  | "deaths"
-  | "assists"
+  | "totalMatches"
+  | "totalKills"
+  | "totalDeaths"
+  | "totalAssists"
   | "kda"
-  | "cs";
+  | "averageKills"
+  | "averageDeaths"
+  | "averageAssists";
 
 const PlayersTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -44,15 +45,11 @@ const PlayersTab: React.FC = () => {
   const columns: Array<{ label: string; key: SortKey }> = [
     { label: "Role", key: "role" },
     { label: "Player", key: "name" },
-    { label: "Matches", key: "matches" },
-    { label: "Wins", key: "wins" },
-    { label: "Losses", key: "losses" },
-    { label: "WR%", key: "winRate" },
-    { label: "Kills", key: "kills" },
-    { label: "Deaths", key: "deaths" },
-    { label: "Assists", key: "assists" },
+    { label: "Matches", key: "totalMatches" },
+    { label: "Kills", key: "totalKills" },
+    { label: "Deaths", key: "totalDeaths" },
+    { label: "Assists", key: "totalAssists" },
     { label: "KDA", key: "kda" },
-    { label: "CS", key: "cs" },
   ];
 
   const handleSort = (key: SortKey) => {
@@ -75,32 +72,38 @@ const PlayersTab: React.FC = () => {
 
       switch (sortConfig.key) {
         case "role":
-          aValue = a.role?.toLowerCase();
-          bValue = b.role?.toLowerCase();
+          aValue = a.role?.toLowerCase() || "";
+          bValue = b.role?.toLowerCase() || "";
           break;
         case "name":
           aValue = a.nickName.toLowerCase();
           bValue = b.nickName.toLowerCase();
           break;
-        case "winRate":
-          aValue = a.aggStats?.matches
-            ? a.aggStats.wins / a.aggStats.matches
-            : 0;
-          bValue = b.aggStats?.matches
-            ? b.aggStats.wins / b.aggStats.matches
-            : 0;
-          break;
         case "kda":
-          const aKDA = a.aggStats
-            ? (a.aggStats.kills + a.aggStats.assists) /
-              Math.max(a.aggStats.deaths, 1)
-            : 0;
-          const bKDA = b.aggStats
-            ? (b.aggStats.kills + b.aggStats.assists) /
-              Math.max(b.aggStats.deaths, 1)
-            : 0;
+          const aKDA =
+            a.aggStats && a.aggStats.totalDeaths > 0
+              ? (a.aggStats.totalKills + a.aggStats.totalAssists) /
+                a.aggStats.totalDeaths
+              : 0;
+          const bKDA =
+            b.aggStats && b.aggStats.totalDeaths > 0
+              ? (b.aggStats.totalKills + b.aggStats.totalAssists) /
+                b.aggStats.totalDeaths
+              : 0;
           aValue = aKDA;
           bValue = bKDA;
+          break;
+        case "averageKills":
+          aValue = a.aggStats?.averageKills || 0;
+          bValue = b.aggStats?.averageKills || 0;
+          break;
+        case "averageDeaths":
+          aValue = a.aggStats?.averageDeaths || 0;
+          bValue = b.aggStats?.averageDeaths || 0;
+          break;
+        case "averageAssists":
+          aValue = a.aggStats?.averageAssists || 0;
+          bValue = b.aggStats?.averageAssists || 0;
           break;
         default:
           aValue = a.aggStats ? a.aggStats[sortConfig.key] ?? 0 : 0;

@@ -1,7 +1,10 @@
+// src/components/LolPlayerRow.tsx
+
 import React from "react";
 import { Player } from "src/schemas/player";
 import { formatStat } from "src/utils/esports";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
+import { isPlayerAggStatsKey } from "src/utils/typeguards";
 
 interface LolPlayerRowProps {
   player: Player;
@@ -41,24 +44,25 @@ const LolPlayerRow: React.FC<LolPlayerRowProps> = ({ player, columns }) => {
               </div>
             );
             break;
-          case "winRate":
-            const winRate = aggStats?.matches
-              ? (aggStats.wins / aggStats.matches) * 100
-              : 0;
-            value = `${winRate.toFixed(2)}%`;
-            break;
           case "kda":
             value = aggStats
               ? formatStat(
-                  (aggStats.kills + aggStats.assists) / aggStats.deaths
+                  (aggStats.totalKills + aggStats.totalAssists) /
+                    (aggStats.totalDeaths > 0 ? aggStats.totalDeaths : 1)
                 )
               : "-";
             break;
           default:
-            const statKey = column.key as keyof typeof aggStats;
-            if (aggStats && aggStats[statKey] !== undefined) {
-              if (statKey === "cs") {
-                value = formatStat(aggStats[statKey]);
+            // Use the type guard to check if column.key is a valid PlayerAggStats key
+            if (
+              aggStats &&
+              isPlayerAggStatsKey(column.key) &&
+              typeof column.key === "string"
+            ) {
+              const statKey = column.key;
+              if (statKey.startsWith("average")) {
+                const displayValue = (aggStats[statKey] as number).toFixed(2);
+                value = displayValue;
               } else {
                 value = aggStats[statKey];
               }
@@ -70,7 +74,7 @@ const LolPlayerRow: React.FC<LolPlayerRowProps> = ({ player, columns }) => {
         return (
           <div
             key={column.key}
-            className={`flex items-center justify-center ${
+            className={`flex items-center ${
               column.key === "name" || column.key === "role"
                 ? "justify-start"
                 : "justify-center"
