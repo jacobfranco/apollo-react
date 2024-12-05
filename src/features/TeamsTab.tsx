@@ -45,7 +45,7 @@ const TeamsTab: React.FC = () => {
   });
 
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
-  const [isCombined, setIsCombined] = useState(true);
+  const [isCombined, setIsCombined] = useState(false); // Changed default to false
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
 
   useEffect(() => {
@@ -205,30 +205,28 @@ const TeamsTab: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-between mb-2">
-        <div>
-          <button
-            onClick={() => setIsCombined((prev) => !prev)}
-            className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 mr-2"
-          >
-            {isCombined ? "Separate by League" : "Combine All Teams"}
-          </button>
-          <button
-            onClick={() =>
-              dispatch(
-                openModal("REGION_FILTER", {
-                  onApplyFilter: handleLeagueFilter,
-                })
-              )
-            }
-            className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
-          >
-            Filter
-          </button>
-        </div>
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() =>
+            dispatch(
+              openModal("REGION_FILTER", {
+                onApplyFilter: handleLeagueFilter,
+              })
+            )
+          }
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600 mr-2"
+        >
+          Filter
+        </button>
+        <button
+          onClick={() => setIsCombined((prev) => !prev)}
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600 mr-2"
+        >
+          {isCombined ? "Separate by League" : "Combine All Teams"}
+        </button>
         <button
           onClick={() => setShowAdvancedStats((prev) => !prev)}
-          className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
         >
           {showAdvancedStats ? "Show Standings" : "Show Stats"}
         </button>

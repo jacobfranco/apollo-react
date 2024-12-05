@@ -11,15 +11,14 @@ import {
   selectPlayersByRosterId,
   selectRosterPlayersLoading,
   selectRosterPlayersError,
-  selectSeriesById,
 } from "src/selectors";
 import { fetchTeamById } from "src/actions/teams";
 import { fetchPlayersByRosterId } from "src/actions/players";
-import { Card, CardBody, CardHeader, CardTitle } from "src/components/Card";
+import { Card, CardBody } from "src/components/Card";
 import { Column } from "src/components/Column";
 import SvgIcon from "src/components/SvgIcon";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
-import { formatStreak, formatStat, formatGold } from "src/utils/esports";
+import { formatStat, formatGold } from "src/utils/esports";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
 import { useTheme } from "src/hooks/useTheme";
 import { useTeamData } from "src/teams";
@@ -32,7 +31,7 @@ import { Series } from "src/schemas/series";
 import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import LolScoreboard from "src/components/LolScoreboard";
 import { fetchSeriesById } from "src/actions/series";
-import { Tabs } from "src/components"; // Ensure Tabs is correctly imported
+import { Tabs } from "src/components";
 
 type TeamDetailParams = {
   esportName: string;
@@ -41,8 +40,7 @@ type TeamDetailParams = {
 
 type StatEntry = {
   label: string;
-  avgKey: keyof TeamAggStats;
-  totalKey: keyof TeamAggStats;
+  key: keyof TeamAggStats;
   formatter: (value: number) => string;
 };
 
@@ -51,7 +49,6 @@ const TeamDetail: React.FC = () => {
   const { esportName, teamId } = useParams<TeamDetailParams>();
   const teamIdNumber = Number(teamId);
 
-  // **Unconditionally call all hooks at the top**
   // Team Data Hooks
   const team = useAppSelector((state) => selectTeamById(state, teamIdNumber));
   const loading = useAppSelector((state) =>
@@ -61,7 +58,6 @@ const TeamDetail: React.FC = () => {
 
   // UI and Theme Hooks
   const getTeamData = useTeamData();
-  const [showAverages, setShowAverages] = useState(true);
   const theme = useTheme();
 
   // Derive rosterId (can be undefined)
@@ -83,17 +79,17 @@ const TeamDetail: React.FC = () => {
     rosterId ? hasFetchedPlayersByRosterId(state, rosterId) : false
   );
 
-  // Add sorting state for season stats
+  // Sorting state for season stats
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
   }>({
-    key: "start", // Default sort by "start" date
-    direction: "desc", // Default to descending order
+    key: "start",
+    direction: "desc",
   });
 
   // Tabs State
-  const [selectedTab, setSelectedTab] = useState("stats"); // Initialize to "stats"
+  const [selectedTab, setSelectedTab] = useState("stats");
 
   // Define Tab Items
   const tabItems = [
@@ -112,13 +108,11 @@ const TeamDetail: React.FC = () => {
   const handleSort = (key: string) => {
     setSortConfig((prevSortConfig) => {
       if (prevSortConfig && prevSortConfig.key === key) {
-        // Toggle direction
         return {
           key,
           direction: prevSortConfig.direction === "asc" ? "desc" : "asc",
         };
       } else {
-        // New sort key, default to "desc"
         return {
           key,
           direction: "desc",
@@ -127,7 +121,7 @@ const TeamDetail: React.FC = () => {
     });
   };
 
-  // **Fetch Team Data if Needed**
+  // Fetch Team Data if Needed
   useEffect(() => {
     if (
       (!team || !team.lolSeasonStats || team.lolSeasonStats.length === 0) &&
@@ -137,7 +131,7 @@ const TeamDetail: React.FC = () => {
     }
   }, [dispatch, team, loading, esportName, teamIdNumber]);
 
-  // **Fetch Roster Players if Needed**
+  // Fetch Roster Players if Needed
   useEffect(() => {
     if (
       rosterId &&
@@ -149,7 +143,7 @@ const TeamDetail: React.FC = () => {
     }
   }, [dispatch, rosterId, rosterLoading, hasFetchedRosterPlayers, rosterError]);
 
-  // **Compute validSeasonStats**
+  // Compute validSeasonStats
   const validSeasonStats = useMemo(() => {
     const seasonStats = team?.lolSeasonStats ?? [];
     return seasonStats.filter(
@@ -161,8 +155,8 @@ const TeamDetail: React.FC = () => {
   const sortedSeasonStats = useMemo<TeamMatchStats[]>(() => {
     if (!sortConfig) return validSeasonStats;
     return [...validSeasonStats].sort((a, b) => {
-      const aValue = (a as any)[sortConfig.key];
-      const bValue = (b as any)[sortConfig.key];
+      let aValue = (a as any)[sortConfig.key];
+      let bValue = (b as any)[sortConfig.key];
 
       if (aValue < bValue) {
         return sortConfig.direction === "asc" ? -1 : 1;
@@ -195,7 +189,7 @@ const TeamDetail: React.FC = () => {
       .filter((series): series is Series => series !== undefined);
   }, [seriesIds, seriesByIdMap]);
 
-  // **Conditional Returns After All Hooks**
+  // Conditional Returns After All Hooks
   if (!team && !loading) {
     return <div className="p-4">Team not found</div>;
   }
@@ -212,8 +206,8 @@ const TeamDetail: React.FC = () => {
     return <div className="p-4">No roster available</div>;
   }
 
-  // **Continue with the Rest of the Component Logic**
-  const { color, logoType, league } = getTeamData(team.name);
+  // Continue with the Rest of the Component Logic
+  const { logoType, league } = getTeamData(team.name);
 
   const logoUrl =
     team.images && team.images.length > 0
@@ -254,11 +248,6 @@ const TeamDetail: React.FC = () => {
     }
   };
 
-  // Handler for toggle button
-  const handleToggle = () => {
-    setShowAverages((prev) => !prev);
-  };
-
   // Access aggStats
   const aggStats = team.aggStats;
 
@@ -279,60 +268,46 @@ const TeamDetail: React.FC = () => {
     return "";
   };
 
-  // Calculate Win Percentage
-  const winPercentage =
-    aggStats && aggStats.totalMatches > 0
-      ? ((aggStats.totalWins / aggStats.totalMatches) * 100).toFixed(2) + "%"
-      : "0%";
-
   // Statistics configuration with properly typed keys
   const stats: StatEntry[] = [
     {
       label: "Gold",
-      avgKey: "averageGoldEarned",
-      totalKey: "totalGoldEarned",
+      key: "averageGoldEarned",
       formatter: formatGold,
     },
     {
       label: "Kills",
-      avgKey: "averageScore",
-      totalKey: "totalScore",
+      key: "averageScore",
       formatter: formatStat,
     },
     {
-      label: "Turrets",
-      avgKey: "averageTurretsDestroyed",
-      totalKey: "totalTurretsDestroyed",
+      label: "Towers",
+      key: "averageTurretsDestroyed",
       formatter: formatStat,
     },
     {
       label: "Inhibitors",
-      avgKey: "averageInhibitorsDestroyed",
-      totalKey: "totalInhibitorsDestroyed",
+      key: "averageInhibitorsDestroyed",
       formatter: formatStat,
     },
     {
       label: "Dragons",
-      avgKey: "averageDragonKills",
-      totalKey: "totalDragonKills",
+      key: "averageDragonKills",
       formatter: formatStat,
     },
     {
       label: "Barons",
-      avgKey: "averageBaronKills",
-      totalKey: "totalBaronKills",
+      key: "averageBaronKills",
       formatter: formatStat,
     },
     {
       label: "Heralds",
-      avgKey: "averageHeraldKills",
-      totalKey: "totalHeraldKills",
+      key: "averageHeraldKills",
       formatter: formatStat,
     },
     {
       label: "Void Grubs",
-      avgKey: "averageVoidGrubKills",
-      totalKey: "totalVoidGrubKills",
+      key: "averageVoidGrubKills",
       formatter: formatStat,
     },
   ];
@@ -341,90 +316,138 @@ const TeamDetail: React.FC = () => {
     {
       label: "Date",
       key: "start",
+      className: "text-center justify-center",
       render: (matchStat: TeamMatchStats) =>
         matchStat.start ? formatShortDate(matchStat.start) : "",
     },
     {
       label: "Opponent",
       key: "opponent",
-      render: (matchStat: TeamMatchStats) =>
-        matchStat.opponent ? matchStat.opponent.name : "Unknown",
+      className: "text-left justify-start",
+      render: (matchStat: TeamMatchStats) => {
+        if (matchStat.opponent) {
+          const opponentId = matchStat.opponent.id;
+          const opponentName = matchStat.opponent.name;
+          const opponentLogoUrl =
+            matchStat.opponent.images && matchStat.opponent.images.length > 0
+              ? matchStat.opponent.images[0].url
+              : placeholderTeam;
+          return (
+            <Link
+              to={`/esports/${esportName}/team/${opponentId}`}
+              className="flex items-center space-x-2"
+            >
+              <img
+                src={opponentLogoUrl}
+                alt={`${opponentName} logo`}
+                className="w-6 h-6 object-contain"
+              />
+              <span>{opponentName}</span>
+            </Link>
+          );
+        } else {
+          return "Unknown";
+        }
+      },
     },
     {
       label: "Result",
       key: "isWinner",
-      render: (matchStat: TeamMatchStats) =>
-        matchStat.isWinner ? "Win" : "Loss",
+      className: "text-center justify-center",
+      render: (matchStat: TeamMatchStats) => (
+        <span
+          className={matchStat.isWinner ? "text-green-500" : "text-red-500"}
+        >
+          {matchStat.isWinner ? "Win" : "Loss"}
+        </span>
+      ),
     },
     {
-      label: "Score",
+      label: "Kills",
       key: "score",
+      className: "text-center justify-center",
     },
     {
       label: "Gold",
       key: "goldEarned",
+      className: "text-center justify-center",
+      render: (matchStat: TeamMatchStats) => formatGold(matchStat.goldEarned),
     },
     {
-      label: "Turrets",
+      label: "Towers",
       key: "turretsDestroyed",
+      className: "text-center justify-center",
     },
-
-    // Add other columns as needed
   ];
 
-  // **Render Tab Content**
+  // Render Tab Content
   const renderTabContent = () => {
     switch (selectedTab) {
       case "stats":
         return (
           <>
-            {/* Statistics Section with Toggle Button */}
+            {/* Statistics Section */}
             {aggStats ? (
-              <Card>
-                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0"></CardHeader>
-                <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-                  <div className="grid grid-cols-2 md:grid-cols-8 gap-6 p-4">
-                    {stats.map(({ label, avgKey, totalKey, formatter }) => (
-                      <div
-                        key={label}
-                        className="flex flex-col items-center justify-center"
-                      >
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-wrap justify-center space-x-4 pb-4">
+                {stats.map(({ label, key, formatter }) => (
+                  <div
+                    key={label}
+                    className="flex-1 min-w-[80px] max-w-[120px] flex-shrink flex-grow"
+                  >
+                    <div className="block pt-4 transition-all duration-200">
+                      <div className="bg-primary-200 dark:bg-secondary-500 rounded-lg p-2 shadow-sm transition-all duration-200 flex flex-col items-center space-y-2">
+                        <div className="text-sm text-gray-500 font-bold text-center uppercase">
                           {label}
-                        </span>
-                        <span className="text-md font-medium text-gray-800 dark:text-gray-200">
-                          {formatter(
-                            aggStats[showAverages ? avgKey : totalKey] || 0
-                          )}
-                        </span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">
+                            {formatter(aggStats[key] || 0)}
+                          </div>
+                        </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </CardBody>
-                <button
-                  onClick={handleToggle}
-                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                >
-                  {showAverages ? "Show Totals" : "Show Averages"}
-                </button>
-              </Card>
+                ))}
+              </div>
             ) : null}
 
             {/* Season Stats Section */}
             {validSeasonStats.length > 0 ? (
-              <Card>
-                <CardHeader></CardHeader>
-                <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-                  <StatsTable<TeamMatchStats>
-                    columns={seasonStatsColumns}
-                    data={sortedSeasonStats}
-                    sortConfig={sortConfig}
-                    onSort={handleSort}
-                    gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
-                    rowKey={(matchStat, index) => index}
-                  />
-                </CardBody>
-              </Card>
+              <div className="mb-4">
+                <StatsTable<TeamMatchStats>
+                  columns={seasonStatsColumns}
+                  data={sortedSeasonStats}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                  gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
+                  rowKey={(matchStat, index) => index}
+                  renderRow={(matchStat) => (
+                    <div
+                      key={matchStat.matchId}
+                      className={`grid gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
+                      style={{
+                        gridTemplateColumns: `repeat(${seasonStatsColumns.length}, 1fr)`,
+                      }}
+                    >
+                      {seasonStatsColumns.map((column) => {
+                        const value = column.render
+                          ? column.render(matchStat)
+                          : (matchStat as any)[column.key] || "-";
+                        return (
+                          <div
+                            key={column.key}
+                            className={`flex items-center ${column.className}`}
+                          >
+                            <span className="text-md font-medium text-gray-800 dark:text-gray-200">
+                              {value}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
+              </div>
             ) : (
               <p>No season stats available</p>
             )}
@@ -435,7 +458,6 @@ const TeamDetail: React.FC = () => {
           <>
             {/* Series History Section */}
             <Card>
-              <CardHeader></CardHeader>
               <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
                 {seriesList && seriesList.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
@@ -565,12 +587,12 @@ const TeamDetail: React.FC = () => {
           </Card>
 
           {/* Roster */}
-          <Card className="flex-1 pt-4 pr-6">
+          <Card className="flex-1 pr-6">
             <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
               {rosterLoading && <p>Loading roster players...</p>}
               {rosterError && <p className="text-red-500">{rosterError}</p>}
               {rosterPlayers.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-4">
+                <div className="flex flex-wrap justify-between gap-2">
                   {rosterPlayers
                     .filter(
                       (player): player is Player =>
@@ -588,7 +610,7 @@ const TeamDetail: React.FC = () => {
                         role
                           ? role.charAt(0).toUpperCase() +
                             role.slice(1).toLowerCase()
-                          : ""; // Normalize roles
+                          : "";
                       const roleA = normalizeRole(a.role);
                       const roleB = normalizeRole(b.role);
                       return (
@@ -596,17 +618,21 @@ const TeamDetail: React.FC = () => {
                       );
                     })
                     .map((player) => (
-                      <PlayerPreview
+                      <div
                         key={player.id}
-                        player={{
-                          ...player,
-                          role: player.role
-                            ? player.role.charAt(0).toUpperCase() +
-                              player.role.slice(1).toLowerCase()
-                            : "",
-                        }} // Capitalize role for display
-                        esportName={esportName}
-                      />
+                        className="flex-1 min-w-[80px] max-w-[120px] flex-shrink flex-grow"
+                      >
+                        <PlayerPreview
+                          player={{
+                            ...player,
+                            role: player.role
+                              ? player.role.charAt(0).toUpperCase() +
+                                player.role.slice(1).toLowerCase()
+                              : "",
+                          }}
+                          esportName={esportName}
+                        />
+                      </div>
                     ))}
                 </div>
               ) : (

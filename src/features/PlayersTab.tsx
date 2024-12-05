@@ -1,6 +1,6 @@
-// src/components/PlayersTab.tsx
+// PlayersTab.tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { fetchPlayers } from "src/actions/players";
@@ -9,19 +9,17 @@ import {
   selectPlayersLoading,
   selectPlayersError,
 } from "src/selectors";
+import { Player } from "src/schemas/player";
+import { PlayerAggStats } from "src/schemas/player-agg-stats";
 import LolPlayerRow from "src/components/LolPlayerRow";
+import Spinner from "src/components/Spinner";
+import StatsTable from "src/components/StatsTable";
 
-type SortKey =
-  | "role"
-  | "name"
-  | "totalMatches"
-  | "totalKills"
-  | "totalDeaths"
-  | "totalAssists"
-  | "kda"
-  | "averageKills"
-  | "averageDeaths"
-  | "averageAssists";
+interface PlayerWithComputedValues extends Player {
+  computedValues: {
+    kda: number;
+  };
+}
 
 const PlayersTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,9 +30,12 @@ const PlayersTab: React.FC = () => {
   const error = useAppSelector(selectPlayersError);
 
   const [sortConfig, setSortConfig] = useState<{
-    key: SortKey;
+    key: string;
     direction: "asc" | "desc";
-  } | null>(null);
+  }>({
+    key: "kda",
+    direction: "desc",
+  });
 
   useEffect(() => {
     if (esportName) {
@@ -42,148 +43,131 @@ const PlayersTab: React.FC = () => {
     }
   }, [dispatch, esportName]);
 
-  const columns: Array<{ label: string; key: SortKey }> = [
-    { label: "Role", key: "role" },
-    { label: "Player", key: "name" },
-    { label: "Matches", key: "totalMatches" },
-    { label: "Kills", key: "totalKills" },
-    { label: "Deaths", key: "totalDeaths" },
-    { label: "Assists", key: "totalAssists" },
-    { label: "KDA", key: "kda" },
-  ];
+  // Define columns in the specified order
+  const columns = useMemo(
+    () => [
+      { label: "Player", key: "name" },
+      { label: "Matches", key: "totalMatches" },
+      { label: "KDA", key: "kda" },
+      { label: "Kills", key: "averageKills" },
+      { label: "Deaths", key: "averageDeaths" },
+      { label: "Assists", key: "averageAssists" },
+      { label: "CS", key: "averageCreepScore" },
+    ],
+    []
+  );
 
-  const handleSort = (key: SortKey) => {
-    let direction: "asc" | "desc" = "asc";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "asc"
-    ) {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
-  };
+  // Filter out players with all zero stats
+  const filteredPlayers = useMemo(() => {
+    return players.filter((player) => {
+      const aggStats = player.aggStats;
+      if (!aggStats) return false; // Exclude players without aggStats
 
-  const sortedPlayers = React.useMemo(() => {
-    if (!sortConfig) return players;
-
-    return [...players].sort((a, b) => {
-      let aValue: any, bValue: any;
-
-      switch (sortConfig.key) {
-        case "role":
-          aValue = a.role?.toLowerCase() || "";
-          bValue = b.role?.toLowerCase() || "";
-          break;
-        case "name":
-          aValue = a.nickName.toLowerCase();
-          bValue = b.nickName.toLowerCase();
-          break;
-        case "kda":
-          const aKDA =
-            a.aggStats && a.aggStats.totalDeaths > 0
-              ? (a.aggStats.totalKills + a.aggStats.totalAssists) /
-                a.aggStats.totalDeaths
-              : 0;
-          const bKDA =
-            b.aggStats && b.aggStats.totalDeaths > 0
-              ? (b.aggStats.totalKills + b.aggStats.totalAssists) /
-                b.aggStats.totalDeaths
-              : 0;
-          aValue = aKDA;
-          bValue = bKDA;
-          break;
-        case "averageKills":
-          aValue = a.aggStats?.averageKills || 0;
-          bValue = b.aggStats?.averageKills || 0;
-          break;
-        case "averageDeaths":
-          aValue = a.aggStats?.averageDeaths || 0;
-          bValue = b.aggStats?.averageDeaths || 0;
-          break;
-        case "averageAssists":
-          aValue = a.aggStats?.averageAssists || 0;
-          bValue = b.aggStats?.averageAssists || 0;
-          break;
-        default:
-          aValue = a.aggStats ? a.aggStats[sortConfig.key] ?? 0 : 0;
-          bValue = b.aggStats ? b.aggStats[sortConfig.key] ?? 0 : 0;
-      }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
-      return 0;
+      // Check if all relevant stats are zero
+      const { averageKills, averageDeaths, averageAssists, averageCreepScore } =
+        aggStats;
+      return (
+        averageKills !== 0 ||
+        averageDeaths !== 0 ||
+        averageAssists !== 0 ||
+        averageCreepScore !== 0
+      );
     });
-  }, [players, sortConfig]);
+  }, [players]);
+
+  // Compute KDA for each player
+  const playersWithComputedValues = useMemo(() => {
+    return filteredPlayers.map((player) => {
+      const aggStats = player.aggStats!;
+      let kda = 0;
+      const { averageKills, averageDeaths, averageAssists } = aggStats;
+      if (averageDeaths === 0) {
+        kda = averageKills + averageAssists;
+      } else {
+        kda = (averageKills + averageAssists) / averageDeaths;
+      }
+      return {
+        ...player,
+        computedValues: {
+          kda,
+        },
+      };
+    });
+  }, [filteredPlayers]);
+
+  // Sorting function
+  const getSortedPlayers = useCallback(
+    (playersToSort: PlayerWithComputedValues[]) => {
+      if (!sortConfig) return playersToSort;
+
+      return [...playersToSort].sort((a, b) => {
+        let comparison = 0;
+
+        if (sortConfig.key === "name") {
+          comparison = a.nickName.localeCompare(b.nickName);
+        } else if (sortConfig.key === "kda") {
+          comparison = a.computedValues.kda - b.computedValues.kda;
+        } else if (sortConfig.key === "totalMatches") {
+          comparison =
+            (a.aggStats?.totalMatches ?? 0) - (b.aggStats?.totalMatches ?? 0);
+        } else {
+          const statKey = sortConfig.key as keyof PlayerAggStats;
+          const aStat = a.aggStats?.[statKey] ?? 0;
+          const bStat = b.aggStats?.[statKey] ?? 0;
+          comparison = aStat - bStat;
+        }
+
+        return sortConfig.direction === "asc" ? comparison : -comparison;
+      });
+    },
+    [sortConfig]
+  );
+
+  const handleSort = useCallback((key: string) => {
+    setSortConfig((prevConfig) => {
+      if (prevConfig && prevConfig.key === key) {
+        return {
+          key,
+          direction: prevConfig.direction === "asc" ? "desc" : "asc",
+        };
+      } else {
+        return {
+          key,
+          direction: "desc",
+        };
+      }
+    });
+  }, []);
 
   if (loading) {
-    return <div className="text-center">Loading players...</div>;
+    return <Spinner withText={false} />;
   }
 
   if (error) {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
+  const gridTemplateColumns = `200px repeat(${columns.length - 1}, 1fr)`;
+
   return (
     <div>
-      {/* Sorting Controls */}
-      <div className="grid grid-cols-[1fr_2fr_repeat(9,1fr)] gap-2">
-        {columns.map((column) => (
-          <div key={column.key} className="flex items-center justify-center">
-            <button
-              onClick={() => handleSort(column.key)}
-              className="w-full px-3 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-bold rounded hover:bg-primary-300 flex items-center justify-center"
-            >
-              {column.label}
-              {sortConfig?.key === column.key ? (
-                sortConfig.direction === "asc" ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                )
-              ) : null}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Padding between sort buttons and player rows */}
-      <div className="my-4"></div>
-
-      {/* Player Rows */}
-      {sortedPlayers.map((player) => (
-        <LolPlayerRow key={player.id} player={player} columns={columns} />
-      ))}
+      <StatsTable<PlayerWithComputedValues>
+        columns={columns}
+        data={getSortedPlayers(playersWithComputedValues)}
+        sortConfig={sortConfig}
+        onSort={handleSort}
+        gridTemplateColumns={gridTemplateColumns}
+        rowKey={(player) => player.id}
+        renderRow={(player) => (
+          <LolPlayerRow
+            key={player.id}
+            player={player}
+            columns={columns}
+            gridTemplateColumns={gridTemplateColumns}
+            esportName={esportName}
+          />
+        )}
+      />
     </div>
   );
 };
