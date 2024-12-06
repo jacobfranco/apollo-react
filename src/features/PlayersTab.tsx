@@ -4,20 +4,25 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { fetchPlayers } from "src/actions/players";
+import { fetchTeams } from "src/actions/teams";
 import {
   selectPlayersList,
   selectPlayersLoading,
   selectPlayersError,
+  selectTeamsById,
+  selectTeamsList,
+  selectTeamsLoading,
 } from "src/selectors";
 import { Player } from "src/schemas/player";
 import { PlayerAggStats } from "src/schemas/player-agg-stats";
-import LolPlayerRow from "src/components/LolPlayerRow";
 import Spinner from "src/components/Spinner";
 import StatsTable from "src/components/StatsTable";
+import LolPlayerRow from "src/components/LolPlayerRow";
 
 interface PlayerWithComputedValues extends Player {
   computedValues: {
     kda: number;
+    teamLogo: string;
   };
 }
 
@@ -26,8 +31,22 @@ const PlayersTab: React.FC = () => {
   const { esportName } = useParams<{ esportName: string }>();
 
   const players = useAppSelector(selectPlayersList);
-  const loading = useAppSelector(selectPlayersLoading);
-  const error = useAppSelector(selectPlayersError);
+  const loadingPlayers = useAppSelector(selectPlayersLoading);
+  const errorPlayers = useAppSelector(selectPlayersError);
+  const teams = useAppSelector(selectTeamsList);
+  const teamsById = useAppSelector(selectTeamsById);
+  const loadingTeams = useAppSelector(selectTeamsLoading);
+
+  // Fetch players and teams if not loaded
+  useEffect(() => {
+    if (!esportName) return;
+    if (players.length === 0 && !loadingPlayers) {
+      dispatch(fetchPlayers(esportName));
+    }
+    if (teams.length === 0 && !loadingTeams) {
+      dispatch(fetchTeams(esportName));
+    }
+  }, [dispatch, esportName, players, loadingPlayers, teams, loadingTeams]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -37,15 +56,10 @@ const PlayersTab: React.FC = () => {
     direction: "desc",
   });
 
-  useEffect(() => {
-    if (esportName) {
-      dispatch(fetchPlayers(esportName));
-    }
-  }, [dispatch, esportName]);
-
-  // Define columns in the specified order
+  // Define all hooks and derived values before any returns
   const columns = useMemo(
     () => [
+      { label: "Team", key: "teamName" },
       { label: "Player", key: "name" },
       { label: "Matches", key: "totalMatches" },
       { label: "KDA", key: "kda" },
@@ -57,13 +71,10 @@ const PlayersTab: React.FC = () => {
     []
   );
 
-  // Filter out players with all zero stats
   const filteredPlayers = useMemo(() => {
     return players.filter((player) => {
       const aggStats = player.aggStats;
-      if (!aggStats) return false; // Exclude players without aggStats
-
-      // Check if all relevant stats are zero
+      if (!aggStats) return false;
       const { averageKills, averageDeaths, averageAssists, averageCreepScore } =
         aggStats;
       return (
@@ -75,35 +86,41 @@ const PlayersTab: React.FC = () => {
     });
   }, [players]);
 
-  // Compute KDA for each player
   const playersWithComputedValues = useMemo(() => {
     return filteredPlayers.map((player) => {
       const aggStats = player.aggStats!;
-      let kda = 0;
       const { averageKills, averageDeaths, averageAssists } = aggStats;
-      if (averageDeaths === 0) {
-        kda = averageKills + averageAssists;
-      } else {
-        kda = (averageKills + averageAssists) / averageDeaths;
-      }
+      const kda =
+        averageDeaths === 0
+          ? averageKills + averageAssists
+          : (averageKills + averageAssists) / averageDeaths;
+
+      const lastTeamId = player.teamIds?.[player.teamIds.length - 1];
+      const team = lastTeamId ? teamsById.get(lastTeamId) : undefined;
+      const teamLogo = team?.images?.[0]?.url ?? "";
+
       return {
         ...player,
         computedValues: {
           kda,
+          teamLogo,
         },
       };
     });
-  }, [filteredPlayers]);
+  }, [filteredPlayers, teamsById]);
 
-  // Sorting function
   const getSortedPlayers = useCallback(
     (playersToSort: PlayerWithComputedValues[]) => {
       if (!sortConfig) return playersToSort;
 
       return [...playersToSort].sort((a, b) => {
         let comparison = 0;
-
-        if (sortConfig.key === "name") {
+        if (sortConfig.key === "teamName") {
+          // Sort by team logo string
+          comparison = a.computedValues.teamLogo.localeCompare(
+            b.computedValues.teamLogo
+          );
+        } else if (sortConfig.key === "name") {
           comparison = a.nickName.localeCompare(b.nickName);
         } else if (sortConfig.key === "kda") {
           comparison = a.computedValues.kda - b.computedValues.kda;
@@ -116,7 +133,6 @@ const PlayersTab: React.FC = () => {
           const bStat = b.aggStats?.[statKey] ?? 0;
           comparison = aStat - bStat;
         }
-
         return sortConfig.direction === "asc" ? comparison : -comparison;
       });
     },
@@ -139,21 +155,25 @@ const PlayersTab: React.FC = () => {
     });
   }, []);
 
-  if (loading) {
+  // Now handle the conditional returns:
+  if (loadingPlayers || loadingTeams) {
     return <Spinner withText={false} />;
   }
 
-  if (error) {
-    return <div className="text-center text-red-500">Error: {error}</div>;
+  if (errorPlayers) {
+    return (
+      <div className="text-center text-red-500">Error: {errorPlayers}</div>
+    );
   }
 
-  const gridTemplateColumns = `200px repeat(${columns.length - 1}, 1fr)`;
+  const sortedPlayers = getSortedPlayers(playersWithComputedValues);
+  const gridTemplateColumns = `100px repeat(${columns.length - 1}, 1fr)`;
 
   return (
     <div>
       <StatsTable<PlayerWithComputedValues>
         columns={columns}
-        data={getSortedPlayers(playersWithComputedValues)}
+        data={sortedPlayers}
         sortConfig={sortConfig}
         onSort={handleSort}
         gridTemplateColumns={gridTemplateColumns}
