@@ -24,10 +24,22 @@ import StatsTable from "src/components/StatsTable";
 import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import LolScoreboard from "src/components/LolScoreboard";
 import { Series } from "src/schemas/series";
+import { useTeamData } from "src/teams";
 
 type PlayerDetailParams = {
   esportName: string;
   playerId: string;
+};
+
+const getTeamLogoFilter = (
+  logoType: "black" | "white" | "color",
+  isPlaceholder: boolean,
+  currentTheme: string
+): string => {
+  if (isPlaceholder) return "";
+  if (logoType === "black" && currentTheme === "dark") return "invert";
+  if (logoType === "white" && currentTheme === "light") return "invert";
+  return "";
 };
 
 const PlayerDetail: React.FC = () => {
@@ -35,6 +47,7 @@ const PlayerDetail: React.FC = () => {
   const { esportName, playerId } = useParams<PlayerDetailParams>();
   const playerIdNumber = Number(playerId);
   const theme = useTheme();
+  const getTeamData = useTeamData();
 
   const player = useAppSelector((state) =>
     selectPlayerById(state, playerIdNumber)
@@ -58,6 +71,7 @@ const PlayerDetail: React.FC = () => {
   );
 
   const [selectedTab, setSelectedTab] = useState("stats");
+  const [isLoadingSchedule, setIsLoadingSchedule] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
@@ -79,24 +93,26 @@ const PlayerDetail: React.FC = () => {
   }, [dispatch, esportName, primaryTeamId, player, team, teamLoading]);
 
   const seriesIds = team?.schedule || [];
-  // Fetch series once team is loaded
+
   useEffect(() => {
-    if (team && seriesIds.length > 0) {
-      seriesIds.forEach((id) => {
-        dispatch(fetchSeriesById(id, esportName));
+    if (team?.schedule && team.schedule.length > 0) {
+      setIsLoadingSchedule(true);
+      Promise.all(
+        team.schedule.map((id) => dispatch(fetchSeriesById(id, esportName)))
+      ).finally(() => {
+        setIsLoadingSchedule(false);
       });
     }
-  }, [dispatch, team, esportName, seriesIds]);
+  }, [team, esportName, dispatch]);
 
   const seriesByIdMap = useAppSelector((state) =>
     state.series.get("seriesById")
   );
-  const seriesList: Series[] = useMemo(() => {
+
+  const seriesList = useMemo(() => {
     return seriesIds
       .map((id) => seriesByIdMap.get(id))
-      .filter(
-        (series: Series | undefined): series is Series => series !== undefined
-      );
+      .filter((series): series is Series => series !== undefined);
   }, [seriesIds, seriesByIdMap]);
 
   const validSeasonStats = useMemo(() => {
@@ -104,42 +120,17 @@ const PlayerDetail: React.FC = () => {
     return seasonStats.filter((matchStat: any) => matchStat != null);
   }, [player?.lolSeasonStats]);
 
-  // Normalize stats to extract totals if they are objects
   const normalizedSeasonStats = useMemo(() => {
     return validSeasonStats.map((stat: any) => {
-      const kills =
-        stat.kills && typeof stat.kills === "object" && stat.kills.total != null
-          ? stat.kills.total
-          : stat.kills ?? 0;
-
-      const deaths =
-        stat.deaths &&
-        typeof stat.deaths === "object" &&
-        stat.deaths.total != null
-          ? stat.deaths.total
-          : stat.deaths ?? 0;
-
-      const assists =
-        stat.assists &&
-        typeof stat.assists === "object" &&
-        stat.assists.total != null
-          ? stat.assists.total
-          : stat.assists ?? 0;
-
-      // Attempt to handle CS similarly
+      const kills = stat.kills?.total ?? 0;
+      const deaths = stat.deaths?.total ?? 0;
+      const assists = stat.assists?.total ?? 0;
       let totalCreepScore = 0;
-      if (
-        stat.totalCreepScore &&
-        typeof stat.totalCreepScore === "object" &&
-        stat.totalCreepScore.total != null
-      ) {
-        totalCreepScore = stat.totalCreepScore.total;
-      } else if (typeof stat.totalCreepScore === "number") {
-        totalCreepScore = stat.totalCreepScore;
-      } else if (stat.creeps && stat.creeps.total != null) {
-        // fallback if creeps is present
-        totalCreepScore = stat.creeps.total;
+      if (stat.creeps?.overall?.kills?.total != null) {
+        totalCreepScore = stat.creeps.overall.kills.total;
       }
+
+      const kda = (kills + assists) / Math.max(1, deaths);
 
       return {
         ...stat,
@@ -147,6 +138,7 @@ const PlayerDetail: React.FC = () => {
         deaths,
         assists,
         totalCreepScore,
+        kda,
       };
     });
   }, [validSeasonStats]);
@@ -232,7 +224,6 @@ const PlayerDetail: React.FC = () => {
       : Number(val);
   };
 
-  // Compute aggregator KDA
   const averageKills = getStatValue("averageKills");
   const averageDeaths = getStatValue("averageDeaths");
   const averageAssists = getStatValue("averageAssists");
@@ -273,102 +264,150 @@ const PlayerDetail: React.FC = () => {
       ]
     : [];
 
-  // KDA column for each match
-  // Build column shows items, trinket, keystone
+  const gridTemplateColumns = "8% 20% 10% 20% 10% 8% 8% 8% 8%";
+
   const seasonStatsColumns = [
     {
       label: "Date",
       key: "start",
-      className: "text-center justify-center",
+      className: "text-center",
       render: (matchStat: any) =>
         matchStat.start ? formatShortDate(matchStat.start) : "",
     },
     {
-      label: "Champion",
-      key: "champion",
-      className: "text-center justify-center",
-      render: (matchStat: any) =>
-        matchStat.champion?.champ?.name
-          ? matchStat.champion.champ.name
-          : "Unknown",
-    },
-    { label: "Kills", key: "kills", className: "text-center justify-center" },
-    { label: "Deaths", key: "deaths", className: "text-center justify-center" },
-    {
-      label: "Assists",
-      key: "assists",
-      className: "text-center justify-center",
-    },
-    {
-      label: "KDA",
-      key: "kda",
-      className: "text-center justify-center",
+      label: "Opponent",
+      key: "opponent",
+      className: "text-left",
       render: (matchStat: any) => {
-        const k = matchStat.kills || 0;
-        const d = matchStat.deaths || 0;
-        const a = matchStat.assists || 0;
-        const kdaVal = (k + a) / Math.max(1, d);
-        return kdaVal.toFixed(2);
-      },
-    },
-    {
-      label: "CS",
-      key: "totalCreepScore",
-      className: "text-center justify-center",
-    },
-    {
-      label: "Build",
-      key: "build",
-      className: "text-center justify-center",
-      render: (matchStat: any) => {
-        const items = Array.isArray(matchStat.items) ? matchStat.items : [];
-        const trinkets = Array.isArray(matchStat.trinketSlot)
-          ? matchStat.trinketSlot
-          : [];
-        const keystoneObj = matchStat.keystone?.keystone;
-        const keystoneImage =
-          keystoneObj?.images &&
-          Array.isArray(keystoneObj.images) &&
-          keystoneObj.images.length > 0
-            ? keystoneObj.images[0].thumbnail
-            : null;
+        if (!matchStat.opponent) return "Unknown";
 
-        // Extract item images
-        const itemImages = items
-          .map((it: any) => it.item?.images?.[0]?.thumbnail)
-          .filter((img: string | undefined) => Boolean(img));
-
-        // Extract trinket images
-        const trinketImages = trinkets
-          .map((it: any) => it.item?.images?.[0]?.thumbnail)
-          .filter((img: string | undefined) => Boolean(img));
+        const teamData = getTeamData(matchStat.opponent.name);
+        const logoFilter = getTeamLogoFilter(teamData.logoType, false, theme);
 
         return (
-          <div className="flex flex-wrap items-center justify-center gap-1">
-            {keystoneImage && (
-              <img src={keystoneImage} alt="keystone" className="w-6 h-6" />
+          <div className="flex items-center gap-2">
+            {matchStat.opponent.images?.[0]?.url && (
+              <img
+                src={matchStat.opponent.images[0].url}
+                alt={matchStat.opponent.name}
+                className={`w-6 h-6 object-contain ${logoFilter}`}
+              />
             )}
-            {itemImages.map((img: string, idx: number) => (
-              <img
-                key={`item-${idx}`}
-                src={img}
-                alt="item"
-                className="w-6 h-6"
-              />
-            ))}
-            {trinketImages.map((img: string, idx: number) => (
-              <img
-                key={`trinket-${idx}`}
-                src={img}
-                alt="trinket"
-                className="w-6 h-6"
-              />
-            ))}
+            <span className="truncate">{matchStat.opponent.name}</span>
           </div>
         );
       },
     },
+    {
+      label: "Champion",
+      key: "champion",
+      className: "text-center",
+      render: (matchStat: any) => {
+        const championImage = matchStat.champion?.champ?.images?.[0]?.url;
+        return championImage ? (
+          <div className="flex justify-center items-center w-16 h-16 mx-auto">
+            <img
+              src={championImage}
+              alt={matchStat.champion.champ.name}
+              className="w-full h-full object-contain"
+            />
+          </div>
+        ) : (
+          "Unknown"
+        );
+      },
+    },
+    {
+      label: "Build",
+      key: "build",
+      className: "text-center",
+      render: (matchStat: any) => {
+        const itemImageUrls = (matchStat.items?.inventory || [])
+          .map(
+            (itemSlot: any) =>
+              itemSlot.item?.images?.[0]?.thumbnail || "/placeholder_item.png"
+          )
+          .concat(Array(6).fill("/placeholder_item.png"))
+          .slice(0, 6);
+
+        const trinketImageUrl =
+          matchStat.items?.trinketSlot?.[0]?.item?.images?.[0]?.thumbnail ||
+          "/placeholder_trinket.png";
+        const summonerSpellUrls = (matchStat.summonerSpells || [])
+          .map(
+            (spellSlot: any) =>
+              spellSlot.spell?.images?.[0]?.thumbnail ||
+              "/placeholder_spell.png"
+          )
+          .concat(Array(2).fill("/placeholder_spell.png"))
+          .slice(0, 2);
+
+        return (
+          <div className="flex items-center justify-center gap-1">
+            <div className="flex flex-col gap-0.5">
+              {summonerSpellUrls.map((url: string, idx: number) => (
+                <img
+                  key={`spell-${idx}`}
+                  src={url}
+                  alt=""
+                  className="w-8 h-8"
+                />
+              ))}
+            </div>
+            <div className="grid grid-cols-3 grid-rows-2 gap-0.5">
+              {itemImageUrls.map((url: string, idx: number) => (
+                <img key={`item-${idx}`} src={url} alt="" className="w-8 h-8" />
+              ))}
+            </div>
+            <img src={trinketImageUrl} alt="" className="w-8 h-8" />
+          </div>
+        );
+      },
+    },
+    {
+      label: "KDA",
+      key: "kda",
+      className: "text-center",
+      render: (matchStat: any) => matchStat.kda.toFixed(2),
+    },
+    {
+      label: "Kills",
+      key: "kills",
+      className: "text-center",
+    },
+    {
+      label: "Deaths",
+      key: "deaths",
+      className: "text-center",
+    },
+    {
+      label: "Assists",
+      key: "assists",
+      className: "text-center",
+    },
+    {
+      label: "CS",
+      key: "totalCreepScore",
+      className: "text-center",
+    },
   ];
+
+  const tabItems = [
+    {
+      text: "Stats",
+      action: () => setSelectedTab("stats"),
+      name: "stats",
+    },
+    {
+      text: "Schedule",
+      action: () => setSelectedTab("schedule"),
+      name: "schedule",
+    },
+  ];
+
+  // Team abbreviation and logo
+  const teamLogoUrl =
+    team && team.images && team.images.length > 0 ? team.images[0].url : null;
 
   const renderTabContent = () => {
     switch (selectedTab) {
@@ -408,43 +447,24 @@ const PlayerDetail: React.FC = () => {
                       data={sortedSeasonStats}
                       sortConfig={sortConfig}
                       onSort={handleSort}
-                      gridTemplateColumns={`repeat(${seasonStatsColumns.length}, 1fr)`}
+                      gridTemplateColumns={gridTemplateColumns}
                       rowKey={(matchStat: any, index: number) => index}
                       renderRow={(matchStat: any) => (
                         <div
                           key={matchStat.matchId}
-                          className={`grid gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
-                          style={{
-                            gridTemplateColumns: `repeat(${seasonStatsColumns.length}, 1fr)`,
-                          }}
+                          className="grid items-center bg-primary-200 dark:bg-secondary-500 rounded-md mb-1"
+                          style={{ gridTemplateColumns }}
                         >
-                          {seasonStatsColumns.map((column) => {
-                            const rawValue = column.render
-                              ? column.render(matchStat)
-                              : matchStat[column.key] ?? "-";
-
-                            // If rawValue is an object (and not null/array), show "-"
-                            let displayValue: string | number | JSX.Element =
-                              rawValue;
-                            if (
-                              typeof rawValue === "object" &&
-                              rawValue !== null &&
-                              !Array.isArray(rawValue)
-                            ) {
-                              displayValue = "-";
-                            }
-
-                            return (
-                              <div
-                                key={column.key}
-                                className={`flex items-center ${column.className}`}
-                              >
-                                <span className="text-md font-medium text-gray-800 dark:text-gray-200">
-                                  {displayValue}
-                                </span>
-                              </div>
-                            );
-                          })}
+                          {seasonStatsColumns.map((column) => (
+                            <div
+                              key={column.key}
+                              className={`${column.className} p-2 overflow-hidden`}
+                            >
+                              {column.render
+                                ? column.render(matchStat)
+                                : matchStat[column.key] ?? "-"}
+                            </div>
+                          ))}
                         </div>
                       )}
                     />
@@ -463,13 +483,7 @@ const PlayerDetail: React.FC = () => {
           return (
             <Card>
               <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-                <p className="text-gray-500">
-                  {teamLoading
-                    ? "Loading team schedule..."
-                    : teamError
-                    ? String(teamError)
-                    : "No schedule available"}
-                </p>
+                <p className="text-gray-500">No schedule available</p>
               </CardBody>
             </Card>
           );
@@ -478,7 +492,9 @@ const PlayerDetail: React.FC = () => {
         return (
           <Card>
             <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-              {seriesList && seriesList.length > 0 ? (
+              {isLoadingSchedule ? (
+                <p className="text-gray-500">Loading series history...</p>
+              ) : seriesList && seriesList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                   {seriesList.map((seriesItem) => {
                     const { id, lifecycle } = seriesItem;
@@ -498,11 +514,7 @@ const PlayerDetail: React.FC = () => {
                   })}
                 </div>
               ) : (
-                <p className="text-gray-500">
-                  {seriesIds.length > 0
-                    ? "Loading series history..."
-                    : "No series history available"}
-                </p>
+                <p className="text-gray-500">No series history available</p>
               )}
             </CardBody>
           </Card>
@@ -511,23 +523,6 @@ const PlayerDetail: React.FC = () => {
         return null;
     }
   };
-
-  const tabItems = [
-    {
-      text: "Stats",
-      action: () => setSelectedTab("stats"),
-      name: "stats",
-    },
-    {
-      text: "Schedule",
-      action: () => setSelectedTab("schedule"),
-      name: "schedule",
-    },
-  ];
-
-  // Team abbreviation and logo
-  const teamLogoUrl =
-    team && team.images && team.images.length > 0 ? team.images[0].url : null;
 
   return (
     <Column

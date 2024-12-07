@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { teamSchema } from "./team";
 
 export const playerMatchStatsSchema = z.object({
   kills: z.number(),
@@ -129,6 +130,12 @@ export const playerMatchStatsSchema = z.object({
         ),
       }),
     })
+    .optional()
+    .nullable(),
+  matchId: z.number(),
+  start: z.union([z.string(), z.number(), z.date()]).optional().nullable(),
+  opponent: z
+    .lazy(() => teamSchema)
     .optional()
     .nullable(),
 });

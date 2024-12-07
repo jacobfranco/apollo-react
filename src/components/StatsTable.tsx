@@ -1,11 +1,10 @@
-// src/components/StatsTable.tsx
-
 import React from "react";
 import SortingHeaders from "./SortingHeaders";
 
 type Column<T> = {
   label: string;
   key: string;
+  className?: string;
   render?: (item: T) => React.ReactNode;
 };
 
@@ -33,39 +32,50 @@ function StatsTable<T>({
   rowKey,
   renderRow,
 }: StatsTableProps<T>) {
+  const gridStyle = {
+    gridTemplateColumns:
+      gridTemplateColumns || `repeat(${columns.length}, 1fr)`,
+  };
+
   return (
-    <>
+    <div className="w-full">
       {onSort && sortConfig && (
-        <SortingHeaders
-          columns={columns}
-          sortConfig={sortConfig}
-          onSort={onSort}
-          gridTemplateColumns={gridTemplateColumns}
-        />
+        <div className="grid mb-3" style={gridStyle}>
+          {columns.map((column, index) => (
+            <div key={column.key} className={column.className}>
+              <SortingHeaders
+                label={column.label}
+                sortKey={column.key}
+                sortConfig={sortConfig}
+                onSort={onSort}
+              />
+            </div>
+          ))}
+        </div>
       )}
-      <div className="my-2" />
-      {data.map((item, index) =>
-        renderRow ? (
-          <React.Fragment key={rowKey ? rowKey(item, index) : index}>
-            {renderRow(item)}
-          </React.Fragment>
-        ) : (
-          <div
-            key={rowKey ? rowKey(item, index) : index}
-            className="grid gap-0"
-            style={{ gridTemplateColumns }}
-          >
-            {columns.map((column) => (
-              <div key={column.key} className="p-2">
-                {column.render
-                  ? column.render(item)
-                  : (item as any)[column.key]}
-              </div>
-            ))}
-          </div>
-        )
-      )}
-    </>
+
+      <div>
+        {data.map((item, index) =>
+          renderRow ? (
+            renderRow(item)
+          ) : (
+            <div
+              key={rowKey ? rowKey(item, index) : index}
+              className="grid bg-primary-200 dark:bg-secondary-500 rounded-md mb-1"
+              style={gridStyle}
+            >
+              {columns.map((column) => (
+                <div key={column.key} className={`${column.className} p-2`}>
+                  {column.render
+                    ? column.render(item)
+                    : (item as any)[column.key]}
+                </div>
+              ))}
+            </div>
+          )
+        )}
+      </div>
+    </div>
   );
 }
 
