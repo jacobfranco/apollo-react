@@ -110,6 +110,11 @@ const ScheduleTab: React.FC = () => {
     return groups;
   }, {} as { [key: string]: Series[] });
 
+  // Sort the keys (dates) in chronological order
+  const sortedDays = Object.keys(groupedSeries).sort((a, b) => {
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
+
   const renderScoresContent = () => {
     if (loading) {
       return <Spinner withText={false} />;
@@ -123,13 +128,13 @@ const ScheduleTab: React.FC = () => {
       case "lol": {
         return (
           <div className="space-y-8">
-            {Object.entries(groupedSeries).map(([day, seriesForDay]) => (
+            {sortedDays.map((day) => (
               <div key={day}>
                 <h2 className="text-xl font-semibold mb-4">
                   {formatDate(day)}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
-                  {seriesForDay.map((seriesItem) => {
+                  {groupedSeries[day].map((seriesItem) => {
                     const { id, lifecycle } = seriesItem;
                     const ScoreboardComponent =
                       lifecycle === "live" ? LolLiveScoreboard : LolScoreboard;
