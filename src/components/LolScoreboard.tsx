@@ -111,14 +111,14 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
       )}
 
       <div
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-300 dark:bg-primary-700 rounded-b px-6 py-2 flex items-center justify-center"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-transparent rounded-b px-6 pb-2 pt-3 flex items-center justify-center"
         style={{
           minWidth: "35%",
           maxWidth: "100%",
           height: "10%",
         }}
       >
-        <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+        <div className="text-gray-900 dark:text-gray-100 opacity-60 font-bold whitespace-nowrap overflow-hidden text-ellipsis">
           {formattedTitle}
         </div>
       </div>
@@ -154,7 +154,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
         {/* Center Column */}
         <div className="flex flex-col items-center w-1/3 justify-center space-y-6">
           {/* Time */}
-          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100 mt-2">
+          <div className="font-bold text-black dark:text-white mt-4">
             {lifecycle === "over"
               ? "Final"
               : lifecycle === "upcoming"
@@ -170,7 +170,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
             <div className={`text-9xl font-bold ${score2Color}`}>{score2}</div>
           </div>
           {/* Format */}
-          <div className="font-bold opacity-60 text-gray-900 dark:text-gray-100">
+          <div className="font-bold opacity-80 text-black dark:text-white pb-1">
             {bestOf}
           </div>
         </div>
