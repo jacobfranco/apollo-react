@@ -201,7 +201,7 @@ const TeamsTab: React.FC = () => {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  const gridTemplateColumns = `200px repeat(${columns.length - 1}, 1fr)`;
+  const gridTemplateColumns = `225px repeat(${columns.length - 1}, 1fr)`;
 
   return (
     <div>

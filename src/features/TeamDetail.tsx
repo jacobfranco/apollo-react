@@ -32,6 +32,7 @@ import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import LolScoreboard from "src/components/LolScoreboard";
 import { fetchSeriesById } from "src/actions/series";
 import { Tabs } from "src/components";
+import AutoFitText from "src/components/AutoFitText";
 
 type TeamDetailParams = {
   esportName: string;
@@ -342,7 +343,16 @@ const TeamDetail: React.FC = () => {
                 alt={`${opponentName} logo`}
                 className="w-6 h-6 object-contain"
               />
-              <span>{opponentName}</span>
+              <div className="w-24">
+                <AutoFitText
+                  text={matchStat.opponent.name}
+                  maxFontSize={16}
+                  minFontSize={10}
+                  maxLines={1}
+                  textAlign="left"
+                  className="font-bold"
+                />
+              </div>
             </Link>
           );
         } else {

@@ -25,6 +25,7 @@ import LolLiveScoreboard from "src/components/LolLiveScoreboard";
 import LolScoreboard from "src/components/LolScoreboard";
 import { Series } from "src/schemas/series";
 import { useTeamData } from "src/teams";
+import AutoFitText from "src/components/AutoFitText";
 
 type PlayerDetailParams = {
   esportName: string;
@@ -147,8 +148,15 @@ const PlayerDetail: React.FC = () => {
     if (!sortConfig || normalizedSeasonStats.length === 0)
       return normalizedSeasonStats;
     return [...normalizedSeasonStats].sort((a: any, b: any) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+      const aValue =
+        sortConfig.key === "champion"
+          ? a.champion?.champ?.name || "Unknown"
+          : a[sortConfig.key];
+      const bValue =
+        sortConfig.key === "champion"
+          ? b.champion?.champ?.name || "Unknown"
+          : b[sortConfig.key];
+
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
@@ -220,7 +228,7 @@ const PlayerDetail: React.FC = () => {
     const val = (aggStats as any)?.[statKey];
     if (val == null) return 0;
     return typeof val === "object" && val.total != null
-      ? val.total
+      ? Math.floor(val.total) // Ensure whole number for total matches
       : Number(val);
   };
 
@@ -264,7 +272,7 @@ const PlayerDetail: React.FC = () => {
       ]
     : [];
 
-  const gridTemplateColumns = "8% 20% 10% 20% 10% 8% 8% 8% 8%";
+  const gridTemplateColumns = "8% 16% 10% 20% 10% 9% 9% 9% 9%";
 
   const seasonStatsColumns = [
     {
@@ -293,7 +301,16 @@ const PlayerDetail: React.FC = () => {
                 className={`w-6 h-6 object-contain ${logoFilter}`}
               />
             )}
-            <span className="truncate">{matchStat.opponent.name}</span>
+            <div className="w-24">
+              <AutoFitText
+                text={matchStat.opponent.name}
+                maxFontSize={16}
+                minFontSize={10}
+                maxLines={1}
+                textAlign="left"
+                className="font-bold"
+              />
+            </div>
           </div>
         );
       },
@@ -304,18 +321,24 @@ const PlayerDetail: React.FC = () => {
       className: "text-center",
       render: (matchStat: any) => {
         const championImage = matchStat.champion?.champ?.images?.[0]?.url;
-        return championImage ? (
-          <div className="flex justify-center items-center w-16 h-16 mx-auto">
-            <img
-              src={championImage}
-              alt={matchStat.champion.champ.name}
-              className="w-full h-full object-contain"
-            />
+        const championName = matchStat.champion?.champ?.name || "Unknown";
+        return (
+          <div className="flex flex-col items-center">
+            {championImage && (
+              <div className="w-14 h-14 pt-2">
+                <img
+                  src={championImage}
+                  alt={championName}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <span className="text-sm mt-1">{championName}</span>
           </div>
-        ) : (
-          "Unknown"
         );
       },
+      sortValue: (matchStat: any) =>
+        matchStat.champion?.champ?.name || "Unknown",
     },
     {
       label: "Build",
@@ -343,7 +366,7 @@ const PlayerDetail: React.FC = () => {
           .slice(0, 2);
 
         return (
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-3">
             <div className="flex flex-col gap-0.5">
               {summonerSpellUrls.map((url: string, idx: number) => (
                 <img
@@ -534,81 +557,93 @@ const PlayerDetail: React.FC = () => {
         {/* Player Info Card */}
         <Card className="flex-1">
           <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-            <div className="flex items-start">
-              {/* Player Image */}
-              <div className="w-32 h-32 flex-shrink-0">
-                <img
-                  src={logoUrl}
-                  alt={`${player.nickName} image`}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              {/* Info */}
-              <div className="flex flex-col space-y-2 ml-4 flex-1">
-                {/* Player Nickname (Role) */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-                    {player.nickName}
-                  </span>
-                  {player.role && (
-                    <span className="text-gray-500">({player.role})</span>
-                  )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-start">
+                {/* Player Image */}
+                <div className="w-32 h-32 flex-shrink-0">
+                  <img
+                    src={logoUrl}
+                    alt={`${player.nickName} image`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-
-                {/* Real Name */}
-                <div className="text-gray-600 dark:text-gray-400">
-                  {player.firstName} {player.lastName}
-                </div>
-
-                {/* Country */}
-                {player.region?.country && (
+                {/* Info */}
+                <div className="flex flex-col space-y-2 ml-4">
+                  {/* Player Nickname and Role */}
                   <div className="flex items-center space-x-2">
-                    {countryFlag && (
-                      <img
-                        src={countryFlag}
-                        alt={`${player.region.country.name} flag`}
-                        className="w-6 h-4 object-cover"
-                      />
-                    )}
-                    <span>{player.region.country.name}</span>
-                  </div>
-                )}
-
-                {/* Team Abbreviation and Logo */}
-                {team && (
-                  <div className="flex items-center space-x-2">
-                    {teamLogoUrl && (
-                      <img
-                        src={teamLogoUrl}
-                        alt={`${team.name} logo`}
-                        className="w-6 h-6 object-contain"
-                      />
-                    )}
-                    {team.abbreviation && (
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
-                        {team.abbreviation}
+                    <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+                      {player.nickName}
+                    </span>
+                    {player.role && (
+                      <span className="text-gray-500 uppercase">
+                        {player.role}
                       </span>
                     )}
                   </div>
-                )}
 
-                {/* Social Media */}
-                {player.socialMediaAccounts &&
-                  player.socialMediaAccounts.length > 0 && (
-                    <div className="mt-2 flex space-x-4">
-                      {player.socialMediaAccounts.map((account) => (
-                        <a
-                          key={account.url}
-                          href={account.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {getSocialIcon(account.platform.name)}
-                        </a>
-                      ))}
+                  {/* Real Name */}
+                  <div className="text-gray-600 dark:text-gray-400">
+                    {player.firstName} {player.lastName}
+                  </div>
+
+                  {/* Country */}
+                  {player.region?.country && (
+                    <div className="flex items-center space-x-2">
+                      {countryFlag && (
+                        <img
+                          src={countryFlag}
+                          alt={`${player.region.country.name} flag`}
+                          className="w-6 h-4 object-cover"
+                        />
+                      )}
+                      <span>{player.region.country.name}</span>
                     </div>
                   )}
+
+                  {/* Social Media */}
+                  {player.socialMediaAccounts &&
+                    player.socialMediaAccounts.length > 0 && (
+                      <div className="mt-2 flex space-x-4">
+                        {player.socialMediaAccounts.map((account) => (
+                          <a
+                            key={account.url}
+                            href={account.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {getSocialIcon(account.platform.name)}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                </div>
               </div>
+
+              {/* Team Information (Right Side) */}
+              {team && (
+                <Link
+                  to={`/esports/${esportName}/team/${team.id}`}
+                  className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-600 rounded-lg transition-colors duration-200 -ml-16"
+                >
+                  {teamLogoUrl && (
+                    <img
+                      src={teamLogoUrl}
+                      alt={`${team.name} logo`}
+                      className="w-24 h-24 object-contain mb-2"
+                    />
+                  )}
+                  <div className="flex flex-col items-center space-y-1">
+                    <span className="text-lg font-medium text-gray-800 dark:text-gray-200 text-center">
+                      {team.name}
+                    </span>
+                    {team.abbreviation && (
+                      <span className="text-sm text-gray-500">
+                        ({team.abbreviation})
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              )}
             </div>
           </CardBody>
         </Card>
