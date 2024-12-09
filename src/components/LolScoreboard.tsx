@@ -155,7 +155,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
         <div className="flex flex-col items-center w-1/3 justify-center space-y-6">
           {/* Time */}
           <div className="font-bold text-black dark:text-white mt-4">
-            {lifecycle === "over"
+            {lifecycle === "over" || lifecycle === "over-draw"
               ? "Final"
               : lifecycle === "upcoming"
               ? formattedStartDate
