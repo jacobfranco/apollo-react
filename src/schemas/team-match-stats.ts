@@ -7,7 +7,7 @@ import { teamSchema } from "./team"; // For z.lazy()
 
 // Define the interface
 export interface TeamMatchStats {
-  matchId: number;
+  matchId?: number | null;
   start?: string | number | Date | null;
   opponent?: Team | null;
   score: number;
@@ -33,7 +33,7 @@ export interface TeamMatchStats {
 
 // Annotate the schema
 export const teamMatchStatsSchema: z.ZodType<TeamMatchStats> = z.object({
-  matchId: z.number(),
+  matchId: z.number().optional().nullable(),
   start: z.union([z.string(), z.number(), z.date()]).optional().nullable(),
   opponent: z
     .lazy(() => teamSchema)

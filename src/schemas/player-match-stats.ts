@@ -132,7 +132,7 @@ export const playerMatchStatsSchema = z.object({
     })
     .optional()
     .nullable(),
-  matchId: z.number(),
+  matchId: z.number().optional().nullable(),
   start: z.union([z.string(), z.number(), z.date()]).optional().nullable(),
   opponent: z
     .lazy(() => teamSchema)
