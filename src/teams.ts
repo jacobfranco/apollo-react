@@ -1641,3 +1641,57 @@ export const useTeamData = () => {
 
   return getTeamData;
 };
+
+export const getLeagueTier = (league: string): 1 | 2 | 3 | 4 => {
+  const tier1Leagues = [
+    "LCK",
+    "LPL",
+    "LEC",
+    "LTA",
+    "LCP",
+    "LCS",
+    "LTA North",
+    "LTA South",
+    "PCS",
+    "VCS",
+    "LJL",
+    "CBLOL",
+  ];
+
+  const tier2Keywords = [
+    "Challengers",
+    "Academy",
+    "Rising",
+    "Youth",
+    "Junior",
+    "Young",
+    "LDL",
+    "NACL",
+  ];
+
+  const tier4Keywords = ["2nd Division", "Liga", "3rd Division", "Secondary"];
+
+  if (tier1Leagues.includes(league)) return 1;
+  if (tier2Keywords.some((keyword) => league.includes(keyword))) return 2;
+  if (tier4Keywords.some((keyword) => league.includes(keyword))) return 4;
+  return 3;
+};
+
+export const groupLeaguesByTier = () => {
+  const grouped = Object.values(teamData).reduce((acc, team) => {
+    if (team.league) {
+      const tier = getLeagueTier(team.league);
+      if (!acc[tier]) acc[tier] = new Set<string>();
+      acc[tier].add(team.league);
+    }
+    return acc;
+  }, {} as Record<number, Set<string>>);
+
+  // Convert Sets to sorted arrays and ensure all tiers exist
+  return {
+    1: Array.from(grouped[1] || []).sort(),
+    2: Array.from(grouped[2] || []).sort(),
+    3: Array.from(grouped[3] || []).sort(),
+    4: Array.from(grouped[4] || []).sort(),
+  };
+};
