@@ -3,27 +3,21 @@ import { Modal } from "src/components";
 import { closeModal } from "src/actions/modals";
 import { useAppDispatch } from "src/hooks";
 import Button from "src/components/Button";
-import { teamData } from "src/teams";
+import { groupLeaguesByTier } from "src/teams";
 
-interface FilterModalProps {
+interface RegionFilterModalProps {
   onApplyFilter: (selectedLeagues: string[]) => void;
+  initialSelections?: string[];
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({ onApplyFilter }) => {
+const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
+  onApplyFilter,
+  initialSelections = [],
+}) => {
   const dispatch = useAppDispatch();
-  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
-
-  // Extract unique leagues from teamData
-  const leagues = Array.from(
-    new Set(
-      Object.values(teamData)
-        .map((data) => data.league)
-        .filter(
-          (league): league is string =>
-            league !== undefined && league !== "Unknown"
-        )
-    )
-  );
+  const [selectedLeagues, setSelectedLeagues] =
+    useState<string[]>(initialSelections);
+  const groupedLeagues = groupLeaguesByTier();
 
   const handleLeagueToggle = (leagueKey: string) => {
     setSelectedLeagues((prev) =>
@@ -38,36 +32,57 @@ const FilterModal: React.FC<FilterModalProps> = ({ onApplyFilter }) => {
     dispatch(closeModal());
   };
 
-  const handleClose = () => {
-    dispatch(closeModal());
+  const handleClearFilters = () => {
+    setSelectedLeagues([]);
   };
 
   return (
-    <Modal
-      title="Filter by League"
-      onClose={handleClose}
-      confirmationAction={handleApplyFilter}
-      confirmationText="Apply Filter"
-      cancelAction={handleClose}
-      cancelText="Cancel"
-    >
-      <div className="space-y-4">
-        {/* Leagues Section */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Leagues</h3>
-          <div className="space-y-2">
-            {leagues.map((league) => (
-              <Button
-                key={league}
-                onClick={() => handleLeagueToggle(league)}
-                theme={
-                  selectedLeagues.includes(league) ? "primary" : "secondary"
-                }
-                block
-              >
-                {league}
-              </Button>
-            ))}
+    <Modal title="Filter by League" onClose={() => dispatch(closeModal())}>
+      <div className="p-4">
+        <div className="grid grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((tier) => (
+            <div key={tier} className="flex flex-col space-y-2">
+              {groupedLeagues[tier as keyof typeof groupedLeagues].map(
+                (league) => (
+                  <Button
+                    key={league}
+                    onClick={() => handleLeagueToggle(league)}
+                    theme={
+                      selectedLeagues.includes(league) ? "primary" : "secondary"
+                    }
+                    className="w-full text-left text-sm"
+                  >
+                    {league}
+                  </Button>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-between">
+          <Button
+            onClick={handleClearFilters}
+            theme="secondary"
+            className="text-sm"
+          >
+            Clear Filters
+          </Button>
+          <div className="space-x-4">
+            <Button
+              onClick={() => dispatch(closeModal())}
+              theme="secondary"
+              className="text-sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleApplyFilter}
+              theme="primary"
+              className="text-sm"
+            >
+              Apply Filters
+            </Button>
           </div>
         </div>
       </div>
@@ -75,4 +90,4 @@ const FilterModal: React.FC<FilterModalProps> = ({ onApplyFilter }) => {
   );
 };
 
-export default FilterModal;
+export default RegionFilterModal;

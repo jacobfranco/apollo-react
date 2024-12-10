@@ -30,7 +30,7 @@ export interface Team {
   lolSeasonStats?: (TeamMatchStats | null)[] | null;
   aggStats?: z.infer<typeof teamAggStatsSchema> | null;
   league?: string;
-  schedule?: number[] | null;
+  schedule?: number[];
 }
 
 // Annotate the schema
@@ -58,5 +58,5 @@ export const teamSchema: z.ZodType<Team> = z.object({
     .nullable(),
   aggStats: teamAggStatsSchema.optional().nullable(),
   league: z.string().optional(),
-  schedule: z.array(z.number()).nullable().optional(),
+  schedule: z.array(z.number()).optional(),
 });
