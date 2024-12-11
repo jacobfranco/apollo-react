@@ -33,9 +33,11 @@ export const updateSeries = (series: Series) => ({
 });
 
 // New actions for fetching series by ID
-export const fetchSeriesByIdRequest = () => ({
+export const fetchSeriesByIdRequest = (seriesId: number) => ({
   type: FETCH_SERIES_BY_ID_REQUEST,
+  payload: seriesId,
 });
+
 export const fetchSeriesByIdSuccess = (series: Series) => ({
   type: FETCH_SERIES_BY_ID_SUCCESS,
   payload: series,
@@ -83,7 +85,7 @@ export const fetchSeriesById = (
   gamePath: string
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
   return async (dispatch, getState) => {
-    dispatch(fetchSeriesByIdRequest());
+    dispatch(fetchSeriesByIdRequest(seriesId));
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/series/${seriesId}`);

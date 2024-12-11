@@ -58,7 +58,7 @@ const PlayerDetail: React.FC = () => {
 
   const primaryTeamId =
     player?.teamIds && player.teamIds.length > 0
-      ? player.teamIds[0]
+      ? player.teamIds[player.teamIds.length - 1]
       : undefined;
 
   const team = useAppSelector((state) =>
@@ -86,25 +86,37 @@ const PlayerDetail: React.FC = () => {
     dispatch(fetchPlayerById(esportName, playerIdNumber));
   }, [dispatch, playerIdNumber, esportName]);
 
-  // Fetch team data once player is loaded
+  // Always fetch team data once primaryTeamId is known
   useEffect(() => {
-    if (player && primaryTeamId && !team && !teamLoading) {
+    if (primaryTeamId) {
       dispatch(fetchTeamById(esportName, primaryTeamId));
     }
-  }, [dispatch, esportName, primaryTeamId, player, team, teamLoading]);
+  }, [dispatch, esportName, primaryTeamId]);
 
   const seriesIds = team?.schedule || [];
 
+  const fetchedSeriesMap = useAppSelector((state) =>
+    state.series.get("fetchedSeriesIds")
+  );
+
+  // Fetch series data
   useEffect(() => {
-    if (team?.schedule && team.schedule.length > 0) {
-      setIsLoadingSchedule(true);
-      Promise.all(
-        team.schedule.map((id) => dispatch(fetchSeriesById(id, esportName)))
-      ).finally(() => {
-        setIsLoadingSchedule(false);
-      });
-    }
-  }, [team, esportName, dispatch]);
+    if (!team || teamLoading || teamError) return;
+    seriesIds.forEach((id) => {
+      const hasBeenFetched = fetchedSeriesMap?.get(id) ?? false;
+      if (!hasBeenFetched) {
+        dispatch(fetchSeriesById(id, esportName));
+      }
+    });
+  }, [
+    dispatch,
+    esportName,
+    team,
+    teamLoading,
+    teamError,
+    seriesIds,
+    fetchedSeriesMap,
+  ]);
 
   const seriesByIdMap = useAppSelector((state) =>
     state.series.get("seriesById")
@@ -515,15 +527,12 @@ const PlayerDetail: React.FC = () => {
         return (
           <Card>
             <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
-              {isLoadingSchedule ? (
-                <p className="text-gray-500">Loading series history...</p>
-              ) : seriesList && seriesList.length > 0 ? (
+              {seriesList && seriesList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                   {seriesList.map((seriesItem) => {
                     const { id, lifecycle } = seriesItem;
                     const ScoreboardComponent =
                       lifecycle === "live" ? LolLiveScoreboard : LolScoreboard;
-
                     return (
                       <Link
                         key={id}
@@ -537,7 +546,11 @@ const PlayerDetail: React.FC = () => {
                   })}
                 </div>
               ) : (
-                <p className="text-gray-500">No series history available</p>
+                <p className="text-gray-500">
+                  {seriesIds.length > 0
+                    ? "Loading series history..."
+                    : "No series history available"}
+                </p>
               )}
             </CardBody>
           </Card>

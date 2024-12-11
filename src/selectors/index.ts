@@ -329,6 +329,13 @@ export const selectSeriesListByIds = (
     .filter((series): series is Series => series !== undefined);
 };
 
+export const selectHasFetchedSeriesById = (
+  state: RootState,
+  seriesId: number
+): boolean => {
+  return state.series.get("fetchedSeriesIds").get(seriesId) ?? false;
+};
+
 export const selectMatchesState = (state: RootState) => state.matches;
 
 export const selectMatchById = (

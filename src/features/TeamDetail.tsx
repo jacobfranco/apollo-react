@@ -11,6 +11,7 @@ import {
   selectPlayersByRosterId,
   selectRosterPlayersLoading,
   selectRosterPlayersError,
+  selectHasFetchedSeriesById,
 } from "src/selectors";
 import { fetchTeamById } from "src/actions/teams";
 import { fetchPlayersByRosterId } from "src/actions/players";
@@ -122,15 +123,10 @@ const TeamDetail: React.FC = () => {
     });
   };
 
-  // Fetch Team Data if Needed
+  // Fetch Team Data
   useEffect(() => {
-    if (
-      (!team || !team.lolSeasonStats || team.lolSeasonStats.length === 0) &&
-      !loading
-    ) {
-      dispatch(fetchTeamById(esportName, teamIdNumber));
-    }
-  }, [dispatch, team, loading, esportName, teamIdNumber]);
+    dispatch(fetchTeamById(esportName, teamIdNumber));
+  }, [dispatch, esportName, teamIdNumber]);
 
   // Fetch Roster Players if Needed
   useEffect(() => {
@@ -172,12 +168,19 @@ const TeamDetail: React.FC = () => {
   // Extract series IDs
   const seriesIds = team?.schedule || [];
 
+  const fetchedSeriesMap = useAppSelector((state) =>
+    state.series.get("fetchedSeriesIds")
+  );
+
   // Fetch series data
   useEffect(() => {
     seriesIds.forEach((id) => {
-      dispatch(fetchSeriesById(id, esportName));
+      const hasBeenFetched = fetchedSeriesMap?.get(id) ?? false;
+      if (!hasBeenFetched) {
+        dispatch(fetchSeriesById(id, esportName));
+      }
     });
-  }, [dispatch, seriesIds, esportName]);
+  }, [dispatch, seriesIds, esportName, fetchedSeriesMap]);
 
   const seriesByIdMap = useAppSelector((state) =>
     state.series.get("seriesById")
