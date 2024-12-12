@@ -81,7 +81,10 @@ const TeamsTab: React.FC = () => {
   // Memoize teams with computed values
   const teamsWithComputedValues = useMemo((): TeamWithComputedValues[] => {
     return teams.map((team) => {
-      const teamInfo = teamData[team.name];
+      const cleanName = team.name
+        .replace(/[\u200B-\u200D\uFEFF\u2060]/g, "")
+        .trim();
+      const teamInfo = teamData[cleanName];
       const seriesWins = team.aggStats?.totalSeriesWins ?? 0;
       const seriesLosses = team.aggStats?.totalSeriesLosses ?? 0;
       const totalSeriesGames = seriesWins + seriesLosses;
@@ -104,31 +107,45 @@ const TeamsTab: React.FC = () => {
   // Memoize filtered teams
   const filteredTeams = useMemo(() => {
     if (selectedLeagues.length === 0) return teamsWithComputedValues;
-    return teamsWithComputedValues.filter((team) =>
-      selectedLeagues.includes(team.league)
-    );
+    return teamsWithComputedValues.filter((team) => {
+      // Always include unknown league teams or check conditionally if needed
+      if (team.league === "Unknown") return true;
+      return selectedLeagues.includes(team.league);
+    });
   }, [teamsWithComputedValues, selectedLeagues]);
 
   // Get ordered league list
   const orderedLeagues = useMemo(() => {
     const tiers = groupLeaguesByTier();
     // Flatten tiers into a single ordered array
-    return [...tiers[1], ...tiers[2], ...tiers[3], ...tiers[4], ...tiers[5]];
+    return [
+      ...tiers[1],
+      ...tiers[2],
+      ...tiers[3],
+      ...tiers[4],
+      ...tiers[5],
+      ...tiers[6],
+    ];
   }, []);
 
   // Memoize teams by league with ordering
   const teamsByLeague = useMemo(() => {
     const leagueGroups = filteredTeams.reduce((acc, team) => {
-      if (!acc[team.league]) {
-        acc[team.league] = [];
+      const leagueKey = team.league || "Unknown";
+      if (!acc[leagueKey]) {
+        acc[leagueKey] = [];
       }
-      acc[team.league].push(team);
+      acc[leagueKey].push(team);
       return acc;
     }, {} as { [league: string]: TeamWithComputedValues[] });
 
-    // Create an ordered version of the groups
+    const allLeagues = [
+      ...orderedLeagues,
+      ...(leagueGroups["Unknown"] ? ["Unknown"] : []),
+    ];
+
     return Object.fromEntries(
-      orderedLeagues
+      allLeagues
         .filter((league) => leagueGroups[league])
         .map((league) => [league, leagueGroups[league]])
     );
