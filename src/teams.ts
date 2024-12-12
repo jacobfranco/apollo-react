@@ -1642,39 +1642,32 @@ export const useTeamData = () => {
   return getTeamData;
 };
 
-export const getLeagueTier = (league: string): 1 | 2 | 3 | 4 => {
-  const tier1Leagues = [
-    "LCK",
-    "LPL",
-    "LEC",
-    "LTA",
-    "LCP",
-    "LCS",
-    "LTA North",
-    "LTA South",
-    "PCS",
-    "VCS",
-    "LJL",
-    "CBLOL",
-  ];
+const tier1Leagues = ["LTA North", "LTA South", "LCK", "LPL", "LEC", "LCP"];
+const tier2Leagues = ["NACL", "LDL", "LCK Challengers", "CD", "LRS", "LCO"];
+const tier3Leagues = ["TCL", "EBL", "LRN", "LCO", "LFL", "GLL"];
+const tier4Leagues = [
+  "Elite Series",
+  "NLC",
+  "Superliga",
+  "Prime League 1st Division",
+  "Hitpoint Masters",
+  "Liga Nexo",
+];
+const tier5Leagues = [
+  "Hitpoint 2nd Division Challengers",
+  "Hitpoint 3rd Division Challengers",
+  "NLC 2nd Division",
+  "NLC 3rd Division",
+  "LVP 2nd Division",
+];
 
-  const tier2Keywords = [
-    "Challengers",
-    "Academy",
-    "Rising",
-    "Youth",
-    "Junior",
-    "Young",
-    "LDL",
-    "NACL",
-  ];
-
-  const tier4Keywords = ["2nd Division", "Liga", "3rd Division", "Secondary"];
-
+export const getLeagueTier = (league: string): 1 | 2 | 3 | 4 | 5 | 6 => {
   if (tier1Leagues.includes(league)) return 1;
-  if (tier2Keywords.some((keyword) => league.includes(keyword))) return 2;
-  if (tier4Keywords.some((keyword) => league.includes(keyword))) return 4;
-  return 3;
+  if (tier2Leagues.includes(league)) return 2;
+  if (tier3Leagues.includes(league)) return 3;
+  if (tier4Leagues.includes(league)) return 4;
+  if (tier5Leagues.includes(league)) return 5;
+  return 6;
 };
 
 export const groupLeaguesByTier = () => {
@@ -1687,11 +1680,11 @@ export const groupLeaguesByTier = () => {
     return acc;
   }, {} as Record<number, Set<string>>);
 
-  // Convert Sets to sorted arrays and ensure all tiers exist
   return {
-    1: Array.from(grouped[1] || []).sort(),
-    2: Array.from(grouped[2] || []).sort(),
-    3: Array.from(grouped[3] || []).sort(),
-    4: Array.from(grouped[4] || []).sort(),
+    1: tier1Leagues.filter((l) => grouped[1]?.has(l)),
+    2: tier2Leagues.filter((l) => grouped[2]?.has(l)),
+    3: tier3Leagues.filter((l) => grouped[3]?.has(l)),
+    4: tier4Leagues.filter((l) => grouped[4]?.has(l)),
+    5: tier5Leagues.filter((l) => grouped[5]?.has(l)),
   };
 };

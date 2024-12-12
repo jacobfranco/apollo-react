@@ -73,7 +73,7 @@ const ScheduleTab: React.FC = () => {
 
   const handleOpenFilterModal = () => {
     dispatch(
-      openModal("REGION_FILTER", {
+      openModal("LOL_REGION_FILTER", {
         onApplyFilter: (leagues: string[]) => {
           setSelectedLeagues(leagues);
           dispatch(closeModal());

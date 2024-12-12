@@ -112,8 +112,8 @@ export const PlayersTab = lazy(() => import("./PlayersTab"));
 export const FantasyTab = lazy(() => import("./FantasyTab"));
 export const MediaTab = lazy(() => import("./MediaTab"));
 export const EsportsTab = lazy(() => import("./EsportsTab"));
-export const RegionFilterModal = lazy(
-  () => import("./modals/RegionFilterModal")
+export const LolRegionFilterModal = lazy(
+  () => import("./modals/LolRegionFilterModal")
 );
 export const StreamModal = lazy(() => import("./modals/StreamModal"));
 export const TeamDetail = lazy(() => import("./TeamDetail"));

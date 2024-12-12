@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "src/components";
 import { closeModal } from "src/actions/modals";
 import { useAppDispatch } from "src/hooks";
 import Button from "src/components/Button";
 import { groupLeaguesByTier } from "src/teams";
+import KVStore from "src/storage/kv-store";
 
-interface RegionFilterModalProps {
+interface LolRegionFilterModalProps {
   onApplyFilter: (selectedLeagues: string[]) => void;
   initialSelections?: string[];
 }
 
-const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
+const LolRegionFilterModal: React.FC<LolRegionFilterModalProps> = ({
   onApplyFilter,
   initialSelections = [],
 }) => {
@@ -18,6 +19,19 @@ const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
   const [selectedLeagues, setSelectedLeagues] =
     useState<string[]>(initialSelections);
   const groupedLeagues = groupLeaguesByTier();
+
+  useEffect(() => {
+    const loadPersistedSelections = async () => {
+      const persistedLeagues = await KVStore.getItem("selectedLeagues");
+      if (Array.isArray(persistedLeagues)) {
+        setSelectedLeagues(persistedLeagues);
+      }
+    };
+
+    loadPersistedSelections().catch(() => {
+      // Handle errors as needed if retrieval fails.
+    });
+  }, []);
 
   const handleLeagueToggle = (leagueKey: string) => {
     setSelectedLeagues((prev) =>
@@ -27,21 +41,27 @@ const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
     );
   };
 
-  const handleApplyFilter = () => {
+  const handleApplyFilter = async () => {
     onApplyFilter(selectedLeagues);
+    await KVStore.setItem("selectedLeagues", selectedLeagues);
     dispatch(closeModal());
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = async () => {
     setSelectedLeagues([]);
+    await KVStore.removeItem("selectedLeagues");
   };
 
   return (
-    <Modal title="Filter by League" onClose={() => dispatch(closeModal())}>
-      <div className="p-4">
-        <div className="grid grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((tier) => (
-            <div key={tier} className="flex flex-col space-y-2">
+    <Modal
+      title="Filter by League"
+      onClose={() => dispatch(closeModal())}
+      width="4xl"
+    >
+      <div className="p-4 max-w-screen-lg mx-auto">
+        <div className="grid grid-cols-5 gap-6">
+          {[1, 2, 3, 4, 5].map((tier) => (
+            <div key={tier} className="flex flex-col space-y-4">
               {groupedLeagues[tier as keyof typeof groupedLeagues].map(
                 (league) => (
                   <Button
@@ -90,4 +110,4 @@ const RegionFilterModal: React.FC<RegionFilterModalProps> = ({
   );
 };
 
-export default RegionFilterModal;
+export default LolRegionFilterModal;

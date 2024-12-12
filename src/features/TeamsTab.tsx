@@ -13,11 +13,9 @@ import { Team } from "src/schemas/team";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
 import LolTeamRow from "src/components/LolTeamRow";
 import { openModal, closeModal } from "src/actions/modals";
-import { teamData } from "src/teams";
+import { groupLeaguesByTier, teamData } from "src/teams";
 import Spinner from "src/components/Spinner";
 import StatsTable from "src/components/StatsTable";
-
-type SortKey = string;
 
 // Cache for computed values
 interface TeamWithComputedValues extends Team {
@@ -111,16 +109,30 @@ const TeamsTab: React.FC = () => {
     );
   }, [teamsWithComputedValues, selectedLeagues]);
 
-  // Memoize teams by league
+  // Get ordered league list
+  const orderedLeagues = useMemo(() => {
+    const tiers = groupLeaguesByTier();
+    // Flatten tiers into a single ordered array
+    return [...tiers[1], ...tiers[2], ...tiers[3], ...tiers[4], ...tiers[5]];
+  }, []);
+
+  // Memoize teams by league with ordering
   const teamsByLeague = useMemo(() => {
-    return filteredTeams.reduce((acc, team) => {
+    const leagueGroups = filteredTeams.reduce((acc, team) => {
       if (!acc[team.league]) {
         acc[team.league] = [];
       }
       acc[team.league].push(team);
       return acc;
     }, {} as { [league: string]: TeamWithComputedValues[] });
-  }, [filteredTeams]);
+
+    // Create an ordered version of the groups
+    return Object.fromEntries(
+      orderedLeagues
+        .filter((league) => leagueGroups[league])
+        .map((league) => [league, leagueGroups[league]])
+    );
+  }, [filteredTeams, orderedLeagues]);
 
   // Memoize sort function
   const getSortedTeams = useCallback(
@@ -209,7 +221,7 @@ const TeamsTab: React.FC = () => {
         <button
           onClick={() =>
             dispatch(
-              openModal("REGION_FILTER", {
+              openModal("LOL_REGION_FILTER", {
                 onApplyFilter: handleLeagueFilter,
               })
             )
