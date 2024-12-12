@@ -85,16 +85,14 @@ const PlayerDetail: React.FC = () => {
     dispatch(fetchPlayerById(esportName, playerIdNumber));
   }, [dispatch, playerIdNumber, esportName]);
 
-  // Fetch team data once primaryTeamId is known to display it (no longer used for schedule)
+  // Fetch team data once primaryTeamId is known
   useEffect(() => {
     if (primaryTeamId) {
       dispatch(fetchTeamById(esportName, primaryTeamId));
     }
   }, [dispatch, esportName, primaryTeamId]);
 
-  // Extract the player's schedule (instead of team schedule)
   const seriesIds = player?.schedule || [];
-
   const fetchedSeriesMap = useAppSelector((state) =>
     state.series.get("fetchedSeriesIds")
   );
@@ -119,11 +117,11 @@ const PlayerDetail: React.FC = () => {
       .map((id) => seriesByIdMap.get(id))
       .filter((series): series is Series => series !== undefined);
 
-    // Sort the series by start time, most recent first
+    // Sort series by start time
     return [...series].sort((a, b) => {
       const aStart = new Date(a.start || 0).getTime();
       const bStart = new Date(b.start || 0).getTime();
-      return bStart - aStart; // Sort descending (newest to oldest)
+      return bStart - aStart;
     });
   }, [seriesIds, seriesByIdMap]);
 
@@ -407,7 +405,6 @@ const PlayerDetail: React.FC = () => {
     if (!sortConfig || normalizedSeasonStats.length === 0)
       return normalizedSeasonStats;
 
-    // Find the column being sorted
     const column = seasonStatsColumns.find((col) => col.key === sortConfig.key);
 
     return [...normalizedSeasonStats].sort((a: any, b: any) => {
@@ -452,7 +449,6 @@ const PlayerDetail: React.FC = () => {
           <>
             {aggStats ? (
               <div className="flex flex-col space-y-6">
-                {/* Aggregate Stats */}
                 <div className="flex flex-wrap justify-center space-x-4 pb-4">
                   {stats.map(({ label, value, formatter }) => (
                     <div
@@ -475,7 +471,6 @@ const PlayerDetail: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Season Stats Table */}
                 {normalizedSeasonStats.length > 0 ? (
                   <div className="mb-4">
                     <StatsTable<any>
@@ -561,6 +556,12 @@ const PlayerDetail: React.FC = () => {
     }
   };
 
+  let logoType: "black" | "white" | "color" = "color";
+  if (team) {
+    const teamData = getTeamData(team.name);
+    logoType = teamData.logoType;
+  }
+
   return (
     <Column
       label=""
@@ -583,7 +584,6 @@ const PlayerDetail: React.FC = () => {
                 </div>
                 {/* Player Info */}
                 <div className="flex flex-col space-y-2 ml-4">
-                  {/* Player Nickname and Role */}
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
                       {player.nickName}
@@ -595,12 +595,10 @@ const PlayerDetail: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Real Name */}
                   <div className="text-gray-600 dark:text-gray-400">
                     {player.firstName} {player.lastName}
                   </div>
 
-                  {/* Country */}
                   {player.region?.country && (
                     <div className="flex items-center space-x-2">
                       {countryFlag && (
@@ -614,7 +612,6 @@ const PlayerDetail: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Social Media */}
                   {player.socialMediaAccounts &&
                     player.socialMediaAccounts.length > 0 && (
                       <div className="mt-2 flex space-x-4">
@@ -633,17 +630,21 @@ const PlayerDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Team Information (Right Side) - Still display it */}
+              {/* Team Information */}
               {team && (
                 <Link
                   to={`/esports/${esportName}/team/${team.id}`}
-                  className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-600 rounded-lg transition-colors duration-200 -ml-16"
+                  className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-600 rounded-lg transition-colors duration-200 mr-16"
                 >
                   {team.images && team.images.length > 0 && (
                     <img
                       src={team.images[0].url}
                       alt={`${team.name} logo`}
-                      className="w-24 h-24 object-contain mb-2"
+                      className={`w-24 h-24 object-contain mb-2 ${getTeamLogoFilter(
+                        logoType,
+                        team.images[0].url === placeholderTeam,
+                        theme
+                      )}`}
                     />
                   )}
                   <div className="flex flex-col items-center space-y-1">
