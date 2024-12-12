@@ -115,9 +115,16 @@ const PlayerDetail: React.FC = () => {
   );
 
   const seriesList = useMemo(() => {
-    return seriesIds
+    const series = seriesIds
       .map((id) => seriesByIdMap.get(id))
       .filter((series): series is Series => series !== undefined);
+
+    // Sort the series by start time, most recent first
+    return [...series].sort((a, b) => {
+      const aStart = new Date(a.start || 0).getTime();
+      const bStart = new Date(b.start || 0).getTime();
+      return bStart - aStart; // Sort descending (newest to oldest)
+    });
   }, [seriesIds, seriesByIdMap]);
 
   const validSeasonStats = useMemo(() => {
@@ -148,38 +155,11 @@ const PlayerDetail: React.FC = () => {
     });
   }, [validSeasonStats]);
 
-  const sortedSeasonStats = useMemo(() => {
-    if (!sortConfig || normalizedSeasonStats.length === 0)
-      return normalizedSeasonStats;
-    return [...normalizedSeasonStats].sort((a: any, b: any) => {
-      const aValue =
-        sortConfig.key === "champion"
-          ? a.champion?.champ?.name || "Unknown"
-          : a[sortConfig.key];
-      const bValue =
-        sortConfig.key === "champion"
-          ? b.champion?.champ?.name || "Unknown"
-          : b[sortConfig.key];
-
-      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [normalizedSeasonStats, sortConfig]);
-
-  if (loading || !player) {
-    return <div className="p-4">Loading player data...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-red-500">{String(error)}</div>;
-  }
-
   const logoUrl =
-    player.images && player.images.length > 0
+    player?.images && player?.images.length > 0
       ? player.images[0].url
       : placeholderTeam;
-  const countryFlag = player.region?.country?.images?.[0]?.url;
+  const countryFlag = player?.region?.country?.images?.[0]?.url;
 
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -214,7 +194,7 @@ const PlayerDetail: React.FC = () => {
     }
   };
 
-  const aggStats = player.aggStats;
+  const aggStats = player?.aggStats;
 
   const handleSort = (key: string) => {
     setSortConfig((prevSortConfig) => {
@@ -291,23 +271,24 @@ const PlayerDetail: React.FC = () => {
       key: "opponent",
       className: "text-left",
       render: (matchStat: any) => {
-        if (!matchStat.opponent) return "Unknown";
+        const opponent = matchStat.opponent;
+        const teamData = opponent ? getTeamData(opponent.name) : null;
+        const logoFilter = teamData
+          ? getTeamLogoFilter(teamData.logoType, false, theme)
+          : "";
 
-        const teamData = getTeamData(matchStat.opponent.name);
-        const logoFilter = getTeamLogoFilter(teamData.logoType, false, theme);
-
-        return (
+        return opponent ? (
           <div className="flex items-center gap-2">
-            {matchStat.opponent.images?.[0]?.url && (
+            {opponent.images?.[0]?.url && (
               <img
-                src={matchStat.opponent.images[0].url}
-                alt={matchStat.opponent.name}
+                src={opponent.images[0].url}
+                alt={opponent.name}
                 className={`w-6 h-6 object-contain ${logoFilter}`}
               />
             )}
             <div className="w-24">
               <AutoFitText
-                text={matchStat.opponent.name}
+                text={opponent.name}
                 maxFontSize={16}
                 minFontSize={10}
                 maxLines={1}
@@ -316,8 +297,11 @@ const PlayerDetail: React.FC = () => {
               />
             </div>
           </div>
+        ) : (
+          "Unknown"
         );
       },
+      sortValue: (matchStat: any) => matchStat.opponent?.name || "Unknown",
     },
     {
       label: "Champion",
@@ -419,6 +403,27 @@ const PlayerDetail: React.FC = () => {
     },
   ];
 
+  const sortedSeasonStats = useMemo(() => {
+    if (!sortConfig || normalizedSeasonStats.length === 0)
+      return normalizedSeasonStats;
+
+    // Find the column being sorted
+    const column = seasonStatsColumns.find((col) => col.key === sortConfig.key);
+
+    return [...normalizedSeasonStats].sort((a: any, b: any) => {
+      const aValue = column?.sortValue
+        ? column.sortValue(a)
+        : a[sortConfig.key];
+      const bValue = column?.sortValue
+        ? column.sortValue(b)
+        : b[sortConfig.key];
+
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [normalizedSeasonStats, sortConfig, seasonStatsColumns]);
+
   const tabItems = [
     {
       text: "Stats",
@@ -431,6 +436,14 @@ const PlayerDetail: React.FC = () => {
       name: "schedule",
     },
   ];
+
+  if (loading || !player) {
+    return <div className="p-4">Loading player data...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-red-500">{String(error)}</div>;
+  }
 
   const renderTabContent = () => {
     switch (selectedTab) {

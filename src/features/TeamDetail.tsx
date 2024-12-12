@@ -152,8 +152,16 @@ const TeamDetail: React.FC = () => {
   const sortedSeasonStats = useMemo<TeamMatchStats[]>(() => {
     if (!sortConfig) return validSeasonStats;
     return [...validSeasonStats].sort((a, b) => {
-      let aValue = (a as any)[sortConfig.key];
-      let bValue = (b as any)[sortConfig.key];
+      let aValue, bValue;
+
+      // Special handling for opponent column
+      if (sortConfig.key === "opponent") {
+        aValue = a.opponent?.name?.toLowerCase() ?? "";
+        bValue = b.opponent?.name?.toLowerCase() ?? "";
+      } else {
+        aValue = (a as any)[sortConfig.key];
+        bValue = (b as any)[sortConfig.key];
+      }
 
       if (aValue < bValue) {
         return sortConfig.direction === "asc" ? -1 : 1;
@@ -188,9 +196,16 @@ const TeamDetail: React.FC = () => {
 
   // Collect series data
   const seriesList = useMemo(() => {
-    return seriesIds
+    const series = seriesIds
       .map((id) => seriesByIdMap.get(id))
       .filter((series): series is Series => series !== undefined);
+
+    // Sort the series by start time, most recent first
+    return [...series].sort((a, b) => {
+      const aStart = new Date(a.start || 0).getTime();
+      const bStart = new Date(b.start || 0).getTime();
+      return bStart - aStart; // Sort descending (newest to oldest)
+    });
   }, [seriesIds, seriesByIdMap]);
 
   // Conditional Returns After All Hooks
