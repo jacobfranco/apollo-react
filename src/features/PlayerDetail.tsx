@@ -72,7 +72,6 @@ const PlayerDetail: React.FC = () => {
   );
 
   const [selectedTab, setSelectedTab] = useState("stats");
-  const [isLoadingSchedule, setIsLoadingSchedule] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
@@ -86,37 +85,30 @@ const PlayerDetail: React.FC = () => {
     dispatch(fetchPlayerById(esportName, playerIdNumber));
   }, [dispatch, playerIdNumber, esportName]);
 
-  // Always fetch team data once primaryTeamId is known
+  // Fetch team data once primaryTeamId is known to display it (no longer used for schedule)
   useEffect(() => {
     if (primaryTeamId) {
       dispatch(fetchTeamById(esportName, primaryTeamId));
     }
   }, [dispatch, esportName, primaryTeamId]);
 
-  const seriesIds = team?.schedule || [];
+  // Extract the player's schedule (instead of team schedule)
+  const seriesIds = player?.schedule || [];
 
   const fetchedSeriesMap = useAppSelector((state) =>
     state.series.get("fetchedSeriesIds")
   );
 
-  // Fetch series data
+  // Fetch series data for the player's schedule
   useEffect(() => {
-    if (!team || teamLoading || teamError) return;
+    if (!player || seriesIds.length === 0) return;
     seriesIds.forEach((id) => {
       const hasBeenFetched = fetchedSeriesMap?.get(id) ?? false;
       if (!hasBeenFetched) {
         dispatch(fetchSeriesById(id, esportName));
       }
     });
-  }, [
-    dispatch,
-    esportName,
-    team,
-    teamLoading,
-    teamError,
-    seriesIds,
-    fetchedSeriesMap,
-  ]);
+  }, [dispatch, esportName, player, seriesIds, fetchedSeriesMap]);
 
   const seriesByIdMap = useAppSelector((state) =>
     state.series.get("seriesById")
@@ -240,7 +232,7 @@ const PlayerDetail: React.FC = () => {
     const val = (aggStats as any)?.[statKey];
     if (val == null) return 0;
     return typeof val === "object" && val.total != null
-      ? Math.floor(val.total) // Ensure whole number for total matches
+      ? Math.floor(val.total)
       : Number(val);
   };
 
@@ -440,10 +432,6 @@ const PlayerDetail: React.FC = () => {
     },
   ];
 
-  // Team abbreviation and logo
-  const teamLogoUrl =
-    team && team.images && team.images.length > 0 ? team.images[0].url : null;
-
   const renderTabContent = () => {
     switch (selectedTab) {
       case "stats":
@@ -514,7 +502,7 @@ const PlayerDetail: React.FC = () => {
           </>
         );
       case "schedule":
-        if (!primaryTeamId || !team) {
+        if (!player.schedule || player.schedule.length === 0) {
           return (
             <Card>
               <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
@@ -580,7 +568,7 @@ const PlayerDetail: React.FC = () => {
                     className="w-full h-full object-contain"
                   />
                 </div>
-                {/* Info */}
+                {/* Player Info */}
                 <div className="flex flex-col space-y-2 ml-4">
                   {/* Player Nickname and Role */}
                   <div className="flex items-center space-x-2">
@@ -632,15 +620,15 @@ const PlayerDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Team Information (Right Side) */}
+              {/* Team Information (Right Side) - Still display it */}
               {team && (
                 <Link
                   to={`/esports/${esportName}/team/${team.id}`}
                   className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-600 rounded-lg transition-colors duration-200 -ml-16"
                 >
-                  {teamLogoUrl && (
+                  {team.images && team.images.length > 0 && (
                     <img
-                      src={teamLogoUrl}
+                      src={team.images[0].url}
                       alt={`${team.name} logo`}
                       className="w-24 h-24 object-contain mb-2"
                     />

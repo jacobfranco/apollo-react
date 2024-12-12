@@ -29,6 +29,7 @@ export const playerSchema = z.object({
   matchStats: playerMatchStatsSchema.optional().nullable(),
   lolSeasonStats: z.any().optional().nullable(),
   aggStats: playerAggStatsSchema.optional().nullable(),
+  schedule: z.array(z.number()).optional(),
 });
 
 export type Player = z.infer<typeof playerSchema>;
