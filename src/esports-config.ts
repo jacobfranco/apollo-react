@@ -12,7 +12,12 @@ const esportsConfig: EsportConfig[] = [
   },
   {
     name: "Valorant",
-    path: "valorant",
+    path: "val",
+    hasApiSupport: false,
+  },
+  {
+    name: "Counter Strike",
+    path: "cs",
     hasApiSupport: false,
   },
 ];
