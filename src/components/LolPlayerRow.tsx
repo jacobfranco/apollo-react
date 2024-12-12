@@ -14,6 +14,7 @@ interface PlayerWithComputedValues extends Player {
   computedValues: {
     kda: number;
     teamLogo: string;
+    teamName: string;
   };
 }
 
@@ -32,11 +33,7 @@ const LolPlayerRow: React.FC<LolPlayerRowProps> = ({
 }) => {
   const { nickName, aggStats, computedValues } = player;
   const { teamLogo } = computedValues;
-
-  // Retrieve team name from player data if available.
-  // If no team or name is provided, use a placeholder to get team data.
-  const lastTeamId = player.teamIds?.[player.teamIds.length - 1];
-  const teamName = player.teamIds && lastTeamId ? `Team${lastTeamId}` : "Team";
+  const teamName = computedValues.teamName;
 
   const getTeamData = useTeamData();
   const { color: _teamColor, logoType } = getTeamData(teamName);

@@ -21,6 +21,7 @@ interface PlayerWithComputedValues extends Player {
   computedValues: {
     kda: number;
     teamLogo: string;
+    teamName: string;
   };
 }
 
@@ -108,12 +109,14 @@ const PlayersTab: React.FC = () => {
       const lastTeamId = player.teamIds?.[player.teamIds.length - 1];
       const team = lastTeamId ? teamsById.get(lastTeamId) : undefined;
       const teamLogo = team?.images?.[0]?.url ?? "";
+      const teamName = team?.name ?? "Team";
 
       return {
         ...player,
         computedValues: {
           kda: isNaN(kda) ? 0 : kda,
           teamLogo,
+          teamName,
         },
       };
     });
