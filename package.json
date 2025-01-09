@@ -14,7 +14,6 @@
     "start": "vite serve",
     "dev": "vite serve",
     "build": "vite build --emptyOutDir",
-    "vercel-build": "vite build  --emptyOutDir --mode staging",
     "preview": "vite preview",
     "i18n": "formatjs extract 'src/**/*.{ts,tsx}' --ignore '**/*.d.ts' --out-file build/messages.json && formatjs compile build/messages.json --out-file src/locales/en.json",
     "test": "vitest",
@@ -170,7 +169,6 @@
     "stylelint": "^16.10.0",
     "stylelint-config-standard-scss": "^13.1.0",
     "tailwindcss": "^3.4.13",
-    "vercel": "^39.2.6",
     "vite-plugin-checker": "^0.8.0",
     "vite-plugin-pwa": "^0.21.1",
     "vitest": "^2.1.8"

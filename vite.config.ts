@@ -11,7 +11,7 @@ import compileTime from "vite-plugin-compile-time";
 import { VitePWA } from "vite-plugin-pwa";
 
 const { NODE_ENV } = process.env;
-const backendUrl = process.env.VITE_BACKEND_URL || "http://localhost:8080";
+const backendUrl = process.env.BACKEND_URL || "http://localhost:8080";
 export default defineConfig(() => {
   const config: UserConfig = {
     build: {
