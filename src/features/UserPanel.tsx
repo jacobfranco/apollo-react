@@ -1,23 +1,21 @@
-import React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link } from "react-router-dom";
 
-import { useAccount } from "src/api/hooks/useAccount";
-import {
-  HStack,
-  Stack,
-  StillImage,
-  Text,
-  VerificationBadge,
-} from "src/components";
+import { useAccount } from "src/api/hooks";
+import StillImage from "src/components/StillImage";
 import Avatar from "src/components/Avatar";
-import { useAppSelector } from "src/hooks";
+import HStack from "src/components/HStack";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import VerificationBadge from "src/components/VerificationBadge";
+import { useAppSelector } from "src/hooks/useAppSelector";
 import { shortNumberFormat } from "src/utils/numbers";
 
 interface IUserPanel {
   accountId: string;
   action?: JSX.Element;
   badges?: JSX.Element[];
+  domain?: string;
 }
 
 const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
@@ -25,7 +23,7 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
   const { account } = useAccount(accountId);
 
   if (!account) return null;
-  const displayNameHtml = { __html: account.display_name_html };
+  const username = account.username;
   const header = account.header;
   const verified = account.verified;
 
@@ -40,13 +38,13 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
           <HStack justifyContent="between">
             <Link
               to={`/@${account.username}`}
-              title={account.username}
+              title={username}
               className="-mt-12 block"
             >
               <Avatar
                 src={account.avatar}
                 size={80}
-                className="h-20 w-20 overflow-hidden bg-gray-50 ring-2 ring-white"
+                className="size-20 overflow-hidden bg-gray-50 ring-2 ring-white"
               />
             </Link>
 
@@ -57,12 +55,9 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
         <Stack>
           <Link to={`/@${account.username}`}>
             <HStack space={1} alignItems="center">
-              <Text
-                size="lg"
-                weight="bold"
-                dangerouslySetInnerHTML={displayNameHtml}
-                truncate
-              />
+              <Text size="lg" weight="bold" truncate>
+                {account.display_name}
+              </Text>
 
               {verified && <VerificationBadge />}
 
@@ -75,8 +70,10 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges }) => {
           </Link>
 
           <HStack>
+            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
             <Text size="sm" theme="muted" direction="ltr" truncate>
-              @{account.username}
+              {/* TODO: Maybe take out these brackets, idk how it will render*/}
+              @{username}
             </Text>
           </HStack>
         </Stack>

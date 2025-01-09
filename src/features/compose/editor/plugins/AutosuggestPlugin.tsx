@@ -4,9 +4,9 @@
  * LICENSE file in the /src/features/compose/editor directory.
  */
 
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils';
-import clsx from 'clsx';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
+import clsx from "clsx";
 import {
   $getSelection,
   $isRangeSelection,
@@ -21,7 +21,7 @@ import {
   LexicalNode,
   RangeSelection,
   TextNode,
-} from 'lexical';
+} from "lexical";
 import React, {
   MutableRefObject,
   ReactPortal,
@@ -29,21 +29,24 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import ReactDOM from 'react-dom';
+} from "react";
+import ReactDOM from "react-dom";
 
-import { clearComposeSuggestions, fetchComposeSuggestions } from 'src/actions/compose';
-import { chooseEmoji } from 'src/actions/emojis'; 
-import { AutosuggestEmoji } from 'src/components';
-import { useAppDispatch, useCompose } from 'src/hooks';
-import { selectAccount } from 'src/selectors';
-import { textAtCursorMatchesToken } from 'src/utils/suggestions';
+import {
+  clearComposeSuggestions,
+  fetchComposeSuggestions,
+} from "src/actions/compose";
+import { chooseEmoji } from "src/actions/emojis";
+import { AutosuggestEmoji } from "src/components";
+import { useAppDispatch, useCompose } from "src/hooks";
+import { selectAccount } from "src/selectors";
+import { textAtCursorMatchesToken } from "src/utils/suggestions";
 
-import AutosuggestAccount from '../../components/AutosuggestAccount';
-import { $createEmojiNode } from '../nodes/EmojiNode';
-import { $createMentionNode } from '../nodes/MentionNode';
+import AutosuggestAccount from "../../components/AutosuggestAccount";
+import { $createEmojiNode } from "../nodes/EmojiNode";
+import { $createMentionNode } from "../nodes/MentionNode";
 
-import type { AutoSuggestion } from 'src/components/AutosuggestInput';
+import type { AutoSuggestion } from "src/components/AutosuggestInput";
 
 type QueryMatch = {
   leadOffset: number;
@@ -56,7 +59,7 @@ type Resolution = {
 };
 
 type MenuRenderFn = (
-  anchorElementRef: MutableRefObject<HTMLElement | null>,
+  anchorElementRef: MutableRefObject<HTMLElement | null>
 ) => ReactPortal | JSX.Element | null;
 
 const tryToPositionRange = (leadOffset: number, range: Range): boolean => {
@@ -84,7 +87,7 @@ const tryToPositionRange = (leadOffset: number, range: Range): boolean => {
 
 const isSelectionOnEntityBoundary = (
   editor: LexicalEditor,
-  offset: number,
+  offset: number
 ): boolean => {
   if (offset !== 0) {
     return false;
@@ -112,22 +115,28 @@ const startTransition = (callback: () => void) => {
 // Got from https://stackoverflow.com/a/42543908/2013580
 const getScrollParent = (
   element: HTMLElement,
-  includeHidden: boolean,
+  includeHidden: boolean
 ): HTMLElement | HTMLBodyElement => {
   let style = getComputedStyle(element);
-  const excludeStaticParent = style.position === 'absolute';
+  const excludeStaticParent = style.position === "absolute";
   const overflowRegex = includeHidden
     ? /(auto|scroll|hidden)/
     : /(auto|scroll)/;
-  if (style.position === 'fixed') {
+  if (style.position === "fixed") {
     return document.body;
   }
-  for (let parent: HTMLElement | null = element; (parent = parent.parentElement);) {
+  for (
+    let parent: HTMLElement | null = element;
+    (parent = parent.parentElement);
+
+  ) {
     style = getComputedStyle(parent);
-    if (excludeStaticParent && style.position === 'static') {
+    if (excludeStaticParent && style.position === "static") {
       continue;
     }
-    if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) {
+    if (
+      overflowRegex.test(style.overflow + style.overflowY + style.overflowX)
+    ) {
       return parent;
     }
   }
@@ -136,7 +145,7 @@ const getScrollParent = (
 
 const isTriggerVisibleInNearestScrollContainer = (
   targetElement: HTMLElement,
-  containerElement: HTMLElement,
+  containerElement: HTMLElement
 ): boolean => {
   const tRect = targetElement.getBoundingClientRect();
   const cRect = containerElement.getBoundingClientRect();
@@ -148,20 +157,19 @@ const useDynamicPositioning = (
   resolution: Resolution | null,
   targetElement: HTMLElement | null,
   onReposition: () => void,
-  onVisibilityChange?: (isInView: boolean) => void,
+  onVisibilityChange?: (isInView: boolean) => void
 ) => {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
     if (targetElement && resolution) {
       const rootElement = editor.getRootElement();
-      const rootScrollParent =
-        rootElement
-          ? getScrollParent(rootElement, false)
-          : document.body;
+      const rootScrollParent = rootElement
+        ? getScrollParent(rootElement, false)
+        : document.body;
       let ticking = false;
       let previousIsInView = isTriggerVisibleInNearestScrollContainer(
         targetElement,
-        rootScrollParent,
+        rootScrollParent
       );
       const handleScroll = () => {
         if (!ticking) {
@@ -173,7 +181,7 @@ const useDynamicPositioning = (
         }
         const isInView = isTriggerVisibleInNearestScrollContainer(
           targetElement,
-          rootScrollParent,
+          rootScrollParent
         );
         if (isInView !== previousIsInView) {
           previousIsInView = isInView;
@@ -183,32 +191,35 @@ const useDynamicPositioning = (
         }
       };
       const resizeObserver = new ResizeObserver(onReposition);
-      window.addEventListener('resize', onReposition);
-      document.addEventListener('scroll', handleScroll, {
+      window.addEventListener("resize", onReposition);
+      document.addEventListener("scroll", handleScroll, {
         capture: true,
         passive: true,
       });
       resizeObserver.observe(targetElement);
       return () => {
         resizeObserver.unobserve(targetElement);
-        window.removeEventListener('resize', onReposition);
-        document.removeEventListener('scroll', handleScroll);
+        window.removeEventListener("resize", onReposition);
+        document.removeEventListener("scroll", handleScroll);
       };
     }
   }, [targetElement, editor, onVisibilityChange, onReposition, resolution]);
 };
 
-const LexicalPopoverMenu = ({ anchorElementRef, menuRenderFn }: {
+const LexicalPopoverMenu = ({
+  anchorElementRef,
+  menuRenderFn,
+}: {
   anchorElementRef: MutableRefObject<HTMLElement>;
   menuRenderFn: MenuRenderFn;
 }): JSX.Element | null => menuRenderFn(anchorElementRef);
 
 const useMenuAnchorRef = (
   resolution: Resolution | null,
-  setResolution: (r: Resolution | null) => void,
+  setResolution: (r: Resolution | null) => void
 ): MutableRefObject<HTMLElement> => {
   const [editor] = useLexicalComposerContext();
-  const anchorElementRef = useRef<HTMLElement>(document.createElement('div'));
+  const anchorElementRef = useRef<HTMLElement>(document.createElement("div"));
   const positionMenu = useCallback(() => {
     const rootElement = editor.getRootElement();
     const containerDiv = anchorElementRef.current;
@@ -221,15 +232,15 @@ const useMenuAnchorRef = (
       containerDiv.style.width = `${width}px`;
 
       if (!containerDiv.isConnected) {
-        containerDiv.setAttribute('aria-label', 'Typeahead menu');
-        containerDiv.setAttribute('id', 'typeahead-menu');
-        containerDiv.setAttribute('role', 'listbox');
-        containerDiv.style.display = 'block';
-        containerDiv.style.position = 'absolute';
+        containerDiv.setAttribute("aria-label", "Typeahead menu");
+        containerDiv.setAttribute("id", "typeahead-menu");
+        containerDiv.setAttribute("role", "listbox");
+        containerDiv.style.display = "block";
+        containerDiv.style.position = "absolute";
         document.body.append(containerDiv);
       }
       anchorElementRef.current = containerDiv;
-      rootElement.setAttribute('aria-controls', 'typeahead-menu');
+      rootElement.setAttribute("aria-controls", "typeahead-menu");
     }
   }, [editor, resolution]);
 
@@ -239,7 +250,7 @@ const useMenuAnchorRef = (
       positionMenu();
       return () => {
         if (rootElement !== null) {
-          rootElement.removeAttribute('aria-controls');
+          rootElement.removeAttribute("aria-controls");
         }
 
         const containerDiv = anchorElementRef.current;
@@ -258,14 +269,14 @@ const useMenuAnchorRef = (
         }
       }
     },
-    [resolution, setResolution],
+    [resolution, setResolution]
   );
 
   useDynamicPositioning(
     resolution,
     anchorElementRef.current,
     positionMenu,
-    onVisibilityChange,
+    onVisibilityChange
   );
 
   return anchorElementRef;
@@ -288,14 +299,13 @@ const AutosuggestPlugin = ({
   const [editor] = useLexicalComposerContext();
   const [resolution, setResolution] = useState<Resolution | null>(null);
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
-  const anchorElementRef = useMenuAnchorRef(
-    resolution,
-    setResolution,
-  );
+  const anchorElementRef = useMenuAnchorRef(resolution, setResolution);
 
-  const handleSelectSuggestion: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleSelectSuggestion: React.MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
     e.preventDefault();
-    const index = Number(e.currentTarget.getAttribute('data-index'));
+    const index = Number(e.currentTarget.getAttribute("data-index"));
     return onSelectSuggestion(index);
   };
 
@@ -312,18 +322,23 @@ const AutosuggestPlugin = ({
 
         /** Replace the matched text with the given node. */
         function replaceMatch(replaceWith: LexicalNode) {
-          const result = (node as TextNode).splitText(offset, offset + matchingString.length);
+          const result = (node as TextNode).splitText(
+            offset,
+            offset + matchingString.length
+          );
           const textNode = result[1] ?? result[0];
           const replacedNode = textNode.replace(replaceWith);
-          replacedNode.insertAfter(new TextNode(' '));
+          replacedNode.insertAfter(new TextNode(" "));
           replacedNode.selectNext();
         }
 
-        if (typeof suggestion === 'object') {
+        if (typeof suggestion === "object") {
           if (!suggestion.id) return;
           dispatch(chooseEmoji(suggestion));
           replaceMatch($createEmojiNode(suggestion));
-        } else if (suggestion[0] === '#') {
+
+          // TODO: Do this spaces
+        } else if (suggestion[0] === "#") {
           (node as TextNode).setTextContent(`${suggestion} `);
           node.select();
         } else {
@@ -342,11 +357,11 @@ const AutosuggestPlugin = ({
 
     if (!node) return null;
 
-    if (node.getType() === 'text') {
+    if (node.getType() === "text") {
       const [leadOffset, matchingString] = textAtCursorMatchesToken(
         node.getTextContent(),
         (state._selection as RangeSelection)?.anchor?.offset,
-        [':', '@'],
+        [":", "@"]
       );
 
       if (!leadOffset || !matchingString) return null;
@@ -360,10 +375,11 @@ const AutosuggestPlugin = ({
     let inner: string | JSX.Element;
     let key: React.Key;
 
-    if (typeof suggestion === 'object') {
-      inner = <AutosuggestEmoji emoji={suggestion} />; 
+    if (typeof suggestion === "object") {
+      inner = <AutosuggestEmoji emoji={suggestion} />;
       key = suggestion.id;
-    } else if (suggestion[0] === '#') {
+      // TODO: Do this for spaces
+    } else if (suggestion[0] === "#") {
       inner = suggestion;
       key = suggestion;
     } else {
@@ -373,13 +389,15 @@ const AutosuggestPlugin = ({
 
     return (
       <div
-        role='button'
+        role="button"
         tabIndex={0}
         key={key}
         data-index={i}
         className={clsx({
-          'snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group': true,
-          'snap-start snap-always bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800': i === selectedSuggestion,
+          "snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group":
+            true,
+          "snap-start snap-always bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800":
+            i === selectedSuggestion,
         })}
         onMouseDown={handleSelectSuggestion}
       >
@@ -396,7 +414,7 @@ const AutosuggestPlugin = ({
     (res: Resolution) => {
       setResolution(res);
     },
-    [resolution],
+    [resolution]
   );
 
   useEffect(() => {
@@ -406,12 +424,17 @@ const AutosuggestPlugin = ({
         const match = getQueryTextForSearch(editor);
         const nativeSelection = window.getSelection();
 
-        if (!match || nativeSelection?.anchorOffset !== nativeSelection?.focusOffset) {
+        if (
+          !match ||
+          nativeSelection?.anchorOffset !== nativeSelection?.focusOffset
+        ) {
           closeTypeahead();
           return;
         }
 
-        dispatch(fetchComposeSuggestions(composeId, match.matchingString.trim()));
+        dispatch(
+          fetchComposeSuggestions(composeId, match.matchingString.trim())
+        );
 
         if (!isSelectionOnEntityBoundary(editor, match.leadOffset)) {
           const isRangePositioned = tryToPositionRange(match.leadOffset, range);
@@ -420,7 +443,7 @@ const AutosuggestPlugin = ({
               openTypeahead({
                 getRect: () => range.getBoundingClientRect(),
                 match,
-              }),
+              })
             );
             return;
           }
@@ -434,12 +457,7 @@ const AutosuggestPlugin = ({
     return () => {
       removeUpdateListener();
     };
-  }, [
-    editor,
-    resolution,
-    closeTypeahead,
-    openTypeahead,
-  ]);
+  }, [editor, resolution, closeTypeahead, openTypeahead]);
 
   useEffect(() => {
     if (suggestions && suggestions.size > 0) setSuggestionsHidden(false);
@@ -450,13 +468,16 @@ const AutosuggestPlugin = ({
       const handleClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
 
-        if (!editor._rootElement?.contains(target) && !anchorElementRef.current.contains(target)) {
+        if (
+          !editor._rootElement?.contains(target) &&
+          !anchorElementRef.current.contains(target)
+        ) {
           setResolution(null);
         }
       };
-      document.addEventListener('click', handleClick);
+      document.addEventListener("click", handleClick);
 
-      return () => document.removeEventListener('click', handleClick);
+      return () => document.removeEventListener("click", handleClick);
     }
   }, [resolution, suggestionsHidden, suggestions.isEmpty()]);
 
@@ -468,29 +489,43 @@ const AutosuggestPlugin = ({
         KEY_ARROW_UP_COMMAND,
         (payload) => {
           const event = payload;
-          if (suggestions !== null && suggestions.size && selectedSuggestion !== null) {
-            const newSelectedSuggestion = selectedSuggestion !== 0 ? selectedSuggestion - 1 : suggestions.size - 1;
+          if (
+            suggestions !== null &&
+            suggestions.size &&
+            selectedSuggestion !== null
+          ) {
+            const newSelectedSuggestion =
+              selectedSuggestion !== 0
+                ? selectedSuggestion - 1
+                : suggestions.size - 1;
             setSelectedSuggestion(newSelectedSuggestion);
             event.preventDefault();
             event.stopImmediatePropagation();
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_ARROW_DOWN_COMMAND,
         (payload) => {
           const event = payload;
-          if (suggestions !== null && suggestions.size && selectedSuggestion !== null) {
-            const newSelectedSuggestion = selectedSuggestion !== suggestions.size - 1 ? selectedSuggestion + 1 : 0;
+          if (
+            suggestions !== null &&
+            suggestions.size &&
+            selectedSuggestion !== null
+          ) {
+            const newSelectedSuggestion =
+              selectedSuggestion !== suggestions.size - 1
+                ? selectedSuggestion + 1
+                : 0;
             setSelectedSuggestion(newSelectedSuggestion);
             event.preventDefault();
             event.stopImmediatePropagation();
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_TAB_COMMAND,
@@ -502,7 +537,7 @@ const AutosuggestPlugin = ({
           setResolution(null);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_ENTER_COMMAND,
@@ -514,7 +549,7 @@ const AutosuggestPlugin = ({
           setResolution(null);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_ESCAPE_COMMAND,
@@ -525,8 +560,8 @@ const AutosuggestPlugin = ({
           setResolution(null);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
-      ),
+        COMMAND_PRIORITY_LOW
+      )
     );
   }, [editor, suggestions, selectedSuggestion, resolution]);
 
@@ -536,17 +571,18 @@ const AutosuggestPlugin = ({
       menuRenderFn={(anchorElementRef) =>
         anchorElementRef.current
           ? ReactDOM.createPortal(
-            <div
-              className={clsx({
-                'scroll-smooth snap-y snap-always will-change-scroll mt-6 overflow-y-auto max-h-56 relative w-max z-1000 shadow bg-white dark:bg-gray-900 rounded-lg py-1 space-y-0 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
-                hidden: suggestionsHidden || suggestions.isEmpty(),
-                block: !suggestionsHidden && !suggestions.isEmpty(),
-              })}
-            >
-              {suggestions.map(renderSuggestion)}
-            </div>,
-            anchorElementRef.current,
-          )
+              <div
+                className={clsx({
+                  "scroll-smooth snap-y snap-always will-change-scroll mt-6 overflow-y-auto max-h-56 relative w-max z-1000 shadow bg-white dark:bg-gray-900 rounded-lg py-1 space-y-0 dark:ring-2 dark:ring-primary-700 focus:outline-none":
+                    true,
+                  hidden: suggestionsHidden || suggestions.isEmpty(),
+                  block: !suggestionsHidden && !suggestions.isEmpty(),
+                })}
+              >
+                {suggestions.map(renderSuggestion)}
+              </div>,
+              anchorElementRef.current
+            )
           : null
       }
     />

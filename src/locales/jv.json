@@ -16,7 +16,7 @@
   "account.domain_blocked": "ꦣꦺꦴꦩꦻꦤ꧀ꦣꦶꦣꦼꦭꦶꦏꦏꦺ",
   "account.edit_profile": "ꦎꦮꦲꦶꦥꦿꦺꦴꦥ꦳ꦶꦭ꧀",
   "account.endorse": "ꦥ꦳ꦶꦠꦸꦂꦲꦶꦁꦥꦿꦺꦴꦥ꦳ꦶꦭ꧀",
-  "account.endorse.success": "ꦤ꧀ꦗꦼꦤꦼꦔꦤ꧀ꦱꦏ꧀ꦤꦶꦏꦶꦤꦩ꧀ꦥꦶꦭꦏꦺ @{acct} ꦲꦶꦁꦥꦿꦺꦴꦥ꦳ꦶꦭ꧀ꦤ꧀ꦗꦼꦤꦼꦔꦤ꧀",
+  "account.endorse.success": "ꦤ꧀ꦗꦼꦤꦼꦔꦤ꧀ꦱꦏ꧀ꦤꦶꦏꦶꦤꦩ꧀ꦥꦶꦭꦏꦺ @{username} ꦲꦶꦁꦥꦿꦺꦴꦥ꦳ꦶꦭ꧀ꦤ꧀ꦗꦼꦤꦼꦔꦤ꧀",
   "account.familiar_followers": "ꦢꦶꦠꦸꦠ꧀ꦲꦏꦺꦢꦺꦤꦶꦁ {accounts}",
   "account.familiar_followers.empty": "ꦧꦺꦴꦠꦼꦤꦮꦺꦴꦤ꧀ꦠꦼꦲꦶꦁꦏꦁꦢꦶꦥꦸꦤ꧀ꦏꦼꦤꦭ꧀ꦏꦁꦔꦼꦠꦸꦠ꧀ꦏꦺ{name}꧉",
   "account.familiar_followers.more": "{count, plural, one {# other} ꦭꦪꦤꦺ {# others}} ꦚ꧀ꦗꦼꦤꦼꦔꦤ꧀ꦠꦸꦠ꧀ꦏꦺ",
@@ -72,7 +72,7 @@
   "account_moderation_modal.roles.admin": "ꦄꦝ꧀ꦩꦶꦤ꧀",
   "account_moderation_modal.roles.moderator": "ꦩꦺꦴꦝꦼꦫꦠꦺꦴꦂ",
   "account_moderation_modal.roles.user": "ꦥꦔꦒꦼꦩ꧀",
-  "account_moderation_modal.title": "ꦩꦺꦴꦝꦺꦫꦠ꧀ @{acct}",
+  "account_moderation_modal.title": "ꦩꦺꦴꦝꦺꦫꦠ꧀ @{username}",
   "account_note.header": "ꦕꦛꦼꦠꦤ꧀",
   "account_note.placeholder": "ꦏ꧀ꦭꦶꦏ꧀ꦏꦁꦒꦺꦴꦤꦩ꧀ꦧꦃꦕꦛꦼꦠꦤ꧀",
   "account_search.placeholder": "ꦒꦺꦴꦭꦺꦏꦶꦄꦏꦸꦤ꧀",
@@ -111,10 +111,10 @@
   "admin.reports.actions.close": "ꦠꦸꦠꦸꦥ꧀",
   "admin.reports.actions.view_status": "ꦥꦶꦂꦱꦤꦶꦥꦺꦴꦱ꧀ꦠꦶꦔꦤ꧀",
   "admin.reports.report_closed_message": "ꦭꦥꦺꦴꦫꦤ꧀ꦧꦧꦒꦤ꧀ @{name} ꦢꦶꦠꦸꦠꦸꦥ꧀",
-  "admin.reports.report_title": "ꦭꦥꦺꦴꦫꦤꦲꦶꦁ {acct}",
+  "admin.reports.report_title": "ꦭꦥꦺꦴꦫꦤꦲꦶꦁ {username}",
   "admin.statuses.actions.delete_status": "ꦧꦸꦱꦼꦏ꧀ꦥꦺꦴꦱ꧀ꦠꦶꦔꦤ꧀",
   "admin.statuses.actions.mark_status_not_sensitive": "ꦠꦼꦔꦼꦫꦶꦥꦺꦴꦱ꧀ꦠꦶꦔꦤ꧀ꦧꦺꦴꦠꦼꦤ꧀ꦒꦮꦠ꧀",
   "admin.statuses.actions.mark_status_sensitive": "ꦠꦼꦔꦼꦫꦶꦥꦺꦴꦱ꧀ꦠꦶꦔꦤ꧀ꦒꦮꦠ꧀",
-  "admin.statuses.status_deleted_message": "ꦏꦶꦫꦶꦩꦤ꧀ꦢꦤꦶꦁ @{acct} ꦱꦩ꧀ꦥꦸꦤ꧀ꦢꦶꦧꦸꦱꦼꦏ꧀",
-  "admin.statuses.status_marked_message_not_sensitive": "ꦏꦶꦫꦶꦩꦤ꧀ꦢꦺꦤꦶꦁ @{acct} ꦢꦶꦥꦸꦤ꧀ꦠꦺꦼꦔꦼꦫꦶꦧꦺꦴꦠꦼꦤ꧀ꦒꦮꦠ꧀"
+  "admin.statuses.status_deleted_message": "ꦏꦶꦫꦶꦩꦤ꧀ꦢꦤꦶꦁ @{username} ꦱꦩ꧀ꦥꦸꦤ꧀ꦢꦶꦧꦸꦱꦼꦏ꧀",
+  "admin.statuses.status_marked_message_not_sensitive": "ꦏꦶꦫꦶꦩꦤ꧀ꦢꦺꦤꦶꦁ @{username} ꦢꦶꦥꦸꦤ꧀ꦠꦺꦼꦔꦼꦫꦶꦧꦺꦴꦠꦼꦤ꧀ꦒꦮꦠ꧀"
 }

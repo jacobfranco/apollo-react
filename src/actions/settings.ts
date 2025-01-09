@@ -1,28 +1,30 @@
-import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
-import { defineMessage } from 'react-intl';
-import { createSelector } from 'reselect';
-import { v4 as uuid } from 'uuid';
+import { Map as ImmutableMap, List as ImmutableList } from "immutable";
+import { defineMessage } from "react-intl";
+import { createSelector } from "reselect";
 
-import { patchMe } from 'src/actions/me';
-import messages from 'src/messages';
-import toast from 'src/toast';
-import { isLoggedIn } from 'src/utils/auth';
+import { patchMe } from "src/actions/me";
+import messages from "src/messages";
+import toast from "src/toast";
+import { isLoggedIn } from "src/utils/auth";
 
-import type { AppDispatch, RootState } from 'src/store';
+import type { AppDispatch, RootState } from "src/store";
 
-const SETTING_CHANGE = 'SETTING_CHANGE' as const;
-const SETTING_SAVE   = 'SETTING_SAVE' as const;
-const SETTINGS_UPDATE = 'SETTINGS_UPDATE' as const;
+const SETTING_CHANGE = "SETTING_CHANGE" as const;
+const SETTING_SAVE = "SETTING_SAVE" as const;
+const SETTINGS_UPDATE = "SETTINGS_UPDATE" as const;
 
-const FE_NAME = 'apollo_fe'; // TODO: Maybe change
+const FE_NAME = "apollo_fe";
 
 /** Options when changing/saving settings. */
 type SettingOpts = {
   /** Whether to display an alert when settings are saved. */
   showAlert?: boolean;
-}
+};
 
-const saveSuccessMessage = defineMessage({ id: 'settings.save.success', defaultMessage: 'Your preferences have been saved!' });
+const saveSuccessMessage = defineMessage({
+  id: "settings.save.success",
+  defaultMessage: "Your preferences have been saved!",
+});
 
 const defaultSettings = ImmutableMap({
   onboarded: false,
@@ -30,16 +32,16 @@ const defaultSettings = ImmutableMap({
   reduceMotion: false,
   underlineLinks: false,
   autoPlayGif: true,
-  displayMedia: 'default',
+  displayMedia: "default",
   expandSpoilers: false,
   unfollowModal: false,
   boostModal: false,
   deleteModal: true,
   missingDescriptionModal: false,
-  defaultPrivacy: 'public',
-  defaultContentType: 'text/plain',
-  themeMode: 'system',
-  locale: navigator.language || 'en',
+  defaultPrivacy: "public",
+  defaultContentType: "text/plain",
+  themeMode: "system",
+  locale: navigator.language || "en",
   showExplanationBox: true,
   explanationBox: true,
   autoloadTimelines: true,
@@ -51,13 +53,11 @@ const defaultSettings = ImmutableMap({
 
   isDeveloper: false,
 
-  /* TODO: Implement chats
   chats: ImmutableMap({
     panes: ImmutableList(),
-    mainWindow: 'minimized',
+    mainWindow: "minimized",
     sound: true,
   }),
-  */
 
   home: ImmutableMap({
     shows: ImmutableMap({
@@ -67,7 +67,7 @@ const defaultSettings = ImmutableMap({
     }),
 
     regex: ImmutableMap({
-      body: '',
+      body: "",
     }),
   }),
 
@@ -80,10 +80,11 @@ const defaultSettings = ImmutableMap({
       mention: true,
       poll: true,
       move: true,
+      "pleroma:emoji_reaction": true,
     }),
 
     quickFilter: ImmutableMap({
-      active: 'all',
+      active: "all",
       show: true,
       advanced: false,
     }),
@@ -96,9 +97,9 @@ const defaultSettings = ImmutableMap({
       mention: true,
       poll: true,
       move: true,
+      "pleroma:emoji_reaction": true,
     }),
 
-    /*  TODO: Implement sounds
     sounds: ImmutableMap({
       follow: false,
       follow_request: false,
@@ -107,8 +108,12 @@ const defaultSettings = ImmutableMap({
       mention: false,
       poll: false,
       move: false,
+      "pleroma:emoji_reaction": false,
     }),
-    */ 
+
+    birthdays: ImmutableMap({
+      show: true,
+    }),
   }),
 
   community: ImmutableMap({
@@ -121,7 +126,7 @@ const defaultSettings = ImmutableMap({
       onlyMedia: false,
     }),
     regex: ImmutableMap({
-      body: '',
+      body: "",
     }),
   }),
 
@@ -135,13 +140,13 @@ const defaultSettings = ImmutableMap({
       onlyMedia: false,
     }),
     regex: ImmutableMap({
-      body: '',
+      body: "",
     }),
   }),
 
   direct: ImmutableMap({
     regex: ImmutableMap({
-      body: '',
+      body: "",
     }),
   }),
 
@@ -160,24 +165,29 @@ const defaultSettings = ImmutableMap({
   }),
 
   columns: ImmutableList([
-    ImmutableMap({ id: 'COMPOSE', uuid: uuid(), params: {} }),
-    ImmutableMap({ id: 'HOME', uuid: uuid(), params: {} }),
-    ImmutableMap({ id: 'NOTIFICATIONS', uuid: uuid(), params: {} }),
+    ImmutableMap({ id: "COMPOSE", uuid: crypto.randomUUID(), params: {} }),
+    ImmutableMap({ id: "HOME", uuid: crypto.randomUUID(), params: {} }),
+    ImmutableMap({
+      id: "NOTIFICATIONS",
+      uuid: crypto.randomUUID(),
+      params: {},
+    }),
   ]),
 
   remote_timeline: ImmutableMap({
-    pinnedHosts: ImmutableOrderedSet(),
+    pinnedHosts: ImmutableList(),
   }),
 });
 
-const getSettings = createSelector([
-  (state: RootState) => state.apollo.get('defaultSettings'),
-  (state: RootState) => state.settings,
-], (apolloSettings, settings) => {
-  return defaultSettings
-    .mergeDeep(apolloSettings)
-    .mergeDeep(settings);
-});
+const getSettings = createSelector(
+  [
+    (state: RootState) => state.apollo.get("defaultSettings"),
+    (state: RootState) => state.settings,
+  ],
+  (apolloSettings, settings) => {
+    return defaultSettings.mergeDeep(apolloSettings).mergeDeep(settings);
+  }
+);
 
 interface SettingChangeAction {
   type: typeof SETTING_CHANGE;
@@ -185,7 +195,8 @@ interface SettingChangeAction {
   value: any;
 }
 
-const changeSettingImmediate = (path: string[], value: any, opts?: SettingOpts) =>
+const changeSettingImmediate =
+  (path: string[], value: any, opts?: SettingOpts) =>
   (dispatch: AppDispatch) => {
     const action: SettingChangeAction = {
       type: SETTING_CHANGE,
@@ -197,7 +208,8 @@ const changeSettingImmediate = (path: string[], value: any, opts?: SettingOpts) 
     dispatch(saveSettingsImmediate(opts));
   };
 
-const changeSetting = (path: string[], value: any, opts?: SettingOpts) =>
+const changeSetting =
+  (path: string[], value: any, opts?: SettingOpts) =>
   (dispatch: AppDispatch) => {
     const action: SettingChangeAction = {
       type: SETTING_CHANGE,
@@ -209,42 +221,52 @@ const changeSetting = (path: string[], value: any, opts?: SettingOpts) =>
     return dispatch(saveSettings(opts));
   };
 
-const saveSettingsImmediate = (opts?: SettingOpts) =>
+const saveSettingsImmediate =
+  (opts?: SettingOpts) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
     const state = getState();
-    if (getSettings(state).getIn(['saved'])) return;
+    if (getSettings(state).getIn(["saved"])) return;
 
-    const data = state.settings.delete('saved').toJS();
+    const data = state.settings.delete("saved").toJS();
 
-    dispatch(patchMe({
-      pleroma_settings_store: {
-        [FE_NAME]: data,
-      },
-    })).then(() => {
-      dispatch({ type: SETTING_SAVE });
+    dispatch(
+      patchMe({
+        pleroma_settings_store: {
+          [FE_NAME]: data,
+        },
+      })
+    )
+      .then(() => {
+        dispatch({ type: SETTING_SAVE });
 
-      if (opts?.showAlert) {
-        toast.success(saveSuccessMessage);
-      }
-    }).catch(error => {
-      toast.showAlertForError(error);
-    });
+        if (opts?.showAlert) {
+          toast.success(saveSuccessMessage);
+        }
+      })
+      .catch((error) => {
+        toast.showAlertForError(error);
+      });
   };
 
-const saveSettings = (opts?: SettingOpts) =>
-  (dispatch: AppDispatch) => dispatch(saveSettingsImmediate(opts));
+const saveSettings = (opts?: SettingOpts) => (dispatch: AppDispatch) =>
+  dispatch(saveSettingsImmediate(opts));
 
-const getLocale = (state: RootState, fallback = 'en') => {
-  const localeWithVariant = (getSettings(state).get('locale') as string).replace('_', '-');
-  const locale = localeWithVariant.split('-')[0];
-  return Object.keys(messages).includes(localeWithVariant) ? localeWithVariant : Object.keys(messages).includes(locale) ? locale : fallback;
+const getLocale = (state: RootState, fallback = "en") => {
+  const localeWithVariant = (
+    getSettings(state).get("locale") as string
+  ).replace("_", "-");
+  const locale = localeWithVariant.split("-")[0];
+  const fallbackLocale = Object.keys(messages).includes(locale)
+    ? locale
+    : fallback;
+  return Object.keys(messages).includes(localeWithVariant)
+    ? localeWithVariant
+    : fallbackLocale;
 };
 
-type SettingsAction =
-  | SettingChangeAction
-  | { type: typeof SETTING_SAVE }
+type SettingsAction = SettingChangeAction | { type: typeof SETTING_SAVE };
 
 export {
   SETTING_CHANGE,

@@ -1,23 +1,31 @@
-import clsx from 'clsx';
-import React, { MouseEventHandler, useEffect, useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import xIcon from "@tabler/icons/outline/x.svg";
+import clsx from "clsx";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
+import { useHistory } from "react-router-dom";
 
-import { Stack, StatusMedia, OutlineBox, StatusReplyMentions, SensitiveContentOverlay } from 'src/components';
-import AccountContainer from 'src/containers/AccountContainer';
-import { useSettings } from 'src/hooks/useSettings';
-import { defaultMediaVisibility } from 'src/utils/status';
+import StatusMedia from "src/components/StatusMedia";
+import Stack from "src/components/Stack";
+import AccountContainer from "src/containers/AccountContainer";
+import { useSettings } from "src/hooks/useSettings.ts";
+import { Status as StatusEntity } from "src/schemas/index.ts";
+import { defaultMediaVisibility } from "src/utils/status.ts";
 
-import type { Status as StatusEntity } from 'src/types/entities';
-import StatusContent from './StatusContent';
+import OutlineBox from "./OutlineBox";
+import QuotedStatusIndicator from "./QuotedStatusIndicator";
+import StatusContent from "./StatusContent";
+import StatusReplyMentions from "./StatusReplyMentions";
+import SensitiveContentOverlay from "./SensitiveContentOverlay";
+
+import type { Status as LegacyStatus } from "src/types/entities.ts";
 
 const messages = defineMessages({
-  cancel: { id: 'reply_indicator.cancel', defaultMessage: 'Cancel' },
+  cancel: { id: "reply_indicator.cancel", defaultMessage: "Cancel" },
 });
 
 interface IQuotedStatus {
   /** The quoted status entity. */
-  status?: StatusEntity;
+  status?: LegacyStatus;
   /** Callback when cancelled (during compose). */
   onCancel?: Function;
   /** Whether the status is shown in the post composer. */
@@ -25,16 +33,21 @@ interface IQuotedStatus {
 }
 
 /** Status embedded in a quote post. */
-const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) => {
+const QuotedStatus: React.FC<IQuotedStatus> = ({
+  status,
+  onCancel,
+  compose,
+}) => {
   const intl = useIntl();
   const history = useHistory();
 
-  const settings = useSettings();
   const { displayMedia } = useSettings();
 
   const overlay = useRef<HTMLDivElement>(null);
 
-  const [showMedia, setShowMedia] = useState<boolean>(defaultMediaVisibility(status, displayMedia));
+  const [showMedia, setShowMedia] = useState<boolean>(
+    defaultMediaVisibility(status, displayMedia)
+  );
   const [minHeight, setMinHeight] = useState(208);
 
   useEffect(() => {
@@ -52,7 +65,7 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
       if (!(e.ctrlKey || e.metaKey)) {
         history.push(statusUrl);
       } else {
-        window.open(statusUrl, '_blank');
+        window.open(statusUrl, "_blank");
       }
       e.stopPropagation();
       e.preventDefault();
@@ -79,23 +92,20 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
   if (onCancel) {
     actions = {
       onActionClick: handleClose,
-      actionIcon: require('@tabler/icons/outline/x.svg'),
-      actionAlignment: 'top',
+      actionIcon: xIcon,
+      actionAlignment: "top",
       actionTitle: intl.formatMessage(messages.cancel),
     };
   }
 
   return (
     <OutlineBox
-      data-testid='quoted-status'
-      className={clsx('cursor-pointer', {
-        'hover:bg-gray-100 dark:hover:bg-gray-800': !compose,
+      data-testid="quoted-status"
+      className={clsx("cursor-pointer", {
+        "hover:bg-gray-100 dark:hover:bg-gray-800": !compose,
       })}
     >
-      <Stack
-        space={2}
-        onClick={handleExpandClick}
-      >
+      <Stack space={2} onClick={handleExpandClick}>
         <AccountContainer
           {...actions}
           id={account.id}
@@ -108,10 +118,14 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
         <StatusReplyMentions status={status} hoverable={false} />
 
         <Stack
-          className='relative z-0'
-          style={{ minHeight: status.hidden ? Math.max(minHeight, 208) + 12 : undefined }}
+          className="relative z-0"
+          style={{
+            minHeight: status.hidden
+              ? Math.max(minHeight, 208) + 12
+              : undefined,
+          }}
         >
-          {(status.hidden) && (
+          {status.hidden && (
             <SensitiveContentOverlay
               status={status}
               visible={showMedia}
@@ -121,14 +135,15 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
           )}
 
           <Stack space={4}>
-            <StatusContent
-              status={status}
-              collapsable
-            />
+            <StatusContent status={status} collapsable />
+
+            {status.quote && (
+              <QuotedStatusIndicator statusId={status.quote as string} />
+            )}
 
             {status.media_attachments.size > 0 && (
               <StatusMedia
-                status={status}
+                status={status.toJS() as StatusEntity}
                 muted={compose}
                 showMedia={showMedia}
                 onToggleVisibility={handleToggleMediaVisibility}

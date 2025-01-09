@@ -1,28 +1,19 @@
-import { Picker as EmojiPicker } from 'emoji-mart';
-import React, { useRef, useEffect } from 'react';
+import { Picker as EmojiPicker } from "emoji-mart";
+import { useRef, useEffect } from "react";
 
-import { joinPublicPath } from 'src/utils/static';
-
-import data from '../data';
-
-const getSpritesheetURL = (set: string) => {
-  return require('emoji-datasource/img/twitter/sheets/32.png');
-};
-
-const getImageURL = (set: string, name: string) => {
-  return joinPublicPath(`/packs/emoji/${name}.svg`);
-};
+import data from "../data.ts";
 
 const Picker: React.FC<any> = (props) => {
-  const ref = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const input = { ...props, data, ref, getImageURL, getSpritesheetURL };
+    if (containerRef.current) {
+      const input = { ...props, data, ref: containerRef };
+      new EmojiPicker(input);
+    }
+  }, [props]);
 
-    new EmojiPicker(input);
-  }, []);
-
-  return <div ref={ref} />;
+  return <div className="flex justify-center" ref={containerRef} />;
 };
 
 export default Picker;

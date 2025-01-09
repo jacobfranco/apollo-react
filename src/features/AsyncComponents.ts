@@ -1,13 +1,15 @@
 import { lazy } from "react";
 
-export const DatePicker = lazy(() => import("./DatePicker"));
 export const ModalContainer = lazy(
   () => import("../containers/ModalContainer")
 );
-export const OnboardingWizard = lazy(() => import("./OnboardingWizard"));
+export const OnboardingFlowModal = lazy(
+  () => import("./modals/OnboardingFlowModal")
+);
 export const Login = lazy(() => import("./Login"));
 export const Signup = lazy(() => import("./Signup"));
 export const TrendsPanel = lazy(() => import("./TrendsPanel"));
+export const TrendingSpacesPanel = lazy(() => import("./TrendingSpacesPanel"));
 export const WhoToFollowPanel = lazy(() => import("./WhoToFollowPanel"));
 export const SignUpPanel = lazy(() => import("./SignUpPanel"));
 export const CtaBanner = lazy(() => import("./CtaBanner"));
@@ -37,6 +39,10 @@ export const ComposeModal = lazy(() => import("./modals/ComposeModal"));
 export const ConfirmationModal = lazy(
   () => import("./modals/ConfirmationModal")
 );
+export const EmojiPickerModal = lazy(() => import("./modals/EmojiPickerModal"));
+export const FamiliarFollowersModal = lazy(
+  () => import("./modals/FamiliarFollowersModal")
+);
 export const HotkeysModal = lazy(() => import("./modals/HotkeysModal"));
 export const LikesModal = lazy(() => import("./modals/LikesModal"));
 export const MediaModal = lazy(() => import("./modals/MediaModal"));
@@ -53,6 +59,7 @@ export const RepostsModal = lazy(() => import("./modals/RepostsModal"));
 export const UnauthorizedModal = lazy(
   () => import("./modals/UnauthorizedModal")
 );
+export const VideoModal = lazy(() => import("./modals/VideoModal"));
 export const UserPanel = lazy(() => import("./UserPanel"));
 export const EmojiPicker = lazy(() => import("./emoji/components/EmojiPicker"));
 export const Status = lazy(() => import("./Status"));
@@ -73,7 +80,6 @@ export const FollowRecommendations = lazy(
 );
 export const NewStatus = lazy(() => import("./NewStatus"));
 export const FollowedTags = lazy(() => import("./FollowedTags"));
-export const FollowedSpaces = lazy(() => import("./FollowedSpaces"));
 export const SuggestedGroupsPanel = lazy(
   () => import("./SuggestedGroupsPanel")
 );
@@ -85,7 +91,7 @@ export const ProfileMediaPanel = lazy(() => import("./ProfileMediaPanel"));
 export const ProfileFieldsPanel = lazy(() => import("./ProfileFieldsPanel"));
 export const AccountTimeline = lazy(() => import("./AccountTimeline"));
 export const Followers = lazy(() => import("./Followers"));
-export const Following = lazy(() => import("./Followers"));
+export const Following = lazy(() => import("./Following"));
 export const LikedStatuses = lazy(() => import("./LikedStatuses"));
 export const PinnedStatuses = lazy(() => import("./PinnedStatuses"));
 export const Quotes = lazy(() => import("./Quotes"));
@@ -115,10 +121,14 @@ export const EsportsTab = lazy(() => import("./EsportsTab"));
 export const LolRegionFilterModal = lazy(
   () => import("./modals/LolRegionFilterModal")
 );
-export const StreamModal = lazy(() => import("./modals/StreamModal"));
 export const TeamDetail = lazy(() => import("./TeamDetail"));
 export const PlayerDetail = lazy(() => import("./PlayerDetail"));
 export const StreamPage = lazy(() => import("./StreamPage"));
-// export const AboutPage = lazy(() => import('./About')); Maybe implement ? Maybe delete ?
-// export const ApolloConfig = lazy(() => import('./ApolloConfig')); TODO: Implement
+export const LatestAccountsPanel = lazy(() => import("./LatestAccountsPanel"));
+export const AboutPage = lazy(() => import("./About"));
+export const Admin = lazy(() => import("./Admin"));
+export const ModerationLog = lazy(() => import("./ModerationLog"));
+export const UserIndex = lazy(() => import("./UserIndex"));
+export const Reports = lazy(() => import("./Reports"));
+export const AdminSpaces = lazy(() => import("./AdminSpaces"));
 // export const PromoPanel = lazy(() => import('./PromoPanel')); TODO: Implement

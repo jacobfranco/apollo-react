@@ -1,29 +1,50 @@
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { fetchGroupRelationshipsSuccess } from 'src/actions/groups';
-import { openModal } from 'src/actions/modals';
-import { useCancelMembershipRequest, useJoinGroup, useLeaveGroup, usePendingGroups } from 'src/api/hooks';
-import { Button } from 'src/components/Button';
-import { importEntities } from 'src/entity-store/actions';
-import { Entities } from 'src/entity-store/entities';
-import { useAppDispatch } from 'src/hooks';
-import { GroupRoles } from 'src/schemas/group-member';
-import toast from 'src/toast';
+import { fetchGroupRelationshipsSuccess } from "src/actions/groups";
+import { openModal } from "src/actions/modals";
+import {
+  useCancelMembershipRequest,
+  useJoinGroup,
+  useLeaveGroup,
+  usePendingGroups,
+} from "src/api/hooks";
+import { Button } from "src/components/Button";
+import { importEntities } from "src/entity-store/actions";
+import { Entities } from "src/entity-store/entities";
+import { useAppDispatch } from "src/hooks";
+import { GroupRoles } from "src/schemas/group-member";
+import toast from "src/toast";
 
-import type { Group, GroupRelationship } from 'src/types/entities';
+import type { Group, GroupRelationship } from "src/types/entities";
 
 interface IGroupActionButton {
   group: Group;
 }
 
 const messages = defineMessages({
-  confirmationConfirm: { id: 'confirmations.leave_group.confirm', defaultMessage: 'Leave' },
-  confirmationHeading: { id: 'confirmations.leave_group.heading', defaultMessage: 'Leave group' },
-  confirmationMessage: { id: 'confirmations.leave_group.message', defaultMessage: 'You are about to leave the group. Do you want to continue?' },
-  joinRequestSuccess: { id: 'group.join.request_success', defaultMessage: 'Request sent to group owner' },
-  joinSuccess: { id: 'group.join.success', defaultMessage: 'Group joined successfully!' },
-  leaveSuccess: { id: 'group.leave.success', defaultMessage: 'Left the group' },
+  confirmationConfirm: {
+    id: "confirmations.leave_group.confirm",
+    defaultMessage: "Leave",
+  },
+  confirmationHeading: {
+    id: "confirmations.leave_group.heading",
+    defaultMessage: "Leave group",
+  },
+  confirmationMessage: {
+    id: "confirmations.leave_group.message",
+    defaultMessage:
+      "You are about to leave the group. Do you want to continue?",
+  },
+  joinRequestSuccess: {
+    id: "group.join.request_success",
+    defaultMessage: "Request sent to group owner",
+  },
+  joinSuccess: {
+    id: "group.join.success",
+    defaultMessage: "Group joined successfully!",
+  },
+  leaveSuccess: { id: "group.leave.success", defaultMessage: "Left the group" },
 });
 
 const GroupActionButton = ({ group }: IGroupActionButton) => {
@@ -41,50 +62,61 @@ const GroupActionButton = ({ group }: IGroupActionButton) => {
   const isAdmin = group.relationship?.role === GroupRoles.ADMIN;
   const isBlocked = group.relationship?.blocked_by;
 
-  const onJoinGroup = () => joinGroup.mutate({}, {
-    onSuccess(entity) {
-      joinGroup.invalidate();
-      invalidatePendingGroups();
-      dispatch(fetchGroupRelationshipsSuccess([entity]));
+  const onJoinGroup = () =>
+    joinGroup.mutate(
+      {},
+      {
+        onSuccess(entity) {
+          joinGroup.invalidate();
+          invalidatePendingGroups();
+          dispatch(fetchGroupRelationshipsSuccess([entity]));
 
-      toast.success(
-        group.locked
-          ? intl.formatMessage(messages.joinRequestSuccess)
-          : intl.formatMessage(messages.joinSuccess),
-      );
-    },
-    onError(error) {
-      const message = (error.response?.data as any).error;
-      if (message) {
-        toast.error(message);
+          toast.success(
+            group.locked
+              ? intl.formatMessage(messages.joinRequestSuccess)
+              : intl.formatMessage(messages.joinSuccess)
+          );
+        },
+        async onError(error) {
+          const message = ((await error.response.json()) as any).error;
+          if (message) {
+            toast.error(message);
+          }
+        },
       }
-    },
-  });
+    );
 
   const onLeaveGroup = () =>
-    dispatch(openModal('CONFIRM', {
-      heading: intl.formatMessage(messages.confirmationHeading),
-      message: intl.formatMessage(messages.confirmationMessage),
-      confirm: intl.formatMessage(messages.confirmationConfirm),
-      onConfirm: () => leaveGroup.mutate(group.relationship?.id as string, {
-        onSuccess(entity) {
-          leaveGroup.invalidate();
-          dispatch(fetchGroupRelationshipsSuccess([entity]));
-          toast.success(intl.formatMessage(messages.leaveSuccess));
-        },
-      }),
-    }));
+    dispatch(
+      openModal("CONFIRM", {
+        heading: intl.formatMessage(messages.confirmationHeading),
+        message: intl.formatMessage(messages.confirmationMessage),
+        confirm: intl.formatMessage(messages.confirmationConfirm),
+        onConfirm: () =>
+          leaveGroup.mutate(group.relationship?.id as string, {
+            onSuccess(entity) {
+              leaveGroup.invalidate();
+              dispatch(fetchGroupRelationshipsSuccess([entity]));
+              toast.success(intl.formatMessage(messages.leaveSuccess));
+            },
+          }),
+      })
+    );
 
-  const onCancelRequest = () => cancelRequest.mutate({}, {
-    onSuccess() {
-      const entity = {
-        ...group.relationship as GroupRelationship,
-        requested: false,
-      };
-      dispatch(importEntities([entity], Entities.GROUP_RELATIONSHIPS));
-      invalidatePendingGroups();
-    },
-  });
+  const onCancelRequest = () =>
+    cancelRequest.mutate(
+      {},
+      {
+        onSuccess() {
+          const entity = {
+            ...(group.relationship as GroupRelationship),
+            requested: false,
+          };
+          dispatch(importEntities([entity], Entities.GROUP_RELATIONSHIPS));
+          invalidatePendingGroups();
+        },
+      }
+    );
 
   if (isBlocked) {
     return null;
@@ -92,11 +124,8 @@ const GroupActionButton = ({ group }: IGroupActionButton) => {
 
   if (isOwner || isAdmin) {
     return (
-      <Button
-        theme='secondary'
-        to={`/group/${group.slug}/manage`}
-      >
-        <FormattedMessage id='group.manage' defaultMessage='Manage Group' />
+      <Button theme="secondary" to={`/group/${group.slug}/manage`}>
+        <FormattedMessage id="group.manage" defaultMessage="Manage Group" />
       </Button>
     );
   }
@@ -104,13 +133,21 @@ const GroupActionButton = ({ group }: IGroupActionButton) => {
   if (isNonMember) {
     return (
       <Button
-        theme='primary'
+        theme="primary"
         onClick={onJoinGroup}
         disabled={joinGroup.isSubmitting}
       >
-        {group.locked
-          ? <FormattedMessage id='group.join.private' defaultMessage='Request Access' />
-          : <FormattedMessage id='group.join.public' defaultMessage='Join Group' />}
+        {group.locked ? (
+          <FormattedMessage
+            id="group.join.private"
+            defaultMessage="Request Access"
+          />
+        ) : (
+          <FormattedMessage
+            id="group.join.public"
+            defaultMessage="Join Group"
+          />
+        )}
       </Button>
     );
   }
@@ -118,22 +155,25 @@ const GroupActionButton = ({ group }: IGroupActionButton) => {
   if (isRequested) {
     return (
       <Button
-        theme='secondary'
+        theme="secondary"
         onClick={onCancelRequest}
         disabled={cancelRequest.isSubmitting}
       >
-        <FormattedMessage id='group.cancel_request' defaultMessage='Cancel Request' />
+        <FormattedMessage
+          id="group.cancel_request"
+          defaultMessage="Cancel Request"
+        />
       </Button>
     );
   }
 
   return (
     <Button
-      theme='secondary'
+      theme="secondary"
       onClick={onLeaveGroup}
       disabled={leaveGroup.isSubmitting}
     >
-      <FormattedMessage id='group.leave' defaultMessage='Leave Group' />
+      <FormattedMessage id="group.leave" defaultMessage="Leave Group" />
     </Button>
   );
 };

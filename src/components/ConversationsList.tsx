@@ -1,12 +1,12 @@
-import debounce from 'lodash/debounce';
-import React, { useRef } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { debounce } from "es-toolkit";
+import React, { useRef } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { expandConversations } from 'src/actions/conversations';
-import { Conversation, ScrollableList } from 'src/components';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
+import { expandConversations } from "src/actions/conversations";
+import { Conversation, ScrollableList } from "src/components";
+import { useAppDispatch, useAppSelector } from "src/hooks";
 
-import type { VirtuosoHandle } from 'react-virtuoso';
+import type { VirtuosoHandle } from "react-virtuoso";
 
 const ConversationsList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +16,8 @@ const ConversationsList: React.FC = () => {
   const isLoading = useAppSelector((state) => state.conversations.isLoading);
   const hasMore = useAppSelector((state) => state.conversations.hasMore);
 
-  const getCurrentIndex = (id: string) => conversations.findIndex(x => x.id === id);
+  const getCurrentIndex = (id: string) =>
+    conversations.findIndex((x) => x.id === id);
 
   const handleMoveUp = (id: string) => {
     const elementIndex = getCurrentIndex(id) - 1;
@@ -31,9 +32,11 @@ const ConversationsList: React.FC = () => {
   const selectChild = (index: number) => {
     ref.current?.scrollIntoView({
       index,
-      behavior: 'smooth',
+      behavior: "smooth",
       done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#direct-list [data-index="${index}"] .focusable`);
+        const element = document.querySelector<HTMLDivElement>(
+          `#direct-list [data-index="${index}"] .focusable`
+        );
 
         if (element) {
           element.focus();
@@ -42,21 +45,30 @@ const ConversationsList: React.FC = () => {
     });
   };
 
-  const handleLoadOlder = debounce(() => {
-    const maxId = conversations.getIn([-1, 'id']);
-    if (maxId) dispatch(expandConversations({ maxId }));
-  }, 300, { leading: true });
+  const handleLoadOlder = debounce(
+    () => {
+      const maxId = conversations.getIn([-1, "id"]);
+      if (maxId) dispatch(expandConversations({ maxId }));
+    },
+    300,
+    { edges: ["leading"] }
+  );
 
   return (
     <ScrollableList
       hasMore={hasMore}
       onLoadMore={handleLoadOlder}
-      id='direct-list'
-      scrollKey='direct'
+      id="direct-list"
+      scrollKey="direct"
       ref={ref}
       isLoading={isLoading}
       showLoading={isLoading && conversations.size === 0}
-      emptyMessage={<FormattedMessage id='empty_column.direct' defaultMessage="You don't have any direct messages yet. When you send or receive one, it will show up here." />}
+      emptyMessage={
+        <FormattedMessage
+          id="empty_column.direct"
+          defaultMessage="You don't have any direct messages yet. When you send or receive one, it will show up here."
+        />
+      }
     >
       {conversations.map((item: any) => (
         <Conversation

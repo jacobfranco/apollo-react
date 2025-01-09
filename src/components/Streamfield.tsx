@@ -1,12 +1,15 @@
-import React from 'react';
-import { useIntl, defineMessages } from 'react-intl';
+import xIcon from "@tabler/icons/outline/x.svg";
+import { useIntl, defineMessages } from "react-intl";
 
-import { HStack, IconButton, Stack, Text } from 'src/components';
-import Button from './Button';
+import Button from "./Button";
+import HStack from "./HStack";
+import IconButton from "./IconButton";
+import Stack from "./Stack";
+import Text from "./Text";
 
 const messages = defineMessages({
-  add: { id: 'streamfield.add', defaultMessage: 'Add' },
-  remove: { id: 'streamfield.remove', defaultMessage: 'Remove' },
+  add: { id: "streamfield.add", defaultMessage: "Add" },
+  remove: { id: "streamfield.remove", defaultMessage: "Remove" },
 });
 
 /** Type of the inner Streamfield input component. */
@@ -62,40 +65,46 @@ const Streamfield: React.FC<IStreamfield> = ({
   return (
     <Stack space={4}>
       <Stack>
-        {label && <Text size='sm' weight='medium'>{label}</Text>}
-        {hint && <Text size='xs' theme='muted'>{hint}</Text>}
+        {label && (
+          <Text size="sm" weight="medium">
+            {label}
+          </Text>
+        )}
+        {hint && (
+          <Text size="xs" theme="muted">
+            {hint}
+          </Text>
+        )}
       </Stack>
 
-      {(values.length > 0) && (
+      {values.length > 0 && (
         <Stack space={1}>
-          {values.map((value, i) => value?._destroy ? null : (
-            <HStack space={2} alignItems='center'>
-              <Component
-                key={i}
-                onChange={handleChange(i)}
-                value={value}
-                autoFocus={i > 0}
-              />
-              {values.length > minItems && onRemoveItem && (
-                <IconButton
-                  iconClassName='h-4 w-4'
-                  className='bg-transparent text-gray-600 hover:text-gray-600'
-                  src={require('@tabler/icons/outline/x.svg')}
-                  onClick={() => onRemoveItem(i)}
-                  title={intl.formatMessage(messages.remove)}
+          {values.map((value, i) =>
+            value?._destroy ? null : (
+              <HStack space={2} alignItems="center">
+                <Component
+                  key={i}
+                  onChange={handleChange(i)}
+                  value={value}
+                  autoFocus={i > 0}
                 />
-              )}
-            </HStack>
-          ))}
+                {values.length > minItems && onRemoveItem && (
+                  <IconButton
+                    iconClassName="h-4 w-4"
+                    className="bg-transparent text-gray-600 hover:text-gray-600"
+                    src={xIcon}
+                    onClick={() => onRemoveItem(i)}
+                    title={intl.formatMessage(messages.remove)}
+                  />
+                )}
+              </HStack>
+            )
+          )}
         </Stack>
       )}
 
-      {(onAddItem && (values.length < maxItems)) && (
-        <Button
-          onClick={onAddItem}
-          theme='secondary'
-          block
-        >
+      {onAddItem && values.length < maxItems && (
+        <Button onClick={onAddItem} theme="secondary" block>
           {intl.formatMessage(messages.add)}
         </Button>
       )}

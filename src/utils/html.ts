@@ -1,37 +1,38 @@
 /** Convert HTML to a plaintext representation, preserving whitespace. */
 // NB: This function can still return unsafe HTML
-export const unescapeHTML = (html: string = ''): string => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = html.replace(/<br\s*\/?>/g, '\n').replace(/<\/p><[^>]*>/g, '\n\n').replace(/<[^>]*>/g, '');
-    return wrapper.textContent || '';
-  };
+export const unescapeHTML = (html: string = ""): string => {
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html
+    .replace(/<br\s*\/?>/g, "\n")
+    .replace(/<\/p><[^>]*>/g, "\n\n")
+    .replace(/<[^>]*>/g, "");
+  return wrapper.textContent || "";
+};
 
-  /** Remove compatibility markup for features Apollo supports. */
+/** Remove compatibility markup for features Apollo supports. */
 export const stripCompatibilityFeatures = (html: string): string => {
-  const node = document.createElement('div');
+  const node = document.createElement("div");
   node.innerHTML = html;
 
   const selectors = [
     // Quote posting
-    '.quote-inline',
+    ".quote-inline",
     // Explicit mentions
-    '.recipients-inline',
+    ".recipients-inline",
   ];
 
   // Remove all instances of all selectors
-  selectors.forEach(selector => {
-    node.querySelectorAll(selector).forEach(elem => {
+  selectors.forEach((selector) => {
+    node.querySelectorAll(selector).forEach((elem) => {
       elem.remove();
     });
   });
 
   return node.innerHTML;
 };
-  
-/** Convert HTML to plaintext. */
-// https://stackoverflow.com/a/822486
-export const stripHTML = (html: string) => {
-  const div = document.createElement('div');
+
+export function htmlToPlaintext(html: string): string {
+  const div = document.createElement("div");
   div.innerHTML = html;
-  return div.textContent || div.innerText || '';
-};
+  return div.textContent || div.innerText || "";
+}

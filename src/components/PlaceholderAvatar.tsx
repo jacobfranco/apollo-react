@@ -1,7 +1,7 @@
-import clsx from 'clsx';
-import React from 'react';
+import clsx from "clsx";
+import React from "react";
 
-import { Stack } from 'src/components';
+import { Stack } from "src/components";
 
 interface IPlaceholderAvatar {
   size: number;
@@ -10,7 +10,11 @@ interface IPlaceholderAvatar {
 }
 
 /** Fake avatar to display while data is loading. */
-const PlaceholderAvatar: React.FC<IPlaceholderAvatar> = ({ size, withText = false, className }) => {
+const PlaceholderAvatar: React.FC<IPlaceholderAvatar> = ({
+  size,
+  withText = false,
+  className,
+}) => {
   const style = React.useMemo(() => {
     if (!size) {
       return {};
@@ -23,17 +27,17 @@ const PlaceholderAvatar: React.FC<IPlaceholderAvatar> = ({ size, withText = fals
   }, [size]);
 
   return (
-    <Stack
-      space={2}
-      className={clsx('animate-pulse text-center', className)}
-    >
+    <Stack space={2} className={clsx("animate-pulse text-center", className)}>
       <div
-        className='mx-auto block rounded-full bg-primary-50 dark:bg-primary-800'
+        className="mx-auto block rounded-5px bg-primary-50 dark:bg-primary-800"
         style={style}
       />
 
       {withText && (
-        <div style={{ width: size, height: 15 }} className='mx-auto rounded-full bg-primary-50 dark:bg-primary-800' />
+        <div
+          style={{ width: size, height: 15 }}
+          className="mx-auto rounded-full bg-primary-50 dark:bg-primary-800"
+        />
       )}
     </Stack>
   );

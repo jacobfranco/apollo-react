@@ -1,14 +1,19 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import refreshIcon from "@tabler/icons/outline/refresh.svg";
+import { defineMessages, useIntl } from "react-intl";
 
-import { Stack, Text, IconButton } from 'src/components';
-import { Column } from 'src/components/Column'
-import { isNetworkError } from 'src/utils/errors';
+import { Column } from "src/components/Column";
+import IconButton from "src/components/IconButton";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import { isNetworkError } from "src/utils/errors";
 
 const messages = defineMessages({
-  title: { id: 'bundle_column_error.title', defaultMessage: 'Network error' },
-  body: { id: 'bundle_column_error.body', defaultMessage: 'Something went wrong while loading this page.' },
-  retry: { id: 'bundle_column_error.retry', defaultMessage: 'Try again' },
+  title: { id: "bundle_column_error.title", defaultMessage: "Network error" },
+  body: {
+    id: "bundle_column_error.body",
+    defaultMessage: "Something went wrong while loading this page.",
+  },
+  retry: { id: "bundle_column_error.retry", defaultMessage: "Try again" },
 });
 
 interface IErrorColumn {
@@ -16,7 +21,10 @@ interface IErrorColumn {
   onRetry?: () => void;
 }
 
-const ErrorColumn: React.FC<IErrorColumn> = ({ error, onRetry = () => location.reload() }) => {
+const ErrorColumn: React.FC<IErrorColumn> = ({
+  error,
+  onRetry = () => location.reload(),
+}) => {
   const intl = useIntl();
 
   const handleRetry = () => {
@@ -29,15 +37,22 @@ const ErrorColumn: React.FC<IErrorColumn> = ({ error, onRetry = () => location.r
 
   return (
     <Column label={intl.formatMessage(messages.title)}>
-      <Stack space={4} alignItems='center' justifyContent='center' className='min-h-[160px] rounded-lg p-10'>
+      <Stack
+        space={4}
+        alignItems="center"
+        justifyContent="center"
+        className="min-h-[160px] rounded-lg p-10"
+      >
         <IconButton
-          iconClassName='h-10 w-10'
+          iconClassName="h-10 w-10"
           title={intl.formatMessage(messages.retry)}
-          src={require('@tabler/icons/outline/refresh.svg')}
+          src={refreshIcon}
           onClick={handleRetry}
         />
 
-        <Text align='center' theme='muted'>{intl.formatMessage(messages.body)}</Text>
+        <Text align="center" theme="muted">
+          {intl.formatMessage(messages.body)}
+        </Text>
       </Stack>
     </Column>
   );

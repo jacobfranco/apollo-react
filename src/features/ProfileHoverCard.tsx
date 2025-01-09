@@ -1,7 +1,8 @@
+import { useFloating } from "@floating-ui/react";
+import calendarIcon from "@tabler/icons/outline/calendar.svg";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useIntl, FormattedMessage } from "react-intl";
-import { usePopper } from "react-popper";
 import { useHistory } from "react-router-dom";
 
 import { fetchRelationships } from "src/actions/accounts";
@@ -9,24 +10,27 @@ import {
   closeProfileHoverCard,
   updateProfileHoverCard,
 } from "src/actions/profile-hover-card";
-import { useAccount } from "src/api/hooks/useAccount";
+import { useAccount } from "src/api/hooks/index";
 import Badge from "src/components/Badge";
-import ActionButton from "src/features/ActionButton";
+import Markup from "src/components/Markup";
+import { Card, CardBody } from "src/components/Card";
+import HStack from "src/components/HStack";
+import Icon from "src/components/Icon";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import ActionButton from "src/components/ActionButton";
 import { UserPanel } from "src/features/AsyncComponents";
-import { useAppSelector, useAppDispatch } from "src/hooks";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
 
 import { showProfileHoverCard } from "src/components/HoverRefWrapper";
 import { dateFormatOptions } from "src/components/RelativeTimestamp";
-import { HStack, Stack, Text } from "src/components";
-import { Card, CardBody } from "src/components/Card";
 
-import type { Account } from "src/schemas";
+import type { Account } from "src/schemas/index";
 import type { AppDispatch } from "src/store";
-import Icon from "src/components/Icon";
 
 const getBadges = (
   account?: Pick<Account, "admin" | "moderator">
-  // TODO: Prime user ? This was patron account so maybe go back through and replace all that
 ): JSX.Element[] => {
   const badges = [];
 
@@ -112,10 +116,14 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({
     };
   }, []);
 
-  const { styles, attributes } = usePopper(targetRef, popperElement);
+  const { floatingStyles } = useFloating({
+    elements: {
+      floating: popperElement,
+      reference: targetRef,
+    },
+  });
 
   if (!account) return null;
-  const accountBio = { __html: account.note_emojified };
   const memberSinceDate = intl.formatDate(account.created_at, {
     month: "long",
     year: "numeric",
@@ -131,8 +139,7 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({
         "opacity-0 pointer-events-none": !visible,
       })}
       ref={setPopperElement}
-      style={styles.popper}
-      {...attributes.popper}
+      style={floatingStyles}
       onMouseEnter={handleMouseEnter(dispatch)}
       onMouseLeave={handleMouseLeave(dispatch)}
     >
@@ -147,8 +154,8 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({
 
             <HStack alignItems="center" space={0.5}>
               <Icon
-                src={require("@tabler/icons/outline/calendar.svg")}
-                className="h-4 w-4 text-gray-800 dark:text-gray-200"
+                src={calendarIcon}
+                className="size-4 text-gray-800 dark:text-gray-200"
               />
 
               <Text
@@ -164,10 +171,6 @@ export const ProfileHoverCard: React.FC<IProfileHoverCard> = ({
                 />
               </Text>
             </HStack>
-
-            {account.note.length > 0 && (
-              <Text size="sm" dangerouslySetInnerHTML={accountBio} />
-            )}
           </Stack>
 
           {followedBy && (

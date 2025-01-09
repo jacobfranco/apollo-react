@@ -4,8 +4,7 @@
     "eslint:recommended",
     "plugin:import/typescript",
     "plugin:compat/recommended",
-    "plugin:tailwindcss/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:tailwindcss/recommended"
   ],
   "env": {
     "browser": true,
@@ -23,7 +22,8 @@
     "import",
     "promise",
     "react-hooks",
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "formatjs"
   ],
   "parserOptions": {
     "sourceType": "module",
@@ -37,7 +37,6 @@
     "react": {
       "version": "detect"
     },
-    "import/extensions": [".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx"],
     "import/ignore": ["node_modules", "\\.(css|scss|json)$"],
     "import/resolver": {
       "typescript": true,
@@ -103,7 +102,7 @@
     "no-irregular-whitespace": "error",
     "no-loop-func": "error",
     "no-mixed-spaces-and-tabs": "error",
-    "no-nested-ternary": "warn",
+    "no-nested-ternary": "error",
     "no-restricted-imports": [
       "error",
       {
@@ -208,17 +207,7 @@
     "jsx-a11y/role-supports-aria-props": "off",
     "jsx-a11y/scope": "warn",
     "jsx-a11y/tabindex-no-positive": "warn",
-    "import/extensions": [
-      "error",
-      "always",
-      {
-        "js": "never",
-        "mjs": "ignorePackages",
-        "jsx": "never",
-        "ts": "never",
-        "tsx": "never"
-      }
-    ],
+    "import/extensions": ["error", "ignorePackages"],
     "import/newline-after-import": "error",
     "import/no-extraneous-dependencies": "error",
     "import/no-unresolved": "error",
@@ -252,7 +241,11 @@
         "config": "tailwind.config.ts"
       }
     ],
-    "tailwindcss/migration-from-tailwind-2": "error"
+    "tailwindcss/migration-from-tailwind-2": "error",
+
+    "formatjs/enforce-default-message": "error",
+    "formatjs/enforce-id": "error",
+    "formatjs/no-literal-string-in-jsx": "error"
   },
   "overrides": [
     {

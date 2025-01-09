@@ -1,14 +1,15 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import chartBarIcon from "@tabler/icons/outline/chart-bar.svg";
+import { defineMessages, useIntl } from "react-intl";
 
-import { addPoll, removePoll } from 'src/actions/compose';
-import { useAppDispatch, useCompose } from 'src/hooks';
+import { addPoll, removePoll } from "src/actions/compose";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useCompose } from "src/hooks/useCompose";
 
-import ComposeFormButton from './ComposeFormButton';
+import ComposeFormButton from "./ComposeFormButton";
 
 const messages = defineMessages({
-  add_poll: { id: 'poll_button.add_poll', defaultMessage: 'Add a poll' },
-  remove_poll: { id: 'poll_button.remove_poll', defaultMessage: 'Remove poll' },
+  add_poll: { id: "poll_button.add_poll", defaultMessage: "Add a poll" },
+  remove_poll: { id: "poll_button.remove_poll", defaultMessage: "Remove poll" },
 });
 
 interface IPollButton {
@@ -39,8 +40,10 @@ const PollButton: React.FC<IPollButton> = ({ composeId, disabled }) => {
 
   return (
     <ComposeFormButton
-      icon={require('@tabler/icons/outline/chart-bar.svg')}
-      title={intl.formatMessage(active ? messages.remove_poll : messages.add_poll)}
+      icon={chartBarIcon}
+      title={intl.formatMessage(
+        active ? messages.remove_poll : messages.add_poll
+      )}
       active={active}
       disabled={disabled}
       onClick={onClick}

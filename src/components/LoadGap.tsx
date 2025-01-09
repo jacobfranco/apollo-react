@@ -1,10 +1,10 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import dotsIcon from "@tabler/icons/outline/dots.svg";
+import { defineMessages, useIntl } from "react-intl";
 
-import Icon from 'src/components/Icon';
+import SvgIcon from "./SvgIcon";
 
 const messages = defineMessages({
-  load_more: { id: 'status.load_more', defaultMessage: 'Load more' },
+  load_more: { id: "status.load_more", defaultMessage: "Load more" },
 });
 
 interface ILoadGap {
@@ -19,8 +19,13 @@ const LoadGap: React.FC<ILoadGap> = ({ disabled, maxId, onClick }) => {
   const handleClick = () => onClick(maxId);
 
   return (
-    <button className='load-more load-gap' disabled={disabled} onClick={handleClick} aria-label={intl.formatMessage(messages.load_more)}>
-      <Icon src={require('@tabler/icons/outline/dots.svg')} />
+    <button
+      className="m-0 box-border block w-full border-0 bg-transparent p-4 text-gray-900"
+      disabled={disabled}
+      onClick={handleClick}
+      aria-label={intl.formatMessage(messages.load_more)}
+    >
+      <SvgIcon className="mx-auto" src={dotsIcon} />
     </button>
   );
 };

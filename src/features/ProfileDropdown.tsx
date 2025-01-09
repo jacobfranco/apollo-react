@@ -1,24 +1,34 @@
-import { useFloating } from '@floating-ui/react';
-import clsx from 'clsx';
-import throttle from 'lodash/throttle';
-import React, { useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { useFloating } from "@floating-ui/react";
+import logoutIcon from "@tabler/icons/outline/logout.svg";
+import plusIcon from "@tabler/icons/outline/plus.svg";
+import clsx from "clsx";
+import { throttle } from "es-toolkit";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
+import { Link } from "react-router-dom";
 
-import { fetchOwnAccounts, logOut, switchAccount } from 'src/actions/auth';
-import Account from 'src/components/Account';
-import { MenuDivider } from 'src/components';
-import { useAppDispatch, useAppSelector, useClickOutside } from 'src/hooks';
-import { makeGetAccount } from 'src/selectors';
+import { fetchOwnAccounts, logOut, switchAccount } from "src/actions/auth";
+import Account from "src/components/Account";
+import { MenuDivider } from "src/components/Menu";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useClickOutside } from "src/hooks/useClickOutside";
+import { makeGetOtherAccounts } from "src/selectors/index";
 
-import ThemeToggle from 'src/features/ThemeToggle';
+import ThemeToggle from "./ThemeToggle";
 
-import type { Account as AccountEntity } from 'src/types/entities';
+import type { Account as AccountEntity } from "src/schemas";
 
 const messages = defineMessages({
-  add: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
-  theme: { id: 'profile_dropdown.theme', defaultMessage: 'Theme' },
-  logout: { id: 'profile_dropdown.logout', defaultMessage: 'Log out @{username}' },
+  add: {
+    id: "profile_dropdown.add_account",
+    defaultMessage: "Add an existing account",
+  },
+  theme: { id: "profile_dropdown.theme", defaultMessage: "Theme" },
+  logout: {
+    id: "profile_dropdown.logout",
+    defaultMessage: "Log out @{username}",
+  },
 });
 
 interface IProfileDropdown {
@@ -32,18 +42,19 @@ type IMenuItem = {
   toggle?: JSX.Element;
   icon?: string;
   action?: (event: React.MouseEvent) => void;
-}
-
-const getAccount = makeGetAccount();
+};
 
 const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
   const [visible, setVisible] = useState(false);
-  const { x, y, strategy, refs } = useFloating<HTMLButtonElement>({ placement: 'bottom-end' });
-  const authUsers = useAppSelector((state) => state.auth.users);
-  const otherAccounts = useAppSelector((state) => authUsers.map((authUser: any) => getAccount(state, authUser.id)!));
+  const { x, y, strategy, refs } = useFloating<HTMLButtonElement>({
+    placement: "bottom-end",
+  });
+
+  const getOtherAccounts = useCallback(makeGetOtherAccounts(), []);
+  const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
 
   const handleLogOut = () => {
     dispatch(logOut());
@@ -61,7 +72,12 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
 
   const renderAccount = (account: AccountEntity) => {
     return (
-      <Account account={account} showProfileHoverCard={false} withLinkToProfile={false} hideActions />
+      <Account
+        account={account}
+        showProfileHoverCard={false}
+        withLinkToProfile={false}
+        hideActions
+      />
     );
   };
 
@@ -70,7 +86,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
 
     menu.push({ text: renderAccount(account), to: `/@${account.username}` });
 
-    otherAccounts.forEach((otherAccount: AccountEntity) => {
+    otherAccounts.forEach((otherAccount) => {
       if (otherAccount && otherAccount.id !== account.id) {
         menu.push({
           text: renderAccount(otherAccount),
@@ -80,30 +96,33 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
     });
 
     menu.push({ text: null });
-    menu.push({ text: intl.formatMessage(messages.theme), toggle: <ThemeToggle /> });
+    menu.push({
+      text: intl.formatMessage(messages.theme),
+      toggle: <ThemeToggle />,
+    });
     menu.push({ text: null });
 
     menu.push({
       text: intl.formatMessage(messages.add),
-      to: '/login/add',
-      icon: require('@tabler/icons/outline/plus.svg'),
+      to: "/login/add",
+      icon: plusIcon,
     });
 
     menu.push({
       text: intl.formatMessage(messages.logout, { username: account.username }),
-      to: '/logout',
+      to: "/logout",
       action: handleLogOut,
-      icon: require('@tabler/icons/outline/logout.svg'),
+      icon: logoutIcon,
     });
 
     return menu;
-  }, [account, authUsers]);
+  }, [account, otherAccounts]);
 
   const toggleVisible = () => setVisible(!visible);
 
   useEffect(() => {
     fetchOwnAccountThrottled();
-  }, [account, authUsers]);
+  }, [account, otherAccounts]);
 
   useClickOutside(refs, () => {
     setVisible(false);
@@ -112,8 +131,8 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   return (
     <>
       <button
-        className='rounded-full focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0 dark:focus:ring-primary-500'
-        type='button'
+        className="rounded-full focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0 dark:focus:ring-primary-500"
+        type="button"
         ref={refs.setReference}
         onClick={toggleVisible}
       >
@@ -123,12 +142,12 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
       {visible && (
         <div
           ref={refs.setFloating}
-          className='z-[1003] mt-2 max-w-xs rounded-md bg-white shadow-lg focus:outline-none dark:bg-gray-900 dark:ring-2 dark:ring-primary-700'
+          className="z-[1003] mt-2 max-w-xs rounded-md bg-primary-200 shadow-lg focus:outline-none black:bg-black dark:bg-secondary-800 ring-2 ring-gray-300 dark:ring-2 dark:ring-secondary-500"
           style={{
             position: strategy,
             top: y ?? 0,
             left: x ?? 0,
-            width: 'max-content',
+            width: "max-content",
           }}
         >
           {menu.map((menuItem, i) => (
@@ -146,11 +165,14 @@ interface MenuItemProps {
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ className, menuItem }) => {
-  const baseClassName = clsx(className, 'block w-full cursor-pointer truncate px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 rtl:text-right dark:text-gray-500 dark:hover:bg-gray-800');
+  const baseClassName = clsx(
+    className,
+    "block w-full cursor-pointer truncate px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800 rtl:text-right"
+  );
 
   if (menuItem.toggle) {
     return (
-      <div className='flex flex-row items-center justify-between space-x-4 px-4 py-1 text-sm text-gray-700 dark:text-gray-400'>
+      <div className="flex flex-row items-center justify-between space-x-4 px-4 py-1 text-sm text-gray-700 dark:text-gray-400">
         <span>{menuItem.text}</span>
 
         {menuItem.toggle}
@@ -160,20 +182,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ className, menuItem }) => {
     return <MenuDivider />;
   } else if (menuItem.action) {
     return (
-      <button
-        type='button'
-        onClick={menuItem.action}
-        className={baseClassName}
-      >
+      <button type="button" onClick={menuItem.action} className={baseClassName}>
         {menuItem.text}
       </button>
     );
   } else if (menuItem.to) {
     return (
-      <Link
-        to={menuItem.to}
-        className={baseClassName}
-      >
+      <Link to={menuItem.to} className={baseClassName}>
         {menuItem.text}
       </Link>
     );

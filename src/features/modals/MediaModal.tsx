@@ -1,32 +1,36 @@
+import arrowLeftIcon from "@tabler/icons/outline/arrow-left.svg";
+import arrowRightIcon from "@tabler/icons/outline/arrow-right.svg";
+import arrowsMaximizeIcon from "@tabler/icons/outline/arrows-maximize.svg";
+import arrowsMinimizeIcon from "@tabler/icons/outline/arrows-minimize.svg";
+import downloadIcon from "@tabler/icons/outline/download.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
 import clsx from "clsx";
-import debounce from "lodash/debounce";
-import React, { useCallback, useEffect, useState } from "react";
+import { debounce } from "es-toolkit";
+import { useCallback, useEffect, useState } from "react";
 import { defineMessages, useIntl, FormattedMessage } from "react-intl";
 import { useHistory } from "react-router-dom";
 import ReactSwipeableViews from "react-swipeable-views";
 
 import { fetchNext, fetchStatusWithContext } from "src/actions/statuses";
-import {
-  ExtendedVideoPlayer,
-  HStack,
-  IconButton,
-  ImageLoader,
-  MissingIndicator,
-  Stack,
-  StatusActionBar,
-  Thread,
-} from "src/components";
-import PlaceholderStatus from "src/components/PlaceholderStatus";
-import Audio from "src/features/Audio";
-import Video from "src/features/Video";
-import { useAppDispatch, useAppSelector } from "src/hooks";
-import { userTouching } from "src/is-mobile";
-import { makeGetStatus } from "src/selectors";
-
-import type { List as ImmutableList } from "immutable";
-import type { Attachment, Status } from "src/types/entities";
+import ExtendedVideoPlayer from "src/components/ExtendedVideoPlayer";
+import MissingIndicator from "src/components/MissingIndicator";
+import StatusActionBar from "src/components/StatusActionBar";
+import HStack from "src/components/HStack";
+import IconButton from "src/components/IconButton";
 import Icon from "src/components/Icon";
-import LiveStreamEmbed from "src/components/LiveStreamEmbed";
+import Stack from "src/components/Stack";
+import Audio from "src/features/Audio";
+import PlaceholderStatus from "src/components/PlaceholderStatus";
+import Thread from "src/components/Thread";
+import Video from "src/features/Video";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { userTouching } from "src/is-mobile";
+import { normalizeStatus } from "src/normalizers/index";
+import { Status as StatusEntity, Attachment } from "src/schemas/index";
+import { Status as LegacyStatus } from "src/types/entities";
+import { getActualStatus } from "src/utils/status";
+
+import ImageLoader from "src/components/ImageLoader";
 
 const messages = defineMessages({
   close: { id: "lightbox.close", defaultMessage: "Close" },
@@ -50,8 +54,8 @@ const containerStyle: React.CSSProperties = {
 };
 
 interface IMediaModal {
-  media: ImmutableList<Attachment>;
-  status?: Status;
+  media: readonly Attachment[];
+  status?: StatusEntity;
   index: number;
   time?: number;
   onClose(): void;
@@ -64,23 +68,20 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
   const history = useHistory();
   const intl = useIntl();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const actualStatus = useAppSelector((state) =>
-    getStatus(state, { id: status?.id as string })
-  );
+  const actualStatus = status ? getActualStatus(status) : undefined;
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
-  const [next, setNext] = useState<string>();
+  const [next, setNext] = useState<string | null>(null);
   const [index, setIndex] = useState<number | null>(null);
   const [navigationHidden, setNavigationHidden] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(!status);
 
-  const hasMultipleImages = media.size > 1;
+  const hasMultipleImages = media.length > 1;
 
-  const handleSwipe = (index: number) => setIndex(index % media.size);
-  const handleNextClick = () => setIndex((getIndex() + 1) % media.size);
+  const handleSwipe = (index: number) => setIndex(index % media.length);
+  const handleNextClick = () => setIndex((getIndex() + 1) % media.length);
   const handlePrevClick = () =>
-    setIndex((media.size + getIndex() - 1) % media.size);
+    setIndex((media.length + getIndex() - 1) % media.length);
 
   const navigationHiddenClassName = navigationHidden
     ? "pointer-events-none opacity-0"
@@ -102,9 +103,7 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
   };
 
   const handleDownload = () => {
-    const mediaItem = hasMultipleImages
-      ? media.get(index as number)
-      : media.get(0);
+    const mediaItem = hasMultipleImages ? media[index as number] : media[0];
     window.open(mediaItem?.url);
   };
 
@@ -122,109 +121,88 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
     }
   };
 
-  const content = media
-    .map((attachment, i) => {
-      const width = (attachment.meta.getIn(["original", "width"]) ||
-        undefined) as number | undefined;
-      const height = (attachment.meta.getIn(["original", "height"]) ||
-        undefined) as number | undefined;
+  const content = media.map((attachment, i) => {
+    const width =
+      "meta" in attachment && "original" in attachment.meta
+        ? attachment?.meta?.original?.width
+        : undefined;
+    const height =
+      "meta" in attachment && "original" in attachment.meta
+        ? attachment?.meta?.original?.height
+        : undefined;
 
-      const link = status && (
-        <a href={status.url} onClick={handleStatusClick}>
-          <FormattedMessage
-            id="lightbox.view_context"
-            defaultMessage="View context"
-          />
-        </a>
+    const link = status && (
+      <a href={status.url} onClick={handleStatusClick}>
+        <FormattedMessage
+          id="lightbox.view_context"
+          defaultMessage="View context"
+        />
+      </a>
+    );
+
+    if (attachment.type === "image") {
+      return (
+        <ImageLoader
+          previewSrc={attachment.preview_url}
+          src={attachment.url}
+          width={width}
+          height={height}
+          alt={attachment.description}
+          key={attachment.url}
+          onClick={toggleNavigation}
+        />
       );
+    } else if (attachment.type === "video") {
+      return (
+        <Video
+          preview={attachment.preview_url}
+          blurhash={attachment.blurhash ?? undefined}
+          src={attachment.url}
+          width={width}
+          height={height}
+          startTime={time}
+          detailed
+          autoFocus={i === getIndex()}
+          link={link}
+          alt={attachment.description}
+          key={attachment.url}
+          visible
+        />
+      );
+    } else if (attachment.type === "audio") {
+      return (
+        <Audio
+          src={attachment.url}
+          alt={attachment.description}
+          poster={
+            attachment.preview_url !== attachment.url
+              ? attachment.preview_url
+              : status?.account.avatar_static
+          }
+          backgroundColor={attachment.meta?.colors?.background}
+          foregroundColor={attachment.meta?.colors?.foreground}
+          accentColor={attachment.meta?.colors?.accent}
+          duration={attachment?.meta?.duration ?? 0}
+          key={attachment.url}
+        />
+      );
+    } else if (attachment.type === "gifv") {
+      return (
+        <ExtendedVideoPlayer
+          src={attachment.url}
+          muted
+          controls={false}
+          width={width}
+          height={height}
+          key={attachment.preview_url}
+          alt={attachment.description}
+          onClick={toggleNavigation}
+        />
+      );
+    }
 
-      if (attachment.type === "image") {
-        return (
-          <ImageLoader
-            previewSrc={attachment.preview_url}
-            src={attachment.url}
-            width={width}
-            height={height}
-            alt={attachment.description}
-            key={attachment.url}
-            onClick={toggleNavigation}
-          />
-        );
-      } else if (attachment.type === "video") {
-        return (
-          <Video
-            preview={attachment.preview_url}
-            blurhash={attachment.blurhash}
-            src={attachment.url}
-            width={width}
-            height={height}
-            startTime={time}
-            detailed
-            autoFocus={i === getIndex()}
-            link={link}
-            alt={attachment.description}
-            key={attachment.url}
-            visible
-          />
-        );
-      } else if (attachment.type === "audio") {
-        return (
-          <Audio
-            src={attachment.url}
-            alt={attachment.description}
-            poster={
-              attachment.preview_url !== attachment.url
-                ? attachment.preview_url
-                : (status?.getIn(["account", "avatar_static"]) as
-                    | string
-                    | undefined)
-            }
-            backgroundColor={
-              attachment.meta.getIn(["colors", "background"]) as
-                | string
-                | undefined
-            }
-            foregroundColor={
-              attachment.meta.getIn(["colors", "foreground"]) as
-                | string
-                | undefined
-            }
-            accentColor={
-              attachment.meta.getIn(["colors", "accent"]) as string | undefined
-            }
-            duration={
-              attachment.meta.getIn(["original", "duration"], 0) as
-                | number
-                | undefined
-            }
-            key={attachment.url}
-          />
-        );
-      } else if (attachment.type === "gifv") {
-        return (
-          <ExtendedVideoPlayer
-            src={attachment.url}
-            muted
-            controls={false}
-            width={width}
-            height={height}
-            key={attachment.preview_url}
-            alt={attachment.description}
-            onClick={toggleNavigation}
-          />
-        );
-      } else if (attachment.type === "stream") {
-        return (
-          <LiveStreamEmbed
-            broadcaster={attachment.broadcaster}
-            key={attachment.id}
-          />
-        );
-      }
-
-      return null;
-    })
-    .toArray();
+    return null;
+  });
 
   const handleLoadMore = useCallback(
     debounce(
@@ -238,7 +216,7 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
         }
       },
       300,
-      { leading: true }
+      { edges: ["leading"] }
     ),
     [next, status]
   );
@@ -284,13 +262,8 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
     }
   };
 
-  // Get the current media item
-  const currentMediaItem = hasMultipleImages
-    ? media.get(getIndex())
-    : media.get(0);
-
   return (
-    <div className="media-modal pointer-events-auto fixed inset-0 z-[9999] h-full bg-gray-900/90">
+    <div className="media-modal pointer-events-auto fixed inset-0 z-[9999] flex size-full bg-gray-900/90">
       <div className="absolute inset-0" role="presentation">
         <Stack
           onClick={handleClickOutside}
@@ -300,123 +273,115 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
           })}
           justifyContent="between"
         >
-          <HStack
-            alignItems="center"
-            justifyContent="between"
-            className={clsx(
-              "flex-[0_0_60px] p-4 transition-opacity",
-              navigationHiddenClassName
-            )}
-          >
-            <IconButton
-              title={intl.formatMessage(messages.close)}
-              src={require("@tabler/icons/outline/x.svg")}
-              onClick={onClose}
-              theme="dark"
-              className="!p-1.5 hover:scale-105 hover:bg-gray-900"
-              iconClassName="h-5 w-5"
-            />
+          <Stack className="relative h-full">
+            <HStack
+              alignItems="center"
+              justifyContent="between"
+              className={clsx(
+                "absolute z-[9999] flex w-full p-4 transition-opacity",
+                navigationHiddenClassName
+              )}
+            >
+              <IconButton
+                title={intl.formatMessage(messages.close)}
+                src={xIcon}
+                onClick={onClose}
+                theme="dark"
+                className="!p-1.5 hover:scale-105 hover:bg-gray-900"
+                iconClassName="h-5 w-5"
+              />
 
-            <HStack alignItems="center" space={2}>
-              {/* Conditionally render the download button */}
-              {currentMediaItem?.type !== "stream" && (
+              <HStack alignItems="center" space={2}>
                 <IconButton
-                  src={require("@tabler/icons/outline/download.svg")}
+                  src={downloadIcon}
                   theme="dark"
                   className="!p-1.5 hover:scale-105 hover:bg-gray-900"
                   iconClassName="h-5 w-5"
                   onClick={handleDownload}
                 />
-              )}
 
-              {status && (
-                <IconButton
-                  src={
-                    isFullScreen
-                      ? require("@tabler/icons/outline/arrows-minimize.svg")
-                      : require("@tabler/icons/outline/arrows-maximize.svg")
-                  }
-                  title={intl.formatMessage(
-                    isFullScreen ? messages.minimize : messages.expand
+                {status && (
+                  <IconButton
+                    src={isFullScreen ? arrowsMinimizeIcon : arrowsMaximizeIcon}
+                    title={intl.formatMessage(
+                      isFullScreen ? messages.minimize : messages.expand
+                    )}
+                    theme="dark"
+                    className="hidden !p-1.5 hover:scale-105 hover:bg-gray-900 xl:block"
+                    iconClassName="h-5 w-5"
+                    onClick={() => setIsFullScreen(!isFullScreen)}
+                  />
+                )}
+              </HStack>
+            </HStack>
+
+            {/* Height based on height of top/bottom bars */}
+            <div className="relative h-[calc(100vh-120px)] w-full grow">
+              {hasMultipleImages && (
+                <div
+                  className={clsx(
+                    "absolute inset-y-0 left-5 z-10 flex items-center transition-opacity",
+                    navigationHiddenClassName
                   )}
-                  theme="dark"
-                  className="hidden !p-1.5 hover:scale-105 hover:bg-gray-900 xl:block"
-                  iconClassName="h-5 w-5"
-                  onClick={() => setIsFullScreen(!isFullScreen)}
+                >
+                  <button
+                    tabIndex={0}
+                    className="flex size-10 items-center justify-center rounded-full bg-gray-900 text-white"
+                    onClick={handlePrevClick}
+                    aria-label={intl.formatMessage(messages.previous)}
+                  >
+                    <Icon src={arrowLeftIcon} className="size-5" />
+                  </button>
+                </div>
+              )}
+
+              <div className="size-full">
+                <ReactSwipeableViews
+                  style={swipeableViewsStyle}
+                  containerStyle={containerStyle}
+                  onChangeIndex={handleSwipe}
+                  className="flex items-center justify-center"
+                  index={getIndex()}
+                >
+                  {content}
+                </ReactSwipeableViews>
+              </div>
+
+              {hasMultipleImages && (
+                <div
+                  className={clsx(
+                    "absolute inset-y-0 right-5 z-10 flex items-center transition-opacity",
+                    navigationHiddenClassName
+                  )}
+                >
+                  <button
+                    tabIndex={0}
+                    className="flex size-10 items-center justify-center rounded-full bg-gray-900 text-white"
+                    onClick={handleNextClick}
+                    aria-label={intl.formatMessage(messages.next)}
+                  >
+                    <Icon src={arrowRightIcon} className="size-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {actualStatus && (
+              <HStack
+                justifyContent="center"
+                className={clsx(
+                  "absolute bottom-2 flex w-full transition-opacity",
+                  navigationHiddenClassName
+                )}
+              >
+                <StatusActionBar
+                  status={normalizeStatus(actualStatus) as LegacyStatus}
+                  space="md"
+                  statusActionButtonTheme="inverse"
                 />
-              )}
-            </HStack>
-          </HStack>
-
-          {/* Height based on height of top/bottom bars */}
-          <div className="relative h-[calc(100vh-120px)] w-full grow">
-            {hasMultipleImages && (
-              <div
-                className={clsx(
-                  "absolute inset-y-0 left-5 z-10 flex items-center transition-opacity",
-                  navigationHiddenClassName
-                )}
-              >
-                <button
-                  tabIndex={0}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white"
-                  onClick={handlePrevClick}
-                  aria-label={intl.formatMessage(messages.previous)}
-                >
-                  <Icon
-                    src={require("@tabler/icons/outline/arrow-left.svg")}
-                    className="h-5 w-5"
-                  />
-                </button>
-              </div>
+              </HStack>
             )}
-
-            <ReactSwipeableViews
-              style={swipeableViewsStyle}
-              containerStyle={containerStyle}
-              onChangeIndex={handleSwipe}
-              index={getIndex()}
-            >
-              {content}
-            </ReactSwipeableViews>
-
-            {hasMultipleImages && (
-              <div
-                className={clsx(
-                  "absolute inset-y-0 right-5 z-10 flex items-center transition-opacity",
-                  navigationHiddenClassName
-                )}
-              >
-                <button
-                  tabIndex={0}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white"
-                  onClick={handleNextClick}
-                  aria-label={intl.formatMessage(messages.next)}
-                >
-                  <Icon
-                    src={require("@tabler/icons/outline/arrow-right.svg")}
-                    className="h-5 w-5"
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {actualStatus && (
-            <HStack
-              justifyContent="center"
-              className={clsx(
-                "flex-[0_0_60px] transition-opacity",
-                navigationHiddenClassName
-              )}
-            >
-              <StatusActionBar
-                status={actualStatus}
-                space="md"
-                statusActionButtonTheme="inverse"
-              />
-            </HStack>
-          )}
+          </Stack>
         </Stack>
 
         {actualStatus && (
@@ -429,7 +394,7 @@ const MediaModal: React.FC<IMediaModal> = (props) => {
             )}
           >
             <Thread
-              status={actualStatus}
+              status={normalizeStatus(actualStatus) as LegacyStatus}
               withMedia={false}
               useWindowScroll={false}
               itemClassName="px-4"

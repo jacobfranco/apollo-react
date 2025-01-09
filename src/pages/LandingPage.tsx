@@ -6,6 +6,7 @@ import {
   TrendsPanel,
   SignUpPanel,
   CtaBanner,
+  TrendingSpacesPanel,
 } from "src/features/AsyncComponents";
 import { useAppSelector } from "src/hooks";
 
@@ -30,6 +31,7 @@ const LandingPage: React.FC<ILandingPage> = ({ children }) => {
       <Layout.Aside>
         {!me && <SignUpPanel />}
         <TrendsPanel limit={5} />
+        <TrendingSpacesPanel limit={3} />
 
         <LinkFooter />
       </Layout.Aside>

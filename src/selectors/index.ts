@@ -4,13 +4,16 @@ import {
   List as ImmutableList,
   OrderedSet as ImmutableOrderedSet,
   Map as ImmutableMap,
+  fromJS,
+  Record,
 } from "immutable";
 
 import { RootState } from "src/store";
-import type { Account as AccountSchema, Player } from "src/schemas";
+import type { Account as AccountSchema } from "src/schemas";
 import { Entities } from "src/entity-store/entities";
 import type {
   Account,
+  EmbeddedEntity,
   Filter as FilterEntity,
   Notification,
   Status,
@@ -22,6 +25,9 @@ import { shouldFilter } from "src/utils/timelines";
 import { getSettings } from "src/actions/settings";
 import { Series } from "src/schemas/series";
 import { Match } from "src/schemas/match";
+import { ReducerStatus } from "src/reducers/statuses";
+import { AdminReportRecord } from "src/normalizers";
+import { ReducerAccount } from "src/reducers/accounts";
 
 const normalizeId = (id: any): string => (typeof id === "string" ? id : "");
 
@@ -37,38 +43,23 @@ export function selectOwnAccount(state: RootState) {
   }
 }
 
-const getAccountBase = (state: RootState, id: string): Account | undefined => {
-  const account = state.entities[Entities.ACCOUNTS]?.store[id] as
-    | Account
-    | undefined;
-  return account;
-};
+export const accountIdsToUsernames = (state: RootState, ids: string[]) =>
+  ids.map((id) => selectAccount(state, id)!.username);
 
-const getAccountRelationship = (state: RootState, id: string) => {
-  const relationship = state.relationships.get(id);
-  return relationship;
-};
-
-const getAuthUserIds = createSelector(
-  [(state: RootState) => state.auth.users],
-  (authUsers) => {
-    return authUsers.reduce((ids: ImmutableOrderedSet<string>, authUser) => {
-      try {
-        const id = authUser.id;
-        return validId(id) ? ids.add(id) : ids;
-      } catch {
-        return ids;
-      }
-    }, ImmutableOrderedSet<string>());
-  }
-);
+const getAccountBase = (state: RootState, id: string) =>
+  state.entities[Entities.ACCOUNTS]?.store[id] as Account | undefined;
+const getAccountRelationship = (state: RootState, id: string) =>
+  state.relationships.get(id);
 
 export const makeGetAccount = () => {
   return createSelector(
     [getAccountBase, getAccountRelationship],
     (account, relationship) => {
       if (!account) return null;
-      return { ...account, relationship };
+      return {
+        ...account,
+        relationship,
+      };
     }
   );
 };
@@ -90,6 +81,13 @@ export const makeGetStatus = () => {
     ],
 
     (statusBase, statusRepost, username, filters, me) => {
+      // Logging the IDs involved
+      const primaryId = statusBase ? statusBase.id : "undefined";
+      const repostId = statusRepost ? statusRepost.id : "undefined";
+      console.log(
+        `Selector invoked with ID: ${primaryId}, Repost ID: ${repostId}`
+      );
+
       if (!statusBase) return null;
       const { account } = statusBase;
       const accountUsername = account.username;
@@ -115,23 +113,32 @@ export const makeGetStatus = () => {
   );
 };
 
-export const makeGetOtherAccounts = () => {
+export function makeGetOtherAccounts() {
   return createSelector(
     [
       (state: RootState) =>
         state.entities[Entities.ACCOUNTS]?.store as EntityStore<AccountSchema>,
-      getAuthUserIds,
+      (state: RootState) => state.auth.users,
       (state: RootState) => state.me,
     ],
-    (accounts, authUserIds, me) => {
-      return authUserIds.reduce((list: ImmutableList<any>, id: string) => {
-        if (id === me) return list;
-        const account = accounts[id];
-        return account ? list.push(account) : list;
-      }, ImmutableList());
+    (store, authUsers, me): AccountSchema[] => {
+      const accountIds = Object.values(authUsers).map(
+        (authUser) => authUser.id
+      );
+
+      return accountIds.reduce<AccountSchema[]>((accounts, id: string) => {
+        if (id === me) return accounts;
+
+        const account = store[id];
+        if (account) {
+          accounts.push(account);
+        }
+
+        return accounts;
+      }, []);
     }
   );
-};
+}
 
 type FilterContext = { contextType?: string };
 
@@ -285,6 +292,67 @@ export const getAccountGallery = createSelector(
     }, ImmutableList());
   }
 );
+
+export const makeGetReport = () => {
+  const getStatus = makeGetStatus();
+
+  return createSelector(
+    [
+      (state: RootState, id: string) => {
+        const report = state.admin.reports.get(id);
+        console.log(
+          "makeGetReport - Retrieved Report:",
+          report?.toJS() || "No Report Found"
+        );
+        return report;
+      },
+      (state: RootState, id: string) => {
+        const report = state.admin.reports.get(id);
+        const statusIds = report?.get("status_ids") || ImmutableList();
+        console.log("makeGetReport - Status IDs:", statusIds.toJS());
+
+        const statuses = statusIds
+          .map((statusId) => {
+            const status = getStatus(state, { id: statusId });
+            console.log(
+              `makeGetReport - Status for ID ${statusId}:`,
+              status?.toJS() || "No Status Found"
+            );
+            return status || null;
+          })
+          .filter(Boolean) as ImmutableList<EmbeddedEntity<Status>>;
+
+        console.log(
+          "makeGetReport - Final statuses list in selector:",
+          statuses.toJS()
+        );
+        return statuses;
+      },
+    ],
+    (report, statuses) => {
+      if (!report) return null;
+
+      const result = AdminReportRecord().merge({
+        id: report.get("id"),
+        account: report.get("account"),
+        target_account: report.get("target_account"),
+        action_taken: report.get("action_taken"),
+        action_taken_by_account: report.get("action_taken_by_account"),
+        assigned_account: report.get("assigned_account"),
+        category: report.get("category"),
+        comment: report.get("comment"),
+        created_at: report.get("created_at"),
+        rules: report.get("rules"),
+        status_ids: report.get("status_ids"),
+        statuses,
+        updated_at: report.get("updated_at"),
+      });
+
+      console.log("makeGetReport - Final Report Object:", result.toJS());
+      return result;
+    }
+  );
+};
 
 export const selectSeriesState = (state: RootState) => state.series;
 

@@ -1,14 +1,12 @@
 import {
-    ApolloConfigRecord,
-    FooterItemRecord,
-  } from 'src/normalizers/apollo';
+  ApolloConfigRecord,
+  FooterItemRecord,
+  PromoPanelItemRecord,
+} from "src/normalizers/apollo";
 
 type Me = string | null | false | undefined;
 type ApolloConfig = ReturnType<typeof ApolloConfigRecord>;
 type FooterItem = ReturnType<typeof FooterItemRecord>;
+type PromoPanelItem = ReturnType<typeof PromoPanelItemRecord>;
 
-export {
-    Me,
-    ApolloConfig,
-    FooterItem,
-}
+export { type Me, type ApolloConfig, type FooterItem, type PromoPanelItem };

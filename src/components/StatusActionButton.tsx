@@ -1,15 +1,13 @@
-// TODO: Redo this file because of Emoji
+import clsx from "clsx";
+import { forwardRef } from "react";
 
-import clsx from 'clsx';
-import React from 'react';
-
-import { Text, /* Emoji */ } from 'src/components';
-import { shortNumberFormat } from 'src/utils/numbers';
-import Icon from './Icon';
+import Icon from "src/components/Icon";
+import Text from "src/components/Text";
+import { shortNumberFormat } from "src/utils/numbers";
 
 const COLORS = {
-  accent: 'accent',
-  success: 'success',
+  accent: "accent",
+  success: "success",
 };
 
 type Color = keyof typeof COLORS;
@@ -19,90 +17,90 @@ interface IStatusActionCounter {
 }
 
 /** Action button numerical counter, eg "5" likes. */
-const StatusActionCounter: React.FC<IStatusActionCounter> = ({ count = 0 }): JSX.Element => {
+const StatusActionCounter: React.FC<IStatusActionCounter> = ({
+  count = 0,
+}): JSX.Element => {
   return (
-    <Text size='xs' weight='semibold' theme='inherit'>
+    <Text size="xs" weight="semibold" theme="inherit">
       {shortNumberFormat(count)}
     </Text>
   );
 };
 
-interface IStatusActionButton extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface IStatusActionButton
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   iconClassName?: string;
   icon: string;
   count?: number;
   active?: boolean;
   color?: Color;
   filled?: boolean;
-  text?: React.ReactNode;
-  theme?: 'default' | 'inverse';
+  theme?: "default" | "inverse";
 }
 
-const StatusActionButton = React.forwardRef<HTMLButtonElement, IStatusActionButton>((props, ref): JSX.Element => {
-  const { icon, className, iconClassName, active, color, filled = false, count = 0, /*emoji,*/ text, theme = 'default', ...filteredProps } = props;
+const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
+  (props, ref): JSX.Element => {
+    const {
+      icon,
+      className,
+      iconClassName,
+      active,
+      color,
+      filled = false,
+      count = 0,
+      theme = "default",
+      ...filteredProps
+    } = props;
 
-  const renderIcon = () => {
-    /*
-    if (emoji) {
+    const renderIcon = () => {
       return (
-        <span className='flex h-6 w-6 items-center justify-center'>
-          <Emoji className='h-full w-full p-0.5' emoji={emoji.name} src={emoji.url} />
-        </span>
+        <Icon
+          src={icon}
+          className={clsx(
+            {
+              "fill-accent-300 text-accent-300 hover:fill-accent-300":
+                active && filled && color === COLORS.accent,
+            },
+            iconClassName
+          )}
+        />
       );
-    } else {
-        */
+    };
+
+    const renderText = () => {
+      if (count) {
+        return <StatusActionCounter count={count} />;
+      }
+    };
+
     return (
-      <Icon
-        src={icon}
+      <button
+        ref={ref}
+        type="button"
         className={clsx(
+          "flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
+          "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-offset-0",
           {
-            'fill-accent-300 text-accent-300 hover:fill-accent-300': active && filled && color === COLORS.accent,
+            "text-gray-600 hover:text-gray-600 dark:hover:text-white bg-white dark:bg-transparent":
+              theme === "default",
+            "text-white/80 hover:text-white bg-transparent dark:bg-transparent":
+              theme === "inverse",
+            "hover:text-gray-600 dark:hover:text-white":
+              !filteredProps.disabled,
+            "text-accent-300 hover:text-accent-300 dark:hover:text-accent-300":
+              active && color === COLORS.accent,
+            "text-success-600 hover:text-success-600 dark:hover:text-success-600":
+              active && color === COLORS.success,
           },
-          iconClassName,
+          className
         )}
-      />
+        {...filteredProps}
+      >
+        {renderIcon()}
+        {renderText()}
+      </button>
     );
-  };
-
-  const renderText = () => {
-    if (text) {
-      return (
-        <Text tag='span' theme='inherit' size='sm'>
-          {text}
-        </Text>
-      );
-    } else if (count) {
-      return (
-        <StatusActionCounter count={count} />
-      );
-    }
-  };
-
-  return (
-    <button
-      ref={ref}
-      type='button'
-      className={clsx(
-        'flex items-center rounded-full p-1 rtl:space-x-reverse',
-        'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-offset-0',
-        {
-          'text-gray-600 hover:text-gray-600 dark:hover:text-white bg-white dark:bg-transparent': theme === 'default',
-          'text-white/80 hover:text-white bg-transparent dark:bg-transparent': theme === 'inverse',
-          'text-black dark:text-white': active /* && emoji */,
-          'hover:text-gray-600 dark:hover:text-white': !filteredProps.disabled,
-          'text-accent-300 hover:text-accent-300 dark:hover:text-accent-300': active /* && !emoji */ && color === COLORS.accent,
-          'text-success-600 hover:text-success-600 dark:hover:text-success-600': active /* && !emoji */ && color === COLORS.success,
-          'space-x-1': !text,
-          'space-x-2': text,
-        },
-        className,
-      )}
-      {...filteredProps}
-    >
-      {renderIcon()}
-      {renderText()}
-    </button>
-  );
-});
+  }
+);
 
 export default StatusActionButton;

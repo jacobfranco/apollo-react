@@ -1,17 +1,17 @@
-import { useRect } from '@reach/rect';
+import { useRect } from "@reach/rect";
 import {
   Tabs as ReachTabs,
   TabList as ReachTabList,
   Tab as ReachTab,
   useTabsContext,
-} from '@reach/tabs';
-import clsx from 'clsx';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+} from "@reach/tabs";
+import clsx from "clsx";
+import React from "react";
+import { useHistory } from "react-router-dom";
 
-import { Counter } from 'src/components';
+import { Counter } from "src/components";
 
-import './Tabs.css';
+import "./Tabs.css";
 
 const HORIZONTAL_PADDING = 8;
 const AnimatedContext = React.createContext(null);
@@ -37,7 +37,6 @@ const AnimatedTabs: React.FC<IAnimatedInterface> = ({ children, ...rest }) => {
   // @ts-ignore
   const left: number = activeRect && activeRect.left - (rect && rect.left);
 
-
   return (
     // @ts-ignore
     <AnimatedContext.Provider value={setActiveRect}>
@@ -47,13 +46,16 @@ const AnimatedTabs: React.FC<IAnimatedInterface> = ({ children, ...rest }) => {
         ref={ref}
       >
         <div
-          className='absolute h-[3px] w-full bg-primary-200 dark:bg-gray-800'
+          className="absolute h-[3px] w-full bg-primary-200 dark:bg-gray-800"
           style={{ top }}
         />
         <div
-          className={clsx('absolute h-[3px] bg-primary-500 transition-all duration-200', {
-            'hidden': top <= 0,
-          })}
+          className={clsx(
+            "absolute h-[3px] bg-primary-500 transition-all duration-200",
+            {
+              hidden: top <= 0,
+            }
+          )}
           style={{ left, top, width }}
         />
         {children}
@@ -64,9 +66,9 @@ const AnimatedTabs: React.FC<IAnimatedInterface> = ({ children, ...rest }) => {
 
 interface IAnimatedTab {
   /** ARIA role. */
-  role: 'button';
+  role: "button";
   /** Element to represent the tab. */
-  as: 'a' | 'button';
+  as: "a" | "button";
   /** Route to visit when the tab is chosen. */
   href?: string;
   /** Tab title text. */
@@ -118,7 +120,7 @@ export type Item = {
   count?: number;
   /** Unique name for this tab. */
   name: string;
-}
+};
 
 interface ITabs {
   /** Array of structured tab items. */
@@ -136,7 +138,7 @@ const Tabs = ({ items, activeItem }: ITabs) => {
   const onChange = (selectedIndex: number) => {
     const item = items[selectedIndex];
 
-    if (typeof item.action === 'function') {
+    if (typeof item.action === "function") {
       item.action();
     } else if (item.to) {
       history.push(item.to);
@@ -149,15 +151,15 @@ const Tabs = ({ items, activeItem }: ITabs) => {
     return (
       <AnimatedTab
         key={name}
-        as='button'
-        role='button'
+        as="button"
+        role="button"
         // @ts-ignore
         title={title}
         index={idx}
       >
-        <div className='relative'>
+        <div className="relative">
           {count ? (
-            <span className='absolute left-full ml-2'>
+            <span className="absolute left-full ml-2">
               <Counter count={count} />
             </span>
           ) : null}
@@ -170,9 +172,7 @@ const Tabs = ({ items, activeItem }: ITabs) => {
 
   return (
     <AnimatedTabs onChange={onChange} defaultIndex={defaultIndex}>
-      <ReachTabList>
-        {items.map((item, i) => renderItem(item, i))}
-      </ReachTabList>
+      <ReachTabList>{items.map((item, i) => renderItem(item, i))}</ReachTabList>
     </AnimatedTabs>
   );
 };

@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useRef } from "react";
 import { Switch, useHistory, useLocation, Redirect } from "react-router-dom";
 
 import { fetchFollowRequests } from "src/actions/accounts";
-import { fetchReports, fetchUsers, fetchConfig } from "src/actions/admin";
+import { fetchReports, fetchUsers } from "src/actions/admin";
 import { fetchFilters } from "src/actions/filters";
 import { fetchMarker } from "src/actions/markers";
 import { expandNotifications } from "src/actions/notifications";
@@ -27,7 +27,7 @@ import {
   useDraggedFiles,
   useLoggedIn,
 } from "src/hooks";
-// import AdminPage from 'src/pages/AdminPage'; TODO: Implement Admin
+import AdminPage from "src/pages/AdminPage";
 import ChatsPage from "src/pages/ChatsPage";
 import DefaultPage from "src/pages/DefaultPage";
 import EmptyPage from "src/pages/EmptyPage";
@@ -72,15 +72,14 @@ import {
   EditPassword,
   EmailConfirmation,
   DeleteAccount,
-  // ApolloConfig,
   // MfaForm,
   ChatIndex,
   ChatWidget,
   ServerInfo,
-  // Dashboard,
-  // ModerationLog,
+  Admin,
+  ModerationLog,
   ScheduledStatuses,
-  // UserIndex,
+  UserIndex,
   FollowRecommendations,
   SidebarMenu,
   ProfileHoverCard,
@@ -94,7 +93,6 @@ import {
   // TestTimeline,
   Logout,
   AuthTokenList,
-  // ThemeEditor,
   Quotes,
   // ServiceWorkerInfo,
   // GroupGallery,
@@ -114,8 +112,7 @@ import {
   // GroupMembershipRequests,
   // EditGroup,
   FollowedTags,
-  FollowedSpaces,
-  // AboutPage,
+  AboutPage,
   Signup,
   Login,
   PasswordReset,
@@ -130,6 +127,8 @@ import {
   TeamDetail,
   PlayerDetail,
   StreamPage,
+  Reports,
+  AdminSpaces,
 } from "./AsyncComponents";
 import GlobalHotkeys from "./GlobalHotkeys";
 import { WrappedRoute } from "src/utils/react-router-helpers";
@@ -399,6 +398,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         componentParams={{ withReplies: true }}
       />
       <WrappedRoute
+        exact
         path="/@:username/followers"
         publicRoute={!authenticatedProfile}
         component={Followers}
@@ -406,6 +406,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
       />
       <WrappedRoute
+        exact
         path="/@:username/following"
         publicRoute={!authenticatedProfile}
         component={Following}
@@ -535,29 +536,55 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
       />
 
-      {/*  
       <WrappedRoute
-        path="/apollo/config"
-        adminOnly
-        page={DefaultPage}
-        component={ApolloConfig}
+        path="/admin"
+        staffOnly
+        page={AdminPage}
+        component={Admin}
         content={children}
+        exact
+      />
+      <WrappedRoute
+        path="/admin/reports"
+        staffOnly
+        page={AdminPage}
+        component={Reports}
+        content={children}
+        exact
       />
 
-    */}
+      <WrappedRoute
+        path="/admin/spaces"
+        staffOnly
+        page={AdminPage}
+        component={AdminSpaces}
+        content={children}
+        exact
+      />
+      <WrappedRoute
+        path="/admin/log"
+        staffOnly
+        page={AdminPage}
+        component={ModerationLog}
+        content={children}
+        exact
+      />
+      <WrappedRoute
+        path="/admin/users"
+        staffOnly
+        page={AdminPage}
+        component={UserIndex}
+        content={children}
+        exact
+      />
 
-      {/* 
-      <WrappedRoute path='/soapbox/admin' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/approval' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/reports' staffOnly page={AdminPage} component={Dashboard} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/log' staffOnly page={AdminPage} component={ModerationLog} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/users' staffOnly page={AdminPage} component={UserIndex} content={children} exact />
-      <WrappedRoute path='/soapbox/admin/theme' staffOnly page={AdminPage} component={ThemeEditor} content={children} exact />
-
-      <WrappedRoute path='/about/:slug?' page={DefaultPage} component={AboutPage} publicRoute exact />
-    
-      
-*/}
+      <WrappedRoute
+        path="/about/:slug?"
+        page={DefaultPage}
+        component={AboutPage}
+        publicRoute
+        exact
+      />
 
       <WrappedRoute
         path="/info"
@@ -688,11 +715,7 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     if (account.staff) {
       dispatch(fetchReports({ resolved: false }));
-      dispatch(fetchUsers(["local", "need_approval"]));
-    }
-
-    if (account.admin) {
-      dispatch(fetchConfig());
+      dispatch(fetchUsers({}));
     }
 
     setTimeout(() => dispatch(fetchFilters()), 500);

@@ -1,9 +1,9 @@
 import { isLoggedIn } from "src/utils/auth";
 import { shouldHaveCard } from "src/utils/status";
 
-import api, { getNextLink } from "../api";
+import api from "../api/index";
 
-import { setComposeToStatus } from "./compose";
+import { setComposeToStatus } from "./compose-status";
 import { fetchGroupRelationships } from "./groups";
 import { importFetchedStatus, importFetchedStatuses } from "./importer";
 import { openModal } from "./modals";
@@ -67,14 +67,16 @@ const createStatus = (
       editing: !!statusId,
     });
 
+    const method = statusId === null ? "POST" : "PUT";
+    const path =
+      statusId === null ? "/api/statuses" : `/api/statuses/${statusId}`;
+    const headers = { "Idempotency-Key": idempotencyKey };
+
     return api(getState)
-      .request({
-        url: statusId === null ? "/api/statuses" : `/api/statuses/${statusId}`,
-        method: statusId === null ? "post" : "put",
-        data: params,
-        headers: { "Idempotency-Key": idempotencyKey },
-      })
-      .then(({ data: status }) => {
+      .request(method, path, params, { headers })
+      .then(async (response) => {
+        const status = await response.json();
+
         // The backend might still be processing the rich media attachment
         if (!status.card && shouldHaveCard(status)) {
           status.expectsCard = true;
@@ -96,9 +98,10 @@ const createStatus = (
           const poll = (retries = 5) => {
             api(getState)
               .get(`/api/statuses/${status.id}`)
-              .then((response) => {
-                if (response.data?.card) {
-                  dispatch(importFetchedStatus(response.data));
+              .then((response) => response.json())
+              .then((data) => {
+                if (data?.card) {
+                  dispatch(importFetchedStatus(data));
                 } else if (retries > 0 && response.status === 200) {
                   setTimeout(() => poll(retries - 1), delay);
                 }
@@ -136,14 +139,15 @@ const editStatus =
 
     api(getState)
       .get(`/api/statuses/${id}/source`)
-      .then((response) => {
+      .then((response) => response.json())
+      .then((data) => {
         dispatch({ type: STATUS_FETCH_SOURCE_SUCCESS });
         dispatch(
           setComposeToStatus(
             status,
-            response.data.text,
-            response.data.spoiler_text,
-            response.data.content_type,
+            data.text,
+            data.spoiler_text,
+            data.content_type,
             false
           )
         );
@@ -162,7 +166,8 @@ const fetchStatus = (id: string) => {
 
     return api(getState)
       .get(`/api/statuses/${id}`)
-      .then(({ data: status }) => {
+      .then((response) => response.json())
+      .then((status) => {
         dispatch(importFetchedStatus(status));
         if (status.group) {
           dispatch(fetchGroupRelationships([status.group.id]));
@@ -196,7 +201,8 @@ const deleteStatus = (id: string, withRedraft = false) => {
 
     return api(getState)
       .delete(`/api/statuses/${id}`)
-      .then((response) => {
+      .then((response) => response.json())
+      .then((data) => {
         dispatch({ type: STATUS_DELETE_SUCCESS, id });
         dispatch(deleteFromTimelines(id));
 
@@ -204,9 +210,9 @@ const deleteStatus = (id: string, withRedraft = false) => {
           dispatch(
             setComposeToStatus(
               status,
-              response.data.text,
-              response.data.spoiler_text,
-              response.data.pleroma?.content_type,
+              data.text,
+              data.spoiler_text,
+              data.pleroma?.content_type,
               withRedraft
             )
           );
@@ -228,7 +234,8 @@ const fetchContext =
 
     return api(getState)
       .get(`/api/statuses/${id}/context`)
-      .then(({ data: context }) => {
+      .then((response) => response.json())
+      .then((context) => {
         if (Array.isArray(context)) {
           // Mitra: returns a list of statuses
           dispatch(importFetchedStatuses(context));
@@ -256,16 +263,18 @@ const fetchNext =
   (statusId: string, next: string) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     const response = await api(getState).get(next);
-    dispatch(importFetchedStatuses(response.data));
+    const data = await response.json();
+
+    dispatch(importFetchedStatuses(data));
 
     dispatch({
       type: CONTEXT_FETCH_SUCCESS,
       id: statusId,
       ancestors: [],
-      descendants: response.data,
+      descendants: data,
     });
 
-    return { next: getNextLink(response) };
+    return { next: response.pagination().next };
   };
 
 const fetchAncestors =
@@ -273,7 +282,8 @@ const fetchAncestors =
     const response = await api(getState).get(
       `/api/statuses/${id}/context/ancestors`
     );
-    dispatch(importFetchedStatuses(response.data));
+    const data = await response.json();
+    dispatch(importFetchedStatuses(data));
     return response;
   };
 
@@ -282,27 +292,15 @@ const fetchDescendants =
     const response = await api(getState).get(
       `/api/statuses/${id}/context/descendants`
     );
-    dispatch(importFetchedStatuses(response.data));
+    const data = await response.json();
+    dispatch(importFetchedStatuses(data));
     return response;
   };
 
 const fetchStatusWithContext =
   (id: string) => async (dispatch: AppDispatch, getState: () => RootState) => {
-    await dispatch(fetchStatus(id));
-    const responses = await Promise.all([
-      dispatch(fetchAncestors(id)),
-      dispatch(fetchDescendants(id)),
-    ]);
-
-    dispatch({
-      type: CONTEXT_FETCH_SUCCESS,
-      id,
-      ancestors: responses[0].data,
-      descendants: responses[1].data,
-    });
-
-    const next = getNextLink(responses[1]);
-    return { next };
+    await Promise.all([dispatch(fetchContext(id)), dispatch(fetchStatus(id))]);
+    return { next: null, prev: null };
   };
 
 const muteStatus =
@@ -375,19 +373,21 @@ const toggleStatusHidden = (status: Status) => {
 };
 
 const translateStatus =
-  (id: string, targetLanguage?: string) =>
+  (id: string, lang?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: STATUS_TRANSLATE_REQUEST, id });
 
     api(getState)
       .post(`/api/statuses/${id}/translate`, {
-        target_language: targetLanguage,
+        lang, // Mastodon API
+        target_language: lang, // HACK: Rebased and Pleroma compatibility
       })
-      .then((response) => {
+      .then((response) => response.json())
+      .then((data) => {
         dispatch({
           type: STATUS_TRANSLATE_SUCCESS,
           id,
-          translation: response.data,
+          translation: data,
         });
       })
       .catch((error) => {

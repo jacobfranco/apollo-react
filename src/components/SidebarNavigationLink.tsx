@@ -1,9 +1,9 @@
-import clsx from 'clsx';
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import clsx from "clsx";
+import React from "react";
+import { NavLink } from "react-router-dom";
 
-import { Text } from 'src/components';
-import Icon from './Icon';
+import { Text } from "src/components";
+import Icon from "./Icon";
 
 interface ISidebarNavigationLink {
   /** Notification count, if any. */
@@ -23,44 +23,53 @@ interface ISidebarNavigationLink {
 }
 
 /** Desktop sidebar navigation link. */
-const SidebarNavigationLink = React.forwardRef((props: ISidebarNavigationLink, ref: React.ForwardedRef<HTMLAnchorElement>): JSX.Element => {
-  const { icon, activeIcon, text, to = '', count, countMax, onClick } = props;
-  const isActive = location.pathname === to;
+const SidebarNavigationLink = React.forwardRef(
+  (
+    props: ISidebarNavigationLink,
+    ref: React.ForwardedRef<HTMLAnchorElement>
+  ): JSX.Element => {
+    const { icon, activeIcon, text, to = "", count, countMax, onClick } = props;
+    const isActive = location.pathname === to;
 
-  const handleClick: React.EventHandler<React.MouseEvent> = (e) => {
-    if (onClick) {
-      onClick(e);
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
+    const handleClick: React.EventHandler<React.MouseEvent> = (e) => {
+      if (onClick) {
+        onClick(e);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
 
-  return (
-    <NavLink
-      exact
-      to={to}
-      ref={ref}
-      onClick={handleClick}
-      className={clsx({
-        'flex items-center px-4 py-3.5 text-base font-semibold space-x-4 rtl:space-x-reverse rounded-5px group text-gray-600 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100 hover:bg-primary-200 dark:hover:bg-primary-900': true,
-        'dark:text-gray-100 text-gray-900': isActive,
-      })}
-    >
-      <span className='relative'>
-        <Icon
-          src={(isActive && activeIcon) || icon}
-          count={count}
-          countMax={countMax}
-          className={clsx('h-5 w-5', {
-            'text-gray-600 dark:text-gray-500 group-hover:text-primary-500 dark:group-hover:text-primary-400': !isActive,
-            'text-primary-500 dark:text-primary-400': isActive,
-          })}
-        />
-      </span>
+    return (
+      <NavLink
+        exact
+        to={to}
+        ref={ref}
+        onClick={handleClick}
+        className={clsx({
+          "flex items-center px-4 py-3.5 text-base font-semibold space-x-4 rtl:space-x-reverse rounded-5px group text-gray-600 hover:text-gray-900 dark:text-gray-500 dark:hover:text-primary-500 hover:bg-primary-200 dark:hover:bg-secondary-700":
+            true,
+          "dark:text-primary-500 text-gray-900": isActive,
+        })}
+      >
+        <span className="relative">
+          <Icon
+            src={(isActive && activeIcon) || icon}
+            count={count}
+            countMax={countMax}
+            className={clsx("h-5 w-5", {
+              "text-gray-600 dark:text-gray-700 group-hover:text-primary-500 dark:group-hover:text-primary-500":
+                !isActive,
+              "text-primary-500 dark:text-primary-400": isActive,
+            })}
+          />
+        </span>
 
-      <Text weight='medium' theme='inherit'>{text}</Text>
-    </NavLink>
-  );
-});
+        <Text weight="medium" theme="inherit">
+          {text}
+        </Text>
+      </NavLink>
+    );
+  }
+);
 
 export default SidebarNavigationLink;

@@ -1,22 +1,22 @@
-import DOMPurify from 'isomorphic-dompurify';
-import React from 'react';
+import DOMPurify from "isomorphic-dompurify";
 
-import { LogoText, Markup, Stack } from 'src/components';
-import { getTextDirection } from 'src/utils/rtl';
+import Markup from "src/components/Markup";
+import Stack from "src/components/Stack";
+import { getTextDirection } from "src/utils/rtl";
+
+import { LogoText } from "src/components/LogoText";
 
 const SiteBanner: React.FC = () => {
-  const description = DOMPurify.sanitize('Welcome to the Gaming Frontier'); // TODO: Change description if necessary
+  const description = DOMPurify.sanitize("Landing page under construction");
 
   return (
-    <Stack space={3}>
-      <LogoText dir={getTextDirection('APOLLO')}>
-        {'APOLLO'}
-      </LogoText>
+    <Stack space={4}>
+      <LogoText>Apollo</LogoText>
 
       <Markup
-        size='lg'
-        dangerouslySetInnerHTML={{ __html: description }}
+        size="lg"
         direction={getTextDirection(description)}
+        html={{ __html: description }}
       />
     </Stack>
   );

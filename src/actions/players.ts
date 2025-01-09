@@ -77,7 +77,8 @@ export const fetchPlayerById = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/players/${playerId}`);
-      const parsedData = playerSchema.parse(response.data);
+      const data = await response.json();
+      const parsedData = playerSchema.parse(data);
       dispatch(fetchPlayerSuccess(parsedData));
     } catch (error: any) {
       const errorMessage =
@@ -97,8 +98,9 @@ export const fetchPlayers = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/players`);
-      console.log("API Response Data:", response.data);
-      const parsedData = playerSchema.array().parse(response.data);
+      const data = await response.json();
+      console.log("API Response Data:", data);
+      const parsedData = playerSchema.array().parse(data);
       dispatch(fetchPlayersSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {
@@ -119,7 +121,8 @@ export const fetchPlayersByRosterId = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/rosters/${rosterId}/players`);
-      const parsedData = playerSchema.array().parse(response.data);
+      const data = await response.json();
+      const parsedData = playerSchema.array().parse(data);
       dispatch(fetchPlayersByRosterSuccess(rosterId, parsedData));
     } catch (error: any) {
       const errorMessage =

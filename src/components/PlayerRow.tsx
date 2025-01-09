@@ -1,6 +1,8 @@
 // src/components/PlayerRow.tsx
 
 import React from "react";
+import swordIcon from "@tabler/icons/outline/sword.svg";
+import ghostIcon from "@tabler/icons/outline/ghost.svg";
 import { Player } from "src/schemas/player";
 import SvgIcon from "./SvgIcon";
 
@@ -90,17 +92,11 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             {/* KDA and CS - Fixed position in center */}
             <div className="flex flex-col items-center w-32">
               <div className="flex items-center text-xl">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/sword.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
+                <SvgIcon src={swordIcon} className="h-6 w-6 text-primary-500" />
                 <div className="ml-1 text-black dark:text-white">{`${kills} / ${deaths} / ${assists}`}</div>
               </div>
               <div className="flex items-center text-sm mt-1">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/ghost.svg")}
-                  className="h-5 w-5 text-primary-500"
-                />
+                <SvgIcon src={ghostIcon} className="h-5 w-5 text-primary-500" />
                 <div className="ml-1 text-black dark:text-white">
                   {totalCreepScore}
                 </div>
@@ -159,19 +155,13 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, team }) => {
             <div className="flex flex-col items-center w-32">
               <div className="flex items-center text-xl">
                 <div className="mr-1 text-black dark:text-white">{`${kills} / ${deaths} / ${assists}`}</div>
-                <SvgIcon
-                  src={require("@tabler/icons/outline/sword.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
+                <SvgIcon src={swordIcon} className="h-6 w-6 text-primary-500" />
               </div>
               <div className="flex items-center text-md mt-1">
                 <div className="mr-1 text-black dark:text-white">
                   {totalCreepScore}
                 </div>
-                <SvgIcon
-                  src={require("@tabler/icons/outline/ghost.svg")}
-                  className="h-5 w-5 text-primary-500"
-                />
+                <SvgIcon src={ghostIcon} className="h-5 w-5 text-primary-500" />
               </div>
             </div>
             {/* Player Info - Fixed width */}

@@ -1,27 +1,18 @@
-import clsx from 'clsx';
-import React, { Suspense } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import xIcon from "@tabler/icons/outline/x.svg";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { setSchedule, removeSchedule } from 'src/actions/compose';
-import { HStack, IconButton, Stack, Text } from 'src/components';
-import Input from 'src/components/Input';
-import { DatePicker } from 'src/features/AsyncComponents';
-import { useAppDispatch, useCompose } from 'src/hooks';
-
-export const isCurrentOrFutureDate = (date: Date) => {
-  return date && new Date().setHours(0, 0, 0, 0) <= new Date(date).setHours(0, 0, 0, 0);
-};
-
-const isFiveMinutesFromNow = (time: Date) => {
-  const fiveMinutesFromNow = new Date(new Date().getTime() + 300000); // now, plus five minutes (Pleroma won't schedule posts )
-  const selectedDate = new Date(time);
-
-  return fiveMinutesFromNow.getTime() < selectedDate.getTime();
-};
+import { setSchedule, removeSchedule } from "src/actions/compose";
+import IconButton from "src/components/IconButton";
+import { Datetime } from "src/components/Datetime";
+import HStack from "src/components/HStack";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useCompose } from "src/hooks/useCompose";
 
 const messages = defineMessages({
-  schedule: { id: 'schedule.post_time', defaultMessage: 'Post Date/Time' },
-  remove: { id: 'schedule.remove', defaultMessage: 'Remove schedule' },
+  schedule: { id: "schedule.post_time", defaultMessage: "Post Date/Time" },
+  remove: { id: "schedule.remove", defaultMessage: "Remove schedule" },
 });
 
 export interface IScheduleForm {
@@ -34,6 +25,8 @@ const ScheduleForm: React.FC<IScheduleForm> = ({ composeId }) => {
 
   const scheduledAt = useCompose(composeId).schedule;
   const active = !!scheduledAt;
+
+  const fiveMinutesFromNow = new Date(new Date().getTime() + 300_000);
 
   const onSchedule = (date: Date) => {
     dispatch(setSchedule(composeId, date));
@@ -50,30 +43,22 @@ const ScheduleForm: React.FC<IScheduleForm> = ({ composeId }) => {
 
   return (
     <Stack space={2}>
-      <Text weight='medium'>
-        <FormattedMessage id='datepicker.hint' defaultMessage='Scheduled to post at…' />
+      <Text weight="medium">
+        <FormattedMessage
+          id="datepicker.hint"
+          defaultMessage="Scheduled to post at…"
+        />
       </Text>
-      <HStack space={2} alignItems='center'>
-        <Suspense fallback={<Input type='text' disabled />}>
-          <DatePicker
-            selected={scheduledAt}
-            showTimeSelect
-            dateFormat='MMMM d, yyyy h:mm aa'
-            timeIntervals={15}
-            wrapperClassName='react-datepicker-wrapper'
-            onChange={onSchedule}
-            placeholderText={intl.formatMessage(messages.schedule)}
-            filterDate={isCurrentOrFutureDate}
-            filterTime={isFiveMinutesFromNow}
-            className={clsx({
-              'has-error': !isFiveMinutesFromNow(scheduledAt),
-            })}
-          />
-        </Suspense>
+      <HStack space={2} alignItems="center">
+        <Datetime
+          onChange={onSchedule}
+          value={scheduledAt}
+          min={fiveMinutesFromNow}
+        />
         <IconButton
-          iconClassName='h-4 w-4'
-          className='bg-transparent text-gray-400 hover:text-gray-600'
-          src={require('@tabler/icons/outline/x.svg')}
+          iconClassName="h-4 w-4"
+          className="bg-transparent text-gray-400 hover:text-gray-600"
+          src={xIcon}
           onClick={handleRemove}
           title={intl.formatMessage(messages.remove)}
         />

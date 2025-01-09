@@ -1,49 +1,57 @@
-import debounce from 'lodash/debounce';
-import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { debounce } from "es-toolkit";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'src/actions/bookmarks';
-import { PullToRefresh, StatusList } from 'src/components';
-import { Column } from 'src/components/Column'
-import { useAppSelector, useAppDispatch } from 'src/hooks';
+import { useBookmarks } from "src/api/hooks";
+import PullToRefresh from "src/components/PullToRefresh";
+import PureStatusList from "src/components/PureStatusList";
+import { Column } from "src/components/Column";
+import { useIsMobile } from "src/hooks/useIsMobile";
+import { useTheme } from "src/hooks/useTheme";
 
 const messages = defineMessages({
-  heading: { id: 'column.bookmarks', defaultMessage: 'Bookmarks' },
+  heading: { id: "column.bookmarks", defaultMessage: "Bookmarks" },
 });
 
-const handleLoadMore = debounce((dispatch) => {
-  dispatch(expandBookmarkedStatuses());
-}, 300, { leading: true });
-
 const Bookmarks: React.FC = () => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const statusIds = useAppSelector((state) => state.status_lists.get('bookmarks')!.items);
-  const isLoading = useAppSelector((state) => state.status_lists.get('bookmarks')!.isLoading);
-  const hasMore = useAppSelector((state) => !!state.status_lists.get('bookmarks')!.next);
+  const theme = useTheme();
+  const isMobile = useIsMobile();
 
-  React.useEffect(() => {
-    dispatch(fetchBookmarkedStatuses());
-  }, []);
+  const handleLoadMore = debounce(
+    () => {
+      fetchNextPage();
+    },
+    300,
+    { edges: ["leading"] }
+  );
+
+  const { bookmarks, isLoading, hasNextPage, fetchEntities, fetchNextPage } =
+    useBookmarks();
 
   const handleRefresh = () => {
-    return dispatch(fetchBookmarkedStatuses());
+    return fetchEntities();
   };
 
-  const emptyMessage = <FormattedMessage id='empty_column.bookmarks' defaultMessage="You don't have any bookmarks yet. When you add one, it will show up here." />;
+  const emptyMessage = (
+    <FormattedMessage
+      id="empty_column.bookmarks"
+      defaultMessage="You don't have any bookmarks yet. When you add one, it will show up here."
+    />
+  );
 
   return (
     <Column label={intl.formatMessage(messages.heading)} transparent>
       <PullToRefresh onRefresh={handleRefresh}>
-        <StatusList
-          statusIds={statusIds}
-          scrollKey='bookmarked_statuses'
-          hasMore={hasMore}
-          isLoading={typeof isLoading === 'boolean' ? isLoading : true}
-          onLoadMore={() => handleLoadMore(dispatch)}
+        <PureStatusList
+          className="black:p-4 black:sm:p-5"
+          statuses={bookmarks}
+          scrollKey="bookmarked_statuses"
+          hasMore={hasNextPage}
+          isLoading={typeof isLoading === "boolean" ? isLoading : true}
+          onLoadMore={() => handleLoadMore()}
           emptyMessage={emptyMessage}
-          divideType='space'
+          divideType={isMobile ? "border" : "space"}
         />
       </PullToRefresh>
     </Column>

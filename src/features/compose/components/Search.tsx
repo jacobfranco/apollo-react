@@ -1,8 +1,10 @@
-import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useCallback, useEffect } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import searchIcon from "@tabler/icons/outline/search.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
+import clsx from "clsx";
+import { debounce } from "es-toolkit";
+import { useCallback, useEffect } from "react";
+import { defineMessages, useIntl } from "react-intl";
+import { useHistory } from "react-router-dom";
 
 import {
   changeSearch,
@@ -11,17 +13,18 @@ import {
   setSearchAccount,
   showSearch,
   submitSearch,
-} from 'src/actions/search';
-import AutosuggestAccountInput from 'src/components/AutosuggestAccountInput';
-import { SvgIcon } from 'src/components';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { selectAccount } from 'src/selectors';
-import { AppDispatch, RootState } from 'src/store';
-import Input from 'src/components/Input';
+} from "src/actions/search";
+import AutosuggestAccountInput from "src/components/AutosuggestAccountInput";
+import Input from "src/components/Input";
+import SvgIcon from "src/components/SvgIcon";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { selectAccount } from "src/selectors/index";
+import { AppDispatch, RootState } from "src/store";
 
 const messages = defineMessages({
-  placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
-  action: { id: 'search.action', defaultMessage: 'Search for “{query}”' },
+  placeholder: { id: "search.placeholder", defaultMessage: "Search" },
+  action: { id: "search.action", defaultMessage: "Search for “{query}”" },
 });
 
 function redirectToAccount(accountId: string, routerHistory: any) {
@@ -56,9 +59,12 @@ const Search = (props: ISearch) => {
   const value = useAppSelector((state) => state.search.value);
   const submitted = useAppSelector((state) => state.search.submitted);
 
-  const debouncedSubmit = useCallback(debounce(() => {
-    dispatch(submitSearch());
-  }, 900), []);
+  const debouncedSubmit = useCallback(
+    debounce(() => {
+      dispatch(submitSearch());
+    }, 900),
+    []
+  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -83,19 +89,19 @@ const Search = (props: ISearch) => {
       dispatch(setSearchAccount(null));
       dispatch(submitSearch());
 
-      history.push('/search');
+      history.push("/search");
     } else {
       dispatch(submitSearch());
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
 
       handleSubmit();
-    } else if (event.key === 'Escape') {
-      document.querySelector('.ui')?.parentElement?.focus();
+    } else if (event.key === "Escape") {
+      document.querySelector(".ui")?.parentElement?.focus();
     }
   };
 
@@ -111,23 +117,23 @@ const Search = (props: ISearch) => {
   const makeMenu = () => [
     {
       text: intl.formatMessage(messages.action, { query: value }),
-      icon: require('@tabler/icons/outline/search.svg'),
+      icon: searchIcon,
       action: handleSubmit,
     },
   ];
 
   const hasValue = value.length > 0 || submitted;
   const componentProps: any = {
-    type: 'text',
-    id: 'search',
+    type: "text",
+    id: "search",
     placeholder: intl.formatMessage(messages.placeholder),
     value,
     onChange: handleChange,
     onKeyDown: handleKeyDown,
     onFocus: handleFocus,
     autoFocus: autoFocus,
-    theme: 'search',
-    className: 'pr-10 rtl:pl-10 rtl:pr-3',
+    theme: "search",
+    className: "pr-10 rtl:pl-10 rtl:pr-3",
   };
 
   if (autosuggest) {
@@ -139,20 +145,23 @@ const Search = (props: ISearch) => {
   useEffect(() => {
     return () => {
       const newPath = history.location.pathname;
-      const shouldPersistSearch = !!newPath.match(/@.+\/posts\/[a-zA-Z0-9]+/g)
-        || !!newPath.match(/\/tags\/.+/g);
+      const shouldPersistSearch =
+        !!newPath.match(/@.+\/posts\/[a-zA-Z0-9]+/g) ||
+        !!newPath.match(/\/tags\/.+/g);
 
       if (!shouldPersistSearch) {
-        dispatch(changeSearch(''));
+        dispatch(changeSearch(""));
       }
     };
   }, []);
 
   return (
-    <div className='w-full'>
-      <label htmlFor='search' className='sr-only'>{intl.formatMessage(messages.placeholder)}</label>
+    <div className="w-full">
+      <label htmlFor="search" className="sr-only">
+        {intl.formatMessage(messages.placeholder)}
+      </label>
 
-      <div className='relative'>
+      <div className="relative">
         {autosuggest ? (
           <AutosuggestAccountInput {...componentProps} />
         ) : (
@@ -160,19 +169,19 @@ const Search = (props: ISearch) => {
         )}
 
         <div
-          role='button'
+          role="button"
           tabIndex={0}
-          className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 rtl:left-0 rtl:right-auto'
+          className="absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 rtl:left-0 rtl:right-auto"
           onClick={handleClear}
         >
           <SvgIcon
-            src={require('@tabler/icons/outline/search.svg')}
-            className={clsx('h-4 w-4 text-gray-600', { hidden: hasValue })}
+            src={searchIcon}
+            className={clsx("size-4 text-gray-600", { hidden: hasValue })}
           />
 
           <SvgIcon
-            src={require('@tabler/icons/outline/x.svg')}
-            className={clsx('h-4 w-4 text-gray-600', { hidden: !hasValue })}
+            src={xIcon}
+            className={clsx("size-4 text-gray-600", { hidden: !hasValue })}
             aria-label={intl.formatMessage(messages.placeholder)}
           />
         </div>

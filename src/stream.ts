@@ -1,36 +1,47 @@
-import WebSocketClient from '@gamestdio/websocket';
+import { ExponentialBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
 
-import { getAccessToken } from 'src/utils/auth';
-import * as BuildConfig from 'src/build-config'
+import { getAccessToken } from "src/utils/auth";
+import * as BuildConfig from "src/build-config";
 
-import type { AppDispatch, RootState } from 'src/store';
+import type { AppDispatch, RootState } from "src/store";
+import { urls } from "./utils/urls";
 
-const randomIntUpTo = (max: number) => Math.floor(Math.random() * Math.floor(max));
+const randomIntUpTo = (max: number) =>
+  Math.floor(Math.random() * Math.floor(max));
 
 interface ConnectStreamCallbacks {
   onConnect(): void;
   onDisconnect(): void;
-  onReceive(websocket: WebSocket, data: unknown): void;
+  onReceive(websocket: Websocket, data: unknown): void;
 }
 
-type PollingRefreshFn = (dispatch: AppDispatch, done?: () => void) => void
+type PollingRefreshFn = (dispatch: AppDispatch, done?: () => void) => void;
 
 export function connectStream(
   path: string,
   pollingRefresh: PollingRefreshFn | null = null,
-  callbacks: (dispatch: AppDispatch, getState: () => RootState) => ConnectStreamCallbacks,
+  callbacks: (
+    dispatch: AppDispatch,
+    getState: () => RootState
+  ) => ConnectStreamCallbacks
 ) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const streamingAPIBaseURL = BuildConfig.STREAMING_URL;
+    const streamingAPIBaseURL = urls.STREAMING_URL;
     const accessToken = getAccessToken(getState());
-    const { onConnect, onDisconnect, onReceive } = callbacks(dispatch, getState);
+    const { onConnect, onDisconnect, onReceive } = callbacks(
+      dispatch,
+      getState
+    );
 
     let polling: NodeJS.Timeout | null = null;
 
     const setupPolling = () => {
       if (pollingRefresh) {
         pollingRefresh(dispatch, () => {
-          polling = setTimeout(() => setupPolling(), 20000 + randomIntUpTo(20000));
+          polling = setTimeout(
+            () => setupPolling(),
+            20000 + randomIntUpTo(20000)
+          );
         });
       }
     };
@@ -42,7 +53,7 @@ export function connectStream(
       }
     };
 
-    let subscription: WebSocket;
+    let subscription: Websocket;
 
     // If the WebSocket fails to be created, don't crash the whole page,
     // just proceed without a subscription.
@@ -76,7 +87,6 @@ export function connectStream(
 
           onConnect();
         },
-
       });
     } catch (e) {
       console.error(e);
@@ -98,30 +108,42 @@ export default function getStream(
   streamingAPIBaseURL: string,
   accessToken: string,
   stream: string,
-  { connected, received, disconnected, reconnected }: {
-    connected: ((this: WebSocket, ev: Event) => any) | null;
+  callbacks: {
+    connected: ((ev: Event) => any) | null;
     received: (data: any) => void;
-    disconnected: ((this: WebSocket, ev: Event) => any) | null;
-    reconnected: ((this: WebSocket, ev: Event) => any);
-  },
+    disconnected: ((ev: Event) => any) | null;
+    reconnected: (ev: Event) => any;
+  }
 ) {
   const params = [`stream=${stream}`];
+  const baseURL = streamingAPIBaseURL.endsWith("/")
+    ? streamingAPIBaseURL.slice(0, -1)
+    : streamingAPIBaseURL;
 
-  const ws = new WebSocketClient(`${streamingAPIBaseURL}/api/streaming/?${params.join('&')}`, accessToken as any);
-
-  ws.onopen = connected;
-  ws.onclose = disconnected;
-  ws.onreconnect = reconnected;
-
-  ws.onmessage = (e) => {
-    if (!e.data) return;
-    try {
-      received(JSON.parse(e.data));
-    } catch (error) {
-      console.error(e);
-      console.error(`Could not parse the above streaming event.\n${error}`);
-    }
-  };
+  const ws = new WebsocketBuilder(
+    `${baseURL}/api/streaming/?${params.join("&")}`
+  )
+    .withProtocols(accessToken)
+    .withBackoff(new ExponentialBackoff(1000, 6))
+    .onOpen((_ws, ev) => {
+      callbacks.connected?.(ev);
+    })
+    .onClose((_ws, ev) => {
+      callbacks.disconnected?.(ev);
+    })
+    .onReconnect((_ws, ev) => {
+      callbacks.reconnected(ev);
+    })
+    .onMessage((_ws, e) => {
+      if (!e.data) return;
+      try {
+        callbacks.received(JSON.parse(e.data));
+      } catch (error) {
+        console.error(e);
+        console.error(`Could not parse streaming event.\n${error}`);
+      }
+    })
+    .build();
 
   return ws;
 }

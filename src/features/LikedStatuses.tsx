@@ -1,5 +1,5 @@
 import { OrderedSet as ImmutableOrderedSet } from "immutable";
-import debounce from "lodash/debounce";
+import { debounce } from "es-toolkit";
 import React, { useCallback, useEffect } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
@@ -60,7 +60,7 @@ const Likes: React.FC<ILikes> = ({ params }) => {
         }
       },
       300,
-      { leading: true }
+      { edges: ["leading"] }
     ),
     [account?.id]
   );

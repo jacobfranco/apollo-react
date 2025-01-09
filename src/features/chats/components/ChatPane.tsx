@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import editIcon from "@tabler/icons/outline/edit.svg";
+import { useState } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { Pane, Stack } from 'src/components';
-import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
-import { useStatContext } from 'src/contexts/stat-context';
-import { useDebounce } from 'src/hooks';
-import { IChat, useChats } from 'src/queries/chats';
+import Stack from "src/components/Stack";
+import { ChatWidgetScreens, useChatContext } from "src/contexts/chat-context";
+import { useStatContext } from "src/contexts/stat-context";
+import { useDebounce } from "src/hooks/useDebounce";
+import { IChat, useChats } from "src/queries/chats";
 
-import ChatList from './ChatList';
-import ChatSearch from './ChatSearch';
-import ChatSearchEmptyResultsBlankslate from './ChatSearchEmptyResultsBlankslate';
-import ChatSearchInput from './ChatSearchInput';
-import ChatPaneHeader from './ChatPaneHeader';
-import ChatWindow from './ChatWindow';
-import ChatSearchHeader from './ChatSearchHeader';
-import ChatPaneBlankslate from './ChatPaneBlankslate';
+import ChatList from "./ChatList";
+import ChatSearch from "./ChatSearch";
+import EmptyResultsBlankslate from "./ChatSearchEmptyResultsBlankslate";
+import ChatSearchInput from "./ChatSearchInput";
+import ChatPaneHeader from "./ChatPaneHeader";
+import ChatWindow from "./ChatWindow";
+import ChatSearchHeader from "./ChatSearchHeader";
+import { Pane } from "src/components/Pane";
+
+import Blankslate from "./ChatPaneBlankslate";
 
 const ChatPane = () => {
   const debounce = useDebounce;
@@ -24,7 +27,9 @@ const ChatPane = () => {
   const debouncedValue = debounce(value as string, 300);
 
   const { screen, changeScreen, isOpen, toggleChatPane } = useChatContext();
-  const { chatsQuery: { data: chats, isLoading } } = useChats(debouncedValue);
+  const {
+    chatsQuery: { data: chats, isLoading },
+  } = useChats(debouncedValue);
 
   const hasSearchValue = Number(debouncedValue?.length) > 0;
 
@@ -35,35 +40,35 @@ const ChatPane = () => {
 
   const clearValue = () => {
     if (hasSearchValue) {
-      setValue('');
+      setValue("");
     }
   };
 
   const renderBody = () => {
     if (hasSearchValue || Number(chats?.length) > 0 || isLoading) {
       return (
-        <Stack space={4} className='h-full grow'>
-            <div className='px-4'>
-              <ChatSearchInput
-                value={value || ''}
-                onChange={(event) => setValue(event.target.value)}
-                onClear={clearValue}
-              />
-            </div>
+        <Stack space={4} className="h-full grow">
+          <div className="px-4">
+            <ChatSearchInput
+              value={value || ""}
+              onChange={(event) => setValue(event.target.value)}
+              onClear={clearValue}
+            />
+          </div>
 
-          {(Number(chats?.length) > 0 || isLoading) ? (
+          {Number(chats?.length) > 0 || isLoading ? (
             <ChatList
               searchValue={debouncedValue}
               onClickChat={handleClickChat}
             />
           ) : (
-            <ChatSearchEmptyResultsBlankslate />
+            <EmptyResultsBlankslate />
           )}
         </Stack>
       );
     } else if (chats?.length === 0) {
       return (
-        <ChatPaneBlankslate
+        <Blankslate
           onSearch={() => {
             changeScreen(ChatWidgetScreens.SEARCH);
           }}
@@ -73,7 +78,10 @@ const ChatPane = () => {
   };
 
   // Active chat
-  if (screen === ChatWidgetScreens.CHAT || screen === ChatWidgetScreens.CHAT_SETTINGS) {
+  if (
+    screen === ChatWidgetScreens.CHAT ||
+    screen === ChatWidgetScreens.CHAT_SETTINGS
+  ) {
     return (
       <Pane isOpen={isOpen}>
         <ChatWindow />
@@ -94,7 +102,7 @@ const ChatPane = () => {
   return (
     <Pane isOpen={isOpen}>
       <ChatPaneHeader
-        title={<FormattedMessage id='column.chats' defaultMessage='Chats' />}
+        title={<FormattedMessage id="column.chats" defaultMessage="Chats" />}
         unreadCount={unreadChatsCount}
         isOpen={isOpen}
         onToggle={toggleChatPane}
@@ -106,7 +114,7 @@ const ChatPane = () => {
             toggleChatPane();
           }
         }}
-        secondaryActionIcon={require('@tabler/icons/outline/edit.svg')}
+        secondaryActionIcon={editIcon}
       />
 
       {isOpen ? renderBody() : null}

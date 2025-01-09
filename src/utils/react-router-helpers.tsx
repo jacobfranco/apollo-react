@@ -1,19 +1,32 @@
-import React, { Suspense, useEffect, useRef } from 'react';
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
-import { Redirect, Route, useHistory, RouteProps, RouteComponentProps, match as MatchType, useLocation } from 'react-router-dom';
+import { Suspense, useEffect, useRef } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
+import {
+  Redirect,
+  Route,
+  useHistory,
+  RouteProps,
+  RouteComponentProps,
+  match as MatchType,
+  useLocation,
+} from "react-router-dom";
 
-import { useOwnAccount } from 'src/hooks';
-import { Layout, ColumnForbidden, ColumnLoading, ColumnsArea, ErrorColumn } from 'src/components';
-import { useSettings } from 'src/hooks/useSettings';
+import Layout from "src/components/Layout";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
+import { useSettings } from "src/hooks/useSettings";
+
+import ColumnForbidden from "src/components/ColumnForbidden";
+import ColumnLoading from "src/components/ColumnLoading";
+import ColumnsArea from "src/components/ColumnsArea";
+import ErrorColumn from "src/components/ErrorColumn";
 
 type PageProps = {
-  params?: MatchType['params'];
+  params?: MatchType["params"];
   layout?: any;
   children: React.ReactNode;
 };
 
 interface IWrappedRoute extends RouteProps {
-  component: React.LazyExoticComponent<any>;
+  component: React.ExoticComponent<any>;
   page?: React.ComponentType<PageProps>;
   content?: React.ReactNode;
   componentParams?: Record<string, any>;
@@ -70,9 +83,11 @@ const WrappedRoute: React.FC<IWrappedRoute> = ({
   };
 
   const loginRedirect = () => {
-    const actualUrl = encodeURIComponent(`${history.location.pathname}${history.location.search}`);
-    localStorage.setItem('apollo:redirect_uri', actualUrl);
-    return <Redirect to='/login' />;
+    const actualUrl = encodeURIComponent(
+      `${history.location.pathname}${history.location.search}`
+    );
+    localStorage.setItem("apollo:redirect_uri", actualUrl);
+    return <Redirect to="/login" />;
   };
 
   const authorized = [
@@ -80,7 +95,7 @@ const WrappedRoute: React.FC<IWrappedRoute> = ({
     developerOnly ? isDeveloper : true,
     staffOnly ? account && account.staff : true,
     adminOnly ? account && account.admin : true,
-  ].every(c => c);
+  ].every((c) => c);
 
   if (!authorized) {
     if (!account) {
@@ -99,9 +114,7 @@ interface IFallbackLayout {
 
 const FallbackLayout: React.FC<IFallbackLayout> = ({ children }) => (
   <>
-    <Layout.Main>
-      {children}
-    </Layout.Main>
+    <Layout.Main>{children}</Layout.Main>
 
     <Layout.Aside />
   </>
@@ -119,7 +132,10 @@ const FallbackForbidden: React.FC = () => (
   </FallbackLayout>
 );
 
-const FallbackError: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+const FallbackError: React.FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
   const location = useLocation();
   const firstUpdate = useRef(true);
 
@@ -138,6 +154,4 @@ const FallbackError: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
   );
 };
 
-export {
-  WrappedRoute,
-};
+export { WrappedRoute };

@@ -1,16 +1,25 @@
-import clsx from 'clsx';
-import throttle from 'lodash/throttle';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import clsx from "clsx";
+import { throttle } from "es-toolkit";
+import { forwardRef, useCallback, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
-import { Card, CardBody, CardHeader, CardTitle, type CardSizes } from 'src/components';
-import Helmet from 'src/components/Helmet'
-import { useApolloConfig } from 'src/hooks';
+import Helmet from "src/components/Helmet";
+import { useApolloConfig } from "src/hooks/useApolloConfig";
 
-type IColumnHeader = Pick<IColumn, 'label' | 'backHref' | 'className' | 'action'>;
+import { Card, CardBody, CardHeader, CardTitle, type CardSizes } from "./Card";
+
+type IColumnHeader = Pick<
+  IColumn,
+  "label" | "backHref" | "className" | "action"
+>;
 
 /** Contains the column title with optional back button. */
-const ColumnHeader: React.FC<IColumnHeader> = ({ label, backHref, className, action }) => {
+const ColumnHeader: React.FC<IColumnHeader> = ({
+  label,
+  backHref,
+  className,
+  action,
+}) => {
   const history = useHistory();
 
   const handleBackClick = () => {
@@ -20,7 +29,7 @@ const ColumnHeader: React.FC<IColumnHeader> = ({ label, backHref, className, act
     }
 
     if (history.length === 1) {
-      history.push('/');
+      history.push("/");
     } else {
       history.goBack();
     }
@@ -30,11 +39,7 @@ const ColumnHeader: React.FC<IColumnHeader> = ({ label, backHref, className, act
     <CardHeader className={className} onBackClick={handleBackClick}>
       <CardTitle title={label} />
 
-      {action && (
-        <div className='flex grow justify-end'>
-          {action}
-        </div>
-      )}
+      {action && <div className="flex grow justify-end">{action}</div>}
     </CardHeader>
   );
 };
@@ -63,62 +68,83 @@ export interface IColumn {
 }
 
 /** A backdrop for the main section of the UI. */
-const Column: React.FC<IColumn> = React.forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>): JSX.Element => {
-  const { backHref, children, label, transparent = false, withHeader = true, className, bodyClassName, action, size } = props;
-  const apolloConfig = useApolloConfig();
-  const [isScrolled, setIsScrolled] = useState(false);
+const Column = forwardRef<HTMLDivElement, IColumn>(
+  (props, ref): JSX.Element => {
+    const {
+      backHref,
+      children,
+      label,
+      transparent = false,
+      withHeader = true,
+      className,
+      bodyClassName,
+      action,
+      size,
+    } = props;
+    const apolloConfig = useApolloConfig();
+    const [isScrolled, setIsScrolled] = useState(false);
 
-  const handleScroll = useCallback(throttle(() => {
-    setIsScrolled(window.pageYOffset > 32);
-  }, 50), []);
+    const handleScroll = useCallback(
+      throttle(() => {
+        setIsScrolled(window.pageYOffset > 32);
+      }, 50),
+      []
+    );
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    useEffect(() => {
+      window.addEventListener("scroll", handleScroll);
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }, []);
 
-  return (
-    <div role='region' className='relative' ref={ref} aria-label={label} column-type={transparent ? 'transparent' : 'filled'}>
-      <Helmet>
-        <title>{label}</title>
+    return (
+      <div
+        role="region"
+        className="relative"
+        ref={ref}
+        aria-label={label}
+        column-type={transparent ? "transparent" : "filled"}
+      >
+        <Helmet>
+          <title>{label}</title>
 
-        {apolloConfig.appleAppId && (
-          <meta
-            data-react-helmet='true'
-            name='apple-itunes-app'
-            content={`app-id=${apolloConfig.appleAppId}, app-argument=${location.href}`}
-          />
-        )}
-      </Helmet>
+          {apolloConfig.appleAppId && (
+            <meta
+              data-react-helmet="true"
+              name="apple-itunes-app"
+              content={`app-id=${apolloConfig.appleAppId}, app-argument=${location.href}`}
+            />
+          )}
+        </Helmet>
 
-      <Card size={size} variant={transparent ? undefined : 'rounded'} className={className}>
-        {withHeader && (
-          <ColumnHeader
-            label={label}
-            backHref={backHref}
-            className={clsx({
-              'rounded-t-3xl': !isScrolled && !transparent,
-              'sticky top-12 z-10 bg-transparent dark:bg-transparent backdrop-blur lg:top-16': !transparent,
-              'p-4 sm:p-0 sm:pb-4': transparent,
-              '-mt-4 -mx-4 p-4': size !== 'lg' && !transparent,
-              '-mt-4 -mx-4 p-4 sm:-mt-6 sm:-mx-6 sm:p-6': size === 'lg' && !transparent,
-            })}
-            action={action}
-          />
-        )}
+        <Card
+          size={size}
+          variant={transparent ? undefined : "rounded"}
+          className={className}
+        >
+          {withHeader && (
+            <ColumnHeader
+              label={label}
+              backHref={backHref}
+              className={clsx({
+                "rounded-t-3xl": !isScrolled && !transparent,
+                "sticky top-12 z-10 bg-transprent dark:bg-transparent black:bg-black/90 backdrop-blur lg:top-16":
+                  !transparent,
+                "p-4 sm:p-0 sm:pb-4 black:p-4": transparent,
+                "-mt-4 p-4": size !== "lg" && !transparent,
+                "-mt-4 p-4 sm:-mt-6 sm:-mx-6 sm:p-6":
+                  size === "lg" && !transparent,
+              })}
+              action={action}
+            />
+          )}
+          <CardBody className={bodyClassName}>{children}</CardBody>
+        </Card>
+      </div>
+    );
+  }
+);
 
-        <CardBody className={bodyClassName}>
-          {children}
-        </CardBody>
-      </Card>
-    </div>
-  );
-});
-
-export {
-  Column,
-  ColumnHeader,
-};
+export { Column, ColumnHeader };

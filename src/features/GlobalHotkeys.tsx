@@ -1,41 +1,43 @@
-import React, { useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useRef } from "react";
+import { useHistory } from "react-router-dom";
 
-import { resetCompose } from 'src/actions/compose';
-import { openModal } from 'src/actions/modals';
-import { FOCUS_EDITOR_COMMAND } from 'src/features/compose/editor/plugins/FocusPlugin';
-import { useAppSelector, useAppDispatch, useOwnAccount } from 'src/hooks';
+import { resetCompose } from "src/actions/compose";
+import { openModal } from "src/actions/modals";
+import { FOCUS_EDITOR_COMMAND } from "src/features/compose/editor/plugins/FocusPlugin";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
 
-import { HotKeys } from './Hotkeys';
+import { HotKeys } from "./Hotkeys";
 
-import type { LexicalEditor } from 'lexical';
+import type { LexicalEditor } from "lexical";
 
 const keyMap = {
-  help: '?',
-  new: 'n',
-  search: ['s', '/'],
-  forceNew: 'option+n',
-  reply: 'r',
-  like: 'l',
-  react: 'e',
-  boost: 'b',
-  mention: 'm',
-  open: ['enter', 'o'],
-  openProfile: 'p',
-  moveDown: ['down', 'j'],
-  moveUp: ['up', 'k'],
-  back: 'backspace',
-  goToHome: 'g h',
-  goToNotifications: 'g n',
-  goToLikes: 'g l',
-  goToPinned: 'g p',
-  goToProfile: 'g u',
-  goToBlocked: 'g b',
-  goToMuted: 'g m',
-  goToRequests: 'g r',
-  toggleHidden: 'x',
-  toggleSensitive: 'h',
-  openMedia: 'a',
+  help: "?",
+  new: "n",
+  search: ["s", "/"],
+  forceNew: "option+n",
+  reply: "r",
+  like: "l",
+  react: "e",
+  boost: "b",
+  mention: "m",
+  open: ["enter", "o"],
+  openProfile: "p",
+  moveDown: ["down", "j"],
+  moveUp: ["up", "k"],
+  back: "backspace",
+  goToHome: "g h",
+  goToNotifications: "g n",
+  goToLikes: "g l",
+  goToPinned: "g p",
+  goToProfile: "g u",
+  goToBlocked: "g b",
+  goToMuted: "g m",
+  goToRequests: "g r",
+  toggleHidden: "x",
+  toggleSensitive: "h",
+  openMedia: "a",
 };
 
 interface IGlobalHotkeys {
@@ -48,18 +50,23 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
 
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const me = useAppSelector(state => state.me);
+  const me = useAppSelector((state) => state.me);
   const { account } = useOwnAccount();
 
   const handleHotkeyNew = (e?: KeyboardEvent) => {
     e?.preventDefault();
 
-    const element = node.current?.querySelector('div[data-lexical-editor="true"]') as HTMLTextAreaElement;
+    const element = node.current?.querySelector(
+      'div[data-lexical-editor="true"]'
+    ) as HTMLTextAreaElement;
 
     if (element) {
-      ((element as any).__lexicalEditor as LexicalEditor).dispatchCommand(FOCUS_EDITOR_COMMAND, undefined);
+      ((element as any).__lexicalEditor as LexicalEditor).dispatchCommand(
+        FOCUS_EDITOR_COMMAND,
+        undefined
+      );
     } else {
-      dispatch(openModal('COMPOSE'));
+      dispatch(openModal("COMPOSE"));
     }
   };
 
@@ -67,7 +74,9 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
     e?.preventDefault();
     if (!node.current) return;
 
-    const element = node.current.querySelector('input#search') as HTMLInputElement;
+    const element = node.current.querySelector(
+      "input#search"
+    ) as HTMLInputElement;
 
     if (element) {
       element.focus();
@@ -81,7 +90,7 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
 
   const handleHotkeyBack = () => {
     if (window.history && window.history.length === 1) {
-      history.push('/');
+      history.push("/");
     } else {
       history.goBack();
     }
@@ -94,20 +103,24 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
 
     // @ts-ignore
     hotkeys.current.__mousetrap__.stopCallback = (_e, element) => {
-      return ['TEXTAREA', 'SELECT', 'INPUT', 'EM-EMOJI-PICKER'].includes(element.tagName) || !!element.closest('[contenteditable]');
+      return (
+        ["TEXTAREA", "SELECT", "INPUT", "EM-EMOJI-PICKER"].includes(
+          element.tagName
+        ) || !!element.closest("[contenteditable]")
+      );
     };
   };
 
   const handleHotkeyToggleHelp = () => {
-    dispatch(openModal('HOTKEYS'));
+    dispatch(openModal("HOTKEYS"));
   };
 
   const handleHotkeyGoToHome = () => {
-    history.push('/');
+    history.push("/");
   };
 
   const handleHotkeyGoToNotifications = () => {
-    history.push('/notifications');
+    history.push("/notifications");
   };
 
   const handleHotkeyGoToLikes = () => {
@@ -126,15 +139,15 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
   };
 
   const handleHotkeyGoToBlocked = () => {
-    history.push('/blocks');
+    history.push("/blocks");
   };
 
   const handleHotkeyGoToMuted = () => {
-    history.push('/mutes');
+    history.push("/mutes");
   };
 
   const handleHotkeyGoToRequests = () => {
-    history.push('/follow_requests');
+    history.push("/follow_requests");
   };
 
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
@@ -156,7 +169,13 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
   };
 
   return (
-    <HotKeys keyMap={keyMap} handlers={me ? handlers : undefined} ref={setHotkeysRef} attach={window} focused>
+    <HotKeys
+      keyMap={keyMap}
+      handlers={me ? handlers : undefined}
+      ref={setHotkeysRef}
+      attach={window}
+      focused
+    >
       {children}
     </HotKeys>
   );

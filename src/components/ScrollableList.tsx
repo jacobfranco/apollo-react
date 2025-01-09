@@ -1,5 +1,5 @@
-import debounce from "lodash/debounce";
-import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import { debounce } from "es-toolkit";
+import { useEffect, useRef, useMemo, useCallback, forwardRef } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Virtuoso,
@@ -10,10 +10,11 @@ import {
   IndexLocationWithAlign,
 } from "react-virtuoso";
 
+import { Card } from "src/components/Card";
+import Spinner from "src/components/Spinner";
 import { useSettings } from "src/hooks/useSettings";
 
 import LoadMore from "./LoadMore";
-import { Card, Spinner } from "src/components";
 
 /** Custom Viruoso component context. */
 type Context = {
@@ -38,7 +39,7 @@ const Item: Components<JSX.Element, Context>["Item"] = ({
 
 /** Custom Virtuoso List component for the outer container. */
 // Ensure the className winds up here
-const List: Components<JSX.Element, Context>["List"] = React.forwardRef(
+const List: Components<JSX.Element, Context>["List"] = forwardRef(
   (props, ref) => {
     const { context, ...rest } = props;
     return <div ref={ref} className={context?.listClassName} {...rest} />;
@@ -94,7 +95,7 @@ interface IScrollableList extends VirtuosoProps<any, any> {
 }
 
 /** Legacy ScrollableList with Virtuoso for backwards-compatibility. */
-const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(
+const ScrollableList = forwardRef<VirtuosoHandle, IScrollableList>(
   (
     {
       scrollKey,
@@ -126,7 +127,7 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(
     const { autoloadMore } = useSettings();
 
     // Preserve scroll position
-    const scrollDataKey = `apollo:scrollData:${scrollKey}`;
+    const scrollDataKey = `src:scrollData:${scrollKey}`;
     const scrollData: SavedScrollPosition | null = useMemo(
       () => JSON.parse(sessionStorage.getItem(scrollDataKey)!),
       [scrollDataKey]
@@ -165,7 +166,7 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(
           }
         },
         150,
-        { trailing: true }
+        { edges: ["trailing"] }
       ),
       []
     );

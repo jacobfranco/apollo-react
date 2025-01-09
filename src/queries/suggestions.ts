@@ -6,9 +6,8 @@ import {
 
 import { fetchRelationships } from "src/actions/accounts";
 import { importFetchedAccounts } from "src/actions/importer";
-import { getLinks } from "src/api";
-import { useAppDispatch } from "src/hooks";
 import { useApi } from "src/hooks/useApi";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
 
 import { PaginatedResult, removePageItem } from "../utils/queries";
 
@@ -39,20 +38,19 @@ const useSuggestions = () => {
     pageParam: PageParam
   ): Promise<PaginatedResult<Result>> => {
     const endpoint = pageParam?.link || "/api/suggestions";
-    const response = await api.get<Suggestion[]>(endpoint);
-    const hasMore = !!response.headers.link;
-    const nextLink = getLinks(response).refs.find(
-      (link) => link.rel === "next"
-    )?.uri;
+    const response = await api.get(endpoint);
+    const next = response.next();
+    const hasMore = !!next;
 
-    const accounts = response.data.map(({ account }) => account);
+    const data: Suggestion[] = await response.json();
+    const accounts = data.map(({ account }) => account);
     const accountIds = accounts.map((account) => account.id);
     dispatch(importFetchedAccounts(accounts));
     dispatch(fetchRelationships(accountIds));
 
     return {
-      result: response.data.map((x) => ({ ...x, account: x.account.id })),
-      link: nextLink,
+      result: data.map((x) => ({ ...x, account: x.account.id })),
+      link: next ?? undefined,
       hasMore,
     };
   };
@@ -109,21 +107,20 @@ function useOnboardingSuggestions() {
     link: string | undefined;
     hasMore: boolean;
   }> => {
-    const link = pageParam?.link || "/api//suggestions";
-    const response = await api.get<Suggestion[]>(link);
-    const hasMore = !!response.headers.link;
-    const nextLink = getLinks(response).refs.find(
-      (link) => link.rel === "next"
-    )?.uri;
+    const link = pageParam?.link || "/api/suggestions";
+    const response = await api.get(link);
+    const next = response.next();
+    const hasMore = !!next;
 
-    const accounts = response.data.map(({ account }) => account);
+    const data: Suggestion[] = await response.json();
+    const accounts = data.map(({ account }) => account);
     const accountIds = accounts.map((account) => account.id);
     dispatch(importFetchedAccounts(accounts));
     dispatch(fetchRelationships(accountIds));
 
     return {
-      data: response.data,
-      link: nextLink,
+      data: data,
+      link: next ?? undefined,
       hasMore,
     };
   };

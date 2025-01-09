@@ -1,6 +1,5 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
-import { getNextLink } from "src/api";
 import { useApi } from "src/hooks/useApi";
 import { Account } from "src/types/entities";
 import { flattenPages, PaginatedResult } from "src/utils/queries";
@@ -16,20 +15,20 @@ export default function useAccountSearch(q: string) {
     const uri = nextPageLink || "/api/accounts/search";
 
     const response = await api.get(uri, {
-      params: {
+      searchParams: {
         q,
         limit: 10,
         followers: true,
       },
     });
-    const { data } = response;
+    const data = await response.json();
 
-    const link = getNextLink(response);
-    const hasMore = !!link;
+    const next = response.next();
+    const hasMore = !!next;
 
     return {
       result: data,
-      link,
+      link: next ?? undefined,
       hasMore,
     };
   };

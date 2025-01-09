@@ -12,10 +12,7 @@ interface ISpaceTimeline {
 
 export const SpaceTimeline: React.FC<ISpaceTimeline> = ({ spacePath }) => {
   const dispatch = useAppDispatch();
-  const space = useAppSelector(
-    (state) =>
-      state.spaces.byUrl.get(spacePath) || state.spaces.byName.get(spacePath)
-  );
+  const space = useAppSelector((state) => state.spaces.get(spacePath));
   const next = useAppSelector(
     (state) => state.timelines.get(`space:${spacePath}`)?.next
   );

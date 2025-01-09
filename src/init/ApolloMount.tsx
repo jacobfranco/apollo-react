@@ -1,28 +1,23 @@
-import React, { Suspense } from 'react';
-import { Toaster } from 'react-hot-toast';
-import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
-import { CompatRouter } from 'react-router-dom-v5-compat';
-// @ts-ignore: it doesn't have types
-import { ScrollContext } from 'react-router-scroll-4';
+import { lazy, Suspense, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { BrowserRouter, Switch, Redirect, Route } from "react-router-dom";
+import { CompatRouter } from "react-router-dom-v5-compat";
 
-import * as BuildConfig from 'src/build-config';
-import LoadingScreen from 'src/components/LoadingScreen';
-import SiteErrorBoundary from 'src/components/SiteErrorBoundary';
-import {
-  ModalContainer,
-  OnboardingWizard,
-} from 'src/features/AsyncComponents';
-import {
-  useAppSelector,
-  useLoggedIn,
-  useOwnAccount,
-  useApolloConfig,
-} from 'src/hooks';
-import { useCachedLocationHandler } from 'src/utils/redirect';
+import { openModal } from "src/actions/modals";
+import LoadingScreen from "src/components/LoadingScreen";
+import { ScrollContext } from "src/components/ScrollContext";
+import SiteErrorBoundary from "src/components/SiteErrorBoundary";
+import { ModalContainer } from "src/features/AsyncComponents";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useLoggedIn } from "src/hooks/useLoggedIn";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
+import { useApolloConfig } from "src/hooks/useApolloConfig";
+import { useCachedLocationHandler } from "src/utils/redirect";
 
-const GdprBanner = React.lazy(() => import('src/components/GdprBanner'));
-const EmbeddedStatus = React.lazy(() => import('src/features/EmbeddedStatus'));
-const UI = React.lazy(() => import('src/features/UI'));
+const GdprBanner = lazy(() => import("src/components/GdprBanner"));
+const EmbeddedStatus = lazy(() => import("src/features/EmbeddedStatus"));
+const UI = lazy(() => import("src/features/UI"));
 
 /** Highest level node with the Redux store. */
 const ApolloMount = () => {
@@ -30,29 +25,33 @@ const ApolloMount = () => {
 
   const { isLoggedIn } = useLoggedIn();
   const { account } = useOwnAccount();
+  const dispatch = useAppDispatch();
+
   const apolloConfig = useApolloConfig();
 
-  const needsOnboarding = useAppSelector(state => state.onboarding.needsOnboarding);
+  const needsOnboarding = useAppSelector(
+    (state) => state.onboarding.needsOnboarding
+  );
   const showOnboarding = account && needsOnboarding;
-  const { redirectRootNoLogin, gdpr } = apolloConfig;
 
-  // @ts-ignore: I don't actually know what these should be, lol
-  const shouldUpdateScroll = (prevRouterProps, { location }) => {
-    return !(location.state?.apolloModalKey && location.state?.apolloModalKey !== prevRouterProps?.location?.state?.apolloModalKey);
-  };
+  if (showOnboarding) {
+    dispatch(openModal("ONBOARDING_FLOW"));
+  }
+
+  const { redirectRootNoLogin, gdpr } = apolloConfig;
 
   return (
     <SiteErrorBoundary>
-      <BrowserRouter basename={BuildConfig.FE_SUBDIRECTORY}>
+      <BrowserRouter>
         <CompatRouter>
-          <ScrollContext shouldUpdateScroll={shouldUpdateScroll}>
+          <ScrollContext>
             <Switch>
-              {(!isLoggedIn && redirectRootNoLogin) && (
-                <Redirect exact from='/' to={redirectRootNoLogin} />
+              {!isLoggedIn && redirectRootNoLogin && (
+                <Redirect exact from="/" to={redirectRootNoLogin} />
               )}
 
               <Route
-                path='/embed/:statusId'
+                path="/embed/:statusId"
                 render={(props) => (
                   <Suspense>
                     <EmbeddedStatus params={props.match.params} />
@@ -60,30 +59,30 @@ const ApolloMount = () => {
                 )}
               />
 
-              <Redirect from='/@:username/:statusId/embed' to='/embed/:statusId' />
+              <Redirect
+                from="/@:username/:statusId/embed"
+                to="/embed/:statusId"
+              />
 
               <Route>
                 <Suspense fallback={<LoadingScreen />}>
-                  {showOnboarding
-                    ? <OnboardingWizard />
-                    : <UI />
-                  }
+                  <UI />
                 </Suspense>
 
                 <Suspense>
                   <ModalContainer />
                 </Suspense>
 
-                {(gdpr && !isLoggedIn) && (
+                {gdpr && !isLoggedIn && (
                   <Suspense>
                     <GdprBanner />
                   </Suspense>
                 )}
 
-                <div id='toaster'>
+                <div id="toaster">
                   <Toaster
-                    position='top-right'
-                    containerClassName='top-10'
+                    position="top-right"
+                    containerClassName="top-10"
                     containerStyle={{ top: 75 }}
                   />
                 </div>

@@ -1,11 +1,16 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { locales } from 'src/messages';
+import { locales } from "src/messages";
 
-import { coerceObject } from './utils';
+import { coerceObject } from "src/schemas/utils";
 
 const skinToneSchema = z.union([
-  z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+  z.literal(6),
 ]);
 
 const settingsSchema = z.object({
@@ -14,17 +19,25 @@ const settingsSchema = z.object({
   reduceMotion: z.boolean().catch(false),
   underlineLinks: z.boolean().catch(false),
   autoPlayGif: z.boolean().catch(true),
-  displayMedia: z.enum(['default', 'hide_all', 'show_all']).catch('default'),
+  displayMedia: z.enum(["default", "hide_all", "show_all"]).catch("default"),
   expandSpoilers: z.boolean().catch(false),
   preserveSpoilers: z.boolean().catch(false),
   unfollowModal: z.boolean().catch(false),
   boostModal: z.boolean().catch(false),
   deleteModal: z.boolean().catch(true),
   missingDescriptionModal: z.boolean().catch(false),
-  defaultPrivacy: z.enum(['public', 'unlisted', 'private', 'direct']).catch('public'),
-  defaultContentType: z.enum(['text/plain', 'text/markdown']).catch('text/plain'),
-  themeMode: z.enum(['system', 'light', 'dark']).catch('system'),
-  locale: z.string().catch(navigator.language).pipe(z.enum(locales)).catch('en'),
+  defaultPrivacy: z
+    .enum(["public", "unlisted", "private", "direct"])
+    .catch("public"),
+  defaultContentType: z
+    .enum(["text/plain", "text/markdown"])
+    .catch("text/plain"),
+  themeMode: z.enum(["system", "light", "dark"]).catch("system"),
+  locale: z
+    .string()
+    .catch(navigator.language)
+    .pipe(z.enum(locales))
+    .catch("en"),
   showExplanationBox: z.boolean().catch(true),
   explanationBox: z.boolean().catch(true),
   autoloadTimelines: z.boolean().catch(true),
@@ -34,7 +47,7 @@ const settingsSchema = z.object({
   isDeveloper: z.boolean().catch(false),
   demo: z.boolean().catch(false),
   chats: coerceObject({
-    mainWindow: z.enum(['minimized', 'open']).catch('minimized'),
+    mainWindow: z.enum(["minimized", "open"]).catch("minimized"),
     sound: z.boolean().catch(true),
   }),
   home: coerceObject({
@@ -48,9 +61,6 @@ const settingsSchema = z.object({
       pinned: z.boolean().catch(true),
     }),
   }),
-  remote_timeline: coerceObject({
-    pinnedHosts: z.string().array().catch([]),
-  }),
   public: coerceObject({
     other: coerceObject({
       onlyMedia: z.boolean().catch(false),
@@ -61,18 +71,18 @@ const settingsSchema = z.object({
       onlyMedia: z.boolean().catch(false),
     }),
   }),
-  remote: coerceObject({
-    other: coerceObject({
-      onlyMedia: z.boolean().catch(false),
-    }),
-  }),
   notifications: coerceObject({
     quickFilter: coerceObject({
-      active: z.string().catch('all'),
+      active: z.string().catch("all"),
       advanced: z.boolean().catch(false),
       show: z.boolean().catch(true),
     }),
   }),
+  /** Settings notifications that have been dismissed. See `useSettingsNotifications` hook. */
+  dismissedSettingsNotifications: z.array(z.string()).catch([]),
+  frequentlyUsedEmojis: z
+    .record(z.string(), z.number().int().nonnegative())
+    .catch({}),
 });
 
 type Settings = z.infer<typeof settingsSchema>;

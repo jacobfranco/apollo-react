@@ -1,6 +1,9 @@
 // src/components/LolLiveScoreboard.tsx
 
 import React, { useEffect, useMemo } from "react";
+import swordsIcon from "@tabler/icons/outline/swords.svg";
+import coinsIcon from "@tabler/icons/outline/coins.svg";
+import towerIcon from "@tabler/icons/outline/tower.svg";
 import { useTeamData } from "src/teams";
 import AutoFitText from "./AutoFitText";
 import placeholderTeam from "src/assets/images/placeholder-team.png";
@@ -232,7 +235,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
               </div>
               <div className="flex-shrink-0 mx-2">
                 <SvgIcon
-                  src={require("@tabler/icons/outline/swords.svg")}
+                  src={swordsIcon}
                   className="h-6 w-6 text-primary-500"
                 />
               </div>
@@ -246,10 +249,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
                 {team1Gold}
               </div>
               <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/coins.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
+                <SvgIcon src={coinsIcon} className="h-6 w-6 text-primary-500" />
               </div>
               <div className="flex-1 text-left text-lg font-bold">
                 {team2Gold}
@@ -261,10 +261,7 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
                 {team1Towers}
               </div>
               <div className="flex-shrink-0 mx-2">
-                <SvgIcon
-                  src={require("@tabler/icons/outline/tower.svg")}
-                  className="h-6 w-6 text-primary-500"
-                />
+                <SvgIcon src={towerIcon} className="h-6 w-6 text-primary-500" />
               </div>
               <div className="flex-1 text-left text-lg font-bold">
                 {team2Towers}

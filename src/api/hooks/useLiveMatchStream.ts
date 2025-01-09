@@ -1,15 +1,16 @@
-import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { connectLiveMatchStream } from 'src/actions/streaming';
-import { getAccessToken } from 'src/utils/auth';
-import * as BuildConfig from 'src/build-config';
+import { useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "src/hooks";
+import { connectLiveMatchStream } from "src/actions/streaming";
+import { getAccessToken } from "src/utils/auth";
+import * as BuildConfig from "src/build-config";
+import { urls } from "src/utils/urls";
 
 const useLiveMatchStream = (matchId: number | null) => {
   const dispatch = useAppDispatch();
   const stream = useRef<(() => void) | null>(null);
 
   const accessToken = useAppSelector(getAccessToken);
-  const streamingUrl = BuildConfig.STREAMING_URL;
+  const streamingUrl = urls.STREAMING_URL;
   const path = matchId !== null ? `live-match/${matchId}` : null; // WebSocket endpoint path
 
   const connect = () => {

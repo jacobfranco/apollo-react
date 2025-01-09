@@ -1,14 +1,14 @@
-import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useRef } from 'react';
+import clsx from "clsx";
+import { debounce } from "es-toolkit";
+import React, { useRef } from "react";
 
-import { fetchAccount } from 'src/actions/accounts';
+import { fetchAccount } from "src/actions/accounts";
 import {
   openProfileHoverCard,
   closeProfileHoverCard,
-} from 'src/actions/profile-hover-card';
-import { useAppDispatch } from 'src/hooks';
-import { isMobile } from 'src/is-mobile';
+} from "src/actions/profile-hover-card";
+import { useAppDispatch } from "src/hooks";
+import { isMobile } from "src/is-mobile";
 
 const showProfileHoverCard = debounce((dispatch, ref, accountId) => {
   dispatch(openProfileHoverCard(ref, accountId));
@@ -22,10 +22,15 @@ interface IHoverRefWrapper {
 }
 
 /** Makes a profile hover card appear when the wrapped element is hovered. */
-export const HoverRefWrapper: React.FC<IHoverRefWrapper> = ({ accountId, children, inline = false, className }) => {
+export const HoverRefWrapper: React.FC<IHoverRefWrapper> = ({
+  accountId,
+  children,
+  inline = false,
+  className,
+}) => {
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLDivElement>(null);
-  const Elem: keyof JSX.IntrinsicElements = inline ? 'span' : 'div';
+  const Elem: keyof JSX.IntrinsicElements = inline ? "span" : "div";
 
   const handleMouseEnter = () => {
     if (!isMobile(window.innerWidth)) {
@@ -47,7 +52,7 @@ export const HoverRefWrapper: React.FC<IHoverRefWrapper> = ({ accountId, childre
   return (
     <Elem
       ref={ref}
-      className={clsx('hover-ref-wrapper', className)}
+      className={clsx("hover-ref-wrapper", className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

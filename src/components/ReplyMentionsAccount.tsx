@@ -1,12 +1,16 @@
-import React, { useEffect } from "react";
+import plusIcon from "@tabler/icons/outline/plus.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
+import { useEffect } from "react";
 import { defineMessages, useIntl } from "react-intl";
 
 import { fetchAccount } from "src/actions/accounts";
 import { addToMentions, removeFromMentions } from "src/actions/compose";
-import { useAccount } from "src/api/hooks/useAccount";
+import { useAccount } from "src/api/hooks";
 import AccountComponent from "src/components/Account";
-import { HStack, IconButton } from "src/components";
-import { useAppDispatch, useCompose } from "src/hooks";
+import IconButton from "src/components/IconButton";
+import HStack from "src/components/HStack";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useCompose } from "src/hooks/useCompose";
 
 const messages = defineMessages({
   remove: {
@@ -28,7 +32,7 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
 
   const compose = useCompose(composeId);
   const { account } = useAccount(accountId);
-  const added = !!account && compose.to?.includes(account.id);
+  const added = !!account && compose.to?.includes(account.username);
 
   const onRemove = () => dispatch(removeFromMentions(composeId, accountId));
   const onAdd = () => dispatch(addToMentions(composeId, accountId));
@@ -46,7 +50,7 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
   if (added) {
     button = (
       <IconButton
-        src={require("@tabler/icons/outline/x.svg")}
+        src={xIcon}
         iconClassName="h-5 w-5"
         title={intl.formatMessage(messages.remove)}
         onClick={onRemove}
@@ -55,7 +59,7 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
   } else {
     button = (
       <IconButton
-        src={require("@tabler/icons/outline/plus.svg")}
+        src={plusIcon}
         iconClassName="h-5 w-5"
         title={intl.formatMessage(messages.add)}
         onClick={onAdd}
@@ -70,7 +74,7 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
       justifyContent="between"
       className="p-2.5"
     >
-      <div className="w-full">
+      <div className="w-5/6">
         <AccountComponent
           account={account}
           withRelationship={false}

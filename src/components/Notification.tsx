@@ -1,26 +1,44 @@
-import React, { useCallback } from "react";
+import atIcon from "@tabler/icons/outline/at.svg";
+import bellRingingIcon from "@tabler/icons/outline/bell-ringing.svg";
+import boltIcon from "@tabler/icons/outline/bolt.svg";
+import briefcaseIcon from "@tabler/icons/outline/briefcase.svg";
+import calendarEventIcon from "@tabler/icons/outline/calendar-event.svg";
+import calendarTimeIcon from "@tabler/icons/outline/calendar-time.svg";
+import chartBarIcon from "@tabler/icons/outline/chart-bar.svg";
+import heartIcon from "@tabler/icons/outline/heart.svg";
+import messagesIcon from "@tabler/icons/outline/messages.svg";
+import moodHappyIcon from "@tabler/icons/outline/mood-happy.svg";
+import pencilIcon from "@tabler/icons/outline/pencil.svg";
+import repeatIcon from "@tabler/icons/outline/repeat.svg";
+import userCheckIcon from "@tabler/icons/outline/user-check.svg";
+import userPlusIcon from "@tabler/icons/outline/user-plus.svg";
+import { useCallback } from "react";
 import {
   defineMessages,
   useIntl,
-  FormattedMessage,
   IntlShape,
   MessageDescriptor,
   defineMessage,
+  FormattedMessage,
 } from "react-intl";
 import { Link, useHistory } from "react-router-dom";
 
 import { mentionCompose } from "src/actions/compose";
 import { repost, like, unrepost, unlike } from "src/actions/interactions";
+import { patchMe } from "src/actions/me";
 import { openModal } from "src/actions/modals";
 import { getSettings } from "src/actions/settings";
 import { hideStatus, revealStatus } from "src/actions/statuses";
-import { Emoji, HStack, Text } from "src/components";
-import { default as Icon } from 'src/components/Icon'
+import Icon from "src/components/Icon";
+import Emoji from "src/components/Emoji";
+import HStack from "src/components/HStack";
+import Text from "src/components/Text";
 import AccountContainer from "src/containers/AccountContainer";
-import StatusContainer from "src/containers/StatusContainer";
 import { HotKeys } from "src/features/Hotkeys";
-import { useAppDispatch, useAppSelector } from "src/hooks";
-import { makeGetNotification } from "src/selectors";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { makeGetNotification } from "src/selectors/index";
+import toast from "src/toast";
 import { NotificationType, validType } from "src/utils/notification";
 
 import type { ScrollPosition } from "src/components/Status";
@@ -29,6 +47,7 @@ import type {
   Status as StatusEntity,
   Notification as NotificationEntity,
 } from "src/types/entities";
+import StatusContainer from "src/containers/StatusContainer";
 
 const notificationForScreenReader = (
   intl: IntlShape,
@@ -55,25 +74,25 @@ const buildLink = (account: AccountEntity): JSX.Element => (
       className="font-bold text-gray-800 hover:underline dark:text-gray-200"
       title={account.username}
       to={`/@${account.username}`}
-      dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-    />
+    >
+      {account.display_name}
+    </Link>
   </bdi>
 );
 
-// TODO: Maybe take out some of these
 const icons: Record<NotificationType, string> = {
-  follow: require("@tabler/icons/outline/user-plus.svg"),
-  follow_request: require("@tabler/icons/outline/user-plus.svg"),
-  mention: require("@tabler/icons/outline/at.svg"),
-  like: require("@tabler/icons/outline/heart.svg"),
-  group_like: require("@tabler/icons/outline/heart.svg"),
-  repost: require("@tabler/icons/outline/repeat.svg"),
-  group_repost: require("@tabler/icons/outline/repeat.svg"),
-  status: require("@tabler/icons/outline/bell-ringing.svg"),
-  poll: require("@tabler/icons/outline/chart-bar.svg"),
-  move: require("@tabler/icons/outline/briefcase.svg"),
-  user_approved: require("@tabler/icons/outline/user-plus.svg"),
-  update: require("@tabler/icons/outline/pencil.svg"),
+  follow: userPlusIcon,
+  follow_request: userPlusIcon,
+  mention: atIcon,
+  like: heartIcon,
+  group_like: heartIcon,
+  repost: repeatIcon,
+  group_repost: repeatIcon,
+  status: bellRingingIcon,
+  poll: chartBarIcon,
+  move: briefcaseIcon,
+  user_approved: userPlusIcon,
+  update: pencilIcon,
 };
 
 const nameMessage = defineMessage({
@@ -81,54 +100,90 @@ const nameMessage = defineMessage({
   defaultMessage: "{link}{others}",
 });
 
-const messages: Record<NotificationType, MessageDescriptor> = defineMessages({
-  follow: {
-    id: "notification.follow",
-    defaultMessage: "{name} followed you",
-  },
-  follow_request: {
-    id: "notification.follow_request",
-    defaultMessage: "{name} has requested to follow you",
-  },
-  mention: {
-    id: "notification.mentioned",
-    defaultMessage: "{name} mentioned you",
-  },
-  like: {
-    id: "notification.like",
-    defaultMessage: "{name} liked your post",
-  },
-  group_like: {
-    id: "notification.group_like",
-    defaultMessage: "{name} liked your group post",
-  },
-  repost: {
-    id: "notification.repost",
-    defaultMessage: "{name} reposted your post",
-  },
-  group_repost: {
-    id: "notification.group_repost",
-    defaultMessage: "{name} reposted your group post",
-  },
-  status: {
-    id: "notification.status",
-    defaultMessage: "{name} just posted",
-  },
-  poll: {
-    id: "notification.poll",
-    defaultMessage: "A poll you have voted in has ended",
-  },
-  move: {
-    id: "notification.move",
-    defaultMessage: "{name} moved to {targetName}",
-  },
-  user_approved: {
-    id: "notification.user_approved",
-    defaultMessage: "Welcome to {instance}!",
-  },
-  update: {
-    id: "notification.update",
-    defaultMessage: "{name} edited a post you interacted with",
+const notificationMessages: Record<NotificationType, MessageDescriptor> =
+  defineMessages({
+    follow: {
+      id: "notification.follow",
+      defaultMessage: "{name} followed you",
+    },
+    follow_request: {
+      id: "notification.follow_request",
+      defaultMessage: "{name} has requested to follow you",
+    },
+    mention: {
+      id: "notification.mentioned",
+      defaultMessage: "{name} mentioned you",
+    },
+    like: {
+      id: "notification.like",
+      defaultMessage: "{name} liked your post",
+    },
+    group_like: {
+      id: "notification.group_like",
+      defaultMessage: "{name} liked your group post",
+    },
+    repost: {
+      id: "notification.repost",
+      defaultMessage: "{name} reposted your post",
+    },
+    group_repost: {
+      id: "notification.group_repost",
+      defaultMessage: "{name} reposted your group post",
+    },
+    status: {
+      id: "notification.status",
+      defaultMessage: "{name} just posted",
+    },
+    poll: {
+      id: "notification.poll",
+      defaultMessage: "A poll you have voted in has ended",
+    },
+    move: {
+      id: "notification.move",
+      defaultMessage: "{name} moved to {targetName}",
+    },
+    "pleroma:chat_mention": {
+      id: "notification.pleroma:chat_mention",
+      defaultMessage: "{name} sent you a message",
+    },
+    "pleroma:emoji_reaction": {
+      id: "notification.pleroma:emoji_reaction",
+      defaultMessage: "{name} reacted to your post",
+    },
+    user_approved: {
+      id: "notification.user_approved",
+      defaultMessage: "Welcome to {instance}!",
+    },
+    update: {
+      id: "notification.update",
+      defaultMessage: "{name} edited a post you interacted with",
+    },
+    "pleroma:event_reminder": {
+      id: "notification.pleroma:event_reminder",
+      defaultMessage: "An event you are participating in starts soon",
+    },
+    "pleroma:participation_request": {
+      id: "notification.pleroma:participation_request",
+      defaultMessage: "{name} wants to join your event",
+    },
+    "pleroma:participation_accepted": {
+      id: "notification.pleroma:participation_accepted",
+      defaultMessage: "You were accepted to join the event",
+    },
+    "ditto:name_grant": {
+      id: "notification.ditto:name_grant",
+      defaultMessage: "You were granted the name {username}",
+    },
+    "ditto:zap": {
+      id: "notification.ditto:zap",
+      defaultMessage: "{name} zapped you {amount} sats",
+    },
+  });
+
+const messages = defineMessages({
+  updateNameSuccess: {
+    id: "notification.update_name_success",
+    defaultMessage: "Name updated successfully",
   },
 });
 
@@ -136,26 +191,18 @@ const buildMessage = (
   intl: IntlShape,
   type: NotificationType,
   account: AccountEntity,
-  totalCount: number | null,
+  username: string | undefined,
   targetName: string,
   instanceTitle: string
 ): React.ReactNode => {
   const link = buildLink(account);
   const name = intl.formatMessage(nameMessage, {
     link,
-    others:
-      totalCount && totalCount > 0 ? (
-        <FormattedMessage
-          id="notification.others"
-          defaultMessage="+ {count, plural, one {# other} other {# others}}"
-          values={{ count: totalCount - 1 }}
-        />
-      ) : (
-        ""
-      ),
+    others: "",
   });
 
-  return intl.formatMessage(messages[type], {
+  return intl.formatMessage(notificationMessages[type], {
+    username,
     name,
     targetName,
     instance: instanceTitle,
@@ -189,7 +236,10 @@ const Notification: React.FC<INotification> = (props) => {
   const intl = useIntl();
 
   const type = notification.type;
+  console.log("Notification type: " + type);
   const { account, status } = notification;
+  console.log("Notification account: " + account);
+  console.log("Notification status: " + status);
 
   const getHandlers = () => ({
     reply: handleMention,
@@ -210,6 +260,7 @@ const Notification: React.FC<INotification> = (props) => {
       account &&
       typeof account === "object"
     ) {
+      console.log(`/@${account.username}/posts/${status.id}`);
       history.push(`/@${account.username}/posts/${status.id}`);
     } else {
       handleOpenProfile();
@@ -298,6 +349,11 @@ const Notification: React.FC<INotification> = (props) => {
     }
   };
 
+  const updateName = async (name: string) => {
+    await dispatch(patchMe({ nip05: name }));
+    toast.success(messages.updateNameSuccess);
+  };
+
   const renderIcon = (): React.ReactNode => {
     if (validType(type)) {
       return (
@@ -312,6 +368,7 @@ const Notification: React.FC<INotification> = (props) => {
   };
 
   const renderContent = () => {
+    console.log("Rendering content type: " + type);
     switch (type as NotificationType) {
       case "follow":
       case "user_approved":
@@ -369,32 +426,27 @@ const Notification: React.FC<INotification> = (props) => {
     }
   };
 
+  const username = notification.name;
   const targetName =
     notification.target && typeof notification.target === "object"
-      ? notification.target.id
+      ? notification.target.username
       : "";
 
   const message: React.ReactNode =
     validType(type) && account && typeof account === "object"
-      ? buildMessage(
-        intl,
-        type,
-        account,
-        notification.total_count,
-        targetName,
-        "Apollo"
-      )
+      ? buildMessage(intl, type, account, username, targetName, "Apollo")
       : null;
 
   const ariaLabel = validType(type)
     ? notificationForScreenReader(
-      intl,
-      intl.formatMessage(messages[type], {
-        name: account && typeof account === "object" ? account.id : "",
-        targetName,
-      }),
-      notification.created_at
-    )
+        intl,
+        intl.formatMessage(notificationMessages[type], {
+          username,
+          name: account && typeof account === "object" ? account.username : "",
+          targetName,
+        }),
+        notification.created_at
+      )
     : "";
 
   return (

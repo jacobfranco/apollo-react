@@ -1,23 +1,27 @@
+import { HTTPError } from "src/api/HTTPError";
+
 import {
   AUTH_LOGGED_OUT,
   AUTH_ACCOUNT_REMEMBER_SUCCESS,
   VERIFY_CREDENTIALS_SUCCESS,
-} from 'src/actions/auth';
+} from "../actions/auth.ts";
 import {
   ME_FETCH_SUCCESS,
   ME_FETCH_FAIL,
   ME_FETCH_SKIP,
   ME_PATCH_SUCCESS,
-} from 'src/actions/me';
+} from "../actions/me.ts";
 
-import type { AxiosError } from 'axios';
-import type { AnyAction } from 'redux';
-import type { Me } from 'src/types/apollo';
+import type { AnyAction } from "redux";
+import type { Me } from "src/types/apollo";
 
 const initialState: Me = null;
 
-const handleForbidden = (state: Me, error: AxiosError) => {
-  if (([401, 403] as any[]).includes(error.response?.status)) {
+const handleForbidden = (state: Me, error: unknown) => {
+  if (
+    error instanceof HTTPError &&
+    [401, 403].includes(error.response.status)
+  ) {
     return false;
   } else {
     return state;

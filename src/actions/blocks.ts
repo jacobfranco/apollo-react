@@ -1,35 +1,37 @@
-import { isLoggedIn } from 'src/utils/auth';
+import { isLoggedIn } from "src/utils/auth";
 
-import api, { getLinks } from '../api';
+import api from "../api";
 
-import { fetchRelationships } from './accounts';
-import { importFetchedAccounts } from './importer';
+import { fetchRelationships } from "./accounts";
+import { importFetchedAccounts } from "./importer";
 
-import type { AppDispatch, RootState } from 'src/store';
+import type { AppDispatch, RootState } from "src/store";
 
-const BLOCKS_FETCH_REQUEST = 'BLOCKS_FETCH_REQUEST';
-const BLOCKS_FETCH_SUCCESS = 'BLOCKS_FETCH_SUCCESS';
-const BLOCKS_FETCH_FAIL = 'BLOCKS_FETCH_FAIL';
+const BLOCKS_FETCH_REQUEST = "BLOCKS_FETCH_REQUEST";
+const BLOCKS_FETCH_SUCCESS = "BLOCKS_FETCH_SUCCESS";
+const BLOCKS_FETCH_FAIL = "BLOCKS_FETCH_FAIL";
 
-const BLOCKS_EXPAND_REQUEST = 'BLOCKS_EXPAND_REQUEST';
-const BLOCKS_EXPAND_SUCCESS = 'BLOCKS_EXPAND_SUCCESS';
-const BLOCKS_EXPAND_FAIL = 'BLOCKS_EXPAND_FAIL';
+const BLOCKS_EXPAND_REQUEST = "BLOCKS_EXPAND_REQUEST";
+const BLOCKS_EXPAND_SUCCESS = "BLOCKS_EXPAND_SUCCESS";
+const BLOCKS_EXPAND_FAIL = "BLOCKS_EXPAND_FAIL";
 
-const fetchBlocks = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  if (!isLoggedIn(getState)) return null;
+const fetchBlocks =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
+    if (!isLoggedIn(getState)) return null;
 
-  dispatch(fetchBlocksRequest());
+    dispatch(fetchBlocksRequest());
 
-  return api(getState)
-    .get('/api/blocks')
-    .then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedAccounts(response.data));
-      dispatch(fetchBlocksSuccess(response.data, next ? next.uri : null));
-      dispatch(fetchRelationships(response.data.map((item: any) => item.id)) as any);
-    })
-    .catch(error => dispatch(fetchBlocksFail(error)));
-};
+    return api(getState)
+      .get("/api/blocks")
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedAccounts(data));
+        dispatch(fetchBlocksSuccess(data, next));
+        dispatch(fetchRelationships(data.map((item: any) => item.id)) as any);
+      })
+      .catch((error) => dispatch(fetchBlocksFail(error)));
+  };
 
 function fetchBlocksRequest() {
   return { type: BLOCKS_FETCH_REQUEST };
@@ -50,27 +52,29 @@ function fetchBlocksFail(error: unknown) {
   };
 }
 
-const expandBlocks = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  if (!isLoggedIn(getState)) return null;
+const expandBlocks =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
+    if (!isLoggedIn(getState)) return null;
 
-  const url = getState().user_lists.blocks.next;
+    const url = getState().user_lists.blocks.next;
 
-  if (url === null) {
-    return null;
-  }
+    if (url === null) {
+      return null;
+    }
 
-  dispatch(expandBlocksRequest());
+    dispatch(expandBlocksRequest());
 
-  return api(getState)
-    .get(url)
-    .then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedAccounts(response.data));
-      dispatch(expandBlocksSuccess(response.data, next ? next.uri : null));
-      dispatch(fetchRelationships(response.data.map((item: any) => item.id)) as any);
-    })
-    .catch(error => dispatch(expandBlocksFail(error)));
-};
+    return api(getState)
+      .get(url)
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedAccounts(data));
+        dispatch(expandBlocksSuccess(data, next));
+        dispatch(fetchRelationships(data.map((item: any) => item.id)) as any);
+      })
+      .catch((error) => dispatch(expandBlocksFail(error)));
+  };
 
 function expandBlocksRequest() {
   return {

@@ -5,17 +5,16 @@ import { fetchHashtag, followHashtag, unfollowHashtag } from "src/actions/tags";
 import { expandHashtagTimeline, clearTimeline } from "src/actions/timelines";
 import { useHashtagStream } from "src/api/hooks";
 import { Toggle } from "src/components";
-import List from "src/components/List";
-import { ListItem } from "src/components/List";
+import List, { ListItem } from "src/components/List";
 import { Column } from "src/components/Column";
 import Timeline from "src/features/Timeline";
 import {
   useAppDispatch,
   useAppSelector,
   useLoggedIn,
+  useIsMobile,
   useTheme,
 } from "src/hooks";
-import { useIsMobile } from "src/hooks";
 
 interface IHashtagTimeline {
   params?: {

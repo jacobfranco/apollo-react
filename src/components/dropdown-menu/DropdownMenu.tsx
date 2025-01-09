@@ -1,24 +1,35 @@
-import { offset, Placement, useFloating, flip, arrow, shift } from '@floating-ui/react';
-import clsx from 'clsx';
-import { supportsPassiveEvents } from 'detect-passive-events';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import {
+  offset,
+  Placement,
+  useFloating,
+  flip,
+  arrow,
+  shift,
+} from "@floating-ui/react";
+import dotsIcon from "@tabler/icons/outline/dots.svg";
+import clsx from "clsx";
+import { supportsPassiveEvents } from "detect-passive-events";
+import { cloneElement, useEffect, useMemo, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 
-import { closeDropdownMenu as closeDropdownMenuRedux, openDropdownMenu } from 'src/actions/dropdown-menu';
-import { closeModal, openModal } from 'src/actions/modals';
-import { useAppDispatch } from 'src/hooks';
-import { userTouching } from 'src/is-mobile';
+import {
+  closeDropdownMenu as closeDropdownMenuRedux,
+  openDropdownMenu,
+} from "src/actions/dropdown-menu";
+import { closeModal, openModal } from "src/actions/modals";
+import IconButton from "src/components/IconButton";
+import Portal from "src/components/Portal";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { userTouching } from "src/is-mobile";
+import { Status as StatusEntity } from "src/schemas/index";
 
-import { IconButton, Portal } from 'src/components';
-
-import DropdownMenuItem, { MenuItem } from './DropdownMenuItem';
-
-import type { Status } from 'src/types/entities';
+import DropdownMenuItem, { MenuItem } from "./DropdownMenuItem";
 
 export type Menu = Array<MenuItem | null>;
 
 interface IDropdownMenu {
   children?: React.ReactElement;
+  modal?: boolean;
   disabled?: boolean;
   items: Menu;
   onClose?: () => void;
@@ -26,7 +37,7 @@ interface IDropdownMenu {
   onShiftClick?: React.EventHandler<React.MouseEvent | React.KeyboardEvent>;
   placement?: Placement;
   src?: string;
-  status?: Status;
+  status?: StatusEntity;
   title?: string;
 }
 
@@ -35,14 +46,15 @@ const listenerOptions = supportsPassiveEvents ? { passive: true } : false;
 const DropdownMenu = (props: IDropdownMenu) => {
   const {
     children,
+    modal = false,
     disabled,
     items,
     onClose,
     onOpen,
     onShiftClick,
-    placement: initialPlacement = 'top',
-    src = require('@tabler/icons/outline/dots.svg'),
-    title = 'Menu',
+    placement: initialPlacement = "top",
+    src = dotsIcon,
+    title = "Menu",
     ...filteredProps
   } = props;
 
@@ -53,19 +65,20 @@ const DropdownMenu = (props: IDropdownMenu) => {
 
   const arrowRef = useRef<HTMLDivElement>(null);
 
-  const { x, y, strategy, refs, middlewareData, placement } = useFloating<HTMLButtonElement>({
-    placement: initialPlacement,
-    middleware: [
-      offset(12),
-      flip(),
-      shift({
-        padding: 8,
-      }),
-      arrow({
-        element: arrowRef,
-      }),
-    ],
-  });
+  const { x, y, strategy, refs, middlewareData, placement } =
+    useFloating<HTMLButtonElement>({
+      placement: initialPlacement,
+      middleware: [
+        offset(12),
+        flip(),
+        shift({
+          padding: 8,
+        }),
+        arrow({
+          element: arrowRef,
+        }),
+      ],
+    });
 
   const handleClick: React.EventHandler<
     React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>
@@ -90,13 +103,13 @@ const DropdownMenu = (props: IDropdownMenu) => {
    * On mobile screens, let's replace the Popper dropdown with a Modal.
    */
   const handleOpen = () => {
-    if (userTouching.matches) {
+    if (userTouching.matches || modal) {
       dispatch(
-        openModal('ACTIONS', {
+        openModal("ACTIONS", {
           status: filteredProps.status,
           actions: items,
           onClick: handleItemClick,
-        }),
+        })
       );
     } else {
       dispatch(openDropdownMenu());
@@ -111,8 +124,8 @@ const DropdownMenu = (props: IDropdownMenu) => {
   const handleClose = () => {
     (refs.reference.current as HTMLButtonElement)?.focus();
 
-    if (userTouching.matches) {
-      dispatch(closeModal('ACTIONS'));
+    if (userTouching.matches || modal) {
+      dispatch(closeModal("ACTIONS"));
     } else {
       closeDropdownMenu();
       setIsOpen(false);
@@ -133,10 +146,12 @@ const DropdownMenu = (props: IDropdownMenu) => {
     });
   };
 
-  const handleKeyPress: React.EventHandler<React.KeyboardEvent<HTMLButtonElement>> = (event) => {
+  const handleKeyPress: React.EventHandler<
+    React.KeyboardEvent<HTMLButtonElement>
+  > = (event) => {
     switch (event.key) {
-      case ' ':
-      case 'Enter':
+      case " ":
+      case "Enter":
         event.stopPropagation();
         event.preventDefault();
         handleClick(event);
@@ -148,7 +163,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
     event.preventDefault();
     event.stopPropagation();
 
-    const i = Number(event.currentTarget.getAttribute('data-index'));
+    const i = Number(event.currentTarget.getAttribute("data-index"));
     const item = items[i];
     if (!item) return;
 
@@ -156,7 +171,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
 
     handleClose();
 
-    if (typeof action === 'function') {
+    if (typeof action === "function") {
       action(event);
     } else if (to) {
       history.push(to);
@@ -164,7 +179,10 @@ const DropdownMenu = (props: IDropdownMenu) => {
   };
 
   const handleDocumentClick = (event: Event) => {
-    if (refs.floating.current && !refs.floating.current.contains(event.target as Node)) {
+    if (
+      refs.floating.current &&
+      !refs.floating.current.contains(event.target as Node)
+    ) {
       handleClose();
     }
   };
@@ -172,32 +190,32 @@ const DropdownMenu = (props: IDropdownMenu) => {
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!refs.floating.current) return;
 
-    const items = Array.from(refs.floating.current.getElementsByTagName('a'));
+    const items = Array.from(refs.floating.current.getElementsByTagName("a"));
     const index = items.indexOf(document.activeElement as any);
 
     let element = null;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         element = items[index + 1] || items[0];
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         element = items[index - 1] || items[items.length - 1];
         break;
-      case 'Tab':
+      case "Tab":
         if (e.shiftKey) {
           element = items[index - 1] || items[items.length - 1];
         } else {
           element = items[index + 1] || items[0];
         }
         break;
-      case 'Home':
+      case "Home":
         element = items[0];
         break;
-      case 'End':
+      case "End":
         element = items[items.length - 1];
         break;
-      case 'Escape':
+      case "Escape":
         handleClose();
         break;
     }
@@ -214,21 +232,23 @@ const DropdownMenu = (props: IDropdownMenu) => {
       const { x, y } = middlewareData.arrow;
 
       const staticPlacement = {
-        top: 'bottom',
-        right: 'left',
-        bottom: 'top',
-        left: 'right',
-      }[placement.split('-')[0]];
+        top: "bottom",
+        right: "left",
+        bottom: "top",
+        left: "right",
+      }[placement.split("-")[0]];
 
       return {
-        left: x !== null ? `${x}px` : '',
-        top: y !== null ? `${y}px` : '',
+        left: x !== null ? `${x}px` : "",
+        top: y !== null ? `${y}px` : "",
         // Ensure the static side gets unset when
         // flipping to other placements' axes.
-        right: '',
-        bottom: '',
-        [staticPlacement as string]: `${(-(arrowRef.current?.offsetWidth || 0)) / 2}px`,
-        transform: 'rotate(45deg)',
+        right: "",
+        bottom: "",
+        [staticPlacement as string]: `${
+          -(arrowRef.current?.offsetWidth || 0) / 2
+        }px`,
+        transform: "rotate(45deg)",
       };
     }
 
@@ -244,17 +264,25 @@ const DropdownMenu = (props: IDropdownMenu) => {
   useEffect(() => {
     if (isOpen) {
       if (refs.floating.current) {
-        (refs.floating.current?.querySelector('li a[role=\'button\']') as HTMLAnchorElement)?.focus();
+        (
+          refs.floating.current?.querySelector(
+            "li a[role='button']"
+          ) as HTMLAnchorElement
+        )?.focus();
       }
 
-      document.addEventListener('click', handleDocumentClick, false);
-      document.addEventListener('keydown', handleKeyDown, false);
-      document.addEventListener('touchend', handleDocumentClick, listenerOptions);
+      document.addEventListener("click", handleDocumentClick, false);
+      document.addEventListener("keydown", handleKeyDown, false);
+      document.addEventListener(
+        "touchend",
+        handleDocumentClick,
+        listenerOptions
+      );
 
       return () => {
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('touchend', handleDocumentClick);
+        document.removeEventListener("click", handleDocumentClick);
+        document.removeEventListener("keydown", handleKeyDown);
+        document.removeEventListener("touchend", handleDocumentClick);
       };
     }
   }, [isOpen, refs.floating.current]);
@@ -266,7 +294,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
   return (
     <>
       {children ? (
-        React.cloneElement(children, {
+        cloneElement(children, {
           disabled,
           onClick: handleClick,
           onKeyPress: handleKeyPress,
@@ -276,8 +304,8 @@ const DropdownMenu = (props: IDropdownMenu) => {
         <IconButton
           disabled={disabled}
           className={clsx({
-            'text-gray-600 hover:text-gray-700 dark:hover:text-gray-500': true,
-            'text-gray-700 dark:text-gray-500': isOpen,
+            "text-gray-600 hover:text-gray-700 dark:hover:text-gray-500": true,
+            "text-gray-700 dark:text-gray-500": isOpen,
           })}
           title={title}
           src={src}
@@ -290,13 +318,14 @@ const DropdownMenu = (props: IDropdownMenu) => {
       {isOpen ? (
         <Portal>
           <div
-            data-testid='dropdown-menu'
+            data-testid="dropdown-menu"
             ref={refs.setFloating}
-            className={
-              clsx('z-[1001] w-56 rounded-md bg-white py-1 shadow-lg transition-opacity duration-100 focus:outline-none dark:bg-gray-900 dark:ring-2 dark:ring-primary-700', {
-                'opacity-0 pointer-events-none': !isOpen,
-              })
-            }
+            className={clsx(
+              "z-[1001] w-56 rounded-md bg-white py-1 shadow-lg transition-opacity duration-100 focus:outline-none black:bg-black dark:bg-gray-900 dark:ring-2 dark:ring-primary-700",
+              {
+                "opacity-0 pointer-events-none": !isOpen,
+              }
+            )}
             style={{
               position: strategy,
               top: y ?? 0,
@@ -318,7 +347,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
             <div
               ref={arrowRef}
               style={arrowProps}
-              className='pointer-events-none absolute z-[-1] h-3 w-3 bg-white dark:bg-gray-900'
+              className="pointer-events-none absolute z-[-1] size-3 bg-white black:bg-black dark:bg-gray-900"
             />
           </div>
         </Portal>

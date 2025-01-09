@@ -1,58 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { IntlProvider } from 'react-intl';
-
-import { fetchMe } from 'src/actions/me';
-import { loadApolloConfig } from 'src/actions/apollo';
-import LoadingScreen from 'src/components/LoadingScreen';
-import {
-  useAppSelector,
-  useAppDispatch,
-  useOwnAccount,
-  useLocale,
-} from 'src/hooks';
-import MESSAGES from 'src/messages';
-import { Entities } from 'src/entity-store/entities';
-
-/** Load initial data from the backend */
-const loadInitial = () => {
-  // @ts-ignore
-  return async (dispatch, getState) => {
-
-    // Await for authenticated fetch
-    await dispatch(fetchMe());
-
-    // Await for configuration
-    await dispatch(loadApolloConfig());
-
-  };
-};
+import React, { useState, useEffect } from "react";
+import { IntlProvider } from "react-intl";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useLocale } from "src/hooks/useLocale";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
+import { fetchMe } from "src/actions/me";
+import { fetchApolloConfig } from "src/actions/apollo";
+import LoadingScreen from "src/components/LoadingScreen";
+import MESSAGES from "src/messages";
 
 interface IApolloLoad {
   children: React.ReactNode;
 }
 
+const loadInitial = () => {
+  return async (dispatch: any) => {
+    console.log("loadInitial: Starting to fetch 'me' and Apollo config...");
+    await dispatch(fetchMe());
+    console.log("loadInitial: 'me' fetched. Now fetching Apollo config...");
+    await dispatch(fetchApolloConfig());
+    console.log("loadInitial: Apollo config fetched.");
+  };
+};
+
 /** Initial data loader. */
 const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
   const dispatch = useAppDispatch();
 
-  const me = useAppSelector(state => state.me);
+  const me = useAppSelector((state) => state.me);
   const { account } = useOwnAccount();
-  const swUpdating = useAppSelector(state => state.meta.swUpdating);
+  const swUpdating = useAppSelector((state) => state.meta.swUpdating);
   const { locale } = useLocale();
 
   const [messages, setMessages] = useState<Record<string, string>>({});
   const [localeLoading, setLocaleLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Log the initial state values directly inside the component
-  const initialStateValues = useAppSelector(state => ({
-    entities: state.entities,
-    relationships: state.relationships,
-    accounts: state.entities[Entities.ACCOUNTS]?.store,
-  }));
+  // Log state whenever it changes
+  console.log("ApolloLoad render:", {
+    me,
+    account,
+    isLoaded,
+    localeLoading,
+    swUpdating,
+    locale,
+  });
 
-
-  /** Whether to display a loading indicator. */
+  // Determine if we should show loading
   const showLoading = [
     me === null,
     me && !account,
@@ -61,33 +55,48 @@ const ApolloLoad: React.FC<IApolloLoad> = ({ children }) => {
     swUpdating,
   ].some(Boolean);
 
+  console.log("showLoading:", showLoading);
 
-  // Load the user's locale
+  // Load locale messages
   useEffect(() => {
-    MESSAGES[locale]().then(messages => {
-      setMessages(messages);
-      setLocaleLoading(false);
-    }).catch(error => {
-      console.error('Error loading locale messages:', error);
-    });
+    console.log("useEffect [locale]: Loading locale messages for:", locale);
+    MESSAGES[locale]()
+      .then((loadedMessages) => {
+        console.log("useEffect [locale]: Successfully loaded messages");
+        setMessages(loadedMessages);
+        setLocaleLoading(false);
+      })
+      .catch((error) => {
+        console.error(
+          "useEffect [locale]: Error loading locale messages:",
+          error
+        );
+      });
   }, [locale]);
 
   // Load initial data from the API
   useEffect(() => {
-    dispatch(loadInitial()).then(() => {
-      setIsLoaded(true);
-    }).catch(error => {
-      console.error('Error loading initial data:', error);
-      setIsLoaded(true); // Consider handling this differently as it assumes loading is complete
-    });
+    console.log("useEffect [initial load]: Dispatching initial data load");
+    dispatch(loadInitial())
+      .then(() => {
+        console.log("useEffect [initial load]: Initial data load complete");
+        setIsLoaded(true);
+      })
+      .catch((error) => {
+        console.error(
+          "useEffect [initial load]: Initial data load failed:",
+          error
+        );
+        setIsLoaded(true);
+      });
   }, [dispatch]);
 
-  // intl is part of loading.
-  // It's important nothing in here depends on intl.
   if (showLoading) {
+    console.log("ApolloLoad: Still loading, rendering <LoadingScreen />");
     return <LoadingScreen />;
   }
 
+  console.log("ApolloLoad: Data loaded, rendering children");
   return (
     <IntlProvider locale={locale} messages={messages}>
       {children}

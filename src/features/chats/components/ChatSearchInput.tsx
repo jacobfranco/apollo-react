@@ -1,10 +1,15 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import Icon from 'src/components/Icon';
-import Input from 'src/components/Input';
+import searchIcon from "@tabler/icons/outline/search.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
+import { defineMessages, useIntl } from "react-intl";
+
+import Icon from "src/components/Icon";
+import Input from "src/components/Input";
 
 const messages = defineMessages({
-  searchPlaceholder: { id: 'chats.search_placeholder', defaultMessage: 'Start a chat with…' },
+  searchPlaceholder: {
+    id: "chats.search_placeholder",
+    defaultMessage: "Start a chat with…",
+  },
 });
 
 interface IChatSearchInput {
@@ -17,26 +22,30 @@ interface IChatSearchInput {
 }
 
 /** Search input for filtering chats. */
-const ChatSearchInput: React.FC<IChatSearchInput> = ({ value, onChange, onClear }) => {
+const ChatSearchInput: React.FC<IChatSearchInput> = ({
+  value,
+  onChange,
+  onClear,
+}) => {
   const intl = useIntl();
 
   return (
     <Input
-      data-testid='chat-search-input'
-      type='text'
+      data-testid="chat-search-input"
+      type="text"
       autoFocus
       placeholder={intl.formatMessage(messages.searchPlaceholder)}
-      className='rounded-full'
+      className="rounded-full"
       value={value}
       onChange={onChange}
-      outerClassName='mt-0'
-      theme='search'
+      outerClassName="mt-0"
+      theme="search"
       append={
         <button onClick={onClear}>
           <Icon
-            src={value.length ? require('@tabler/icons/outline/x.svg') : require('@tabler/icons/outline/search.svg')}
-            className='h-4 w-4 text-gray-700 dark:text-gray-600'
-            aria-hidden='true'
+            src={value.length ? xIcon : searchIcon}
+            className="size-4 text-gray-700 dark:text-gray-600"
+            aria-hidden="true"
           />
         </button>
       }

@@ -1,11 +1,11 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import { Account } from 'src/types/entities';
+import { OrderedSet as ImmutableOrderedSet } from "immutable";
+import { Account } from "src/types/entities";
 
 /** Convert a plain tag into a badge. */
 const tagToBadge = (tag: string) => `badge:${tag}`;
 
 /** Convert a badge into a plain tag. */
-const badgeToTag = (badge: string) => badge.replace(/^badge:/, '');
+const badgeToTag = (badge: string) => badge.replace(/^badge:/, "");
 
 /** Difference between an old and new set of tags. */
 interface TagDiff {
@@ -28,20 +28,12 @@ const getTagDiff = (oldTags: string[], newTags: string[]): TagDiff => {
 
 /** Returns only tags which are badges. */
 const filterBadges = (tags: string[]): string[] => {
-    return tags.filter(tag => tag.startsWith('badge:'));
-  };
-  
-  /** Get badges from an account. TODO: This needs to be properly implemented 
-  const getBadges = (account: Account) => {
-    const tags = account?.tags ?? [];
-    return filterBadges(tags);
-  };
-  */
-
-
-export {
-  tagToBadge,
-  badgeToTag,
-  filterBadges,
-  getTagDiff,
+  return tags.filter((tag) => tag.startsWith("badge:"));
 };
+
+/** Get badges from an account. */
+const getBadges = (account: Pick<Account, "tags">) => {
+  return filterBadges(account?.tags ?? []);
+};
+
+export { tagToBadge, badgeToTag, filterBadges, getTagDiff, getBadges };

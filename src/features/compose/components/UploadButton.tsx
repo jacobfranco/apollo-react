@@ -1,14 +1,16 @@
-import React, { useRef } from 'react';
-import { defineMessages, IntlShape, useIntl } from 'react-intl';
+import paperclipIcon from "@tabler/icons/outline/paperclip.svg";
+import photoIcon from "@tabler/icons/outline/photo.svg";
+import { useRef } from "react";
+import { defineMessages, IntlShape, useIntl } from "react-intl";
 
-import { IconButton } from 'src/components';
+import IconButton from "src/components/IconButton";
 
 const messages = defineMessages({
-  upload: { id: 'upload_button.label', defaultMessage: 'Add media attachment' },
+  upload: { id: "upload_button.label", defaultMessage: "Add media attachment" },
 });
 
 export const onlyImages = (types: string[] | undefined): boolean => {
-  return types?.every((type) => type.startsWith('image/')) ?? false;
+  return types?.every((type) => type.startsWith("image/")) ?? false;
 };
 
 export interface IUploadButton {
@@ -27,7 +29,7 @@ const UploadButton: React.FC<IUploadButton> = ({
   unavailable = false,
   onSelectFile,
   resetFileKey,
-  className = 'text-gray-600 hover:text-gray-700 dark:hover:text-gray-500',
+  className = "text-gray-600 hover:text-gray-700 dark:hover:text-gray-500",
   iconClassName,
   icon,
 }) => {
@@ -35,16 +37,16 @@ const UploadButton: React.FC<IUploadButton> = ({
 
   const fileElement = useRef<HTMLInputElement>(null);
   const attachmentTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'video/mp4',
-    'video/webm',
-    'audio/mpeg',
-    'audio/ogg',
-    'audio/mp4',
-    'text/plain',
-  ];  // TODO: Implement correct attachment types
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "video/mp4",
+    "video/webm",
+    "audio/mpeg",
+    "audio/ogg",
+    "audio/mp4",
+    "text/plain",
+  ]; // TODO: Implement correct attachment types
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     if (e.target.files?.length) {
@@ -60,11 +62,7 @@ const UploadButton: React.FC<IUploadButton> = ({
     return null;
   }
 
-  const src = icon || (
-    onlyImages(attachmentTypes)
-      ? require('@tabler/icons/outline/photo.svg')
-      : require('@tabler/icons/outline/paperclip.svg')
-  );
+  const src = icon || (onlyImages(attachmentTypes) ? photoIcon : paperclipIcon);
 
   return (
     <div>
@@ -78,16 +76,16 @@ const UploadButton: React.FC<IUploadButton> = ({
       />
 
       <label>
-        <span className='sr-only'>{intl.formatMessage(messages.upload)}</span>
+        <span className="sr-only">{intl.formatMessage(messages.upload)}</span>
         <input
           key={resetFileKey}
           ref={fileElement}
-          type='file'
+          type="file"
           multiple
-          accept={attachmentTypes?.join(',')}
+          accept={attachmentTypes?.join(",")}
           onChange={handleChange}
           disabled={disabled}
-          className='hidden'
+          className="hidden"
         />
       </label>
     </div>

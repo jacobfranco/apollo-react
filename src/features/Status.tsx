@@ -1,20 +1,21 @@
-import debounce from "lodash/debounce";
-import React, { useCallback, useEffect, useState } from "react";
+import { debounce } from "es-toolkit";
+import { useCallback, useEffect, useState } from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { Redirect } from "react-router-dom";
 
 import { fetchStatusWithContext, fetchNext } from "src/actions/statuses";
+import MissingIndicator from "src/components/MissingIndicator";
+import PullToRefresh from "src/components/PullToRefresh";
+import { Column } from "src/components/Column";
+import Stack from "src/components/Stack";
 import PlaceholderStatus from "src/components/PlaceholderStatus";
-import {
-  MissingIndicator,
-  PullToRefresh,
-  Stack,
-  Thread,
-  ThreadLoginCta,
-} from "src/components";
-import { useAppDispatch, useAppSelector, useLoggedIn } from "src/hooks";
-import { makeGetStatus } from "src/selectors";
-import { Column as Column } from "src/components/Column";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useLoggedIn } from "src/hooks/useLoggedIn";
+import { makeGetStatus } from "src/selectors/index";
+
+import ThreadLoginCta from "src/components/ThreadLoginCta";
+import Thread from "src/components/Thread";
 
 const messages = defineMessages({
   title: { id: "status.title", defaultMessage: "Post Details" },
@@ -87,7 +88,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   );
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
-  const [next, setNext] = useState<string>();
+  const [next, setNext] = useState<string | null>(null);
 
   /** Fetch the status (and context) from the API. */
   const fetchData = async () => {
@@ -120,7 +121,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
         }
       },
       300,
-      { leading: true }
+      { edges: ["leading"] }
     ),
     [next, status]
   );

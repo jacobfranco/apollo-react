@@ -1,13 +1,11 @@
-import escapeTextContentForBrowser from 'escape-html';
-import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
-import DOMPurify from 'isomorphic-dompurify';
+import { Map as ImmutableMap, List as ImmutableList } from "immutable";
+import DOMPurify from "isomorphic-dompurify";
 
-import emojify from 'src/features/emoji';
-import { normalizeStatus } from 'src/normalizers';
-import { stripCompatibilityFeatures, unescapeHTML } from 'src/utils/html';
-import { normalizeId } from 'src/utils/normalizers';
+import { normalizeStatus } from "src/normalizers/index";
+import { htmlToPlaintext, stripCompatibilityFeatures } from "src/utils/html";
+import { normalizeId } from "src/utils/normalizers";
 
-import { STATUS_IMPORT, STATUSES_IMPORT } from '../actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT } from "../actions/importer";
 import {
   REPOST_REQUEST,
   REPOST_FAIL,
@@ -16,7 +14,7 @@ import {
   LIKE_REQUEST,
   UNLIKE_REQUEST,
   LIKE_FAIL,
-} from '../actions/interactions';
+} from "../actions/interactions";
 import {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_FAIL,
@@ -29,11 +27,11 @@ import {
   STATUS_TRANSLATE_SUCCESS,
   STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
-} from '../actions/statuses';
-import { TIMELINE_DELETE } from '../actions/timelines';
+} from "../actions/statuses";
+import { TIMELINE_DELETE } from "../actions/timelines";
 
-import type { AnyAction } from 'redux';
-import type { APIEntity } from 'src/types/entities';
+import type { AnyAction } from "redux";
+import type { APIEntity } from "src/types/entities";
 
 const domParser = new DOMParser();
 
@@ -50,15 +48,15 @@ export interface ReducerStatus extends StatusRecord {
 
 const minifyStatus = (status: StatusRecord): ReducerStatus => {
   return status.mergeWith((o, n) => n || o, {
-    repost: normalizeId(status.getIn(['repost', 'id'])),
-    poll: normalizeId(status.getIn(['poll', 'id'])),
-    quote: normalizeId(status.getIn(['quote', 'id'])),
+    repost: normalizeId(status.getIn(["repost", "id"])),
+    poll: normalizeId(status.getIn(["poll", "id"])),
+    quote: normalizeId(status.getIn(["quote", "id"])),
   }) as ReducerStatus;
 };
 
 // Gets titles of poll options from status
 const getPollOptionTitles = ({ poll }: StatusRecord): readonly string[] => {
-  if (poll && typeof poll === 'object') {
+  if (poll && typeof poll === "object") {
     return poll.options.map(({ title }) => title);
   } else {
     return [];
@@ -75,69 +73,100 @@ const buildSearchContent = (status: StatusRecord): string => {
   const pollOptionTitles = getPollOptionTitles(status);
   const mentionedUsernames = getMentionedUsernames(status);
 
-  const fields = ImmutableList([
-    status.spoiler_text,
-    status.content,
-  ]).concat(pollOptionTitles).concat(mentionedUsernames);
+  const fields = ImmutableList([status.spoiler_text, status.content])
+    .concat(pollOptionTitles)
+    .concat(mentionedUsernames);
 
-  return unescapeHTML(fields.join('\n\n')) || '';
+  return htmlToPlaintext(fields.join("\n\n")) || "";
 };
 
 // Only calculate these values when status first encountered
 // Otherwise keep the ones already in the reducer
 export const calculateStatus = (
   status: StatusRecord,
-  oldStatus?: StatusRecord,
-  expandSpoilers: boolean = false,
+  expandSpoilers: boolean = false
 ): StatusRecord => {
-  if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
-    return status.merge({
-      search_index: oldStatus.search_index,
-      contentHtml: oldStatus.contentHtml,
-      spoilerHtml: oldStatus.spoilerHtml,
-      hidden: oldStatus.hidden,
-    });
-  } else {
-    const spoilerText = status.spoiler_text;
-    const searchContent = buildSearchContent(status);
+  const searchContent = buildSearchContent(status);
 
-    return status.merge({
-      search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-      contentHtml: DOMPurify.sanitize(stripCompatibilityFeatures(emojify(status.content)), { USE_PROFILES: { html: true } }),
-      spoilerHtml: DOMPurify.sanitize(emojify(escapeTextContentForBrowser(spoilerText)), { USE_PROFILES: { html: true } }),
-      hidden: expandSpoilers ? false : spoilerText.length > 0 || status.sensitive,
-    });
-  }
+  return status.merge({
+    search_index:
+      domParser.parseFromString(searchContent, "text/html").documentElement
+        .textContent || "",
+    content: DOMPurify.sanitize(stripCompatibilityFeatures(status.content), {
+      USE_PROFILES: { html: true },
+    }),
+    hidden: expandSpoilers
+      ? false
+      : status.spoiler_text.length > 0 || status.sensitive,
+  });
+};
+
+// Check whether a status is a quote by secondary characteristics
+const isQuote = (status: StatusRecord) => {
+  return Boolean(status.pleroma.get("quote_url"));
 };
 
 // Preserve translation if an existing status already has it
-const fixTranslation = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
+const fixTranslation = (
+  status: StatusRecord,
+  oldStatus?: StatusRecord
+): StatusRecord => {
   if (oldStatus?.translation && !status.translation) {
-    return status
-      .set('translation', oldStatus.translation);
+    return status.set("translation", oldStatus.translation);
   } else {
     return status;
   }
 };
 
-const fixStatus = (state: State, status: APIEntity, expandSpoilers: boolean): ReducerStatus => {
+// Preserve quote if an existing status already has it
+const fixQuote = (
+  status: StatusRecord,
+  oldStatus?: StatusRecord
+): StatusRecord => {
+  if (oldStatus && !status.quote && isQuote(status)) {
+    return status
+      .set("quote", oldStatus.quote)
+      .updateIn(
+        ["pleroma", "quote_visible"],
+        (visible) => visible || oldStatus.pleroma.get("quote_visible")
+      );
+  } else {
+    return status;
+  }
+};
+
+const fixStatus = (
+  state: State,
+  status: APIEntity,
+  expandSpoilers: boolean
+): ReducerStatus => {
   const oldStatus = state.get(status.id);
 
-  return normalizeStatus(status).withMutations(status => {
+  return normalizeStatus(status).withMutations((status) => {
     fixTranslation(status, oldStatus);
-    calculateStatus(status, oldStatus, expandSpoilers);
+    fixQuote(status, oldStatus);
+    calculateStatus(status, expandSpoilers);
     minifyStatus(status);
   }) as ReducerStatus;
 };
 
-const importStatus = (state: State, status: APIEntity, expandSpoilers: boolean): State =>
-  state.set(status.id, fixStatus(state, status, expandSpoilers));
+const importStatus = (
+  state: State,
+  status: APIEntity,
+  expandSpoilers: boolean
+): State => state.set(status.id, fixStatus(state, status, expandSpoilers));
 
-const importStatuses = (state: State, statuses: APIEntities, expandSpoilers: boolean): State =>
-  state.withMutations(mutable => statuses.forEach(status => importStatus(mutable, status, expandSpoilers)));
+const importStatuses = (
+  state: State,
+  statuses: APIEntities,
+  expandSpoilers: boolean
+): State =>
+  state.withMutations((mutable) =>
+    statuses.forEach((status) => importStatus(mutable, status, expandSpoilers))
+  );
 
 const deleteStatus = (state: State, id: string, references: Array<string>) => {
-  references.forEach(ref => {
+  references.forEach((ref) => {
     state = deleteStatus(state, ref[0], []);
   });
 
@@ -146,8 +175,8 @@ const deleteStatus = (state: State, id: string, references: Array<string>) => {
 
 const incrementReplyCount = (state: State, { in_reply_to_id }: APIEntity) => {
   if (in_reply_to_id) {
-    return state.updateIn([in_reply_to_id, 'replies_count'], 0, count => {
-      return typeof count === 'number' ? count + 1 : 0;
+    return state.updateIn([in_reply_to_id, "replies_count"], 0, (count) => {
+      return typeof count === "number" ? count + 1 : 0;
     });
   } else {
     return state;
@@ -156,18 +185,19 @@ const incrementReplyCount = (state: State, { in_reply_to_id }: APIEntity) => {
 
 const decrementReplyCount = (state: State, { in_reply_to_id }: APIEntity) => {
   if (in_reply_to_id) {
-    return state.updateIn([in_reply_to_id, 'replies_count'], 0, count => {
-      return typeof count === 'number' ? Math.max(0, count - 1) : 0;
+    return state.updateIn([in_reply_to_id, "replies_count"], 0, (count) => {
+      return typeof count === "number" ? Math.max(0, count - 1) : 0;
     });
   } else {
     return state;
   }
 };
 
+/** Simulate like/unlike of status for optimistic interactions */
 const simulateLike = (
   state: State,
   statusId: string,
-  liked: boolean,
+  liked: boolean
 ): State => {
   const status = state.get(statusId);
   if (!status) return state;
@@ -189,20 +219,30 @@ interface Translation {
 }
 
 /** Import translation from translation service into the store. */
-const importTranslation = (state: State, statusId: string, translation: Translation) => {
+const importTranslation = (
+  state: State,
+  statusId: string,
+  translation: Translation
+) => {
   const map = ImmutableMap(translation);
-  const result = map.set('content', stripCompatibilityFeatures(map.get('content', '')));
-  return state.setIn([statusId, 'translation'], result);
+  const result = map.set(
+    "content",
+    stripCompatibilityFeatures(map.get("content", ""))
+  );
+  return state.setIn([statusId, "translation"], result);
 };
 
 /** Delete translation from the store. */
 const deleteTranslation = (state: State, statusId: string) => {
-  return state.deleteIn([statusId, 'translation']);
+  return state.deleteIn([statusId, "translation"]);
 };
 
 const initialState: State = ImmutableMap();
 
-export default function statuses(state = initialState, action: AnyAction): State {
+export default function statuses(
+  state = initialState,
+  action: AnyAction
+): State {
   switch (action.type) {
     case STATUS_IMPORT:
       return importStatus(state, action.status, action.expandSpoilers);
@@ -217,32 +257,38 @@ export default function statuses(state = initialState, action: AnyAction): State
     case UNLIKE_REQUEST:
       return simulateLike(state, action.status.id, false);
     case LIKE_FAIL:
-      return state.get(action.status.id) === undefined ? state : state.setIn([action.status.id, 'liked'], false);
+      return state.get(action.status.id) === undefined
+        ? state
+        : state.setIn([action.status.id, "liked"], false);
     case REPOST_REQUEST:
-      return state.setIn([action.status.id, 'reposted'], true);
+      return state.setIn([action.status.id, "reposted"], true);
     case REPOST_FAIL:
-      return state.get(action.status.id) === undefined ? state : state.setIn([action.status.id, 'reposted'], false);
+      return state.get(action.status.id) === undefined
+        ? state
+        : state.setIn([action.status.id, "reposted"], false);
     case UNREPOST_REQUEST:
-      return state.setIn([action.status.id, 'reposted'], false);
+      return state.setIn([action.status.id, "reposted"], false);
     case UNREPOST_FAIL:
-      return state.get(action.status.id) === undefined ? state : state.setIn([action.status.id, 'reposted'], true);
+      return state.get(action.status.id) === undefined
+        ? state
+        : state.setIn([action.status.id, "reposted"], true);
     case STATUS_MUTE_SUCCESS:
-      return state.setIn([action.id, 'muted'], true);
+      return state.setIn([action.id, "muted"], true);
     case STATUS_UNMUTE_SUCCESS:
-      return state.setIn([action.id, 'muted'], false);
+      return state.setIn([action.id, "muted"], false);
     case STATUS_REVEAL:
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         action.ids.forEach((id: string) => {
           if (!(state.get(id) === undefined)) {
-            map.setIn([id, 'hidden'], false);
+            map.setIn([id, "hidden"], false);
           }
         });
       });
     case STATUS_HIDE:
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         action.ids.forEach((id: string) => {
           if (!(state.get(id) === undefined)) {
-            map.setIn([id, 'hidden'], true);
+            map.setIn([id, "hidden"], true);
           }
         });
       });
@@ -255,7 +301,7 @@ export default function statuses(state = initialState, action: AnyAction): State
     case STATUS_TRANSLATE_UNDO:
       return deleteTranslation(state, action.id);
     case STATUS_UNFILTER:
-      return state.setIn([action.id, 'showFiltered'], false);
+      return state.setIn([action.id, "showFiltered"], false);
     case TIMELINE_DELETE:
       return deleteStatus(state, action.id, action.references);
     default:

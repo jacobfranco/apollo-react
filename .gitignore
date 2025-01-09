@@ -4,7 +4,9 @@
 /coverage/
 /.coverage/
 /.eslintcache
-/.env
+/.env.staging
+/.env.development
+/.env.production
 /deploy.sh
 /.vs/
 yarn-error.log*

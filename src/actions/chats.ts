@@ -1,67 +1,64 @@
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable';
-import { v4 as uuidv4 } from 'uuid';
+import { List as ImmutableList, Map as ImmutableMap } from "immutable";
 
-import { getSettings, changeSetting } from 'src/actions/settings';
+import { getSettings, changeSetting } from "src/actions/settings";
 
-import api, { getLinks } from '../api';
+import api from "../api";
 
-import type { AppDispatch, RootState } from 'src/store';
-import type { History } from 'src/types/history';
+import type { AppDispatch, RootState } from "src/store";
+import type { History } from "src/types/history";
 
-const CHATS_FETCH_REQUEST = 'CHATS_FETCH_REQUEST';
-const CHATS_FETCH_SUCCESS = 'CHATS_FETCH_SUCCESS';
-const CHATS_FETCH_FAIL    = 'CHATS_FETCH_FAIL';
+const CHATS_FETCH_REQUEST = "CHATS_FETCH_REQUEST";
+const CHATS_FETCH_SUCCESS = "CHATS_FETCH_SUCCESS";
+const CHATS_FETCH_FAIL = "CHATS_FETCH_FAIL";
 
-const CHATS_EXPAND_REQUEST = 'CHATS_EXPAND_REQUEST';
-const CHATS_EXPAND_SUCCESS = 'CHATS_EXPAND_SUCCESS';
-const CHATS_EXPAND_FAIL    = 'CHATS_EXPAND_FAIL';
+const CHATS_EXPAND_REQUEST = "CHATS_EXPAND_REQUEST";
+const CHATS_EXPAND_SUCCESS = "CHATS_EXPAND_SUCCESS";
+const CHATS_EXPAND_FAIL = "CHATS_EXPAND_FAIL";
 
-const CHAT_MESSAGES_FETCH_REQUEST = 'CHAT_MESSAGES_FETCH_REQUEST';
-const CHAT_MESSAGES_FETCH_SUCCESS = 'CHAT_MESSAGES_FETCH_SUCCESS';
-const CHAT_MESSAGES_FETCH_FAIL    = 'CHAT_MESSAGES_FETCH_FAIL';
+const CHAT_MESSAGES_FETCH_REQUEST = "CHAT_MESSAGES_FETCH_REQUEST";
+const CHAT_MESSAGES_FETCH_SUCCESS = "CHAT_MESSAGES_FETCH_SUCCESS";
+const CHAT_MESSAGES_FETCH_FAIL = "CHAT_MESSAGES_FETCH_FAIL";
 
-const CHAT_MESSAGE_SEND_REQUEST = 'CHAT_MESSAGE_SEND_REQUEST';
-const CHAT_MESSAGE_SEND_SUCCESS = 'CHAT_MESSAGE_SEND_SUCCESS';
-const CHAT_MESSAGE_SEND_FAIL    = 'CHAT_MESSAGE_SEND_FAIL';
+const CHAT_MESSAGE_SEND_REQUEST = "CHAT_MESSAGE_SEND_REQUEST";
+const CHAT_MESSAGE_SEND_SUCCESS = "CHAT_MESSAGE_SEND_SUCCESS";
+const CHAT_MESSAGE_SEND_FAIL = "CHAT_MESSAGE_SEND_FAIL";
 
-const CHAT_FETCH_REQUEST = 'CHAT_FETCH_REQUEST';
-const CHAT_FETCH_SUCCESS = 'CHAT_FETCH_SUCCESS';
-const CHAT_FETCH_FAIL    = 'CHAT_FETCH_FAIL';
+const CHAT_FETCH_REQUEST = "CHAT_FETCH_REQUEST";
+const CHAT_FETCH_SUCCESS = "CHAT_FETCH_SUCCESS";
+const CHAT_FETCH_FAIL = "CHAT_FETCH_FAIL";
 
-const CHAT_READ_REQUEST = 'CHAT_READ_REQUEST';
-const CHAT_READ_SUCCESS = 'CHAT_READ_SUCCESS';
-const CHAT_READ_FAIL    = 'CHAT_READ_FAIL';
+const CHAT_READ_REQUEST = "CHAT_READ_REQUEST";
+const CHAT_READ_SUCCESS = "CHAT_READ_SUCCESS";
+const CHAT_READ_FAIL = "CHAT_READ_FAIL";
 
-const CHAT_MESSAGE_DELETE_REQUEST = 'CHAT_MESSAGE_DELETE_REQUEST';
-const CHAT_MESSAGE_DELETE_SUCCESS = 'CHAT_MESSAGE_DELETE_SUCCESS';
-const CHAT_MESSAGE_DELETE_FAIL    = 'CHAT_MESSAGE_DELETE_FAIL';
+const CHAT_MESSAGE_DELETE_REQUEST = "CHAT_MESSAGE_DELETE_REQUEST";
+const CHAT_MESSAGE_DELETE_SUCCESS = "CHAT_MESSAGE_DELETE_SUCCESS";
+const CHAT_MESSAGE_DELETE_FAIL = "CHAT_MESSAGE_DELETE_FAIL";
 
 // TODO: Implement into main fetch chats function
 // TODO: Implement on backend
-const fetchChatsV2 = () =>
-  (dispatch: AppDispatch, getState: () => RootState) =>
-    api(getState).get('/api/chats').then((response) => {
-      let next: { uri: string } | undefined = getLinks(response).refs.find(link => link.rel === 'next');
+const fetchChatsV2 = () => (dispatch: AppDispatch, getState: () => RootState) =>
+  api(getState)
+    .get("/api/chats")
+    .then(async (response) => {
+      const next = response.next();
+      const data = await response.json();
 
-      if (!next && response.data.length) {
-        next = { uri: `/api/chats?max_id=${response.data[response.data.length - 1].id}&offset=0` };
-      }
-
-      dispatch({ type: CHATS_FETCH_SUCCESS, chats: response.data, next: next ? next.uri : null });
-    }).catch(error => {
+      dispatch({ type: CHATS_FETCH_SUCCESS, chats: data, next });
+    })
+    .catch((error) => {
       dispatch({ type: CHATS_FETCH_FAIL, error });
     });
 
-const fetchChats = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState();
+const fetchChats = () => (dispatch: AppDispatch, getState: () => RootState) => {
+  const state = getState();
 
-    dispatch({ type: CHATS_FETCH_REQUEST });
-      return dispatch(fetchChatsV2());
-  };
+  dispatch({ type: CHATS_FETCH_REQUEST });
+  return dispatch(fetchChatsV2());
+};
 
-const expandChats = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const expandChats =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
     const url = getState().chats.next;
 
     if (url === null) {
@@ -69,140 +66,208 @@ const expandChats = () =>
     }
 
     dispatch({ type: CHATS_EXPAND_REQUEST });
-    api(getState).get(url).then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
+    api(getState)
+      .get(url)
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
 
-      dispatch({ type: CHATS_EXPAND_SUCCESS, chats: response.data, next: next ? next.uri : null });
-    }).catch(error => {
-      dispatch({ type: CHATS_EXPAND_FAIL, error });
-    });
+        dispatch({ type: CHATS_EXPAND_SUCCESS, chats: data, next });
+      })
+      .catch((error) => {
+        dispatch({ type: CHATS_EXPAND_FAIL, error });
+      });
   };
 
-const fetchChatMessages = (chatId: string, maxId: string | null = null) =>
+const fetchChatMessages =
+  (chatId: string, maxId: string | null = null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CHAT_MESSAGES_FETCH_REQUEST, chatId, maxId });
-    return api(getState).get(`/api/${chatId}/messages`, { params: { max_id: maxId } }).then(({ data }) => {
-      dispatch({ type: CHAT_MESSAGES_FETCH_SUCCESS, chatId, maxId, chatMessages: data });
-    }).catch(error => {
-      dispatch({ type: CHAT_MESSAGES_FETCH_FAIL, chatId, maxId, error });
-    });
+    const searchParams = maxId ? { max_id: maxId } : undefined;
+    return api(getState)
+      .get(`/api/chats/${chatId}/messages`, { searchParams })
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({
+          type: CHAT_MESSAGES_FETCH_SUCCESS,
+          chatId,
+          maxId,
+          chatMessages: data,
+        });
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_MESSAGES_FETCH_FAIL, chatId, maxId, error });
+      });
   };
 
-const sendChatMessage = (chatId: string, params: Record<string, any>) =>
+const sendChatMessage =
+  (chatId: string, params: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const uuid = `末_${Date.now()}_${uuidv4()}`;
+    const uuid = `末_${Date.now()}_${crypto.randomUUID()}`;
     const me = getState().me;
     dispatch({ type: CHAT_MESSAGE_SEND_REQUEST, chatId, params, uuid, me });
-    return api(getState).post(`/api/${chatId}/messages`, params).then(({ data }) => {
-      dispatch({ type: CHAT_MESSAGE_SEND_SUCCESS, chatId, chatMessage: data, uuid });
-    }).catch(error => {
-      dispatch({ type: CHAT_MESSAGE_SEND_FAIL, chatId, error, uuid });
-    });
+    return api(getState)
+      .post(`/api/chats/${chatId}/messages`, params)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({
+          type: CHAT_MESSAGE_SEND_SUCCESS,
+          chatId,
+          chatMessage: data,
+          uuid,
+        });
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_MESSAGE_SEND_FAIL, chatId, error, uuid });
+      });
   };
 
-const openChat = (chatId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const openChat =
+  (chatId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const panes = getSettings(state).getIn(['chats', 'panes']) as ImmutableList<ImmutableMap<string, any>>;
-    const idx = panes.findIndex(pane => pane.get('chat_id') === chatId);
+    const panes = getSettings(state).getIn(["chats", "panes"]) as ImmutableList<
+      ImmutableMap<string, any>
+    >;
+    const idx = panes.findIndex((pane) => pane.get("chat_id") === chatId);
 
     dispatch(markChatRead(chatId));
 
     if (idx > -1) {
-      return dispatch(changeSetting(['chats', 'panes', idx as any, 'state'], 'open'));
+      return dispatch(
+        changeSetting(["chats", "panes", idx as any, "state"], "open")
+      );
     } else {
-      const newPane = ImmutableMap({ chat_id: chatId, state: 'open' });
-      return dispatch(changeSetting(['chats', 'panes'], panes.push(newPane)));
+      const newPane = ImmutableMap({ chat_id: chatId, state: "open" });
+      return dispatch(changeSetting(["chats", "panes"], panes.push(newPane)));
     }
   };
 
-const closeChat = (chatId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const panes = getSettings(getState()).getIn(['chats', 'panes']) as ImmutableList<ImmutableMap<string, any>>;
-    const idx = panes.findIndex(pane => pane.get('chat_id') === chatId);
+const closeChat =
+  (chatId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    const panes = getSettings(getState()).getIn([
+      "chats",
+      "panes",
+    ]) as ImmutableList<ImmutableMap<string, any>>;
+    const idx = panes.findIndex((pane) => pane.get("chat_id") === chatId);
 
     if (idx > -1) {
-      return dispatch(changeSetting(['chats', 'panes'], panes.delete(idx)));
+      return dispatch(changeSetting(["chats", "panes"], panes.delete(idx)));
     } else {
       return false;
     }
   };
 
-const toggleChat = (chatId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const panes = getSettings(getState()).getIn(['chats', 'panes']) as ImmutableList<ImmutableMap<string, any>>;
-    const [idx, pane] = panes.findEntry(pane => pane.get('chat_id') === chatId)!;
+const toggleChat =
+  (chatId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    const panes = getSettings(getState()).getIn([
+      "chats",
+      "panes",
+    ]) as ImmutableList<ImmutableMap<string, any>>;
+    const [idx, pane] = panes.findEntry(
+      (pane) => pane.get("chat_id") === chatId
+    )!;
 
     if (idx > -1) {
-      const state = pane.get('state') === 'minimized' ? 'open' : 'minimized';
-      if (state === 'open') dispatch(markChatRead(chatId));
-      return dispatch(changeSetting(['chats', 'panes', idx as any, 'state'], state));
+      const state = pane.get("state") === "minimized" ? "open" : "minimized";
+      if (state === "open") dispatch(markChatRead(chatId));
+      return dispatch(
+        changeSetting(["chats", "panes", idx as any, "state"], state)
+      );
     } else {
       return false;
     }
   };
 
-const toggleMainWindow = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const main = getSettings(getState()).getIn(['chats', 'mainWindow']) as 'minimized' | 'open';
-    const state = main === 'minimized' ? 'open' : 'minimized';
-    return dispatch(changeSetting(['chats', 'mainWindow'], state));
+const toggleMainWindow =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
+    const main = getSettings(getState()).getIn(["chats", "mainWindow"]) as
+      | "minimized"
+      | "open";
+    const state = main === "minimized" ? "open" : "minimized";
+    return dispatch(changeSetting(["chats", "mainWindow"], state));
   };
 
-const fetchChat = (chatId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchChat =
+  (chatId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CHAT_FETCH_REQUEST, chatId });
-    return api(getState).get(`/api/chats/${chatId}`).then(({ data }) => {
-      dispatch({ type: CHAT_FETCH_SUCCESS, chat: data });
-    }).catch(error => {
-      dispatch({ type: CHAT_FETCH_FAIL, chatId, error });
-    });
+    return api(getState)
+      .get(`/api/chats/${chatId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({ type: CHAT_FETCH_SUCCESS, chat: data });
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_FETCH_FAIL, chatId, error });
+      });
   };
 
-const startChat = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const startChat =
+  (accountId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CHAT_FETCH_REQUEST, accountId });
-    return api(getState).post(`/api/chats/by-account-id/${accountId}`).then(({ data }) => {
-      dispatch({ type: CHAT_FETCH_SUCCESS, chat: data });
-      return data;
-    }).catch(error => {
-      dispatch({ type: CHAT_FETCH_FAIL, accountId, error });
-    });
+    return api(getState)
+      .post(`/api/chats/by-account-id/${accountId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({ type: CHAT_FETCH_SUCCESS, chat: data });
+        return data;
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_FETCH_FAIL, accountId, error });
+      });
   };
 
-const markChatRead = (chatId: string, lastReadId?: string | null) =>
+const markChatRead =
+  (chatId: string, lastReadId?: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const chat = getState().chats.items.get(chatId)!;
     if (!lastReadId) lastReadId = chat.last_message;
 
-    if (chat.get('unread') < 1) return;
+    if (chat.get("unread") < 1) return;
     if (!lastReadId) return;
 
     dispatch({ type: CHAT_READ_REQUEST, chatId, lastReadId });
-    api(getState).post(`/api/chats/${chatId}/read`, { last_read_id: lastReadId }).then(({ data }) => {
-      dispatch({ type: CHAT_READ_SUCCESS, chat: data, lastReadId });
-    }).catch(error => {
-      dispatch({ type: CHAT_READ_FAIL, chatId, error, lastReadId });
-    });
+    api(getState)
+      .post(`/api/chats/${chatId}/read`, { last_read_id: lastReadId })
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({ type: CHAT_READ_SUCCESS, chat: data, lastReadId });
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_READ_FAIL, chatId, error, lastReadId });
+      });
   };
 
-const deleteChatMessage = (chatId: string, messageId: string) =>
+const deleteChatMessage =
+  (chatId: string, messageId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CHAT_MESSAGE_DELETE_REQUEST, chatId, messageId });
-    api(getState).delete(`/api/chats/${chatId}/messages/${messageId}`).then(({ data }) => {
-      dispatch({ type: CHAT_MESSAGE_DELETE_SUCCESS, chatId, messageId, chatMessage: data });
-    }).catch(error => {
-      dispatch({ type: CHAT_MESSAGE_DELETE_FAIL, chatId, messageId, error });
-    });
+    api(getState)
+      .delete(`/api/chats/${chatId}/messages/${messageId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({
+          type: CHAT_MESSAGE_DELETE_SUCCESS,
+          chatId,
+          messageId,
+          chatMessage: data,
+        });
+      })
+      .catch((error) => {
+        dispatch({ type: CHAT_MESSAGE_DELETE_FAIL, chatId, messageId, error });
+      });
   };
 
 /** Start a chat and launch it in the UI */
-const launchChat = (accountId: string, router: History, forceNavigate = false) => {
+const launchChat = (
+  accountId: string,
+  router: History,
+  forceNavigate = false
+) => {
   const isMobile = (width: number) => width <= 1190;
 
   return (dispatch: AppDispatch) => {
     // TODO: make this faster
-    return dispatch(startChat(accountId)).then(chat => {
+    return dispatch(startChat(accountId)).then((chat) => {
       if (forceNavigate || isMobile(window.innerWidth)) {
         router.push(`/chats/${chat.id}`);
       } else {

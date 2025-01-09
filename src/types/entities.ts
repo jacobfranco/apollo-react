@@ -1,7 +1,7 @@
-import { Account as SchemaAccount } from 'src/schemas';
+import { Account as SchemaAccount } from "src/schemas";
 import {
-  // AdminAccountRecord,
-  // AdminReportRecord,
+  AdminAccountRecord,
+  AdminReportRecord,
   AttachmentRecord,
   ChatRecord,
   ChatMessageRecord,
@@ -16,15 +16,14 @@ import {
   SpaceRecord,
   StatusRecord,
   TagRecord,
-} from 'src/normalizers'
+} from "src/normalizers";
 
-import {
-  Record as ImmutableRecord
-} from 'immutable'
+import { Record as ImmutableRecord } from "immutable";
 
-import type { LegacyMap } from 'src/utils/legacy';
-import { z } from 'zod';
+import type { LegacyMap } from "src/utils/legacy";
 
+type AdminAccount = ReturnType<typeof AdminAccountRecord>;
+type AdminReport = ReturnType<typeof AdminReportRecord>;
 type Attachment = ReturnType<typeof AttachmentRecord>;
 type Chat = ReturnType<typeof ChatRecord>;
 type ChatMessage = ReturnType<typeof ChatMessageRecord>;
@@ -48,10 +47,15 @@ interface Status extends ReturnType<typeof StatusRecord> {
 
 // Utility types
 type APIEntity = Record<string, any>;
-type EmbeddedEntity<T extends object> = null | string | ReturnType<ImmutableRecord.Factory<T>>;
+type EmbeddedEntity<T extends object> =
+  | null
+  | string
+  | ReturnType<ImmutableRecord.Factory<T>>;
 
-export {
+export type {
   Account,
+  AdminAccount,
+  AdminReport,
   APIEntity,
   Attachment,
   Chat,
@@ -67,8 +71,8 @@ export {
   Notification,
   Space,
   Status,
-  Tag
-}
+  Tag,
+};
 
 export type {
   Card,
@@ -79,5 +83,5 @@ export type {
   Match,
   Poll,
   PollOption,
-  Relationship
-} from 'src/schemas'
+  Relationship,
+} from "src/schemas";

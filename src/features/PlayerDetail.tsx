@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import twitterIcon from "@tabler/icons/outline/brand-twitter.svg";
+import twitchIcon from "@tabler/icons/outline/brand-twitch.svg";
+import youtubeIcon from "@tabler/icons/outline/brand-youtube.svg";
+import worldIcon from "@tabler/icons/outline/world.svg";
 import { useParams, Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { fetchPlayerById } from "src/actions/players";
@@ -164,28 +168,28 @@ const PlayerDetail: React.FC = () => {
       case "twitter":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-twitter.svg")}
+            src={twitterIcon}
             className="h-5 w-5 text-gray-600 hover:text-blue-500"
           />
         );
       case "twitch":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-twitch.svg")}
+            src={twitchIcon}
             className="h-5 w-5 text-gray-600 hover:text-purple-500"
           />
         );
       case "youtube":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-youtube.svg")}
+            src={youtubeIcon}
             className="h-5 w-5 text-gray-600 hover:text-red-500"
           />
         );
       default:
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/world.svg")}
+            src={worldIcon}
             className="h-5 w-5 text-gray-600 hover:text-blue-500"
           />
         );

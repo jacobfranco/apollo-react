@@ -4,7 +4,8 @@ import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import { directComposeById } from "src/actions/compose";
 import { expandDirectTimeline } from "src/actions/timelines";
 import { useDirectStream } from "src/api/hooks/useDirectStream";
-import { AccountSearch, Timeline } from "src/components";
+import { AccountSearch } from "src/components";
+import Timeline from "src/features/Timeline";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import { Column } from "src/components/Column";
 

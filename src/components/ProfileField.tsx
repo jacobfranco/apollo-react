@@ -1,51 +1,69 @@
-import clsx from 'clsx';
-import React from 'react';
-import { defineMessages, useIntl, FormatDateOptions } from 'react-intl';
+import checkIcon from "@tabler/icons/outline/check.svg";
+import clsx from "clsx";
+import { defineMessages, useIntl, FormatDateOptions } from "react-intl";
 
-import { HStack, Markup } from 'src/components';
+import Markup from "src/components/Markup";
+import HStack from "src/components/HStack";
+import Icon from "src/components/Icon";
+import { htmlToPlaintext } from "src/utils/html";
 
-import type { Account } from 'src/schemas';
-import Icon from './Icon';
+import type { Account } from "src/schemas/index";
+
+const getTicker = (value: string): string =>
+  (value.match(/\$([a-zA-Z]*)/i) || [])[1];
 
 const messages = defineMessages({
-  linkVerifiedOn: { id: 'account.link_verified_on', defaultMessage: 'Ownership of this link was checked on {date}' },
+  linkVerifiedOn: {
+    id: "account.link_verified_on",
+    defaultMessage: "Ownership of this link was checked on {date}",
+  },
 });
 
 const dateFormatOptions: FormatDateOptions = {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
+  month: "short",
+  day: "numeric",
+  year: "numeric",
   hour12: true,
-  hour: 'numeric',
-  minute: '2-digit',
+  hour: "numeric",
+  minute: "2-digit",
 };
 
 interface IProfileField {
-  field: Account['fields'][number];
+  field: Account["fields"][number];
 }
 
 /** Renders a single profile field. */
 const ProfileField: React.FC<IProfileField> = ({ field }) => {
   const intl = useIntl();
+  const valuePlain = htmlToPlaintext(field.value);
 
   return (
     <dl>
-      <dt title={field.name}>
-        <Markup weight='bold' tag='span' dangerouslySetInnerHTML={{ __html: field.name_emojified }} />
+      <dt className="font-bold" title={field.name}>
+        {field.name}
       </dt>
 
       <dd
-        className={clsx({ 'text-success-500': field.verified_at })}
-        title={field.value_plain}
+        className={clsx({ "text-success-500": field.verified_at })}
+        title={valuePlain}
       >
-        <HStack space={2} alignItems='center'>
+        <HStack space={2} alignItems="center">
           {field.verified_at && (
-            <span className='flex-none' title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(field.verified_at, dateFormatOptions) })}>
-              <Icon src={require('@tabler/icons/outline/check.svg')} />
+            <span
+              className="flex-none"
+              title={intl.formatMessage(messages.linkVerifiedOn, {
+                date: intl.formatDate(field.verified_at, dateFormatOptions),
+              })}
+            >
+              <Icon src={checkIcon} />
             </span>
           )}
 
-          <Markup className='overflow-hidden break-words' tag='span' dangerouslySetInnerHTML={{ __html: field.value_emojified }} />
+          <Markup
+            className="overflow-hidden break-words"
+            tag="span"
+            html={{ __html: field.value }}
+          />
         </HStack>
       </dd>
     </dl>

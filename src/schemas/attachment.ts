@@ -1,6 +1,7 @@
 import { isBlurhashValid } from "blurhash";
 import { z } from "zod";
-import { broadcasterSchema } from "./broadcaster";
+
+import { mimeSchema } from "./utils.ts";
 
 const blurhashSchema = z.string().superRefine((value, ctx) => {
   const r = isBlurhashValid(value);
@@ -17,6 +18,12 @@ const baseAttachmentSchema = z.object({
   blurhash: blurhashSchema.nullable().catch(null),
   description: z.string().catch(""),
   id: z.string(),
+  pleroma: z
+    .object({
+      mime_type: mimeSchema,
+    })
+    .optional()
+    .catch(undefined),
   preview_url: z.string().url().catch(""),
   remote_url: z.string().url().nullable().catch(null),
   type: z.string(),
@@ -69,6 +76,7 @@ const audioAttachmentSchema = baseAttachmentSchema.extend({
   meta: z
     .object({
       duration: z.number().optional().catch(undefined),
+      original: imageMetaSchema.optional().catch(undefined),
       colors: z
         .object({
           background: z.string().optional().catch(undefined),
@@ -82,13 +90,14 @@ const audioAttachmentSchema = baseAttachmentSchema.extend({
     .catch({}),
 });
 
-const streamAttachmentSchema = baseAttachmentSchema.extend({
-  type: z.literal("stream"),
-  broadcaster: broadcasterSchema,
-});
-
 const unknownAttachmentSchema = baseAttachmentSchema.extend({
   type: z.literal("unknown"),
+  meta: z
+    .object({
+      duration: z.number().optional().catch(undefined),
+      original: imageMetaSchema.optional().catch(undefined),
+    })
+    .catch({}),
 });
 
 /** https://docs.joinmastodon.org/entities/attachment */
@@ -98,7 +107,6 @@ const attachmentSchema = z
     videoAttachmentSchema,
     gifvAttachmentSchema,
     audioAttachmentSchema,
-    streamAttachmentSchema,
     unknownAttachmentSchema,
   ])
   .transform((attachment) => {

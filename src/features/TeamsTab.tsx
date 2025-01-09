@@ -223,7 +223,7 @@ const TeamsTab: React.FC = () => {
   );
 
   if (loading) {
-    return <Spinner withText={false} />;
+    return <Spinner />;
   }
 
   if (error) {

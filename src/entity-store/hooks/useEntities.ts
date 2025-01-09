@@ -1,21 +1,27 @@
-import { useEffect } from 'react';
-import z from 'zod';
+import LinkHeader from "http-link-header";
+import { useEffect } from "react";
+import z from "zod";
 
-import { getNextLink, getPrevLink } from 'src/api';
-import { useApi } from 'src/hooks/useApi';
-import { useAppDispatch } from 'src/hooks/useAppDispatch';
-import { useAppSelector } from 'src/hooks/useAppSelector';
-import { useGetState } from 'src/hooks/useGetState';
-import { filteredArray } from 'src/schemas/utils';
-import { realNumberSchema } from 'src/utils/numbers';
+import { useApi } from "src/hooks/useApi";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useGetState } from "src/hooks/useGetState";
+import { filteredArray } from "src/schemas/utils";
+import { realNumberSchema } from "src/utils/numbers";
 
-import { entitiesFetchFail, entitiesFetchRequest, entitiesFetchSuccess, invalidateEntityList } from '../actions';
-import { selectEntities, selectListState, useListState } from '../selectors';
+import {
+  entitiesFetchFail,
+  entitiesFetchRequest,
+  entitiesFetchSuccess,
+  invalidateEntityList,
+} from "../actions";
+import { selectEntities, selectListState, useListState } from "../selectors";
 
-import { parseEntitiesPath } from './utils';
+import { parseEntitiesPath } from "./utils";
 
-import type { EntityFn, EntitySchema, ExpandedEntitiesPath } from './types';
-import type { Entity } from '../types';
+import type { EntityFn, EntitySchema, ExpandedEntitiesPath } from "./types";
+import type { Entity } from "../types";
+import { adminAccountSchema } from "src/schemas/admin-account";
 
 /** Additional options for the hook. */
 interface UseEntitiesOpts<TEntity extends Entity> {
@@ -37,67 +43,88 @@ function useEntities<TEntity extends Entity>(
   /** API route to GET, eg `'/api/notifications'`. If undefined, nothing will be fetched. */
   entityFn: EntityFn<void>,
   /** Additional options for the hook. */
-  opts: UseEntitiesOpts<TEntity> = {},
+  opts: UseEntitiesOpts<TEntity> = {}
 ) {
   const api = useApi();
   const dispatch = useAppDispatch();
   const getState = useGetState();
 
   const { entityType, listKey, path } = parseEntitiesPath(expandedPath);
-  const entities = useAppSelector(state => selectEntities<TEntity>(state, path));
+  const entities = useAppSelector((state) =>
+    selectEntities<TEntity>(state, path)
+  );
   const schema = opts.schema || z.custom<TEntity>();
 
   const isEnabled = opts.enabled ?? true;
-  const isFetching = useListState(path, 'fetching');
-  const lastFetchedAt = useListState(path, 'lastFetchedAt');
-  const isFetched = useListState(path, 'fetched');
-  const isError = !!useListState(path, 'error');
-  const totalCount = useListState(path, 'totalCount');
-  const isInvalid = useListState(path, 'invalid');
+  const isFetching = useListState(path, "fetching");
+  const lastFetchedAt = useListState(path, "lastFetchedAt");
+  const isFetched = useListState(path, "fetched");
+  const isError = !!useListState(path, "error");
+  const totalCount = useListState(path, "totalCount");
+  const isInvalid = useListState(path, "invalid");
 
-  const next = useListState(path, 'next');
-  const prev = useListState(path, 'prev');
+  const next = useListState(path, "next");
+  const prev = useListState(path, "prev");
 
-  const fetchPage = async(req: EntityFn<void>, pos: 'start' | 'end', overwrite = false): Promise<void> => {
+  const fetchPage = async (
+    req: EntityFn<void>,
+    pos: "start" | "end",
+    overwrite = false
+  ): Promise<void> => {
     // Get `isFetching` state from the store again to prevent race conditions.
-    const isFetching = selectListState(getState(), path, 'fetching');
+    const isFetching = selectListState(getState(), path, "fetching");
     if (isFetching) return;
 
     dispatch(entitiesFetchRequest(entityType, listKey));
     try {
       const response = await req();
-      const entities = filteredArray(schema).parse(response.data);
-      const parsedCount = realNumberSchema.safeParse(response.headers['x-total-count']);
+      const json = await response.json();
+      const entities = filteredArray(schema).parse(json);
+      const parsedCount = realNumberSchema.safeParse(
+        response.headers.get("x-total-count")
+      );
       const totalCount = parsedCount.success ? parsedCount.data : undefined;
+      const linkHeader = response.headers.get("link");
+      const links = linkHeader ? new LinkHeader(linkHeader) : undefined;
 
-      dispatch(entitiesFetchSuccess(entities, entityType, listKey, pos, {
-        next: getNextLink(response),
-        prev: getPrevLink(response),
-        totalCount: Number(totalCount) >= entities.length ? totalCount : undefined,
-        fetching: false,
-        fetched: true,
-        error: null,
-        lastFetchedAt: new Date(),
-        invalid: false,
-      }, overwrite));
+      dispatch(
+        entitiesFetchSuccess(
+          entities,
+          entityType,
+          listKey,
+          pos,
+          {
+            next: links?.refs.find((link) => link.rel === "next")?.uri,
+            prev: links?.refs.find((link) => link.rel === "prev")?.uri,
+            totalCount:
+              Number(totalCount) >= entities.length ? totalCount : undefined,
+            fetching: false,
+            fetched: true,
+            error: null,
+            lastFetchedAt: new Date(),
+            invalid: false,
+          },
+          overwrite
+        )
+      );
     } catch (error) {
       dispatch(entitiesFetchFail(entityType, listKey, error));
     }
   };
 
-  const fetchEntities = async(): Promise<void> => {
-    await fetchPage(entityFn, 'end', true);
+  const fetchEntities = async (): Promise<void> => {
+    await fetchPage(entityFn, "end", true);
   };
 
-  const fetchNextPage = async(): Promise<void> => {
+  const fetchNextPage = async (): Promise<void> => {
     if (next) {
-      await fetchPage(() => api.get(next), 'end');
+      await fetchPage(() => api.get(next), "end");
     }
   };
 
-  const fetchPreviousPage = async(): Promise<void> => {
+  const fetchPreviousPage = async (): Promise<void> => {
     if (prev) {
-      await fetchPage(() => api.get(prev), 'start');
+      await fetchPage(() => api.get(prev), "start");
     }
   };
 
@@ -111,7 +138,9 @@ function useEntities<TEntity extends Entity>(
     if (!isEnabled) return;
     if (isFetching) return;
     const isUnset = !lastFetchedAt;
-    const isStale = lastFetchedAt ? Date.now() >= lastFetchedAt.getTime() + staleTime : false;
+    const isStale = lastFetchedAt
+      ? Date.now() >= lastFetchedAt.getTime() + staleTime
+      : false;
 
     if (isInvalid || isUnset || isStale) {
       fetchEntities();
@@ -132,10 +161,8 @@ function useEntities<TEntity extends Entity>(
     isLoading: isFetching && entities.length === 0,
     invalidate,
     /** The `X-Total-Count` from the API if available, or the length of items in the store. */
-    count: typeof totalCount === 'number' ? totalCount : entities.length,
+    count: typeof totalCount === "number" ? totalCount : entities.length,
   };
 }
 
-export {
-  useEntities,
-};
+export { useEntities };

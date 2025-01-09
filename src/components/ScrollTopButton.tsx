@@ -1,10 +1,11 @@
-import throttle from 'lodash/throttle';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useIntl, MessageDescriptor } from 'react-intl';
+import arrowBarToUpIcon from "@tabler/icons/outline/arrow-bar-to-up.svg";
+import { throttle } from "es-toolkit";
+import { useState, useEffect, useCallback } from "react";
+import { useIntl, MessageDescriptor } from "react-intl";
 
-import { Text } from 'src/components';
-import { useSettings } from 'src/hooks/useSettings';
-import Icon from './Icon';
+import Icon from "src/components/Icon";
+import Text from "src/components/Text";
+import { useSettings } from "src/hooks/useSettings";
 
 interface IScrollTopButton {
   /** Callback when clicked, and also when scrolled to the top. */
@@ -28,13 +29,13 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
   autoloadThreshold = 50,
 }) => {
   const intl = useIntl();
+  const { autoloadTimelines } = useSettings();
 
   // Whether we are scrolled past the `threshold`.
   const [scrolled, setScrolled] = useState<boolean>(false);
   // Whether we are scrolled above the `autoloadThreshold`.
   const [scrolledTop, setScrolledTop] = useState<boolean>(false);
 
-  const { autoloadTimelines } = useSettings();
   const visible = count > 0 && scrolled;
 
   /** Number of pixels scrolled down from the top of the page. */
@@ -50,13 +51,19 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
   }, [autoloadTimelines, scrolledTop, count, onClick]);
 
   /** Set state while scrolling. */
-  const handleScroll = useCallback(throttle(() => {
-    const scrollTop = getScrollTop();
+  const handleScroll = useCallback(
+    throttle(
+      () => {
+        const scrollTop = getScrollTop();
 
-    setScrolled(scrollTop > threshold);
-    setScrolledTop(scrollTop <= autoloadThreshold);
-
-  }, 150, { trailing: true }), [threshold, autoloadThreshold]);
+        setScrolled(scrollTop > threshold);
+        setScrolledTop(scrollTop <= autoloadThreshold);
+      },
+      150,
+      { edges: ["trailing"] }
+    ),
+    [threshold, autoloadThreshold]
+  );
 
   /** Scroll to top and trigger `onClick`. */
   const handleClick: React.MouseEventHandler = useCallback(() => {
@@ -68,12 +75,12 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
     // Delay adding the scroll listener so navigating back doesn't
     // unload feed items before the feed is rendered.
     setTimeout(() => {
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll);
       handleScroll();
     }, 250);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
 
@@ -86,17 +93,14 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
   }
 
   return (
-    <div className='fixed left-1/2 top-20 z-50 -translate-x-1/2'>
+    <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2">
       <button
-        className='flex cursor-pointer items-center space-x-1.5 whitespace-nowrap rounded-full bg-primary-600 px-4 py-2 text-white transition-transform hover:scale-105 hover:bg-primary-700 active:scale-100'
+        className="flex cursor-pointer items-center space-x-1.5 whitespace-nowrap rounded-full bg-primary-600 px-4 py-2 text-white transition-transform hover:scale-105 hover:bg-primary-700 active:scale-100"
         onClick={handleClick}
       >
-        <Icon
-          className='h-4 w-4'
-          src={require('@tabler/icons/outline/arrow-bar-to-up.svg')}
-        />
+        <Icon className="size-4" src={arrowBarToUpIcon} />
 
-        <Text theme='inherit' size='sm'>
+        <Text theme="inherit" size="sm">
           {intl.formatMessage(message, { count })}
         </Text>
       </button>

@@ -1,26 +1,32 @@
-import clsx from 'clsx';
-import React, { useRef, useState } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import clsx from "clsx";
+import React, { useRef, useState } from "react";
+import { Virtuoso } from "react-virtuoso";
 
-import { fetchChats } from 'src/actions/chats';
-import { PlaceholderChat, PullToRefresh, Spinner, Stack } from 'src/components';
-import { useAppDispatch } from 'src/hooks';
-import { useChats } from 'src/queries/chats';
+import { fetchChats } from "src/actions/chats";
+import { PlaceholderChat, PullToRefresh, Spinner, Stack } from "src/components";
+import { useAppDispatch } from "src/hooks";
+import { useChats } from "src/queries/chats";
 
-import ChatListItem from './ChatListItem';
+import ChatListItem from "./ChatListItem";
 
 interface IChatList {
-  onClickChat: (chat: any) => void
-  useWindowScroll?: boolean
-  searchValue?: string
+  onClickChat: (chat: any) => void;
+  useWindowScroll?: boolean;
+  searchValue?: string;
 }
 
-const ChatList: React.FC<IChatList> = ({ onClickChat, useWindowScroll = false, searchValue }) => {
+const ChatList: React.FC<IChatList> = ({
+  onClickChat,
+  useWindowScroll = false,
+  searchValue,
+}) => {
   const dispatch = useAppDispatch();
 
   const chatListRef = useRef(null);
 
-  const { chatsQuery: { data: chats, isFetching, hasNextPage, fetchNextPage } } = useChats(searchValue);
+  const {
+    chatsQuery: { data: chats, isFetching, hasNextPage, fetchNextPage },
+  } = useChats(searchValue);
 
   const [isNearBottom, setNearBottom] = useState<boolean>(false);
   const [isNearTop, setNearTop] = useState<boolean>(true);
@@ -48,7 +54,7 @@ const ChatList: React.FC<IChatList> = ({ onClickChat, useWindowScroll = false, s
   };
 
   return (
-    <div className='relative h-full'>
+    <div className="relative h-full">
       <PullToRefresh onRefresh={handleRefresh}>
         <Virtuoso
           ref={chatListRef}
@@ -58,13 +64,13 @@ const ChatList: React.FC<IChatList> = ({ onClickChat, useWindowScroll = false, s
           data={chats}
           endReached={handleLoadMore}
           itemContent={(_index, chat) => (
-            <div className='px-2'>
+            <div className="px-2">
               <ChatListItem chat={chat} onClick={onClickChat} />
             </div>
           )}
           components={{
             ScrollSeekPlaceholder: () => <PlaceholderChat />,
-            Footer: () => hasNextPage ? <Spinner withText={false} /> : null,
+            Footer: () => (hasNextPage ? <Spinner /> : null),
             EmptyPlaceholder: renderEmpty,
           }}
         />
@@ -72,16 +78,22 @@ const ChatList: React.FC<IChatList> = ({ onClickChat, useWindowScroll = false, s
 
       <>
         <div
-          className={clsx('pointer-events-none absolute inset-x-0 top-0 flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 dark:from-gray-900', {
-            'opacity-0': isNearTop,
-            'opacity-100': !isNearTop,
-          })}
+          className={clsx(
+            "pointer-events-none absolute inset-x-0 top-0 flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 dark:from-gray-900",
+            {
+              "opacity-0": isNearTop,
+              "opacity-100": !isNearTop,
+            }
+          )}
         />
         <div
-          className={clsx('pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 dark:from-gray-900', {
-            'opacity-0': isNearBottom,
-            'opacity-100': !isNearBottom,
-          })}
+          className={clsx(
+            "pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 dark:from-gray-900",
+            {
+              "opacity-0": isNearBottom,
+              "opacity-100": !isNearBottom,
+            }
+          )}
         />
       </>
     </div>

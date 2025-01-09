@@ -1,6 +1,10 @@
 // TeamDetail.tsx
 
 import React, { useState, useEffect, useMemo } from "react";
+import twitterIcon from "@tabler/icons/outline/brand-twitter.svg";
+import twitchIcon from "@tabler/icons/outline/brand-twitch.svg";
+import youtubeIcon from "@tabler/icons/outline/brand-youtube.svg";
+import worldIcon from "@tabler/icons/outline/world.svg";
 import { Link, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "src/hooks";
 import {
@@ -239,28 +243,28 @@ const TeamDetail: React.FC = () => {
       case "twitter":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-twitter.svg")}
+            src={twitterIcon}
             className="h-5 w-5 text-gray-600 hover:text-blue-500"
           />
         );
       case "twitch":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-twitch.svg")}
+            src={twitchIcon}
             className="h-5 w-5 text-gray-600 hover:text-purple-500"
           />
         );
       case "youtube":
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/brand-youtube.svg")}
+            src={youtubeIcon}
             className="h-5 w-5 text-gray-600 hover:text-red-500"
           />
         );
       default:
         return (
           <SvgIcon
-            src={require("@tabler/icons/outline/world.svg")}
+            src={worldIcon}
             className="h-5 w-5 text-gray-600 hover:text-blue-500"
           />
         );
@@ -499,7 +503,7 @@ const TeamDetail: React.FC = () => {
                       return (
                         <Link
                           key={id}
-                          to={`/esports/${esportName}/series/${id}`}
+                          to={`/esports${esportName}/series/${id}`}
                           className="block p-0 m-0 transform transition-transform duration-200 ease-in-out hover:scale-101"
                           style={{ width: "100%", textDecoration: "none" }}
                         >

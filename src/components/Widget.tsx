@@ -1,6 +1,9 @@
-import React from 'react';
+import arrowRightIcon from "@tabler/icons/outline/arrow-right.svg";
 
-import { HStack, IconButton, Stack, Text } from 'src/components';
+import HStack from "src/components/HStack";
+import IconButton from "src/components/IconButton";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
 
 interface IWidgetTitle {
   /** Title text for the widget. */
@@ -9,7 +12,9 @@ interface IWidgetTitle {
 
 /** Title of a widget. */
 const WidgetTitle = ({ title }: IWidgetTitle): JSX.Element => (
-  <Text size='xl' weight='bold' tag='h1'>{title}</Text>
+  <Text size="xl" weight="bold" tag="h1">
+    {title}
+  </Text>
 );
 
 interface IWidgetBody {
@@ -39,22 +44,23 @@ const Widget: React.FC<IWidget> = ({
   title,
   children,
   onActionClick,
-  actionIcon = require('@tabler/icons/outline/arrow-right.svg'),
+  actionIcon = arrowRightIcon,
   actionTitle,
   action,
 }): JSX.Element => {
   return (
     <Stack space={4}>
-      <HStack alignItems='center' justifyContent='between'>
+      <HStack alignItems="center" justifyContent="between">
         <WidgetTitle title={title} />
-        {action || (onActionClick && (
-          <IconButton
-            className='ml-2 h-6 w-6 text-black rtl:rotate-180 dark:text-white'
-            src={actionIcon}
-            onClick={onActionClick}
-            title={actionTitle}
-          />
-        ))}
+        {action ||
+          (onActionClick && (
+            <IconButton
+              className="ml-2 size-6 text-black dark:text-white rtl:rotate-180"
+              src={actionIcon}
+              onClick={onActionClick}
+              title={actionTitle}
+            />
+          ))}
       </HStack>
       <WidgetBody>{children}</WidgetBody>
     </Stack>

@@ -1,24 +1,28 @@
+import xIcon from "@tabler/icons/outline/x.svg";
 import clsx from "clsx";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FormattedMessage, defineMessages, useIntl } from "react-intl";
 
 import { expandSearch, setFilter, setSearchAccount } from "src/actions/search";
-import { fetchTrendingStatuses } from "src/actions/trending-statuses";
-import { useAccount } from "src/api/hooks";
 import {
-  Hashtag,
-  HStack,
-  IconButton,
-  ScrollableList,
-  Spinner,
-  Tabs,
-  Text,
-} from "src/components";
+  expandTrendingStatuses,
+  fetchTrendingStatuses,
+} from "src/actions/trending-statuses";
+import { useAccount } from "src/api/hooks/index";
+import Hashtag from "src/components/Hashtag";
+import IconButton from "src/components/IconButton";
+import ScrollableList from "src/components/ScrollableList";
+import HStack from "src/components/HStack";
+import Spinner from "src/components/Spinner";
+import Tabs from "src/components/Tabs";
+import Text from "src/components/Text";
 import AccountContainer from "src/containers/AccountContainer";
 import StatusContainer from "src/containers/StatusContainer";
+import PlaceholderAccount from "src/components/PlaceholderAccount";
+import PlaceholderHashtag from "src/components/PlaceholderHashtag";
 import PlaceholderStatus from "src/components/PlaceholderStatus";
-import { PlaceholderAccount, PlaceholderHashtag } from "src/components";
-import { useAppDispatch, useAppSelector } from "src/hooks";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
 
 import type { OrderedSet as ImmutableOrderedSet } from "immutable";
 import type { VirtuosoHandle } from "react-virtuoso";
@@ -42,6 +46,9 @@ const SearchResults = () => {
   const trendingStatuses = useAppSelector(
     (state) => state.trending_statuses.items
   );
+  const nextTrendingStatuses = useAppSelector(
+    (state) => state.trending_statuses.next
+  );
   const trends = useAppSelector((state) => state.trends.items);
   const submitted = useAppSelector((state) => state.search.submitted);
   const selectedFilter = useAppSelector((state) => state.search.filter);
@@ -50,7 +57,17 @@ const SearchResults = () => {
   );
   const { account } = useAccount(filterByAccount);
 
-  const handleLoadMore = () => dispatch(expandSearch(selectedFilter));
+  const handleLoadMore = () => {
+    if (
+      results.accounts.size ||
+      results.statuses.size ||
+      results.hashtags.size
+    ) {
+      dispatch(expandSearch(selectedFilter));
+    } else if (nextTrendingStatuses) {
+      dispatch(expandTrendingStatuses(nextTrendingStatuses));
+    }
+  };
 
   const handleUnsetAccount = () => dispatch(setSearchAccount(null));
 
@@ -138,7 +155,7 @@ const SearchResults = () => {
       ));
     } else if (loaded) {
       noResultsMessage = (
-        <div className="empty-column-indicator">
+        <div className="flex min-h-[160px] flex-1 items-center justify-center rounded-lg bg-primary-50 p-10 text-center text-gray-900 dark:bg-secondary-700 dark:text-gray-300">
           <FormattedMessage
             id="empty_column.search.accounts"
             defaultMessage='There are no people results for "{term}"'
@@ -161,10 +178,12 @@ const SearchResults = () => {
           id={statusId}
           onMoveUp={handleMoveUp}
           onMoveDown={handleMoveDown}
+          variant="slim"
         />
       ));
       resultsIds = results.statuses;
     } else if (!submitted && trendingStatuses && !trendingStatuses.isEmpty()) {
+      hasMore = !!nextTrendingStatuses;
       searchResults = trendingStatuses.map((statusId: string) => (
         // @ts-ignore
         <StatusContainer
@@ -172,12 +191,13 @@ const SearchResults = () => {
           id={statusId}
           onMoveUp={handleMoveUp}
           onMoveDown={handleMoveDown}
+          variant="slim"
         />
       ));
       resultsIds = trendingStatuses;
     } else if (loaded) {
       noResultsMessage = (
-        <div className="empty-column-indicator">
+        <div className="flex min-h-[160px] flex-1 items-center justify-center rounded-lg bg-primary-50 p-10 text-center text-gray-900 dark:bg-gray-700 dark:text-gray-300">
           <FormattedMessage
             id="empty_column.search.statuses"
             defaultMessage='There are no posts results for "{term}"'
@@ -205,7 +225,7 @@ const SearchResults = () => {
       ));
     } else if (loaded) {
       noResultsMessage = (
-        <div className="empty-column-indicator">
+        <div className="flex min-h-[160px] flex-1 items-center justify-center rounded-lg bg-primary-50 p-10 text-center text-gray-900 dark:bg-gray-700 dark:text-gray-300">
           <FormattedMessage
             id="empty_column.search.hashtags"
             defaultMessage='There are no hashtags results for "{term}"'
@@ -225,7 +245,7 @@ const SearchResults = () => {
         >
           <IconButton
             iconClassName="h-5 w-5"
-            src={require("@tabler/icons/outline/x.svg")}
+            src={xIcon}
             onClick={handleUnsetAccount}
           />
           <Text truncate>
@@ -260,7 +280,7 @@ const SearchResults = () => {
             "divide-gray-200 dark:divide-gray-800 divide-solid divide-y":
               selectedFilter === "statuses",
           })}
-          itemClassName={clsx({
+          itemClassName={clsx("px-4", {
             "pb-4": selectedFilter === "accounts",
             "pb-3": selectedFilter === "hashtags",
           })}

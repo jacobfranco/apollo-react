@@ -14,10 +14,12 @@ export const FETCH_TEAM_SUCCESS = "teams/FETCH_TEAM_SUCCESS";
 export const FETCH_TEAM_FAILURE = "teams/FETCH_TEAM_FAILURE";
 
 export const fetchTeamsRequest = () => ({ type: FETCH_TEAMS_REQUEST });
+
 export const fetchTeamsSuccess = (teams: Team[]) => ({
   type: FETCH_TEAMS_SUCCESS,
   payload: teams,
 });
+
 export const fetchTeamsFailure = (error: string) => ({
   type: FETCH_TEAMS_FAILURE,
   payload: error,
@@ -38,7 +40,6 @@ export const fetchTeamFailure = (teamId: number, error: string) => ({
   payload: { teamId, error },
 });
 
-// Thunk action to fetch all teams
 export const fetchTeams = (
   gamePath: string
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
@@ -47,8 +48,9 @@ export const fetchTeams = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/teams`);
-      console.log("API Response Data:", response.data);
-      const parsedData = teamSchema.array().parse(response.data);
+      const data = await response.json();
+      console.log("API Response Data:", data);
+      const parsedData = teamSchema.array().parse(data);
       dispatch(fetchTeamsSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {
@@ -61,7 +63,6 @@ export const fetchTeams = (
   };
 };
 
-// Thunk action to fetch team by ID
 export const fetchTeamById = (
   gamePath: string,
   teamId: number
@@ -71,8 +72,9 @@ export const fetchTeamById = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/teams/${teamId}`);
-      console.log("API Response Data:", response.data);
-      const parsedData = teamSchema.parse(response.data);
+      const data = await response.json();
+      console.log("API Response Data:", data);
+      const parsedData = teamSchema.parse(data);
       dispatch(fetchTeamSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {

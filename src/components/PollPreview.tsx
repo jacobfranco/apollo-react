@@ -1,9 +1,7 @@
-import noop from 'lodash/noop';
-import React from 'react';
-
-import { PollOption, Stack } from 'src/components';
-import { useAppSelector } from 'src/hooks';
-import { Poll as PollEntity } from 'src/types/entities';
+import PollOption from "src/components/PollOption";
+import Stack from "src/components/Stack";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { Poll as PollEntity } from "src/types/entities";
 
 interface IPollPreview {
   pollId: string;
@@ -26,7 +24,7 @@ const PollPreview: React.FC<IPollPreview> = ({ pollId }) => {
           index={i}
           showResults={false}
           active={false}
-          onToggle={noop}
+          onToggle={() => {}}
         />
       ))}
     </Stack>

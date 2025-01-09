@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { List as ImmutableList, Map as ImmutableMap } from "immutable";
-import debounce from "lodash/debounce";
+import { debounce } from "es-toolkit";
 import React, { useCallback, useEffect, useRef } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import { createSelector } from "reselect";
@@ -106,7 +106,7 @@ const Notifications = () => {
         dispatch(expandNotifications({ maxId: last && last.get("id") }));
       },
       300,
-      { leading: true }
+      { edges: ["leading"] }
     ),
     [notifications]
   );

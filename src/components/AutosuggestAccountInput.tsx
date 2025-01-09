@@ -1,15 +1,17 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import throttle from 'lodash/throttle';
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { throttle } from "es-toolkit";
+import { OrderedSet as ImmutableOrderedSet } from "immutable";
+import { useState, useRef, useCallback, useEffect } from "react";
 
-import { accountSearch } from 'src/actions/accounts';
-import AutosuggestInput, { AutoSuggestion } from 'src/components/AutosuggestInput';
-import { useAppDispatch } from 'src/hooks';
+import { accountSearch } from "src/actions/accounts";
+import AutosuggestInput, {
+  AutoSuggestion,
+} from "src/components/AutosuggestInput";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
 
-import type { Menu } from 'src/components/dropdown-menu';
-import type { InputThemes } from 'src/components/Input';
+import type { Menu } from "src/components/dropdown-menu";
+import type { InputThemes } from "src/components/Input";
 
-const noOp = () => { };
+const noOp = () => {};
 
 interface IAutosuggestAccountInput {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
@@ -27,7 +29,7 @@ interface IAutosuggestAccountInput {
 const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
   onChange,
   onSelected,
-  value = '',
+  value = "",
   limit = 4,
   ...rest
 }) => {
@@ -44,37 +46,48 @@ const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
     setAccountIds(ImmutableOrderedSet());
   };
 
-  const handleAccountSearch = useCallback(throttle((q) => {
-    const params = { q, limit, resolve: false };
+  const handleAccountSearch = useCallback(
+    throttle(
+      (q) => {
+        const params = { q, limit, resolve: false };
 
-    dispatch(accountSearch(params, controller.current.signal))
-      .then((accounts: { id: string }[]) => {
-        const accountIds = accounts.map(account => account.id);
-        setAccountIds(ImmutableOrderedSet(accountIds));
-      })
-      .catch(noOp);
-  }, 900, { leading: true, trailing: true }), [limit]);
+        dispatch(accountSearch(params, controller.current.signal))
+          .then((accounts: { id: string }[]) => {
+            const accountIds = accounts.map((account) => account.id);
+            setAccountIds(ImmutableOrderedSet(accountIds));
+          })
+          .catch(noOp);
+      },
+      900,
+      { edges: ["leading", "trailing"] }
+    ),
+    [limit]
+  );
 
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     refreshCancelToken();
     handleAccountSearch(e.target.value);
     onChange(e);
   };
 
-  const handleSelected = (_tokenStart: number, _lastToken: string | null, suggestion: AutoSuggestion) => {
-    if (typeof suggestion === 'string' && suggestion[0] !== '#') {
+  const handleSelected = (
+    _tokenStart: number,
+    _lastToken: string | null,
+    suggestion: AutoSuggestion
+  ) => {
+    if (typeof suggestion === "string" && suggestion[0] !== "#") {
       onSelected(suggestion);
     }
   };
 
   useEffect(() => {
     if (rest.autoFocus) {
-      handleAccountSearch('');
+      handleAccountSearch("");
     }
   }, []);
 
   useEffect(() => {
-    if (value === '') {
+    if (value === "") {
       clearResults();
     }
   }, [value]);

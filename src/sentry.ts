@@ -1,36 +1,34 @@
-import { NODE_ENV } from 'src/build-config';
-import sourceCode from 'src/utils/code';
+import { NODE_ENV } from "src/build-config.ts";
 
-import type { Account } from './schemas';
-import type { CaptureContext, UserFeedback } from '@sentry/types';
-import type { SetOptional } from 'type-fest';
+import type { CaptureContext, SendFeedbackParams } from "@sentry/types";
+import type { Account } from "src/schemas/index.ts";
 
 /** Start Sentry. */
 async function startSentry(dsn: string): Promise<void> {
-  const Sentry = await import('@sentry/react');
+  const Sentry = await import("@sentry/react");
 
   Sentry.init({
     dsn,
     debug: false,
-    enabled: NODE_ENV === 'production',
-    integrations: [new Sentry.BrowserTracing()],
+    enabled: NODE_ENV === "production",
+    integrations: [Sentry.browserTracingIntegration()],
 
     // Filter events.
     // https://docs.sentry.io/platforms/javascript/configuration/filtering/
     ignoreErrors: [
       // Network errors.
-      'AxiosError',
+      "HTTPError",
       // sw.js couldn't be downloaded.
-      'Failed to update a ServiceWorker for scope',
+      "Failed to update a ServiceWorker for scope",
       // Useful for try/catch, useless as a Sentry error.
-      'AbortError',
+      "AbortError",
       // localForage error in FireFox private browsing mode (which doesn't support IndexedDB).
       // We only use IndexedDB as a cache, so we can safely ignore the error.
-      'No available storage method found',
+      "No available storage method found",
       // Virtuoso throws these errors, but it is a false-positive.
       // https://github.com/petyosi/react-virtuoso/issues/254
-      'ResizeObserver loop completed with undelivered notifications.',
-      'ResizeObserver loop limit exceeded',
+      "ResizeObserver loop completed with undelivered notifications.",
+      "ResizeObserver loop limit exceeded",
     ],
     denyUrls: [
       // Browser extensions.
@@ -39,15 +37,15 @@ async function startSentry(dsn: string): Promise<void> {
       /^moz-extension:\/\//i,
     ],
 
-    tracesSampleRate: .1,
+    tracesSampleRate: 0.1,
   });
 
-  Sentry.setContext('apollo', sourceCode);
+  Sentry.setContext("apollo", null);
 }
 
 /** Associate the account with Sentry events. */
 async function setSentryAccount(account: Account): Promise<void> {
-  const Sentry = await import('@sentry/react');
+  const Sentry = await import("@sentry/react");
 
   Sentry.setUser({
     id: account.id,
@@ -58,23 +56,25 @@ async function setSentryAccount(account: Account): Promise<void> {
 
 /** Remove the account from Sentry events. */
 async function unsetSentryAccount(): Promise<void> {
-  const Sentry = await import('@sentry/react');
+  const Sentry = await import("@sentry/react");
   Sentry.setUser(null);
 }
 
 /** Capture the exception and report it to Sentry. */
-async function captureSentryException (
+async function captureSentryException(
   exception: any,
-  captureContext?: CaptureContext | undefined,
+  captureContext?: CaptureContext | undefined
 ): Promise<string> {
-  const Sentry = await import('@sentry/react');
+  const Sentry = await import("@sentry/react");
   return Sentry.captureException(exception, captureContext);
 }
 
 /** Capture user feedback and report it to Sentry. */
-async function captureSentryFeedback(feedback: SetOptional<UserFeedback, 'name' | 'email'>): Promise<void> {
-  const Sentry = await import('@sentry/react');
-  Sentry.captureUserFeedback(feedback as UserFeedback);
+async function captureSentryFeedback(
+  feedback: SendFeedbackParams
+): Promise<void> {
+  const Sentry = await import("@sentry/react");
+  Sentry.captureFeedback(feedback);
 }
 
 export {

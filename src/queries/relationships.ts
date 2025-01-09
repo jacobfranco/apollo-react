@@ -1,20 +1,24 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { fetchRelationshipsFail, fetchRelationshipsSuccess } from 'src/actions/accounts';
-import { useApi, useAppDispatch } from 'src/hooks';
+import {
+  fetchRelationshipsFail,
+  fetchRelationshipsSuccess,
+} from "src/actions/accounts";
+import { useApi } from "src/hooks/useApi";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
 
 const useFetchRelationships = () => {
   const api = useApi();
   const dispatch = useAppDispatch();
 
   return useMutation({
-    mutationFn: ({ accountIds }: { accountIds: string[]}) => {
-      const ids = accountIds.map((id) => `id[]=${id}`).join('&');
+    mutationFn: ({ accountIds }: { accountIds: string[] }) => {
+      const ids = accountIds.map((id) => `id[]=${id}`).join("&");
 
       return api.get(`/api/accounts/relationships?${ids}`);
     },
-    onSuccess(response) {
-      dispatch(fetchRelationshipsSuccess(response.data));
+    async onSuccess(response) {
+      dispatch(fetchRelationshipsSuccess(await response.json()));
     },
     onError(error) {
       dispatch(fetchRelationshipsFail(error));

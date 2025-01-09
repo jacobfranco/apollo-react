@@ -1,19 +1,33 @@
-import React, { useRef } from 'react';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import pencilIcon from "@tabler/icons/outline/pencil.svg";
+import { useRef, useState } from "react";
+import { defineMessages, useIntl, FormattedMessage } from "react-intl";
+import { Link, useHistory } from "react-router-dom";
 
-import { ActionButton, Badge, HoverRefWrapper, VerificationBadge, RelativeTimestamp } from 'src/components';
-import { useAppSelector } from 'src/hooks';
+import HoverRefWrapper from "src/components/HoverRefWrapper";
+import Markup from "src/components/Markup";
+import Avatar from "src/components/Avatar";
+import HStack from "src/components/HStack";
+import IconButton from "src/components/IconButton";
+import Icon from "src/components/Icon";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import VerificationBadge from "src/components/VerificationBadge";
+import ActionButton from "src/components/ActionButton";
+import { useAppSelector } from "src/hooks/useAppSelector";
 
-import { Emoji, HStack, IconButton, Stack, Text } from 'src/components';
+import Badge from "./Badge";
+import RelativeTimestamp from "./RelativeTimestamp";
 
-import type { StatusApprovalStatus } from 'src/normalizers/status';
-import type { Account as AccountSchema } from 'src/schemas';
-import Avatar from './Avatar';
-import Icon from './Icon';
+import type { StatusApprovalStatus } from "src/normalizers/status";
+import type { Account as AccountSchema } from "src/schemas/index";
+
+interface IInstanceFavicon {
+  account: AccountSchema;
+  disabled?: boolean;
+}
 
 const messages = defineMessages({
-  bot: { id: 'account.badges.bot', defaultMessage: 'Bot' },
+  bot: { id: "account.badges.bot", defaultMessage: "Bot" },
 });
 
 interface IProfilePopper {
@@ -22,22 +36,22 @@ interface IProfilePopper {
   children: React.ReactNode;
 }
 
-const ProfilePopper: React.FC<IProfilePopper> = ({ condition, wrapper, children }) => {
-  return (
-    <>
-      {condition ? wrapper(children) : children}
-    </>
-  );
+const ProfilePopper: React.FC<IProfilePopper> = ({
+  condition,
+  wrapper,
+  children,
+}) => {
+  return <>{condition ? wrapper(children) : children}</>;
 };
 
 export interface IAccount {
   account: AccountSchema;
   action?: React.ReactElement;
-  actionAlignment?: 'center' | 'top';
+  actionAlignment?: "center" | "top";
   actionIcon?: string;
   actionTitle?: string;
   /** Override other actions for specificity like mute/unmute. */
-  actionType?: 'muting' | 'blocking' | 'follow_request';
+  actionType?: "muting" | "blocking" | "follow_request";
   avatarSize?: number;
   hidden?: boolean;
   hideActions?: boolean;
@@ -64,7 +78,7 @@ const Account = ({
   action,
   actionIcon,
   actionTitle,
-  actionAlignment = 'center',
+  actionAlignment = "center",
   avatarSize = 42,
   hidden = false,
   hideActions = false,
@@ -108,8 +122,8 @@ const Account = ({
           src={actionIcon}
           title={actionTitle}
           onClick={handleAction}
-          className='bg-transparent text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500'
-          iconClassName='h-4 w-4'
+          className="bg-transparent text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500"
+          iconClassName="h-4 w-4"
         />
       );
     }
@@ -138,122 +152,177 @@ const Account = ({
 
   if (withDate) timestamp = account.created_at;
 
-  const LinkEl: any = withLinkToProfile ? Link : 'div';
-  const linkProps = withLinkToProfile ? {
-    to: `/@${account.username}`,
-    title: account.username,
-    onClick: (event: React.MouseEvent) => event.stopPropagation(),
-  } : {};
+  const LinkEl: any = withLinkToProfile ? Link : "div";
+  const linkProps = withLinkToProfile
+    ? {
+        to: `/@${account.username}`,
+        title: account.username,
+        onClick: (event: React.MouseEvent) => event.stopPropagation(),
+      }
+    : {};
 
   return (
-    <div data-testid='account' className='group block w-full shrink-0' ref={overflowRef}>
-      <HStack alignItems={actionAlignment} space={3} justifyContent='between'>
-        <HStack alignItems={withAccountNote || note ? 'top' : 'center'} space={3} className='overflow-hidden'>
+    <div
+      data-testid="account"
+      className="group block w-full shrink-0"
+      ref={overflowRef}
+    >
+      <HStack alignItems={actionAlignment} space={3} justifyContent="between">
+        <HStack
+          alignItems={withAccountNote || note ? "top" : "center"}
+          space={3}
+          className="overflow-hidden"
+        >
           <ProfilePopper
             condition={showProfileHoverCard}
-            wrapper={(children) => <HoverRefWrapper className='relative' accountId={account.id} inline>{children}</HoverRefWrapper>}
+            wrapper={(children) => (
+              <HoverRefWrapper
+                className="relative"
+                accountId={account.id}
+                inline
+              >
+                {children}
+              </HoverRefWrapper>
+            )}
           >
-            <LinkEl className='rounded-full' {...linkProps}>
+            <LinkEl className="rounded-5px" {...linkProps}>
               <Avatar src={account.avatar} size={avatarSize} />
-              {emoji && (
-                <Emoji
-                  className='absolute -right-1.5 bottom-0 h-5 w-5'
-                  emoji={emoji}
-                  src={emojiUrl}
-                />
-              )}
             </LinkEl>
           </ProfilePopper>
 
-          <div className='grow overflow-hidden'>
+          <div className="grow overflow-hidden">
             <ProfilePopper
               condition={showProfileHoverCard}
-              wrapper={(children) => <HoverRefWrapper accountId={account.id} inline>{children}</HoverRefWrapper>}
+              wrapper={(children) => (
+                <HoverRefWrapper accountId={account.id} inline>
+                  {children}
+                </HoverRefWrapper>
+              )}
             >
               <LinkEl {...linkProps}>
-                <HStack space={1} alignItems='center' grow>
-                  <Text
-                    size='sm'
-                    weight='semibold'
-                    truncate
-                    dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-                  />
+                <HStack space={1} alignItems="center" grow>
+                  <Text size="sm" weight="semibold" truncate>
+                    {account.display_name}
+                  </Text>
 
                   {account.verified && <VerificationBadge />}
 
-                  {account.bot && <Badge slug='bot' title={intl.formatMessage(messages.bot)} />}
+                  {account.bot && (
+                    <Badge
+                      slug="bot"
+                      title={intl.formatMessage(messages.bot)}
+                    />
+                  )}
                 </HStack>
               </LinkEl>
             </ProfilePopper>
 
             <Stack space={withAccountNote || note ? 1 : 0}>
-              <HStack alignItems='center' space={1}>
-                <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
-
-                {(timestamp) ? (
+              <HStack alignItems="center" space={1}>
+                <Text theme="muted" size="sm" direction="ltr" truncate>
+                  @{username}
+                </Text>{" "}
+                {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
+                {timestamp ? (
                   <>
-                    <Text tag='span' theme='muted' size='sm'>&middot;</Text>
-
+                    <Text tag="span" theme="muted" size="sm">
+                      &middot;
+                    </Text>{" "}
+                    {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
                     {timestampUrl ? (
-                      <Link to={timestampUrl} className='hover:underline' onClick={(event) => event.stopPropagation()}>
-                        <RelativeTimestamp timestamp={timestamp} theme='muted' size='sm' className='whitespace-nowrap' futureDate={futureTimestamp} />
+                      <Link
+                        to={timestampUrl}
+                        className="hover:underline"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <RelativeTimestamp
+                          timestamp={timestamp}
+                          theme="muted"
+                          size="sm"
+                          className="whitespace-nowrap"
+                          futureDate={futureTimestamp}
+                        />
                       </Link>
                     ) : (
-                      <RelativeTimestamp timestamp={timestamp} theme='muted' size='sm' className='whitespace-nowrap' futureDate={futureTimestamp} />
+                      <RelativeTimestamp
+                        timestamp={timestamp}
+                        theme="muted"
+                        size="sm"
+                        className="whitespace-nowrap"
+                        futureDate={futureTimestamp}
+                      />
                     )}
                   </>
                 ) : null}
-
-                {approvalStatus && ['pending', 'rejected'].includes(approvalStatus) && (
-                  <>
-                    <Text tag='span' theme='muted' size='sm'>&middot;</Text>
-
-                    <Text tag='span' theme='muted' size='sm'>
-                      {approvalStatus === 'pending'
-                        ? <FormattedMessage id='status.approval.pending' defaultMessage='Pending approval' />
-                        : <FormattedMessage id='status.approval.rejected' defaultMessage='Rejected' />}
-                    </Text>
-                  </>
-                )}
-
+                {approvalStatus &&
+                  ["pending", "rejected"].includes(approvalStatus) && (
+                    <>
+                      <Text tag="span" theme="muted" size="sm">
+                        &middot;
+                      </Text>{" "}
+                      {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
+                      <Text tag="span" theme="muted" size="sm">
+                        {approvalStatus === "pending" ? (
+                          <FormattedMessage
+                            id="status.approval.pending"
+                            defaultMessage="Pending approval"
+                          />
+                        ) : (
+                          <FormattedMessage
+                            id="status.approval.rejected"
+                            defaultMessage="Rejected"
+                          />
+                        )}
+                      </Text>
+                    </>
+                  )}
                 {showEdit ? (
                   <>
-                    <Text tag='span' theme='muted' size='sm'>&middot;</Text>
-
-                    <Icon className='h-5 w-5 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/pencil.svg')} />
+                    <Text tag="span" theme="muted" size="sm">
+                      &middot;
+                    </Text>{" "}
+                    {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
+                    <Icon
+                      className="size-5 text-gray-700 dark:text-gray-600"
+                      src={pencilIcon}
+                    />
                   </>
                 ) : null}
-
-                {actionType === 'muting' && account.mute_expires_at ? (
+                {actionType === "muting" && account.mute_expires_at ? (
                   <>
-                    <Text tag='span' theme='muted' size='sm'>&middot;</Text>
-
-                    <Text theme='muted' size='sm'><RelativeTimestamp timestamp={account.mute_expires_at} futureDate /></Text>
+                    <Text tag="span" theme="muted" size="sm">
+                      &middot;
+                    </Text>{" "}
+                    {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
+                    <Text theme="muted" size="sm">
+                      <RelativeTimestamp
+                        timestamp={account.mute_expires_at}
+                        futureDate
+                      />
+                    </Text>
                   </>
                 ) : null}
               </HStack>
 
               {note ? (
-                <Text
-                  size='sm'
-                  className='mr-2'
-                >
+                <Text size="sm" className="mr-2">
                   {note}
                 </Text>
-              ) : withAccountNote && (
-                <Text
-                  size='sm'
-                  dangerouslySetInnerHTML={{ __html: account.note_emojified }}
-                  className='mr-2 rtl:ml-2 rtl:mr-0'
-                />
+              ) : (
+                withAccountNote && (
+                  <Markup
+                    truncate
+                    size="sm"
+                    html={{ __html: account.note }}
+                    className="mr-2 rtl:ml-2 rtl:mr-0 [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden"
+                  />
+                )
               )}
             </Stack>
           </div>
         </HStack>
 
-        <div ref={actionRef}>
-          {withRelationship ? renderAction() : null}
-        </div>
+        <div ref={actionRef}>{withRelationship ? renderAction() : null}</div>
       </HStack>
     </div>
   );

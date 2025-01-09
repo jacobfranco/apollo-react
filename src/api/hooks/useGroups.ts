@@ -10,7 +10,7 @@ function useGroups(q: string = "") {
 
   const { entities, ...result } = useEntities<Group>(
     [Entities.GROUPS, "search", q],
-    () => api.get("/api/groups", { params: { q } }),
+    () => api.get("/api/groups", { searchParams: { q } }),
     { enabled: true, schema: groupSchema }
   );
   const { relationships } = useGroupRelationships(

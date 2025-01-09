@@ -1,9 +1,13 @@
-import { normalizeApolloConfig } from "src/normalizers";
 import { createSelector } from "reselect";
+
+import { normalizeApolloConfig } from "src/normalizers";
+
+import api from "../api";
+
 import { AppDispatch, RootState } from "src/store";
-import KVStore from "src/storage/kv-store";
-import { staticClient } from "src/api";
 import { APIEntity } from "src/types/entities";
+import KVStore from "src/storage/kv-store";
+
 import { getAuthUserUrl, getMeUrl } from "src/utils/auth";
 
 const APOLLO_CONFIG_REMEMBER_REQUEST = "APOLLO_CONFIG_REMEMBER_REQUEST";
@@ -62,22 +66,40 @@ const rememberApolloConfig =
   };
 
 const fetchApolloConfig =
-  (host: string | null) =>
+  (host: string | null = null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
+    console.log("fetchApolloConfig: Fetching Apollo JSON...");
     return dispatch(fetchApolloJson(host));
   };
 
-const fetchApolloJson = (host: string | null) => (dispatch: AppDispatch) =>
-  staticClient
-    .get("/instance/apollo.json")
-    .then(({ data }) => {
-      if (!isObject(data)) throw "apollo.json failed";
+const fetchApolloJson = (host: string | null) => (dispatch: AppDispatch) => {
+  console.log("fetchApolloJson: Making fetch request to /instance/apollo.json");
+
+  return fetch("/instance/apollo.json")
+    .then((response) => {
+      console.log("fetchApolloJson: response received", response);
+      return response.json();
+    })
+    .then((data) => {
+      console.log("fetchApolloJson: JSON data parsed", data);
+      if (!isObject(data)) {
+        console.error("fetchApolloJson: Data is not an object");
+        throw new Error("apollo.json failed");
+      }
+
+      console.log("fetchApolloJson: Dispatching importApolloConfig");
       dispatch(importApolloConfig(data, host));
+      console.log("fetchApolloJson: Apollo config imported successfully");
       return data;
     })
     .catch((error) => {
+      console.error(
+        "fetchApolloJson: Failed to fetch or parse apollo.json",
+        error
+      );
       dispatch(apolloConfigFail(error, host));
     });
+};
 
 const importApolloConfig = (apolloConfig: APIEntity, host: string | null) => {
   if (!apolloConfig.brandColor) {

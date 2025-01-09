@@ -1,57 +1,86 @@
-import clsx from 'clsx'; import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import clsx from "clsx";
+import { FormattedMessage } from "react-intl";
+import { Link } from "react-router-dom";
 
-import { openModal } from 'src/actions/modals';
-import { HStack, Text } from 'src/components';
-import { useAppSelector, useAppDispatch } from 'src/hooks';
-import { shortNumberFormat } from 'src/utils/numbers';
+import { openModal } from "src/actions/modals";
+import HStack from "src/components/HStack";
+import Text from "src/components/Text";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { shortNumberFormat } from "src/utils/numbers";
 
-import type { Status } from 'src/types/entities';
+import type { Status } from "src/types/entities";
 
 interface IStatusInteractionBar {
   status: Status;
 }
 
-const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.Element | null => {
+const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({
+  status,
+}): JSX.Element | null => {
   const me = useAppSelector(({ me }) => me);
   const dispatch = useAppDispatch();
   const { account } = status;
 
-  if (!account || typeof account !== 'object') return null;
+  if (!account || typeof account !== "object") return null;
 
   const onOpenUnauthorizedModal = () => {
-    dispatch(openModal('UNAUTHORIZED'));
+    dispatch(openModal("UNAUTHORIZED"));
   };
 
   const onOpenRepostsModal = (username: string, statusId: string): void => {
-    dispatch(openModal('REPOSTS', {
-      username,
-      statusId,
-    }));
+    dispatch(
+      openModal("REPOSTS", {
+        username,
+        statusId,
+      })
+    );
   };
 
   const onOpenLikesModal = (username: string, statusId: string): void => {
-    dispatch(openModal('LIKES', {
-      username,
-      statusId,
-    }));
+    dispatch(
+      openModal("LIKES", {
+        username,
+        statusId,
+      })
+    );
+  };
+
+  const onOpenDislikesModal = (username: string, statusId: string): void => {
+    dispatch(
+      openModal("DISLIKES", {
+        username,
+        statusId,
+      })
+    );
+  };
+
+  const onOpenReactionsModal = (username: string, statusId: string): void => {
+    dispatch(
+      openModal("REACTIONS", {
+        username,
+        statusId,
+      })
+    );
   };
 
   const handleOpenRepostsModal: React.EventHandler<React.MouseEvent> = (e) => {
     e.preventDefault();
 
     if (!me) onOpenUnauthorizedModal();
-    else onOpenRepostsModal(account.id, status.id);
+    else onOpenRepostsModal(account.username, status.id);
   };
 
   const getReposts = () => {
     if (status.reposts_count) {
       return (
-        <InteractionCounter count={status.reposts_count} onClick={handleOpenRepostsModal}>
+        <InteractionCounter
+          count={status.reposts_count}
+          onClick={handleOpenRepostsModal}
+        >
           <FormattedMessage
-            id='status.interactions.reposts'
-            defaultMessage='{count, plural, one {Repost} other {Reposts}}'
+            id="status.interactions.reposts"
+            defaultMessage="{count, plural, one {Repost} other {Reposts}}"
             values={{ count: status.reposts_count }}
           />
         </InteractionCounter>
@@ -64,10 +93,15 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
   const getQuotes = () => {
     if (status.quotes_count) {
       return (
-        <InteractionCounter count={status.quotes_count} to={`/@${status.getIn(['account', 'username'])}/posts/${status.id}/quotes`}>
+        <InteractionCounter
+          count={status.quotes_count}
+          to={`/@${status.getIn(["account", "username"])}/posts/${
+            status.id
+          }/quotes`}
+        >
           <FormattedMessage
-            id='status.interactions.quotes'
-            defaultMessage='{count, plural, one {Quote} other {Quotes}}'
+            id="status.interactions.quotes"
+            defaultMessage="{count, plural, one {Quote} other {Quotes}}"
             values={{ count: status.quotes_count }}
           />
         </InteractionCounter>
@@ -77,20 +111,34 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
     return null;
   };
 
-  const handleOpenLikesModal: React.EventHandler<React.MouseEvent<HTMLButtonElement>> = (e) => {
+  const handleOpenLikesModal: React.EventHandler<
+    React.MouseEvent<HTMLButtonElement>
+  > = (e) => {
     e.preventDefault();
 
     if (!me) onOpenUnauthorizedModal();
-    else onOpenLikesModal(account.id, status.id);
+    else onOpenLikesModal(account.username, status.id);
+  };
+
+  const handleOpenDislikesModal: React.EventHandler<
+    React.MouseEvent<HTMLButtonElement>
+  > = (e) => {
+    e.preventDefault();
+
+    if (!me) onOpenUnauthorizedModal();
+    else onOpenDislikesModal(account.username, status.id);
   };
 
   const getLikes = () => {
     if (status.likes_count) {
       return (
-        <InteractionCounter count={status.likes_count} onClick={handleOpenLikesModal}>
+        <InteractionCounter
+          count={status.likes_count}
+          onClick={handleOpenLikesModal}
+        >
           <FormattedMessage
-            id='status.interactions.likes'
-            defaultMessage='{count, plural, one {Like} other {Likes}}'
+            id="status.interactions.likes"
+            defaultMessage="{count, plural, one {Like} other {Likes}}"
             values={{ count: status.likes_count }}
           />
         </InteractionCounter>
@@ -99,7 +147,6 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
 
     return null;
   };
-
 
   return (
     <HStack space={3}>
@@ -117,19 +164,22 @@ interface IInteractionCounter {
   to?: string;
 }
 
-const InteractionCounter: React.FC<IInteractionCounter> = ({ count, children, onClick, to }) => {
-
-  const className = clsx({ // TODO: Maybe restore ?
-    'text-gray-600 dark:text-gray-700': true,
+const InteractionCounter: React.FC<IInteractionCounter> = ({
+  count,
+  children,
+  onClick,
+  to,
+}) => {
+  const className = clsx({
+    "text-gray-600 dark:text-gray-700": true,
+    "hover:underline": true,
   });
 
   const body = (
-    <HStack space={1} alignItems='center'>
-      <Text weight='bold'>
-        {shortNumberFormat(count)}
-      </Text>
+    <HStack space={1} alignItems="center">
+      <Text weight="bold">{shortNumberFormat(count)}</Text>
 
-      <Text tag='div' theme='muted'>
+      <Text tag="div" theme="muted">
         {children}
       </Text>
     </HStack>
@@ -144,11 +194,7 @@ const InteractionCounter: React.FC<IInteractionCounter> = ({ count, children, on
   }
 
   return (
-    <button
-      type='button'
-      onClick={onClick}
-      className={className}
-    >
+    <button type="button" onClick={onClick} className={className}>
       {body}
     </button>
   );

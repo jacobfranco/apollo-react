@@ -1,42 +1,37 @@
-/**
- * Space normalizer:
- * Converts API spaces into our internal format.
- * @see {@link https://docs.joinmastodon.org/entities/space/}
- */
 import {
   List as ImmutableList,
   Map as ImmutableMap,
   Record as ImmutableRecord,
   fromJS,
-} from 'immutable';
+} from "immutable";
 
-import { normalizeHistory } from './history';
+import { normalizeHistory } from "./history";
 
-import type { History } from 'src/types/entities';
+import type { History } from "src/types/entities";
 
-// https://docs.joinmastodon.org/entities/space/
 export const SpaceRecord = ImmutableRecord({
-  name: '',
-  url: '',
-  imageUrl: '',
+  id: "",
+  name: "",
+  linkUrl: "",
+  imageUrl: "",
   history: null as ImmutableList<History> | null,
   following: false,
 });
 
 const normalizeHistoryList = (space: ImmutableMap<string, any>) => {
-  if (space.get('history')) {
-    return space.update('history', ImmutableList(), attachments => {
+  if (space.get("history")) {
+    return space.update("history", ImmutableList(), (attachments) => {
       return attachments.map(normalizeHistory);
     });
   } else {
-    return space.set('history', null);
+    return space.set("history", null);
   }
 };
 
 export const normalizeSpace = (space: Record<string, any>) => {
   return SpaceRecord(
-    ImmutableMap(fromJS(space)).withMutations(space => {
+    ImmutableMap(fromJS(space)).withMutations((space) => {
       normalizeHistoryList(space);
-    }),
+    })
   );
 };

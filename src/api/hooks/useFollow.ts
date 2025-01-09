@@ -1,9 +1,9 @@
-import { importEntities } from 'src/entity-store/actions';
-import { Entities } from 'src/entity-store/entities';
-import { useTransaction } from 'src/entity-store/hooks';
-import { useAppDispatch, useLoggedIn } from 'src/hooks';
-import { useApi } from 'src/hooks/useApi';
-import { relationshipSchema } from 'src/schemas';
+import { importEntities } from "src/entity-store/actions";
+import { Entities } from "src/entity-store/entities";
+import { useTransaction } from "src/entity-store/hooks";
+import { useAppDispatch, useLoggedIn } from "src/hooks";
+import { useApi } from "src/hooks/useApi";
+import { relationshipSchema } from "src/schemas";
 
 interface FollowOpts {
   reposts?: boolean;
@@ -56,8 +56,11 @@ function useFollow() {
     followEffect(accountId);
 
     try {
-      const response = await api.post(`/api/accounts/${accountId}/follow`, options);
-      const result = relationshipSchema.safeParse(response.data);
+      const response = await api.post(
+        `/api/accounts/${accountId}/follow`,
+        options
+      );
+      const result = relationshipSchema.safeParse(await response.json());
       if (result.success) {
         dispatch(importEntities([result.data], Entities.RELATIONSHIPS));
       }
@@ -71,7 +74,7 @@ function useFollow() {
     unfollowEffect(accountId);
 
     try {
-      await api.post(`/api/accounts${accountId}/unfollow`);
+      await api.post(`/api/accounts/${accountId}/unfollow`);
     } catch (e) {
       followEffect(accountId);
     }

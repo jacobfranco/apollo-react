@@ -3,6 +3,7 @@ import React from "react";
 import {
   WhoToFollowPanel,
   TrendsPanel,
+  TrendingSpacesPanel,
   SignUpPanel,
   CtaBanner,
 } from "src/features/AsyncComponents";
@@ -32,6 +33,7 @@ const DefaultPage: React.FC<IDefaultPage> = ({ children }) => {
       <Layout.Aside>
         {!me && <SignUpPanel />}
         <TrendsPanel limit={5} />
+        <TrendingSpacesPanel limit={3} />
         {me && <WhoToFollowPanel limit={3} />}
         <LinkFooter key="link-footer" />
       </Layout.Aside>

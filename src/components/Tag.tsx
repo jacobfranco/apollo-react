@@ -1,6 +1,7 @@
-import React from 'react';
+import xIcon from "@tabler/icons/outline/x.svg";
 
-import { IconButton, Text } from 'src/components';
+import IconButton from "./IconButton";
+import Text from "./Text";
 
 interface ITag {
   /** Name of the tag. */
@@ -12,12 +13,12 @@ interface ITag {
 /** A single editable Tag (used by TagInput). */
 const Tag: React.FC<ITag> = ({ tag, onDelete }) => {
   return (
-    <div className='inline-flex items-center whitespace-nowrap rounded bg-primary-500 p-1'>
-      <Text theme='white'>{tag}</Text>
+    <div className="inline-flex items-center whitespace-nowrap rounded bg-primary-500 p-1">
+      <Text theme="white">{tag}</Text>
 
       <IconButton
-        iconClassName='h-4 w-4'
-        src={require('@tabler/icons/outline/x.svg')}
+        iconClassName="h-4 w-4"
+        src={xIcon}
         onClick={() => onDelete(tag)}
       />
     </div>

@@ -1,17 +1,19 @@
-import { Map as ImmutableMap, Record as ImmutableRecord, fromJS } from 'immutable';
+import {
+  Map as ImmutableMap,
+  Record as ImmutableRecord,
+  fromJS,
+} from "immutable";
 
-import type { Account, EmbeddedEntity } from 'src/types/entities';
+import type { Account, EmbeddedEntity } from "src/types/entities";
 
 export const ChatRecord = ImmutableRecord({
   account: null as EmbeddedEntity<Account>,
-  id: '',
+  id: "",
   unread: 0,
-  last_message: '' as string || null,
-  updated_at: '',
+  last_message: "" as string | null,
+  updated_at: "",
 });
 
 export const normalizeChat = (chat: Record<string, any>) => {
-  return ChatRecord(
-    ImmutableMap(fromJS(chat)),
-  );
+  return ChatRecord(ImmutableMap(fromJS(chat)));
 };

@@ -1,13 +1,13 @@
-import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import clsx from "clsx";
+import { debounce } from "es-toolkit";
+import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
 
 import {
   openStatusHoverCard,
   closeStatusHoverCard,
-} from 'src/actions/status-hover-card';
-import { isMobile } from 'src/is-mobile';
+} from "src/actions/status-hover-card";
+import { isMobile } from "src/is-mobile";
 
 const showStatusHoverCard = debounce((dispatch, ref, statusId) => {
   dispatch(openStatusHoverCard(ref, statusId));
@@ -21,10 +21,15 @@ interface IHoverStatusWrapper {
 }
 
 /** Makes a status hover card appear when the wrapped element is hovered. */
-export const HoverStatusWrapper: React.FC<IHoverStatusWrapper> = ({ statusId, children, inline = false, className }) => {
+export const HoverStatusWrapper: React.FC<IHoverStatusWrapper> = ({
+  statusId,
+  children,
+  inline = false,
+  className,
+}) => {
   const dispatch = useDispatch();
   const ref = useRef<HTMLDivElement>(null);
-  const Elem: keyof JSX.IntrinsicElements = inline ? 'span' : 'div';
+  const Elem: keyof JSX.IntrinsicElements = inline ? "span" : "div";
 
   const handleMouseEnter = () => {
     if (!isMobile(window.innerWidth)) {
@@ -45,7 +50,7 @@ export const HoverStatusWrapper: React.FC<IHoverStatusWrapper> = ({ statusId, ch
   return (
     <Elem
       ref={ref}
-      className={clsx('hover-status-wrapper', className)}
+      className={clsx("hover-status-wrapper", className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

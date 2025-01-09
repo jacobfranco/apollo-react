@@ -1,10 +1,9 @@
 import clsx from "clsx";
-import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-import { Text } from "src/components";
 import IconWithCounter from "src/components/IconWithCounter";
-import Icon from "./Icon";
+import Icon from "src/components/Icon";
+import Text from "src/components/Text";
 
 interface IThumbNavigationLink {
   count?: number;
@@ -42,13 +41,17 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
   const icon = (active && activeSrc) || src;
 
   return (
-    <NavLink to={to} exact={exact} className="thumb-navigation__link">
+    <NavLink
+      to={to}
+      exact={exact}
+      className="flex flex-1 flex-col items-center space-y-1 px-2 py-2.5 text-lg text-gray-600"
+    >
       {count !== undefined ? (
         <IconWithCounter
           src={icon}
           className={clsx({
             "h-5 w-5": true,
-            "text-gray-600": !active,
+            "text-gray-600 black:text-white": !active,
             "text-primary-500": active,
           })}
           count={count}
@@ -59,7 +62,7 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
           src={icon}
           className={clsx({
             "h-5 w-5": true,
-            "text-gray-600": !active,
+            "text-gray-600 black:text-white": !active,
             "text-primary-500": active,
           })}
         />

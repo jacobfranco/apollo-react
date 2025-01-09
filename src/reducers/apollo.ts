@@ -1,9 +1,5 @@
 import { List as ImmutableList, Map as ImmutableMap, fromJS } from "immutable";
 
-import KVStore from "src/storage/kv-store";
-import { ConfigDB } from "src/utils/config-db";
-
-import { ADMIN_CONFIG_UPDATE_SUCCESS } from "../actions/admin";
 import {
   APOLLO_CONFIG_REMEMBER_SUCCESS,
   APOLLO_CONFIG_REQUEST_SUCCESS,
@@ -17,23 +13,11 @@ const fallbackState = ImmutableMap<string, any>({
   accentColor: "#110132", // Accent
 });
 
-const persistApolloConfig = (
-  apolloConfig: ImmutableMap<string, any>,
-  host: string
-) => {
-  if (host) {
-    KVStore.setItem(`apollo_config:${host}`, apolloConfig.toJS()).catch(
-      console.error
-    );
-  }
-};
-
 const importApolloConfig = (
   state: ImmutableMap<string, any>,
   apolloConfig: ImmutableMap<string, any>,
   host: string
 ) => {
-  persistApolloConfig(apolloConfig, host);
   return apolloConfig;
 };
 

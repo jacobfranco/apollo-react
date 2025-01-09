@@ -1,8 +1,13 @@
-import clsx from 'clsx';
-import React, { useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import playerStopFilledIcon from "@tabler/icons/filled/player-stop.svg";
+import checkIcon from "@tabler/icons/outline/check.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
+import clsx from "clsx";
+import { useEffect, useRef, useState } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { HStack, IconButton, Text } from 'src/components';
+import HStack from "src/components/HStack";
+import IconButton from "src/components/IconButton";
+import Text from "src/components/Text";
 
 interface IAuthorizeRejectButtons {
   onAuthorize(): Promise<unknown> | unknown;
@@ -11,8 +16,14 @@ interface IAuthorizeRejectButtons {
 }
 
 /** Buttons to approve or reject a pending item, usually an account. */
-const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize, onReject, countdown }) => {
-  const [state, setState] = useState<'authorizing' | 'rejecting' | 'authorized' | 'rejected' | 'pending'>('pending');
+const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({
+  onAuthorize,
+  onReject,
+  countdown,
+}) => {
+  const [state, setState] = useState<
+    "authorizing" | "rejecting" | "authorized" | "rejected" | "pending"
+  >("pending");
   const timeout = useRef<NodeJS.Timeout>();
   const interval = useRef<ReturnType<typeof setInterval>>();
 
@@ -33,9 +44,9 @@ const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize
   };
 
   function handleAction(
-    present: 'authorizing' | 'rejecting',
-    past: 'authorized' | 'rejected',
-    action: () => Promise<unknown> | unknown,
+    present: "authorizing" | "rejecting",
+    past: "authorized" | "rejected",
+    action: () => Promise<unknown> | unknown
   ): void {
     if (state === present) {
       if (interval.current) {
@@ -44,7 +55,7 @@ const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize
       if (timeout.current) {
         clearTimeout(timeout.current);
       }
-      setState('pending');
+      setState("pending");
     } else {
       const doAction = async () => {
         try {
@@ -54,7 +65,7 @@ const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize
           if (e) console.error(e);
         }
       };
-      if (typeof countdown === 'number') {
+      if (typeof countdown === "number") {
         setState(present);
         timeout.current = setTimeout(doAction, countdown);
         startProgressInterval();
@@ -64,15 +75,17 @@ const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize
     }
   }
 
-  const handleAuthorize = async () => handleAction('authorizing', 'authorized', onAuthorize);
-  const handleReject = async () => handleAction('rejecting', 'rejected', onReject);
+  const handleAuthorize = async () =>
+    handleAction("authorizing", "authorized", onAuthorize);
+  const handleReject = async () =>
+    handleAction("rejecting", "rejected", onReject);
 
   const renderStyle = (selectedState: typeof state) => {
-    if (state === 'authorizing' && selectedState === 'authorizing') {
+    if (state === "authorizing" && selectedState === "authorizing") {
       return {
         background: `conic-gradient(rgb(var(--color-primary-500)) ${progress}deg, rgb(var(--color-primary-500) / 0.1) 0deg)`,
       };
-    } else if (state === 'rejecting' && selectedState === 'rejecting') {
+    } else if (state === "rejecting" && selectedState === "rejecting") {
       return {
         background: `conic-gradient(rgb(var(--color-danger-600)) ${progress}deg, rgb(var(--color-danger-600) / 0.1) 0deg)`,
       };
@@ -93,32 +106,43 @@ const AuthorizeRejectButtons: React.FC<IAuthorizeRejectButtons> = ({ onAuthorize
   }, []);
 
   switch (state) {
-    case 'authorized':
+    case "authorized":
       return (
-        <ActionEmblem text={<FormattedMessage id='authorize.success' defaultMessage='Approved' />} />
+        <ActionEmblem
+          text={
+            <FormattedMessage
+              id="authorize.success"
+              defaultMessage="Approved"
+            />
+          }
+        />
       );
-    case 'rejected':
+    case "rejected":
       return (
-        <ActionEmblem text={<FormattedMessage id='reject.success' defaultMessage='Rejected' />} />
+        <ActionEmblem
+          text={
+            <FormattedMessage id="reject.success" defaultMessage="Rejected" />
+          }
+        />
       );
     default:
       return (
-        <HStack space={3} alignItems='center'>
+        <HStack space={3} alignItems="center">
           <AuthorizeRejectButton
-            theme='danger'
-            icon={require('@tabler/icons/outline/x.svg')}
+            theme="danger"
+            icon={xIcon}
             action={handleReject}
-            isLoading={state === 'rejecting'}
-            disabled={state === 'authorizing'}
-            style={renderStyle('rejecting')}
+            isLoading={state === "rejecting"}
+            disabled={state === "authorizing"}
+            style={renderStyle("rejecting")}
           />
           <AuthorizeRejectButton
-            theme='primary'
-            icon={require('@tabler/icons/outline/check.svg')}
+            theme="primary"
+            icon={checkIcon}
             action={handleAuthorize}
-            isLoading={state === 'authorizing'}
-            disabled={state === 'rejecting'}
-            style={renderStyle('authorizing')}
+            isLoading={state === "authorizing"}
+            disabled={state === "rejecting"}
+            style={renderStyle("authorizing")}
           />
         </HStack>
       );
@@ -131,8 +155,8 @@ interface IActionEmblem {
 
 const ActionEmblem: React.FC<IActionEmblem> = ({ text }) => {
   return (
-    <div className='rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-800'>
-      <Text theme='muted' size='sm'>
+    <div className="rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-800">
+      <Text theme="muted" size="sm">
         {text}
       </Text>
     </div>
@@ -140,7 +164,7 @@ const ActionEmblem: React.FC<IActionEmblem> = ({ text }) => {
 };
 
 interface IAuthorizeRejectButton {
-  theme: 'primary' | 'danger';
+  theme: "primary" | "danger";
   icon: string;
   action(): void;
   isLoading?: boolean;
@@ -148,27 +172,32 @@ interface IAuthorizeRejectButton {
   style: React.CSSProperties;
 }
 
-const AuthorizeRejectButton: React.FC<IAuthorizeRejectButton> = ({ theme, icon, action, isLoading, style, disabled }) => {
+const AuthorizeRejectButton: React.FC<IAuthorizeRejectButton> = ({
+  theme,
+  icon,
+  action,
+  isLoading,
+  style,
+  disabled,
+}) => {
   return (
-    <div className='relative'>
+    <div className="relative">
       <div
         style={style}
-        className={
-          clsx({
-            'flex h-11 w-11 items-center justify-center rounded-full': true,
-            'bg-danger-600/10': theme === 'danger',
-            'bg-primary-500/10': theme === 'primary',
-          })
-        }
+        className={clsx({
+          "flex h-11 w-11 items-center justify-center rounded-full": true,
+          "bg-danger-600/10": theme === "danger",
+          "bg-primary-500/10": theme === "primary",
+        })}
       >
         <IconButton
-          src={isLoading ? require('@tabler/icons/filled/player-stop.svg') : icon}
+          src={isLoading ? playerStopFilledIcon : icon}
           onClick={action}
-          theme='seamless'
-          className='h-10 w-10 items-center justify-center bg-white focus:!ring-0 dark:!bg-gray-900'
-          iconClassName={clsx('h-6 w-6', {
-            'text-primary-500': theme === 'primary',
-            'text-danger-600': theme === 'danger',
+          theme="seamless"
+          className="size-10 items-center justify-center bg-white focus:!ring-0 dark:!bg-gray-900"
+          iconClassName={clsx("size-6", {
+            "text-primary-500": theme === "primary",
+            "text-danger-600": theme === "danger",
           })}
           disabled={disabled}
         />

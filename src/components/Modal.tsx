@@ -1,16 +1,25 @@
+import arrowLeftIcon from "@tabler/icons/outline/arrow-left.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
 import clsx from "clsx";
-import React from "react";
-import { defineMessages, useIntl } from "react-intl";
+import { forwardRef, useEffect, useRef } from "react";
+import { FormattedMessage, defineMessages, useIntl } from "react-intl";
 
-import { HStack, IconButton } from "src/components";
-import { default as Button } from "src/components/Button";
-import { ButtonThemes } from "src/components/useButtonStyles";
+import Button from "./Button";
+import HStack from "./HStack";
+import IconButton from "./IconButton";
+import { ButtonThemes } from "./useButtonStyles";
 
 const messages = defineMessages({
   back: { id: "card.back.label", defaultMessage: "Back" },
   close: { id: "lightbox.close", defaultMessage: "Close" },
   confirm: { id: "confirmations.delete.confirm", defaultMessage: "Delete" },
 });
+
+const themes = {
+  normal:
+    "bg-white black:bg-black dark:bg-secondary-700 p-6 shadow-xl text-gray-900 dark:text-gray-100",
+  transparent: "bg-transparent p-0 shadow-none",
+};
 
 const widths = {
   xs: "max-w-xs",
@@ -44,6 +53,8 @@ interface IModal {
   confirmationFullWidth?: boolean;
   /** Callback when the modal is closed. */
   onClose?: () => void;
+  /** Theme for the modal. */
+  theme?: keyof typeof themes;
   /** Callback when the secondary action is chosen. */
   secondaryAction?: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   /** Secondary button text. */
@@ -60,13 +71,13 @@ interface IModal {
 }
 
 /** Displays a modal dialog box. */
-const Modal = React.forwardRef<HTMLDivElement, IModal>(
+const Modal = forwardRef<HTMLDivElement, IModal>(
   (
     {
       cancelAction,
       cancelText,
       children,
-      closeIcon = require("@tabler/icons/outline/x.svg"),
+      closeIcon = xIcon,
       closePosition = "right",
       confirmationAction,
       confirmationDisabled,
@@ -74,6 +85,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
       confirmationTheme,
       confirmationFullWidth,
       onClose,
+      theme = "normal",
       secondaryAction,
       secondaryDisabled = false,
       secondaryText,
@@ -86,9 +98,9 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
     ref
   ) => {
     const intl = useIntl();
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (buttonRef?.current && !skipFocus) {
         buttonRef.current.focus();
       }
@@ -100,8 +112,9 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
         data-testid="modal"
         className={clsx(
           className,
-          "pointer-events-auto mx-auto block w-full rounded-2xl bg-white p-6 text-start align-middle text-gray-900 shadow-xl transition-all dark:bg-secondary-700 dark:text-gray-100",
-          widths[width]
+          "pointer-events-auto mx-auto block w-full rounded-2xl text-start align-middle transition-all",
+          widths[width],
+          themes[theme]
         )}
       >
         <div className="w-full justify-between sm:flex sm:items-start">
@@ -114,10 +127,10 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
               >
                 {onBack && (
                   <IconButton
-                    src={require("@tabler/icons/outline/arrow-left.svg")}
+                    src={arrowLeftIcon}
                     title={intl.formatMessage(messages.back)}
                     onClick={onBack}
-                    className="text-gray-500 hover:text-gray-700 rtl:rotate-180 dark:text-gray-300 dark:hover:text-gray-200"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200 rtl:rotate-180"
                   />
                 )}
 
@@ -130,7 +143,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
                     src={closeIcon}
                     title={intl.formatMessage(messages.close)}
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 rtl:rotate-180 dark:text-gray-300 dark:hover:text-gray-200"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200 rtl:rotate-180"
                   />
                 )}
               </div>
@@ -149,7 +162,12 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(
             <div className={clsx({ grow: !confirmationFullWidth })}>
               {cancelAction && (
                 <Button theme="tertiary" onClick={cancelAction}>
-                  {cancelText || "Cancel"}
+                  {cancelText || (
+                    <FormattedMessage
+                      id="common.cancel"
+                      defaultMessage="Cancel"
+                    />
+                  )}
                 </Button>
               )}
             </div>

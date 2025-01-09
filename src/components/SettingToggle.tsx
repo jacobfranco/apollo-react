@@ -1,8 +1,8 @@
-import get from 'lodash/get';
-import React from 'react';
+import { get } from "es-toolkit/compat";
+import React from "react";
 
-import { Toggle } from 'src/components';
-import { Settings } from 'src/schemas/settings';
+import { Toggle } from "src/components";
+import { Settings } from "src/schemas/settings";
 
 interface ISettingToggle {
   /** Unique identifier for the Toggle. */
@@ -16,9 +16,15 @@ interface ISettingToggle {
 }
 
 /** Stateful toggle to change user settings. */
-const SettingToggle: React.FC<ISettingToggle> = ({ id, settings, settingPath, onChange }) => {
-
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = ({ target }) => {
+const SettingToggle: React.FC<ISettingToggle> = ({
+  id,
+  settings,
+  settingPath,
+  onChange,
+}) => {
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = ({
+    target,
+  }) => {
     onChange(settingPath, target.checked);
   };
 

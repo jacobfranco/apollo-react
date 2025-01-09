@@ -1,14 +1,12 @@
-import React, { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { openModal } from 'src/actions/modals';
-import { MediaGallery } from 'src/features/AsyncComponents';
-import { useAppDispatch } from 'src/hooks';
-
-import type { List as ImmutableList } from 'immutable';
-import type { Attachment } from 'src/types/entities';
+import { openModal } from "src/actions/modals";
+import { MediaGallery } from "src/features/AsyncComponents";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { Attachment } from "src/schemas/index";
 
 interface IAttachmentThumbs {
-  media: ImmutableList<Attachment>;
+  media: readonly Attachment[];
   onClick?(): void;
   sensitive?: boolean;
 }
@@ -17,11 +15,12 @@ const AttachmentThumbs = (props: IAttachmentThumbs) => {
   const { media, onClick, sensitive } = props;
   const dispatch = useAppDispatch();
 
-  const fallback = <div className='media-gallery--compact' />;
-  const onOpenMedia = (media: ImmutableList<Attachment>, index: number) => dispatch(openModal('MEDIA', { media, index }));
+  const fallback = <div className="!h-[50px] bg-transparent" />;
+  const onOpenMedia = (media: readonly Attachment[], index: number) =>
+    dispatch(openModal("MEDIA", { media, index }));
 
   return (
-    <div className='attachment-thumbs'>
+    <div className="relative">
       <Suspense fallback={fallback}>
         <MediaGallery
           media={media}
@@ -34,7 +33,11 @@ const AttachmentThumbs = (props: IAttachmentThumbs) => {
       </Suspense>
 
       {onClick && (
-        <div className='attachment-thumbs__clickable-region' onClick={onClick} />
+        <button
+          className="absolute inset-0 size-full cursor-pointer"
+          onClick={onClick}
+          style={{ background: "none", border: "none", padding: 0 }}
+        />
       )}
     </div>
   );

@@ -1,8 +1,8 @@
-import { $applyNodeReplacement, DecoratorNode } from 'lexical';
-import React from 'react';
+import { $applyNodeReplacement, DecoratorNode } from "lexical";
+import React from "react";
 
-import { Emoji as Component } from 'src/components';
-import { isNativeEmoji, type Emoji } from 'src/features/emoji';
+import { Emoji as Component } from "src/components";
+import { isNativeEmoji, type Emoji } from "src/features/emoji";
 
 import type {
   EditorConfig,
@@ -10,20 +10,22 @@ import type {
   NodeKey,
   SerializedLexicalNode,
   Spread,
-} from 'lexical';
+} from "lexical";
 
-type SerializedEmojiNode = Spread<{
-  data: Emoji;
-  type: 'emoji';
-  version: 1;
-}, SerializedLexicalNode>;
+type SerializedEmojiNode = Spread<
+  {
+    data: Emoji;
+    type: "emoji";
+    version: 1;
+  },
+  SerializedLexicalNode
+>;
 
 class EmojiNode extends DecoratorNode<JSX.Element> {
-
   __emoji: Emoji;
 
-  static getType(): 'emoji' {
-    return 'emoji';
+  static getType(): "emoji" {
+    return "emoji";
   }
 
   static clone(node: EmojiNode): EmojiNode {
@@ -36,7 +38,7 @@ class EmojiNode extends DecoratorNode<JSX.Element> {
   }
 
   createDOM(config: EditorConfig): HTMLElement {
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     const theme = config.theme;
     const className = theme.emoji;
     if (className !== undefined) {
@@ -56,7 +58,7 @@ class EmojiNode extends DecoratorNode<JSX.Element> {
   exportJSON(): SerializedEmojiNode {
     return {
       data: this.__emoji,
-      type: 'emoji',
+      type: "emoji",
       version: 1,
     };
   }
@@ -72,14 +74,12 @@ class EmojiNode extends DecoratorNode<JSX.Element> {
   getTextContent(): string {
     const emoji = this.__emoji;
     return emoji.native;
-
   }
 
   decorate(): JSX.Element {
     const emoji = this.__emoji;
-    return  <Component emoji={emoji.native} alt={emoji.colons} className='emojione h-4 w-4' />;
+    return <Component emoji={emoji.native} />;
   }
-
 }
 
 function $createEmojiNode(emoji: Emoji): EmojiNode {
@@ -88,7 +88,7 @@ function $createEmojiNode(emoji: Emoji): EmojiNode {
 }
 
 const $isEmojiNode = (
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is EmojiNode => node instanceof EmojiNode;
 
 export { EmojiNode, $createEmojiNode, $isEmojiNode };

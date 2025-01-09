@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-const relationshipSchema = z.object({ // TODO: Make more comprehensive
+const relationshipSchema = z.object({
   blocked_by: z.boolean().catch(false),
   blocking: z.boolean().catch(false),
   followed_by: z.boolean().catch(false),

@@ -2,7 +2,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 
 import entities from "src/entity-store/reducer";
 
-import admin_user_index from "./admin-user-index";
+import activity from "./activity";
 import admin from "./admin";
 import apollo from "./apollo";
 import auth from "./auth";
@@ -12,7 +12,6 @@ import contexts from "./contexts";
 import conversations from "./conversations";
 import dropdown_menu from "./dropdown-menu";
 import filters from "./filters";
-import followed_spaces from "./followed-spaces";
 import followed_tags from "./followed-tags";
 import group_memberships from "./group-memberships";
 import group_relationships from "./group-relationships";
@@ -30,7 +29,6 @@ import polls from "./polls";
 import profile_hover_card from "./profile-hover-card";
 import relationships from "./relationships";
 import reports from "./reports";
-import rules from "./rules";
 import scheduled_statuses from "./scheduled-statuses";
 import search from "./search";
 import security from "./security";
@@ -46,11 +44,12 @@ import tags from "./tags";
 import teams from "./teams";
 import timelines from "./timelines";
 import trending_statuses from "./trending-statuses";
+import trending_spaces from "./trending-spaces";
 import trends from "./trends";
 import user_lists from "./user-lists";
 
 const reducers = {
-  admin_user_index,
+  activity,
   admin,
   apollo,
   auth,
@@ -61,7 +60,6 @@ const reducers = {
   dropdown_menu,
   entities,
   filters,
-  followed_spaces,
   followed_tags,
   group_memberships,
   group_relationships,
@@ -79,7 +77,6 @@ const reducers = {
   profile_hover_card,
   relationships,
   reports,
-  rules,
   scheduled_statuses,
   search,
   security,
@@ -95,6 +92,7 @@ const reducers = {
   teams,
   timelines,
   trending_statuses,
+  trending_spaces,
   trends,
   user_lists,
 };

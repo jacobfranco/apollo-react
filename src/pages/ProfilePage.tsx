@@ -1,10 +1,12 @@
-import React from "react";
 import { FormattedMessage } from "react-intl";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { useAccountLookup } from "src/api/hooks/useAccountLookup";
-import { Header, Layout, SidebarNavigation, Tabs } from "src/components";
-import { Column as Column } from "src/components/Column";
+import { useAccountLookup } from "src/api/hooks";
+import { Column } from "src/components/Column";
+import Layout from "src/components/Layout";
+import Tabs from "src/components/Tabs";
+import Header from "src/components/Header";
+import LinkFooter from "src/features/LinkFooter";
 import {
   WhoToFollowPanel,
   ProfileInfoPanel,
@@ -13,8 +15,8 @@ import {
   SignUpPanel,
   CtaBanner,
 } from "src/features/AsyncComponents";
-import LinkFooter from "src/features/LinkFooter";
-import { useAppSelector } from "src/hooks";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import SidebarNavigation from "src/components/SidebarNavigation";
 
 interface IProfilePage {
   params?: {
@@ -31,6 +33,11 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
   const { account } = useAccountLookup(username, { withRelationship: true });
 
   const me = useAppSelector((state) => state.me);
+
+  // Fix case of username
+  if (account && account.username !== username) {
+    return <Redirect to={`/@${account.username}`} />;
+  }
 
   const tabItems = [
     {
@@ -60,10 +67,7 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
     if (ownAccount) {
       tabItems.push({
         text: (
-          <FormattedMessage
-            id="navigation_bar.favourites"
-            defaultMessage="Likes"
-          />
+          <FormattedMessage id="navigation_bar.likes" defaultMessage="Likes" />
         ),
         to: `/@${account.username}/likes`,
         name: "likes",
@@ -93,18 +97,14 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
         <SidebarNavigation />
       </Layout.Sidebar>
       <Layout.Main>
-        <Column
-          size="lg"
-          label={account ? `@${username})}` : ""}
-          withHeader={false}
-        >
+        <Column size="lg" label={`@${username}`} withHeader={false}>
           <div className="space-y-4">
             <Header account={account} />
             <ProfileInfoPanel username={username} account={account} />
 
             {account && showTabs && (
               <Tabs
-                key={`profile-tabs-${account.username}`}
+                key={`profile-tabs-${account.id}`}
                 items={tabItems}
                 activeItem={activeItem}
               />
@@ -124,7 +124,8 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
         {account && account.fields.length > 0 && (
           <ProfileFieldsPanel account={account} />
         )}
-        {me && <WhoToFollowPanel limit={3} />}
+        <WhoToFollowPanel limit={3} />
+
         <LinkFooter key="link-footer" />
       </Layout.Aside>
     </Layout>

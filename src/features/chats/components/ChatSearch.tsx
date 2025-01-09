@@ -1,29 +1,31 @@
-import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import React, { useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import searchIcon from "@tabler/icons/outline/search.svg";
+import xIcon from "@tabler/icons/outline/x.svg";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
+import { useHistory } from "react-router-dom";
 
-import { Stack } from 'src/components';
-import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
-import { useDebounce } from 'src/hooks';
-import { useChats, ChatKeys } from 'src/queries/chats';
-import { queryClient } from 'src/queries/client';
-import useAccountSearch from 'src/queries/search';
-import toast from 'src/toast';
+import { HTTPError } from "src/api/HTTPError";
+import Icon from "src/components/Icon";
+import Input from "src/components/Input";
+import Stack from "src/components/Stack";
+import { ChatWidgetScreens, useChatContext } from "src/contexts/chat-context";
+import { useDebounce } from "src/hooks/useDebounce";
+import { useChats, ChatKeys } from "src/queries/chats";
+import { queryClient } from "src/queries/client";
+import useAccountSearch from "src/queries/search";
+import toast from "src/toast";
 
-import ChatSearchBlankslate from './ChatSearchBlankslate';
-import ChatSearchEmptyResultsBlankslate from './ChatSearchEmptyResultsBlankslate';
-import ChatSearchResults from './ChatSearchResults'
-import Input from 'src/components/Input';
-import Icon from 'src/components/Icon';
+import Blankslate from "./ChatSearchBlankslate";
+import EmptyResultsBlankslate from "./ChatSearchEmptyResultsBlankslate";
+import Results from "./ChatSearchResults";
 
 const messages = defineMessages({
-  placeholder: { id: 'chat_search.placeholder', defaultMessage: 'Type a name' },
+  placeholder: { id: "chat_search.placeholder", defaultMessage: "Type a name" },
 });
 
 interface IChatSearch {
-  isMainPage?: boolean
+  isMainPage?: boolean;
 }
 
 const ChatSearch = (props: IChatSearch) => {
@@ -36,7 +38,7 @@ const ChatSearch = (props: IChatSearch) => {
   const { changeScreen } = useChatContext();
   const { getOrCreateChatByAccountId } = useChats();
 
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState<string>("");
   const debouncedValue = debounce(value as string, 300);
 
   const accountSearchResult = useAccountSearch(debouncedValue);
@@ -47,15 +49,18 @@ const ChatSearch = (props: IChatSearch) => {
 
   const handleClickOnSearchResult = useMutation({
     mutationFn: (accountId: string) => getOrCreateChatByAccountId(accountId),
-    onError: (error: AxiosError) => {
-      const data = error.response?.data as any;
-      toast.error(data?.error);
+    onError: (error) => {
+      if (error instanceof HTTPError) {
+        toast.showAlertForError(error);
+      }
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      const data = await response.json();
+
       if (isMainPage) {
-        history.push(`/chats/${response.data.id}`);
+        history.push(`/chats/${data.id}`);
       } else {
-        changeScreen(ChatWidgetScreens.CHAT, response.data.id);
+        changeScreen(ChatWidgetScreens.CHAT, data.id);
       }
 
       queryClient.invalidateQueries({ queryKey: ChatKeys.chatSearch() });
@@ -65,7 +70,7 @@ const ChatSearch = (props: IChatSearch) => {
   const renderBody = () => {
     if (hasSearchResults) {
       return (
-        <ChatSearchResults
+        <Results
           accountSearchResult={accountSearchResult}
           onSelect={(id) => {
             handleClickOnSearchResult.mutate(id);
@@ -74,45 +79,43 @@ const ChatSearch = (props: IChatSearch) => {
         />
       );
     } else if (hasSearchValue && !hasSearchResults && !isFetching) {
-      return <ChatSearchEmptyResultsBlankslate />;
+      return <EmptyResultsBlankslate />;
     } else {
-      return <ChatSearchBlankslate />;
+      return <Blankslate />;
     }
   };
 
   const clearValue = () => {
     if (hasSearchValue) {
-      setValue('');
+      setValue("");
     }
   };
 
   return (
-    <Stack space={4} className='h-full grow'>
-      <div className='px-4'>
+    <Stack space={4} className="h-full grow">
+      <div className="px-4">
         <Input
-          data-testid='search'
-          type='text'
+          data-testid="search"
+          type="text"
           autoFocus
           placeholder={intl.formatMessage(messages.placeholder)}
-          value={value || ''}
+          value={value || ""}
           onChange={(event) => setValue(event.target.value)}
-          outerClassName='mt-0'
-          theme='search'
+          outerClassName="mt-0"
+          theme="search"
           append={
             <button onClick={clearValue}>
               <Icon
-                src={hasSearchValue ? require('@tabler/icons/outline/x.svg') : require('@tabler/icons/outline/search.svg')}
-                className='h-4 w-4 text-gray-700 dark:text-gray-600'
-                aria-hidden='true'
+                src={hasSearchValue ? xIcon : searchIcon}
+                className="size-4 text-gray-700 dark:text-gray-600"
+                aria-hidden="true"
               />
             </button>
           }
         />
       </div>
 
-      <Stack className='grow'>
-        {renderBody()}
-      </Stack>
+      <Stack className="grow">{renderBody()}</Stack>
     </Stack>
   );
 };

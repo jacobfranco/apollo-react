@@ -1,5 +1,6 @@
+import trashIcon from "@tabler/icons/outline/trash.svg";
 import clsx from "clsx";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import {
@@ -8,20 +9,20 @@ import {
   uploadCompose,
 } from "src/actions/compose";
 import { openModal, closeModal } from "src/actions/modals";
-import { useGroup } from "src/api/hooks/useGroup";
+import { useGroup } from "src/api/hooks/index";
 import { checkComposeContent } from "src/components/ModalRoot";
-import { HStack, Modal, Text, Toggle } from "src/components";
-import {
-  useAppDispatch,
-  useAppSelector,
-  useCompose,
-  useDraggedFiles,
-} from "src/hooks";
+import HStack from "src/components/HStack";
+import Modal from "src/components/Modal";
+import Text from "src/components/Text";
+import Toggle from "src/components/Toggle";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useCompose } from "src/hooks/useCompose";
+import { useDraggedFiles } from "src/hooks/useDraggedFiles";
 
-import ComposeForm from "src/features/compose/components/ComposeForm";
+import ComposeForm from "../compose/components/ComposeForm";
 
 const messages = defineMessages({
-  close: { id: "lightbox.close", defaultMessage: "Close" },
   confirm: { id: "confirmations.cancel.confirm", defaultMessage: "Discard" },
   cancelEditing: {
     id: "confirmations.cancel_editing.confirm",
@@ -59,7 +60,7 @@ const ComposeModal: React.FC<IComposeModal> = ({
     if (checkComposeContent(compose)) {
       dispatch(
         openModal("CONFIRM", {
-          icon: require("@tabler/icons/outline/trash.svg"),
+          icon: trashIcon,
           heading: statusId ? (
             <FormattedMessage
               id="confirmations.cancel_editing.heading"

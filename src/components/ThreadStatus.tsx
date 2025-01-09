@@ -1,10 +1,10 @@
-import clsx from 'clsx';
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import React from 'react';
+import clsx from "clsx";
+import { OrderedSet as ImmutableOrderedSet } from "immutable";
+import React from "react";
 
-import StatusContainer from 'src/containers/StatusContainer';
-import { PlaceholderStatus } from 'src/components';
-import { useAppSelector } from 'src/hooks';
+import StatusContainer from "src/containers/StatusContainer";
+import { PlaceholderStatus } from "src/components";
+import { useAppSelector } from "src/hooks";
 
 interface IThreadStatus {
   id: string;
@@ -18,9 +18,13 @@ interface IThreadStatus {
 const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const { id, focusedStatusId } = props;
 
-  const replyToId = useAppSelector(state => state.contexts.inReplyTos.get(id));
-  const replyCount = useAppSelector(state => state.contexts.replies.get(id, ImmutableOrderedSet()).size);
-  const isLoaded = useAppSelector(state => Boolean(state.statuses.get(id)));
+  const replyToId = useAppSelector((state) =>
+    state.contexts.inReplyTos.get(id)
+  );
+  const replyCount = useAppSelector(
+    (state) => state.contexts.replies.get(id, ImmutableOrderedSet()).size
+  );
+  const isLoaded = useAppSelector((state) => Boolean(state.statuses.get(id)));
 
   const renderConnector = (): JSX.Element | null => {
     const isConnectedTop = replyToId && replyToId !== focusedStatusId;
@@ -31,21 +35,25 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
 
     return (
       <div
-        className={clsx('absolute left-5 z-[1] hidden w-0.5 bg-gray-200 rtl:left-auto rtl:right-5 dark:bg-primary-800', {
-          '!block top-[calc(12px+42px)] h-[calc(100%-42px-8px-1rem)]': isConnectedBottom,
-        })}
+        className={clsx(
+          "absolute left-5 z-[1] hidden w-0.5 bg-gray-200 rtl:left-auto rtl:right-5 dark:bg-secondary-800",
+          {
+            "!block top-[calc(12px+42px)] h-[calc(100%-42px-8px-1rem)]":
+              isConnectedBottom,
+          }
+        )}
       />
     );
   };
 
   return (
-    <div className='thread__status'>
+    <div className="thread__status">
       {renderConnector()}
       {isLoaded ? (
         // @ts-ignore FIXME
         <StatusContainer {...props} showGroup={false} />
       ) : (
-        <PlaceholderStatus variant='default' />
+        <PlaceholderStatus variant="default" />
       )}
     </div>
   );

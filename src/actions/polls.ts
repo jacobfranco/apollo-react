@@ -1,40 +1,45 @@
-import api from '../api';
+import api from "../api/index";
 
-import { importFetchedPoll } from './importer';
+import { importFetchedPoll } from "./importer";
 
-import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity } from 'src/types/entities';
+import type { AppDispatch, RootState } from "src/store";
+import type { APIEntity } from "src/types/entities";
 
-const POLL_VOTE_REQUEST = 'POLL_VOTE_REQUEST';
-const POLL_VOTE_SUCCESS = 'POLL_VOTE_SUCCESS';
-const POLL_VOTE_FAIL    = 'POLL_VOTE_FAIL';
+const POLL_VOTE_REQUEST = "POLL_VOTE_REQUEST";
+const POLL_VOTE_SUCCESS = "POLL_VOTE_SUCCESS";
+const POLL_VOTE_FAIL = "POLL_VOTE_FAIL";
 
-const POLL_FETCH_REQUEST = 'POLL_FETCH_REQUEST';
-const POLL_FETCH_SUCCESS = 'POLL_FETCH_SUCCESS';
-const POLL_FETCH_FAIL    = 'POLL_FETCH_FAIL';
+const POLL_FETCH_REQUEST = "POLL_FETCH_REQUEST";
+const POLL_FETCH_SUCCESS = "POLL_FETCH_SUCCESS";
+const POLL_FETCH_FAIL = "POLL_FETCH_FAIL";
 
-const vote = (pollId: string, choices: string[]) =>
+const vote =
+  (pollId: string, choices: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(voteRequest());
 
-    api(getState).post(`/api/polls/${pollId}/votes`, { choices })
-      .then(({ data }) => {
+    api(getState)
+      .post(`/api/polls/${pollId}/votes`, { choices })
+      .then((response) => response.json())
+      .then((data) => {
         dispatch(importFetchedPoll(data));
         dispatch(voteSuccess(data));
       })
-      .catch(err => dispatch(voteFail(err)));
+      .catch((err) => dispatch(voteFail(err)));
   };
 
-const fetchPoll = (pollId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchPoll =
+  (pollId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchPollRequest());
 
-    api(getState).get(`/api/polls/${pollId}`)
-      .then(({ data }) => {
+    api(getState)
+      .get(`/api/polls/${pollId}`)
+      .then((response) => response.json())
+      .then((data) => {
         dispatch(importFetchedPoll(data));
         dispatch(fetchPollSuccess(data));
       })
-      .catch(err => dispatch(fetchPollFail(err)));
+      .catch((err) => dispatch(fetchPollFail(err)));
   };
 
 const voteRequest = () => ({

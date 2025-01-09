@@ -1,39 +1,46 @@
-import { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
+import { useEffect, useState } from "react";
+import { z } from "zod";
 
-import { useAppDispatch, useAppSelector, useLoading } from 'src/hooks';
+import { HTTPError } from "src/api/HTTPError";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useLoading } from "src/hooks/useLoading";
 
-import { importEntities } from '../actions';
-import { findEntity } from '../selectors';
-import { Entity } from '../types';
+import { importEntities } from "../actions";
+import { findEntity } from "../selectors";
+import { Entity } from "../types";
 
-import { EntityFn } from './types';
-import { type UseEntityOpts } from './useEntity';
+import { EntityFn } from "./types";
+import { type UseEntityOpts } from "./useEntity";
 
 /** Entities will be filtered through this function until it returns true. */
-type LookupFn<TEntity extends Entity> = (entity: TEntity) => boolean
+type LookupFn<TEntity extends Entity> = (entity: TEntity) => boolean;
 
 function useEntityLookup<TEntity extends Entity>(
   entityType: string,
   lookupFn: LookupFn<TEntity>,
   entityFn: EntityFn<void>,
-  opts: UseEntityOpts<TEntity> = {},
+  opts: UseEntityOpts<TEntity> = {}
 ) {
   const { schema = z.custom<TEntity>() } = opts;
 
   const dispatch = useAppDispatch();
+  const [fetchedEntity, setFetchedEntity] = useState<TEntity | undefined>();
   const [isFetching, setPromise] = useLoading(true);
   const [error, setError] = useState<unknown>();
 
-  const entity = useAppSelector(state => findEntity(state, entityType, lookupFn));
+  const entity = useAppSelector(
+    (state) => findEntity(state, entityType, lookupFn) ?? fetchedEntity
+  );
   const isEnabled = opts.enabled ?? true;
   const isLoading = isFetching && !entity;
 
   const fetchEntity = async () => {
     try {
       const response = await setPromise(entityFn());
-      const entity = schema.parse(response.data);
+      const json = await response.json();
+      const entity = schema.parse(json);
+      setFetchedEntity(entity);
       dispatch(importEntities([entity], entityType));
     } catch (e) {
       setError(e);
@@ -53,8 +60,8 @@ function useEntityLookup<TEntity extends Entity>(
     fetchEntity,
     isFetching,
     isLoading,
-    isUnauthorized: error instanceof AxiosError && error.response?.status === 401,
-    isForbidden: error instanceof AxiosError && error.response?.status === 403,
+    isUnauthorized: error instanceof HTTPError && error.response.status === 401,
+    isForbidden: error instanceof HTTPError && error.response.status === 403,
   };
 }
 

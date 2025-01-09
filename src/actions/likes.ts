@@ -1,45 +1,53 @@
-import { isLoggedIn } from 'src/utils/auth';
+import { isLoggedIn } from "src/utils/auth";
 
-import api, { getLinks } from '../api';
+import api from "../api/index";
 
-import { importFetchedStatuses } from './importer';
+import { importFetchedStatuses } from "./importer";
 
-import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity } from 'src/types/entities';
+import type { AppDispatch, RootState } from "src/store";
+import type { APIEntity } from "src/types/entities";
 
-const LIKED_STATUSES_FETCH_REQUEST = 'LIKED_STATUSES_FETCH_REQUEST';
-const LIKED_STATUSES_FETCH_SUCCESS = 'LIKED_STATUSES_FETCH_SUCCESS';
-const LIKED_STATUSES_FETCH_FAIL    = 'LIKED_STATUSES_FETCH_FAIL';
+const LIKED_STATUSES_FETCH_REQUEST = "LIKED_STATUSES_FETCH_REQUEST";
+const LIKED_STATUSES_FETCH_SUCCESS = "LIKED_STATUSES_FETCH_SUCCESS";
+const LIKED_STATUSES_FETCH_FAIL = "LIKED_STATUSES_FETCH_FAIL";
 
-const LIKED_STATUSES_EXPAND_REQUEST = 'LIKED_STATUSES_EXPAND_REQUEST';
-const LIKED_STATUSES_EXPAND_SUCCESS = 'LIKED_STATUSES_EXPAND_SUCCESS';
-const LIKED_STATUSES_EXPAND_FAIL    = 'LIKED_STATUSES_EXPAND_FAIL';
+const LIKED_STATUSES_EXPAND_REQUEST = "LIKED_STATUSES_EXPAND_REQUEST";
+const LIKED_STATUSES_EXPAND_SUCCESS = "LIKED_STATUSES_EXPAND_SUCCESS";
+const LIKED_STATUSES_EXPAND_FAIL = "LIKED_STATUSES_EXPAND_FAIL";
 
-const ACCOUNT_LIKED_STATUSES_FETCH_REQUEST = 'ACCOUNT_LIKED_STATUSES_FETCH_REQUEST';
-const ACCOUNT_LIKED_STATUSES_FETCH_SUCCESS = 'ACCOUNT_LIKED_STATUSES_FETCH_SUCCESS';
-const ACCOUNT_LIKED_STATUSES_FETCH_FAIL    = 'ACCOUNT_LIKED_STATUSES_FETCH_FAIL';
+const ACCOUNT_LIKED_STATUSES_FETCH_REQUEST =
+  "ACCOUNT_LIKED_STATUSES_FETCH_REQUEST";
+const ACCOUNT_LIKED_STATUSES_FETCH_SUCCESS =
+  "ACCOUNT_LIKED_STATUSES_FETCH_SUCCESS";
+const ACCOUNT_LIKED_STATUSES_FETCH_FAIL = "ACCOUNT_LIKED_STATUSES_FETCH_FAIL";
 
-const ACCOUNT_LIKED_STATUSES_EXPAND_REQUEST = 'ACCOUNT_LIKED_STATUSES_EXPAND_REQUEST';
-const ACCOUNT_LIKED_STATUSES_EXPAND_SUCCESS = 'ACCOUNT_LIKED_STATUSES_EXPAND_SUCCESS';
-const ACCOUNT_LIKED_STATUSES_EXPAND_FAIL    = 'ACCOUNT_LIKED_STATUSES_EXPAND_FAIL';
+const ACCOUNT_LIKED_STATUSES_EXPAND_REQUEST =
+  "ACCOUNT_LIKED_STATUSES_EXPAND_REQUEST";
+const ACCOUNT_LIKED_STATUSES_EXPAND_SUCCESS =
+  "ACCOUNT_LIKED_STATUSES_EXPAND_SUCCESS";
+const ACCOUNT_LIKED_STATUSES_EXPAND_FAIL = "ACCOUNT_LIKED_STATUSES_EXPAND_FAIL";
 
-const fetchLikedStatuses = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchLikedStatuses =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    if (getState().status_lists.get('likes')?.isLoading) {
+    if (getState().status_lists.get("likes")?.isLoading) {
       return;
     }
 
     dispatch(fetchLikedStatusesRequest());
 
-    api(getState).get('/api/likes').then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedStatuses(response.data));
-      dispatch(fetchLikedStatusesSuccess(response.data, next ? next.uri : null));
-    }).catch(error => {
-      dispatch(fetchLikedStatusesFail(error));
-    });
+    api(getState)
+      .get("/api/likes")
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedStatuses(data));
+        dispatch(fetchLikedStatusesSuccess(data, next));
+      })
+      .catch((error) => {
+        dispatch(fetchLikedStatusesFail(error));
+      });
   };
 
 const fetchLikedStatusesRequest = () => ({
@@ -47,7 +55,10 @@ const fetchLikedStatusesRequest = () => ({
   skipLoading: true,
 });
 
-const fetchLikedStatusesSuccess = (statuses: APIEntity[], next: string | null) => ({
+const fetchLikedStatusesSuccess = (
+  statuses: APIEntity[],
+  next: string | null
+) => ({
   type: LIKED_STATUSES_FETCH_SUCCESS,
   statuses,
   next,
@@ -60,32 +71,39 @@ const fetchLikedStatusesFail = (error: unknown) => ({
   skipLoading: true,
 });
 
-const expandLikedStatuses = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const expandLikedStatuses =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    const url = getState().status_lists.get('likes')?.next || null;
+    const url = getState().status_lists.get("likes")?.next || null;
 
-    if (url === null || getState().status_lists.get('likes')?.isLoading) {
+    if (url === null || getState().status_lists.get("likes")?.isLoading) {
       return;
     }
 
     dispatch(expandLikedStatusesRequest());
 
-    api(getState).get(url).then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedStatuses(response.data));
-      dispatch(expandLikedStatusesSuccess(response.data, next ? next.uri : null));
-    }).catch(error => {
-      dispatch(expandLikedStatusesFail(error));
-    });
+    api(getState)
+      .get(url)
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedStatuses(data));
+        dispatch(expandLikedStatusesSuccess(data, next));
+      })
+      .catch((error) => {
+        dispatch(expandLikedStatusesFail(error));
+      });
   };
 
 const expandLikedStatusesRequest = () => ({
   type: LIKED_STATUSES_EXPAND_REQUEST,
 });
 
-const expandLikedStatusesSuccess = (statuses: APIEntity[], next: string | null) => ({
+const expandLikedStatusesSuccess = (
+  statuses: APIEntity[],
+  next: string | null
+) => ({
   type: LIKED_STATUSES_EXPAND_SUCCESS,
   statuses,
   next,
@@ -96,8 +114,8 @@ const expandLikedStatusesFail = (error: unknown) => ({
   error,
 });
 
-const fetchAccountLikedStatuses = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchAccountLikedStatuses =
+  (accountId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
     if (getState().status_lists.get(`likes:${accountId}`)?.isLoading) {
@@ -106,13 +124,17 @@ const fetchAccountLikedStatuses = (accountId: string) =>
 
     dispatch(fetchAccountLikedStatusesRequest(accountId));
 
-    api(getState).get(`/api/accounts/${accountId}/likes`).then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedStatuses(response.data));
-      dispatch(fetchAccountLikedStatusesSuccess(accountId, response.data, next ? next.uri : null));
-    }).catch(error => {
-      dispatch(fetchAccountLikedStatusesFail(accountId, error));
-    });
+    api(getState)
+      .get(`/api/accounts/${accountId}/likes`)
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedStatuses(data));
+        dispatch(fetchAccountLikedStatusesSuccess(accountId, data, next));
+      })
+      .catch((error) => {
+        dispatch(fetchAccountLikedStatusesFail(accountId, error));
+      });
   };
 
 const fetchAccountLikedStatusesRequest = (accountId: string) => ({
@@ -121,7 +143,11 @@ const fetchAccountLikedStatusesRequest = (accountId: string) => ({
   skipLoading: true,
 });
 
-const fetchAccountLikedStatusesSuccess = (accountId: string, statuses: APIEntity, next: string | null) => ({
+const fetchAccountLikedStatusesSuccess = (
+  accountId: string,
+  statuses: APIEntity,
+  next: string | null
+) => ({
   type: ACCOUNT_LIKED_STATUSES_FETCH_SUCCESS,
   accountId,
   statuses,
@@ -136,25 +162,32 @@ const fetchAccountLikedStatusesFail = (accountId: string, error: unknown) => ({
   skipLoading: true,
 });
 
-const expandAccountLikedStatuses = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const expandAccountLikedStatuses =
+  (accountId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
     const url = getState().status_lists.get(`likes:${accountId}`)?.next || null;
 
-    if (url === null || getState().status_lists.get(`likes:${accountId}`)?.isLoading) {
+    if (
+      url === null ||
+      getState().status_lists.get(`likes:${accountId}`)?.isLoading
+    ) {
       return;
     }
 
     dispatch(expandAccountLikedStatusesRequest(accountId));
 
-    api(getState).get(url).then(response => {
-      const next = getLinks(response).refs.find(link => link.rel === 'next');
-      dispatch(importFetchedStatuses(response.data));
-      dispatch(expandAccountLikedStatusesSuccess(accountId, response.data, next ? next.uri : null));
-    }).catch(error => {
-      dispatch(expandAccountLikedStatusesFail(accountId, error));
-    });
+    api(getState)
+      .get(url)
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        dispatch(importFetchedStatuses(data));
+        dispatch(expandAccountLikedStatusesSuccess(accountId, data, next));
+      })
+      .catch((error) => {
+        dispatch(expandAccountLikedStatusesFail(accountId, error));
+      });
   };
 
 const expandAccountLikedStatusesRequest = (accountId: string) => ({
@@ -162,7 +195,11 @@ const expandAccountLikedStatusesRequest = (accountId: string) => ({
   accountId,
 });
 
-const expandAccountLikedStatusesSuccess = (accountId: string, statuses: APIEntity[], next: string | null) => ({
+const expandAccountLikedStatusesSuccess = (
+  accountId: string,
+  statuses: APIEntity[],
+  next: string | null
+) => ({
   type: ACCOUNT_LIKED_STATUSES_EXPAND_SUCCESS,
   accountId,
   statuses,

@@ -1,17 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { fetchTrendingSpacesSuccess } from 'src/actions/trends';
-import { useApi, useAppDispatch } from 'src/hooks';
-import { normalizeSpace } from 'src/normalizers';
+import { fetchTrendingSpacesSuccess } from "src/actions/trends";
+import { useApi } from "src/hooks/useApi";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { normalizeSpace } from "src/normalizers";
 
-import type { Space } from 'src/types/entities';
+import type { Space } from "src/types/entities";
 
-export default function useTrends() {
+export default function useTrendingSpaces() {
   const api = useApi();
   const dispatch = useAppDispatch();
 
-  const getTrends = async () => {
-    const { data } = await api.get<any[]>('/api/trends/spaces');
+  const getTrendingSpaces = async () => {
+    const response = await api.get("/api/trends/spaces");
+    const data: Space[] = await response.json();
 
     dispatch(fetchTrendingSpacesSuccess(data));
 
@@ -20,8 +22,8 @@ export default function useTrends() {
   };
 
   const result = useQuery<ReadonlyArray<Space>>({
-    queryKey: ['trending_spaces'],
-    queryFn: getTrends,
+    queryKey: ["trending_spaces"],
+    queryFn: getTrendingSpaces,
     placeholderData: [],
     staleTime: 600000, // 10 minutes
   });

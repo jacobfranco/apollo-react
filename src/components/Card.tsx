@@ -1,12 +1,13 @@
+import arrowLeftIcon from "@tabler/icons/outline/arrow-left.svg";
 import clsx from "clsx";
-import React from "react";
+import { forwardRef } from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { Link } from "react-router-dom";
 
-import SvgIcon from "./SvgIcon";
+import SvgIcon from "src/components/SvgIcon";
 
-import HStack from "./HStack";
-import Text from "./Text";
+import HStack from "src/components/HStack";
+import Text from "src/components/Text";
 
 const sizes = {
   md: "p-4 sm:rounded-xl",
@@ -33,7 +34,7 @@ interface ICard {
 }
 
 /** An opaque backdrop to hold a collection of related elements. */
-const Card = React.forwardRef<HTMLDivElement, ICard>(
+const Card = forwardRef<HTMLDivElement, ICard>(
   (
     { children, variant = "default", size = "md", className, ...filteredProps },
     ref
@@ -43,10 +44,11 @@ const Card = React.forwardRef<HTMLDivElement, ICard>(
       {...filteredProps}
       className={clsx(
         {
-          "bg-primary-100 dark:bg-secondary-700 text-gray-900 dark:text-gray-100 shadow-lg dark:shadow-none":
+          "bg-primary-200 dark:bg-secondary-900 black:bg-black text-gray-900 dark:text-gray-100 shadow-lg dark:shadow-none":
             variant === "rounded",
           [sizes[size]]: variant === "rounded",
           "py-4": variant === "slim",
+          "black:rounded-none": size !== "xl",
         },
         className
       )}
@@ -88,13 +90,10 @@ const CardHeader: React.FC<ICardHeader> = ({
     return (
       <Comp
         {...backAttributes}
-        className="rounded-full text-gray-900 focus:ring-2 focus:ring-primary-500 dark:text-gray-100"
+        className="rounded-5px text-gray-900 focus:ring-2 focus:ring-primary-500 dark:text-gray-100"
         aria-label={intl.formatMessage(messages.back)}
       >
-        <SvgIcon
-          src={require("@tabler/icons/outline/arrow-left.svg")}
-          className="h-6 w-6 rtl:rotate-180"
-        />
+        <SvgIcon src={arrowLeftIcon} className="size-6 rtl:rotate-180" />
         <span className="sr-only" data-testid="back-button">
           {intl.formatMessage(messages.back)}
         </span>

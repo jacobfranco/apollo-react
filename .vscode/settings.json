@@ -19,7 +19,6 @@
   ],
   "scss.validate": false,
   "workbench.colorTheme": "Nightcall (No Italics)",
-  "workbench.iconTheme": "quill-icons-minimal",
   "workbench.productIconTheme": "icons-carbon",
   "editor.renderWhitespace": "none",
   "editor.minimap.renderCharacters": false,

@@ -10,29 +10,27 @@ export const FETCH_SERIES_SUCCESS = "series/FETCH_SUCCESS";
 export const FETCH_SERIES_FAILURE = "series/FETCH_FAILURE";
 export const UPDATE_SERIES = "series/UPDATE_SERIES";
 
-// New action types for fetching series by ID
 export const FETCH_SERIES_BY_ID_REQUEST = "series/FETCH_BY_ID_REQUEST";
 export const FETCH_SERIES_BY_ID_SUCCESS = "series/FETCH_BY_ID_SUCCESS";
 export const FETCH_SERIES_BY_ID_FAILURE = "series/FETCH_BY_ID_FAILURE";
 
-// Existing actions
 export const fetchSeriesRequest = () => ({ type: FETCH_SERIES_REQUEST });
+
 export const fetchSeriesSuccess = (series: Series[]) => ({
   type: FETCH_SERIES_SUCCESS,
   payload: series,
 });
+
 export const fetchSeriesFailure = (error: string) => ({
   type: FETCH_SERIES_FAILURE,
   payload: error,
 });
 
-// New action for updates
 export const updateSeries = (series: Series) => ({
   type: UPDATE_SERIES,
   payload: series,
 });
 
-// New actions for fetching series by ID
 export const fetchSeriesByIdRequest = (seriesId: number) => ({
   type: FETCH_SERIES_BY_ID_REQUEST,
   payload: seriesId,
@@ -42,12 +40,12 @@ export const fetchSeriesByIdSuccess = (series: Series) => ({
   type: FETCH_SERIES_BY_ID_SUCCESS,
   payload: series,
 });
+
 export const fetchSeriesByIdFailure = (error: string) => ({
   type: FETCH_SERIES_BY_ID_FAILURE,
   payload: error,
 });
 
-// Fetch series by week
 export const fetchSeries = ({
   timestamp,
   gamePath,
@@ -59,14 +57,20 @@ export const fetchSeries = ({
     dispatch(fetchSeriesRequest());
     try {
       const client = api(getState);
-      const response = await client.get(`/api/${gamePath}/series/week`, {
-        params: { timestamp },
-      });
 
-      console.log("API Response Data:", response.data);
+      // Construct URL with query parameters
+      const url = new URL(
+        `/api/${gamePath}/series/week`,
+        window.location.origin
+      );
+      if (timestamp) {
+        url.searchParams.set("timestamp", timestamp.toString());
+      }
 
-      const parsedData = seriesSchema.array().parse(response.data);
-
+      const response = await client.get(url.toString());
+      const data = await response.json();
+      console.log("API Response Data:", data);
+      const parsedData = seriesSchema.array().parse(data);
       dispatch(fetchSeriesSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {
@@ -79,7 +83,6 @@ export const fetchSeries = ({
   };
 };
 
-// Fetch series by ID
 export const fetchSeriesById = (
   seriesId: number,
   gamePath: string
@@ -89,11 +92,9 @@ export const fetchSeriesById = (
     try {
       const client = api(getState);
       const response = await client.get(`/api/${gamePath}/series/${seriesId}`);
-
-      console.log("API Response Data:", response.data);
-
-      const parsedData = seriesSchema.parse(response.data);
-
+      const data = await response.json();
+      console.log("API Response Data:", data);
+      const parsedData = seriesSchema.parse(data);
       dispatch(fetchSeriesByIdSuccess(parsedData));
     } catch (error: any) {
       if (error instanceof ZodError) {

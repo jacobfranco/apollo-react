@@ -4,13 +4,13 @@
  * LICENSE file in the /src/features/compose/editor directory.
  */
 
-import { HashtagNode } from '@lexical/hashtag';
-import { AutoLinkNode } from '@lexical/link';
+import { HashtagNode } from "@lexical/hashtag";
+import { AutoLinkNode } from "@lexical/link";
 
-import { EmojiNode } from './EmojiNode'; 
-import { MentionNode } from './MentionNode'; 
+import { EmojiNode } from "./EmojiNode";
+import { MentionNode } from "./MentionNode";
 
-import type { Klass, LexicalNode } from 'lexical';
+import type { Klass, LexicalNode } from "lexical";
 
 const useNodes = () => {
   const nodes: Array<Klass<LexicalNode>> = [

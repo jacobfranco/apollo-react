@@ -1,8 +1,7 @@
-import clsx from 'clsx';
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import clsx from "clsx";
+import React, { useState } from "react";
 
-import { Select } from 'src/components';
+import { Select } from "src/components";
 
 interface IInputContainer {
   label?: React.ReactNode;
@@ -15,17 +14,21 @@ interface IInputContainer {
 }
 
 export const InputContainer: React.FC<IInputContainer> = (props) => {
-  const containerClass = clsx('input', {
-    'with_label': props.label,
-    'required': props.required,
-    'boolean': props.type === 'checkbox',
-    'field_with_errors': props.error,
-  }, props.extraClass);
+  const containerClass = clsx(
+    "input",
+    {
+      with_label: props.label,
+      required: props.required,
+      boolean: props.type === "checkbox",
+      field_with_errors: props.error,
+    },
+    props.extraClass
+  );
 
   return (
     <div className={containerClass}>
       {props.children}
-      {props.hint && <span className='hint'>{props.hint}</span>}
+      {props.hint && <span className="hint">{props.hint}</span>}
     </div>
   );
 };
@@ -36,20 +39,22 @@ interface ILabelInputContainer {
   children: React.ReactNode;
 }
 
-export const LabelInputContainer: React.FC<ILabelInputContainer> = ({ label, hint, children }) => {
-  const [id] = useState(uuidv4());
-  const childrenWithProps = React.Children.map(children, child => (
+export const LabelInputContainer: React.FC<ILabelInputContainer> = ({
+  label,
+  hint,
+  children,
+}) => {
+  const [id] = useState(crypto.randomUUID());
+  const childrenWithProps = React.Children.map(children, (child) =>
     // @ts-ignore: not sure how to get the right type here
     React.cloneElement(child, { id: id, key: id })
-  ));
+  );
 
   return (
-    <div className='label_input'>
+    <div className="label_input">
       <label htmlFor={id}>{label}</label>
-      <div className='label_input__wrapper'>
-        {childrenWithProps}
-      </div>
-      {hint && <span className='hint'>{hint}</span>}
+      <div className="label_input__wrapper">{childrenWithProps}</div>
+      {hint && <span className="hint">{hint}</span>}
     </div>
   );
 };
@@ -68,7 +73,10 @@ interface ILabelTextarea {
   label?: React.ReactNode;
 }
 
-export const LabelTextarea: React.FC<ILabelTextarea> = ({ label, ...props }) => (
+export const LabelTextarea: React.FC<ILabelTextarea> = ({
+  label,
+  ...props
+}) => (
   <LabelInputContainer label={label}>
     <textarea {...props} />
   </LabelInputContainer>
@@ -94,7 +102,7 @@ interface ISimpleInput {
 
 export const SimpleInput: React.FC<ISimpleInput> = (props) => {
   const { hint, error, ...rest } = props;
-  const Input = props.label ? LabelInput : 'input';
+  const Input = props.label ? LabelInput : "input";
 
   return (
     <InputContainer {...props}>
@@ -114,7 +122,7 @@ interface ICheckbox {
 }
 
 export const Checkbox: React.FC<ICheckbox> = (props) => (
-  <SimpleInput type='checkbox' {...props} />
+  <SimpleInput type="checkbox" {...props} />
 );
 
 interface ISelectDropdown {
@@ -129,16 +137,22 @@ interface ISelectDropdown {
 export const SelectDropdown: React.FC<ISelectDropdown> = (props) => {
   const { label, hint, items, ...rest } = props;
 
-  const optionElems = Object.keys(items).map(item => (
-    <option key={item} value={item}>{items[item]}</option>
+  const optionElems = Object.keys(items).map((item) => (
+    <option key={item} value={item}>
+      {items[item]}
+    </option>
   ));
 
   // @ts-ignore
   const selectElem = <Select {...rest}>{optionElems}</Select>;
 
   return label ? (
-    <LabelInputContainer label={label} hint={hint}>{selectElem}</LabelInputContainer>
-  ) : selectElem;
+    <LabelInputContainer label={label} hint={hint}>
+      {selectElem}
+    </LabelInputContainer>
+  ) : (
+    selectElem
+  );
 };
 
 interface ITextInput {
@@ -156,16 +170,16 @@ interface ITextInput {
   required?: boolean;
 }
 
-export const TextInput: React.FC<ITextInput> = props => (
-  <SimpleInput type='text' {...props} />
+export const TextInput: React.FC<ITextInput> = (props) => (
+  <SimpleInput type="text" {...props} />
 );
 
-export const FileChooser : React.FC = (props) => (
-  <SimpleInput type='file' {...props} />
+export const FileChooser: React.FC = (props) => (
+  <SimpleInput type="file" {...props} />
 );
 
 FileChooser.defaultProps = {
-  accept: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  accept: ["image/jpeg", "image/png", "image/gif", "image/webp"],
 };
 
 interface IFileChooserLogo {
@@ -176,10 +190,10 @@ interface IFileChooserLogo {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-export const FileChooserLogo: React.FC<IFileChooserLogo> = props => (
-  <SimpleInput type='file' {...props} />
+export const FileChooserLogo: React.FC<IFileChooserLogo> = (props) => (
+  <SimpleInput type="file" {...props} />
 );
 
 FileChooserLogo.defaultProps = {
-  accept: ['image/svg', 'image/png'],
+  accept: ["image/svg", "image/png"],
 };

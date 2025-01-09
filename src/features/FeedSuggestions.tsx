@@ -1,20 +1,15 @@
-import React from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { Link } from "react-router-dom";
 
-import { useAccount } from "src/api/hooks/useAccount";
-import { useAppSelector } from "src/hooks";
+import { useAccount } from "src/api/hooks/index";
+import { Card, CardBody, CardTitle } from "src/components/Card";
+import HStack from "src/components/HStack";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import VerificationBadge from "src/components/VerificationBadge";
+import { useAppSelector } from "src/hooks/useAppSelector";
 
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  HStack,
-  Stack,
-  Text,
-  VerificationBadge,
-} from "src/components";
-import ActionButton from "src/features/ActionButton";
+import ActionButton from "src/components/ActionButton";
 import { HotKeys } from "src/features/Hotkeys";
 
 const messages = defineMessages({
@@ -36,13 +31,13 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
   return (
     <Stack
       space={3}
-      className="w-52 shrink-0 rounded-md border border-solid border-gray-300 p-4 md:w-full md:shrink md:border-transparent md:p-0 dark:border-gray-800 dark:md:border-transparent"
+      className="w-52 shrink-0 rounded-md border border-solid border-gray-300 p-4 dark:border-gray-800 md:w-full md:shrink md:border-transparent md:p-0 dark:md:border-transparent"
     >
       <Link to={`/@${account.username}`} title={account.username}>
         <Stack space={3} className="mx-auto w-40 md:w-24">
           <img
             src={account.avatar}
-            className="mx-auto block h-16 w-16 min-w-[56px] rounded-full object-cover"
+            className="mx-auto block size-16 min-w-[56px] rounded-full object-cover"
             alt={account.username}
           />
 
@@ -50,19 +45,20 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
             <HStack alignItems="center" justifyContent="center" space={1}>
               <Text
                 weight="semibold"
-                dangerouslySetInnerHTML={{ __html: account.display_name_html }}
                 truncate
                 align="center"
                 size="sm"
                 className="max-w-[95%]"
-              />
+              >
+                {account.display_name}
+              </Text>
 
               {account.verified && <VerificationBadge />}
             </HStack>
-
             <Text theme="muted" align="center" size="sm" truncate>
               @{account.username}
-            </Text>
+            </Text>{" "}
+            {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
           </Stack>
         </Stack>
       </Link>

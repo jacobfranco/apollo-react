@@ -1,57 +1,59 @@
-import React, { Suspense } from "react";
+import { PureComponent, Suspense } from "react";
 
 import Base from "src/components/ModalRoot";
-
 import {
   AccountModerationModal,
   ActionsModal,
   BoostModal,
+  // CaptchaModal,
   ComposeModal,
   ConfirmationModal,
+  // EditRuleModal,
   // EmbedModal,
-  // FamiliarFollowersModal,
-  HotkeysModal,
-  // LandingPageModal,
+  EmojiPickerModal,
+  FamiliarFollowersModal,
   LikesModal,
+  HotkeysModal,
   // CreateGroupModal,
   MediaModal,
   MentionsModal,
   MissingDescriptionModal,
   MuteModal,
-  LolRegionFilterModal,
+  OnboardingFlowModal,
   RepostsModal,
   ReplyMentionsModal,
   ReportModal,
-  StreamModal,
   UnauthorizedModal,
-  // VideoModal,
+  VideoModal,
 } from "src/features/AsyncComponents";
 
 import ModalLoading from "src/components/ModalLoading";
 
 /* eslint sort-keys: "error" */
-const MODAL_COMPONENTS: Record<string, React.LazyExoticComponent<any>> = {
+const MODAL_COMPONENTS: Record<string, React.ExoticComponent<any>> = {
   ACCOUNT_MODERATION: AccountModerationModal,
   ACTIONS: ActionsModal,
   BOOST: BoostModal,
+  // 'CAPTCHA': CaptchaModal,
   COMPOSE: ComposeModal,
   CONFIRM: ConfirmationModal,
+  // 'CREATE_GROUP': CreateGroupModal,
+  // 'EDIT_RULE': EditRuleModal,
   // 'EMBED': EmbedModal,
-  // 'FAMILIAR_FOLLOWERS': FamiliarFollowersModal,
+  EMOJI_PICKER: EmojiPickerModal,
+  FAMILIAR_FOLLOWERS: FamiliarFollowersModal,
   HOTKEYS: HotkeysModal,
-  // 'LANDING_PAGE': LandingPageModal,
   LIKES: LikesModal,
   MEDIA: MediaModal,
   MENTIONS: MentionsModal,
   MISSING_DESCRIPTION: MissingDescriptionModal,
   MUTE: MuteModal,
-  LOL_REGION_FILTER: LolRegionFilterModal,
+  ONBOARDING_FLOW: OnboardingFlowModal,
   REPOSTS: RepostsModal,
   REPLY_MENTIONS: ReplyMentionsModal,
   REPORT: ReportModal,
   UNAUTHORIZED: UnauthorizedModal,
-  STREAM: StreamModal,
-  // 'VIDEO': VideoModal,
+  VIDEO: VideoModal,
 };
 
 export type ModalType = keyof typeof MODAL_COMPONENTS | null;
@@ -62,16 +64,16 @@ interface IModalRoot {
   onClose: (type?: ModalType) => void;
 }
 
-export default class ModalRoot extends React.PureComponent<IModalRoot> {
+export default class ModalRoot extends PureComponent<IModalRoot> {
   getSnapshotBeforeUpdate() {
     return { visible: !!this.props.type };
   }
 
   componentDidUpdate(prevProps: IModalRoot, prevState: any, { visible }: any) {
     if (visible) {
-      document.body.classList.add("with-modals");
+      document.body.classList.add("overflow-hidden");
     } else {
-      document.body.classList.remove("with-modals");
+      document.body.classList.remove("overflow-hidden");
     }
   }
 

@@ -1,13 +1,13 @@
-import clsx from 'clsx';
-import React, { useState } from 'react';
+import photoOffIcon from "@tabler/icons/outline/photo-off.svg";
+import clsx from "clsx";
+import { useMemo, useState } from "react";
 
-import StillImage, { IStillImage } from 'src/components/StillImage';
-
-import { default as Icon } from 'src/components/Icon';
+import StillImage, { IStillImage } from "src/components/StillImage";
+import Icon from "src/components/Icon";
 
 const AVATAR_SIZE = 42;
 
-interface IAvatar extends Pick<IStillImage, 'src' | 'onError' | 'className'> {
+interface IAvatar extends Pick<IStillImage, "src" | "onError" | "className"> {
   /** Width and height of the avatar in pixels. */
   size?: number;
 }
@@ -20,10 +20,13 @@ const Avatar = (props: IAvatar) => {
 
   const handleLoadFailure = () => setIsAvatarMissing(true);
 
-  const style: React.CSSProperties = React.useMemo(() => ({
-    width: size,
-    height: size,
-  }), [size]);
+  const style: React.CSSProperties = useMemo(
+    () => ({
+      width: size,
+      height: size,
+    }),
+    [size]
+  );
 
   if (isAvatarMissing) {
     return (
@@ -32,11 +35,14 @@ const Avatar = (props: IAvatar) => {
           width: size,
           height: size,
         }}
-        className={clsx('flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-900', className)}
+        className={clsx(
+          "flex items-center justify-center rounded-5px bg-white dark:bg-white",
+          className
+        )}
       >
         <Icon
-          src={require('@tabler/icons/outline/photo-off.svg')}
-          className='h-4 w-4 text-gray-500 dark:text-gray-700'
+          src={photoOffIcon}
+          className="size-4 text-gray-500 dark:text-gray-700"
         />
       </div>
     );
@@ -44,10 +50,10 @@ const Avatar = (props: IAvatar) => {
 
   return (
     <StillImage
-      className={clsx('rounded-full', className)}
+      className={clsx("rounded-5px", className)}
       style={style}
       src={src}
-      alt='Avatar'
+      alt="Avatar"
       onError={handleLoadFailure}
     />
   );

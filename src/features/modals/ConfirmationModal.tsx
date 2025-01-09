@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState } from "react";
+import { FormattedMessage } from "react-intl";
 
-import List, { ListItem } from 'src/components/List';
-import { Modal, Stack, Text, Toggle } from 'src/components';
+import List, { ListItem } from "src/components/List";
+import { Modal, Stack, Text, Toggle } from "src/components";
 
-import type { ButtonThemes } from 'src/components/useButtonStyles';
+import type { ButtonThemes } from "src/components/useButtonStyles";
 
 interface IConfirmationModal {
   heading: React.ReactNode;
@@ -29,26 +29,28 @@ const ConfirmationModal: React.FC<IConfirmationModal> = ({
   onSecondary,
   onCancel,
   checkbox,
-  confirmationTheme = 'danger',
+  confirmationTheme = "danger",
 }) => {
   const [checked, setChecked] = useState(false);
 
   const handleClick = () => {
-    onClose('CONFIRM');
+    onClose("CONFIRM");
     onConfirm();
   };
 
   const handleSecondary = () => {
-    onClose('CONFIRM');
+    onClose("CONFIRM");
     onSecondary!();
   };
 
   const handleCancel = () => {
-    onClose('CONFIRM');
+    onClose("CONFIRM");
     if (onCancel) onCancel();
   };
 
-  const handleCheckboxChange: React.ChangeEventHandler<HTMLInputElement> = e => {
+  const handleCheckboxChange: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
     setChecked(e.target.checked);
   };
 
@@ -59,15 +61,18 @@ const ConfirmationModal: React.FC<IConfirmationModal> = ({
       confirmationText={confirm}
       confirmationDisabled={checkbox && !checked}
       confirmationTheme={confirmationTheme}
-      cancelText={<FormattedMessage id='confirmation_modal.cancel' defaultMessage='Cancel' />}
+      cancelText={
+        <FormattedMessage
+          id="confirmation_modal.cancel"
+          defaultMessage="Cancel"
+        />
+      }
       cancelAction={handleCancel}
       secondaryText={secondary}
       secondaryAction={onSecondary && handleSecondary}
     >
       <Stack space={4}>
-        <Text>
-          {message}
-        </Text>
+        <Text>{message}</Text>
 
         {checkbox && (
           <List>

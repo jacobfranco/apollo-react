@@ -1,33 +1,22 @@
-import React from 'react';
-
-import { removeVS16s, toCodePoints } from 'src/utils/emoji';
-import { joinPublicPath } from 'src/utils/static';
-
-interface IEmoji extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface IEmoji {
   /** Unicode emoji character. */
-  emoji?: string;
+  emoji: string;
+  /** Size to render the emoji. */
+  size?: number;
 }
 
 /** A single emoji image. */
 const Emoji: React.FC<IEmoji> = (props): JSX.Element | null => {
-  const { emoji, alt, src, ...rest } = props;
-
-  let filename;
-
-  if (emoji) {
-    const codepoints = toCodePoints(removeVS16s(emoji));
-    filename = codepoints.join('-');
-  }
-
-  if (!filename && !src) return null;
+  const { emoji, size = 16 } = props;
+  const px = `${size}px`;
 
   return (
-    <img
-      draggable='false'
-      alt={alt || emoji}
-      src={src || joinPublicPath(`packs/emoji/${filename}.svg`)}
-      {...rest}
-    />
+    <div
+      className="inline-flex select-none items-center justify-center font-emoji leading-[0]"
+      style={{ width: px, height: px, fontSize: px }}
+    >
+      {emoji}
+    </div>
   );
 };
 

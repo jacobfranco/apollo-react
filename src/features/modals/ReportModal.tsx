@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import infoCircleIcon from "@tabler/icons/outline/info-circle.svg";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import { blockAccount } from "src/actions/accounts";
@@ -9,26 +10,26 @@ import {
   ReportableEntities,
 } from "src/actions/reports";
 import { expandAccountTimeline } from "src/actions/timelines";
-import { useAccount } from "src/api/hooks/useAccount";
-import {
-  AttachmentThumbs,
-  GroupCard,
-  HStack,
-  Modal,
-  ProgressBar,
-  Stack,
-  Text,
-} from "src/components";
+import { useAccount } from "src/api/hooks/index";
+import AttachmentThumbs from "src/components/AttachmentThumbs";
+import GroupCard from "src/components/GroupCard";
 import List, { ListItem } from "src/components/List";
+import StatusContent from "src/components/StatusContent";
+import Avatar from "src/components/Avatar";
+import HStack from "src/components/HStack";
+import Icon from "src/components/Icon";
+import Modal from "src/components/Modal";
+import ProgressBar from "src/components/ProgressBar";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
 import AccountContainer from "src/containers/AccountContainer";
-import { useAppDispatch, useAppSelector } from "src/hooks";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { Attachment } from "src/schemas/index";
 
 import ConfirmationStep from "src/components/ReportConfirmation";
 import OtherActionsStep from "src/components/ReportOtherActions";
 import ReasonStep from "src/components/ReportReason";
-import Icon from "src/components/Icon";
-import Avatar from "src/components/Avatar";
-import StatusContent from "src/components/StatusContent";
 
 const messages = defineMessages({
   blankslate: {
@@ -39,12 +40,12 @@ const messages = defineMessages({
   next: { id: "report.next", defaultMessage: "Next" },
   submit: { id: "report.submit", defaultMessage: "Submit" },
   reportContext: {
-    id: "report.chatMessage.context",
+    id: "report.chat_message.context",
     defaultMessage:
       "When reporting a user’s message, the five messages before and five messages after the one selected will be passed along to our moderation team for context.",
   },
   reportMessage: {
-    id: "report.chatMessage.title",
+    id: "report.chat_message.title",
     defaultMessage: "Report message",
   },
   reportGroup: { id: "report.group.title", defaultMessage: "Report Group" },
@@ -85,13 +86,23 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
   const status = useAppSelector((state) => state.statuses.get(statusId));
 
   if (!status) {
+    console.log("No status found for ID:", statusId);
     return null;
   }
+
+  if (!status?.account) {
+    return null;
+  }
+
+  // Extract just the ID from the account object
+  const accountId = status.account.id;
+
+  console.log("Status account field:", status.account);
 
   return (
     <Stack space={2} className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
       <AccountContainer
-        id={status.account as any}
+        id={accountId}
         showProfileHoverCard={false}
         withLinkToProfile={false}
         timestamp={status.created_at}
@@ -102,7 +113,7 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
 
       {status.media_attachments.size > 0 && (
         <AttachmentThumbs
-          media={status.media_attachments}
+          media={status.media_attachments.toJS() as unknown as Attachment[]}
           sensitive={status.sensitive}
         />
       )}
@@ -126,15 +137,14 @@ const ReportModal = ({ onClose }: IReportModal) => {
   const isSubmitting = useAppSelector(
     (state) => state.reports.new.isSubmitting
   );
-  const rules = useAppSelector((state) => state.rules.items);
   const ruleIds = useAppSelector((state) => state.reports.new.rule_ids);
   const selectedStatusIds = useAppSelector(
     (state) => state.reports.new.status_ids
   );
-  // const selectedChatMessage = useAppSelector((state) => state.reports.new.chat_message); TODO: Implement chats
+  // selectedChatMessage = useAppSelector((state) => state.reports.new.chat_message);
   const selectedGroup = useAppSelector((state) => state.reports.new.group);
 
-  const shouldRequireRule = rules.length > 0;
+  const shouldRequireRule = true;
 
   const isReportingAccount = entityType === ReportableEntities.ACCOUNT;
   const isReportingStatus = entityType === ReportableEntities.STATUS;
@@ -234,42 +244,35 @@ const ReportModal = ({ onClose }: IReportModal) => {
     }
   };
 
+  /*
+
   const renderSelectedChatMessage = () => {
     if (account) {
       return (
         <Stack space={4}>
-          <HStack
-            alignItems="center"
-            space={4}
-            className="rounded-md border border-solid border-gray-400 p-4 dark:border-2 dark:border-gray-800"
-          >
+          <HStack alignItems='center' space={4} className='rounded-md border border-solid border-gray-400 p-4 dark:border-2 dark:border-gray-800'>
             <div>
-              <Avatar src={account.avatar} className="h-8 w-8" />
+              <Avatar src={account.avatar} className='size-8' />
             </div>
-            {/* TODO: Implement reports
+
             <div className='grow rounded-md bg-gray-200 p-4 dark:bg-primary-800'>
               <Text dangerouslySetInnerHTML={{ __html: selectedChatMessage?.content as string }} />
-            </div>  
-      */}
+            </div>
           </HStack>
+
           <List>
             <ListItem
-              label={
-                <Icon
-                  src={require("@tabler/icons/outline/info-circle.svg")}
-                  className="text-gray-600"
-                />
-              }
+              label={<Icon src={infoCircleIcon} className='text-gray-600' />}
             >
-              <Text size="sm">
-                {intl.formatMessage(messages.reportContext)}
-              </Text>
+              <Text size='sm'>{intl.formatMessage(messages.reportContext)}</Text>
             </ListItem>
           </List>
         </Stack>
       );
     }
   };
+
+  */
 
   const renderSelectedGroup = () => {
     if (selectedGroup) {
@@ -281,9 +284,10 @@ const ReportModal = ({ onClose }: IReportModal) => {
     switch (entityType) {
       case ReportableEntities.STATUS:
         return renderSelectedStatuses();
-      /* TODO: Implement chats
-    case ReportableEntities.CHAT_MESSAGE:
-      return renderSelectedChatMessage();
+      /*
+      case ReportableEntities.CHAT_MESSAGE:
+        return renderSelectedChatMessage();
+      
       */
       case ReportableEntities.GROUP:
         if (currentStep === Steps.TWO) {
@@ -298,13 +302,12 @@ const ReportModal = ({ onClose }: IReportModal) => {
 
   const renderTitle = () => {
     switch (entityType) {
-      /* TODO: Implement chats
       case ReportableEntities.CHAT_MESSAGE:
         return intl.formatMessage(messages.reportMessage);
-        */
       case ReportableEntities.GROUP:
         return intl.formatMessage(messages.reportGroup);
       default:
+        // eslint-disable-next-line formatjs/no-literal-string-in-jsx
         return (
           <FormattedMessage
             id="report.target"

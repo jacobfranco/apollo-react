@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchTrendsSuccess } from "src/actions/trends";
-import { useAppDispatch } from "src/hooks";
 import { useApi } from "src/hooks/useApi";
-import { normalizeTag } from "src/normalizers";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { normalizeTag } from "src/normalizers/index";
 
 import type { Tag } from "src/types/entities";
 
@@ -12,7 +12,8 @@ export default function useTrends() {
   const dispatch = useAppDispatch();
 
   const getTrends = async () => {
-    const { data } = await api.get<any[]>("/api/trends");
+    const response = await api.get("/api/trends");
+    const data: Tag[] = await response.json();
 
     dispatch(fetchTrendsSuccess(data));
 

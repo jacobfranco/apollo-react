@@ -1,8 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { getAllMondays } from 'src/utils/dates';
-import { format } from 'date-fns';
-import ArrowButton from './ArrowButton';
-import RangeIconButton from './RangeIconButton';
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import chevronLeftIcon from "@tabler/icons/outline/chevron-left.svg";
+import chevronRightIcon from "@tabler/icons/outline/chevron-right.svg";
+import { getAllMondays } from "src/utils/dates";
+import { format } from "date-fns";
+import ArrowButton from "./ArrowButton";
+import RangeIconButton from "./RangeIconButton";
 
 interface WeekPickerProps {
   selectedDate: Date;
@@ -10,7 +12,7 @@ interface WeekPickerProps {
 }
 
 const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
-  const allMondays = useMemo(() => getAllMondays(2024), []);
+  const allMondays = useMemo(() => getAllMondays(2025), []);
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -26,9 +28,9 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -75,9 +77,12 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
   };
 
   const formattedSelectedDate = useMemo(() => {
-    const startDate = format(selectedDate, 'MMM d');
-    const endDate = format(new Date(selectedDate.getTime() + 6 * 24 * 60 * 60 * 1000), 'MMM d');
-    const year = format(selectedDate, 'yyyy');
+    const startDate = format(selectedDate, "MMM d");
+    const endDate = format(
+      new Date(selectedDate.getTime() + 6 * 24 * 60 * 60 * 1000),
+      "MMM d"
+    );
+    const year = format(selectedDate, "yyyy");
     return { startDate, endDate, year };
   }, [selectedDate]);
 
@@ -88,7 +93,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
         <ArrowButton
           onClick={handlePreviousWeek}
           disabled={selectedDate <= allMondays[0]}
-          src={require('@tabler/icons/outline/chevron-left.svg')}
+          src={chevronLeftIcon}
           ariaLabel="Previous Week"
         />
 
@@ -109,7 +114,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
         <ArrowButton
           onClick={handleNextWeek}
           disabled={selectedDate >= allMondays[allMondays.length - 1]}
-          src={require('@tabler/icons/outline/chevron-right.svg')}
+          src={chevronRightIcon}
           ariaLabel="Next Week"
         />
       </div>
@@ -123,20 +128,22 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedDate, onChange }) => {
               endOfWeek.setDate(date.getDate() + 6);
               const isSelected = date.getTime() === selectedDate.getTime();
 
-              const weekStart = format(date, 'MMM d');
-              const weekEnd = format(endOfWeek, 'MMM d');
-              const weekYear = format(date, 'yyyy');
+              const weekStart = format(date, "MMM d");
+              const weekEnd = format(endOfWeek, "MMM d");
+              const weekYear = format(date, "yyyy");
 
               return (
                 <li
                   key={date.toISOString()}
                   onClick={() => selectWeek(date)}
-                  className={`week-picker__item ${isSelected ? 'week-picker__item--selected' : ''}`}
+                  className={`week-picker__item ${
+                    isSelected ? "week-picker__item--selected" : ""
+                  }`}
                   role="option"
                   aria-selected={isSelected}
                   tabIndex={0}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       selectWeek(date);
                     }
                   }}

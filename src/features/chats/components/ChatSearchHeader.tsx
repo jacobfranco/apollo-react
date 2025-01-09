@@ -1,14 +1,15 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import arrowLeftIcon from "@tabler/icons/outline/arrow-left.svg";
+import { defineMessages, useIntl } from "react-intl";
 
-import { HStack, Text } from 'src/components';
-import { ChatWidgetScreens, useChatContext } from 'src/contexts/chat-context';
+import HStack from "src/components/HStack";
+import Icon from "src/components/Icon";
+import Text from "src/components/Text";
+import { ChatWidgetScreens, useChatContext } from "src/contexts/chat-context";
 
-import ChatPaneHeader from './ChatPaneHeader';
-import Icon from 'src/components/Icon';
+import ChatPaneHeader from "./ChatPaneHeader";
 
 const messages = defineMessages({
-  title: { id: 'chat_search.title', defaultMessage: 'Messages' },
+  title: { id: "chat_search.title", defaultMessage: "Messages" },
 });
 
 const ChatSearchHeader = () => {
@@ -18,21 +19,21 @@ const ChatSearchHeader = () => {
 
   return (
     <ChatPaneHeader
-      data-testid='pane-header'
+      data-testid="pane-header"
       title={
-        <HStack alignItems='center' space={2}>
+        <HStack alignItems="center" space={2}>
           <button
             onClick={() => {
               changeScreen(ChatWidgetScreens.INBOX);
             }}
           >
             <Icon
-              src={require('@tabler/icons/outline/arrow-left.svg')}
-              className='h-6 w-6 text-gray-600 rtl:rotate-180 dark:text-gray-400'
+              src={arrowLeftIcon}
+              className="size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180"
             />
           </button>
 
-          <Text size='sm' weight='bold' truncate>
+          <Text size="sm" weight="bold" truncate>
             {intl.formatMessage(messages.title)}
           </Text>
         </HStack>

@@ -1,14 +1,16 @@
-import { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
-import z from 'zod';
+import { useEffect, useState } from "react";
+import z from "zod";
 
-import { useAppDispatch, useAppSelector, useLoading } from 'src/hooks';
+import { HTTPError } from "src/api/HTTPError";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useLoading } from "src/hooks/useLoading";
 
-import { importEntities } from '../actions';
-import { selectEntity } from '../selectors';
+import { importEntities } from "../actions";
+import { selectEntity } from "../selectors";
 
-import type { EntitySchema, EntityPath, EntityFn } from './types';
-import type { Entity } from '../types';
+import type { EntitySchema, EntityPath, EntityFn } from "./types";
+import type { Entity } from "../types";
 
 /** Additional options for the hook. */
 interface UseEntityOpts<TEntity extends Entity> {
@@ -23,7 +25,7 @@ interface UseEntityOpts<TEntity extends Entity> {
 function useEntity<TEntity extends Entity>(
   path: EntityPath,
   entityFn: EntityFn<void>,
-  opts: UseEntityOpts<TEntity> = {},
+  opts: UseEntityOpts<TEntity> = {}
 ) {
   const [isFetching, setPromise] = useLoading(true);
   const [error, setError] = useState<unknown>();
@@ -35,7 +37,9 @@ function useEntity<TEntity extends Entity>(
   const defaultSchema = z.custom<TEntity>();
   const schema = opts.schema || defaultSchema;
 
-  const entity = useAppSelector(state => selectEntity<TEntity>(state, entityType, entityId));
+  const entity = useAppSelector((state) =>
+    selectEntity<TEntity>(state, entityType, entityId)
+  );
 
   const isEnabled = opts.enabled ?? true;
   const isLoading = isFetching && !entity;
@@ -44,7 +48,8 @@ function useEntity<TEntity extends Entity>(
   const fetchEntity = async () => {
     try {
       const response = await setPromise(entityFn());
-      const entity = schema.parse(response.data);
+      const json = await response.json();
+      const entity = schema.parse(json);
       dispatch(importEntities([entity], entityType));
     } catch (e) {
       setError(e);
@@ -65,12 +70,9 @@ function useEntity<TEntity extends Entity>(
     isLoading,
     isLoaded,
     error,
-    isUnauthorized: error instanceof AxiosError && error.response?.status === 401,
-    isForbidden: error instanceof AxiosError && error.response?.status === 403,
+    isUnauthorized: error instanceof HTTPError && error.response.status === 401,
+    isForbidden: error instanceof HTTPError && error.response.status === 403,
   };
 }
 
-export {
-  useEntity,
-  type UseEntityOpts,
-};
+export { useEntity, type UseEntityOpts };

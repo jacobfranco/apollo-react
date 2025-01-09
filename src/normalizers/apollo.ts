@@ -8,7 +8,7 @@ import {
 import { toTailwind } from "src/utils/tailwind";
 import { generateAccent } from "src/utils/theme";
 
-import type { FooterItem } from "src/types/apollo";
+import type { FooterItem, PromoPanelItem } from "src/types/apollo";
 
 const DEFAULT_COLORS = ImmutableMap<string, any>({
   success: ImmutableMap({
@@ -38,6 +38,17 @@ const DEFAULT_COLORS = ImmutableMap<string, any>({
   greentext: "#789922",
 });
 
+export const PromoPanelItemRecord = ImmutableRecord({
+  icon: "",
+  text: "",
+  url: "",
+  textLocales: ImmutableMap<string, string>(),
+});
+
+export const PromoPanelRecord = ImmutableRecord({
+  items: ImmutableList<PromoPanelItem>(),
+});
+
 export const ApolloConfigRecord = ImmutableRecord(
   {
     appleAppId: null,
@@ -57,6 +68,7 @@ export const ApolloConfigRecord = ImmutableRecord(
     gdpr: false,
     gdprUrl: "",
     greentext: false,
+    promoPanel: PromoPanelRecord(),
     navlinks: ImmutableMap({
       homeFooter: ImmutableList<FooterItem>(),
     }),
@@ -135,11 +147,19 @@ const maybeAddMissingColors = (
 
   const missing = ImmutableMap({
     "gradient-start": colors.getIn(["primary", "500"]),
-    "gradient-end": colors.getIn(["accent", "500"]),
+    "gradient-end": colors.getIn(["secondary", "700"]),
     "accent-blue": colors.getIn(["primary", "600"]),
   });
 
   return apolloConfig.set("colors", missing.mergeDeep(colors));
+};
+
+const normalizePromoPanel = (
+  apolloConfig: ApolloConfigMap
+): ApolloConfigMap => {
+  const promoPanel = PromoPanelRecord(apolloConfig.get("promoPanel"));
+  const items = promoPanel.items.map(PromoPanelItemRecord);
+  return apolloConfig.set("promoPanel", promoPanel.set("items", items));
 };
 
 export const normalizeApolloConfig = (apolloConfig: Record<string, any>) => {
@@ -150,6 +170,7 @@ export const normalizeApolloConfig = (apolloConfig: Record<string, any>) => {
       normalizeColors(apolloConfig);
       maybeAddMissingColors(apolloConfig);
       normalizeFooterLinks(apolloConfig);
+      normalizePromoPanel(apolloConfig);
     })
   );
 };

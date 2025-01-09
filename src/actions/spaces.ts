@@ -1,49 +1,46 @@
-import api, { getLinks } from '../api';
+import api from "../api";
 
-import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity } from 'src/types/entities';
+import type { AppDispatch, RootState } from "src/store";
+import type { APIEntity } from "src/types/entities";
 
-const SPACE_FETCH_REQUEST = 'SPACE_FETCH_REQUEST';
-const SPACE_FETCH_SUCCESS = 'SPACE_FETCH_SUCCESS';
-const SPACE_FETCH_FAIL = 'SPACE_FETCH_FAIL';
+const SPACE_FETCH_REQUEST = "SPACE_FETCH_REQUEST";
+const SPACE_FETCH_SUCCESS = "SPACE_FETCH_SUCCESS";
+const SPACE_FETCH_FAIL = "SPACE_FETCH_FAIL";
 
-const ALL_SPACES_FETCH_REQUEST = 'ALL_SPACES_FETCH_REQUEST';
-const ALL_SPACES_FETCH_SUCCESS = 'ALL_SPACES_FETCH_SUCCESS';
-const ALL_SPACES_FETCH_FAIL = 'ALL_SPACES_FETCH_FAIL';
+const ALL_SPACES_FETCH_REQUEST = "ALL_SPACES_FETCH_REQUEST";
+const ALL_SPACES_FETCH_SUCCESS = "ALL_SPACES_FETCH_SUCCESS";
+const ALL_SPACES_FETCH_FAIL = "ALL_SPACES_FETCH_FAIL";
 
-const SPACE_FOLLOW_REQUEST = 'SPACE_FOLLOW_REQUEST';
-const SPACE_FOLLOW_SUCCESS = 'SPACE_FOLLOW_SUCCESS';
-const SPACE_FOLLOW_FAIL = 'SPACE_FOLLOW_FAIL';
+const SPACE_FOLLOW_REQUEST = "SPACE_FOLLOW_REQUEST";
+const SPACE_FOLLOW_SUCCESS = "SPACE_FOLLOW_SUCCESS";
+const SPACE_FOLLOW_FAIL = "SPACE_FOLLOW_FAIL";
 
-const SPACE_UNFOLLOW_REQUEST = 'SPACE_UNFOLLOW_REQUEST';
-const SPACE_UNFOLLOW_SUCCESS = 'SPACE_UNFOLLOW_SUCCESS';
-const SPACE_UNFOLLOW_FAIL = 'SPACE_UNFOLLOW_FAIL';
+const SPACE_UNFOLLOW_REQUEST = "SPACE_UNFOLLOW_REQUEST";
+const SPACE_UNFOLLOW_SUCCESS = "SPACE_UNFOLLOW_SUCCESS";
+const SPACE_UNFOLLOW_FAIL = "SPACE_UNFOLLOW_FAIL";
 
-const FOLLOWED_SPACES_FETCH_REQUEST = 'FOLLOWED_SPACES_FETCH_REQUEST';
-const FOLLOWED_SPACES_FETCH_SUCCESS = 'FOLLOWED_SPACES_FETCH_SUCCESS';
-const FOLLOWED_SPACES_FETCH_FAIL = 'FOLLOWED_SPACES_FETCH_FAIL';
+const fetchSpace =
+  (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch(fetchSpaceRequest());
 
-const FOLLOWED_SPACES_EXPAND_REQUEST = 'FOLLOWED_SPACES_EXPAND_REQUEST';
-const FOLLOWED_SPACES_EXPAND_SUCCESS = 'FOLLOWED_SPACES_EXPAND_SUCCESS';
-const FOLLOWED_SPACES_EXPAND_FAIL = 'FOLLOWED_SPACES_EXPAND_FAIL';
-
-const fetchSpace = (name: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch(fetchSpaceRequest());
-
-  api(getState).get(`/api/spaces/${name}`).then(({ data }) => {
-    dispatch(fetchSpaceSuccess(name, data));
-  }).catch(err => {
-    dispatch(fetchSpaceFail(err));
-  });
-};
+    api(getState)
+      .get(`/api/spaces/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(fetchSpaceSuccess(id, data));
+      })
+      .catch((err) => {
+        dispatch(fetchSpaceFail(err));
+      });
+  };
 
 const fetchSpaceRequest = () => ({
   type: SPACE_FETCH_REQUEST,
 });
 
-const fetchSpaceSuccess = (name: string, space: APIEntity) => ({
+const fetchSpaceSuccess = (id: string, space: APIEntity) => ({
   type: SPACE_FETCH_SUCCESS,
-  name,
+  id,
   space,
 });
 
@@ -52,17 +49,22 @@ const fetchSpaceFail = (error: unknown) => ({
   error,
 });
 
+const fetchAllSpaces =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch(fetchAllSpacesRequest());
 
-const fetchAllSpaces = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch(fetchAllSpacesRequest());
-
-  api(getState).get('/api/spaces').then(response => {
-    const next = getLinks(response).refs.find(link => link.rel === 'next');
-    dispatch(fetchAllSpacesSuccess(response.data, next ? next.uri : null));
-  }).catch(err => {
-    dispatch(fetchAllSpacesFail(err));
-  });
-};
+    api(getState)
+      .get("/api/spaces")
+      .then(async (response) => {
+        const next = response.next();
+        const data = await response.json();
+        console.log("Spaces API response:", data); // Add this
+        dispatch(fetchAllSpacesSuccess(data, next));
+      })
+      .catch((err) => {
+        dispatch(fetchAllSpacesFail(err));
+      });
+  };
 
 const fetchAllSpacesRequest = () => ({
   type: ALL_SPACES_FETCH_REQUEST,
@@ -79,124 +81,69 @@ const fetchAllSpacesFail = (error: unknown) => ({
   error,
 });
 
-const followSpace = (name: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  console.log('followSpace action creator called with name:', name);
-  dispatch(followSpaceRequest(name));
+const followSpace =
+  (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch(followSpaceRequest(id));
 
-  api(getState).post(`/api/spaces/${name}/follow`).then(({ data }) => {
-    console.log('followSpace API call successful, data:', data);
-    dispatch(followSpaceSuccess(name, data));
-  }).catch(err => {
-    console.error('followSpace API call failed, error:', err);
-    dispatch(followSpaceFail(name, err));
-  });
-};
+    api(getState)
+      .post(`/api/spaces/${id}/follow`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(followSpaceSuccess(id, data));
+      })
+      .catch((err) => {
+        dispatch(followSpaceFail(id, err));
+      });
+  };
 
-const followSpaceRequest = (name: string) => ({
+const followSpaceRequest = (id: string) => ({
   type: SPACE_FOLLOW_REQUEST,
-  name,
+  id,
 });
 
-const followSpaceSuccess = (name: string, space: APIEntity) => ({
+const followSpaceSuccess = (id: string, space: APIEntity) => ({
   type: SPACE_FOLLOW_SUCCESS,
-  name,
+  id,
   space,
 });
 
-const followSpaceFail = (name: string, error: unknown) => ({
+const followSpaceFail = (id: string, error: unknown) => ({
   type: SPACE_FOLLOW_FAIL,
-  name,
+  id,
   error,
 });
 
-const unfollowSpace = (name: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  console.log('unfollowSpace action creator called with name:', name);
-  dispatch(unfollowSpaceRequest(name));
+const unfollowSpace =
+  (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch(unfollowSpaceRequest(id));
 
-  api(getState).post(`/api/spaces/${name}/unfollow`).then(({ data }) => {
-    console.log('unfollowSpace API call successful, data:', data);
-    dispatch(unfollowSpaceSuccess(name, data));
-  }).catch(err => {
-    console.error('unfollowSpace API call failed, error:', err);
-    dispatch(unfollowSpaceFail(name, err));
-  });
-};
+    api(getState)
+      .post(`/api/spaces/${id}/unfollow`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(unfollowSpaceSuccess(id, data));
+      })
+      .catch((err) => {
+        dispatch(unfollowSpaceFail(id, err));
+      });
+  };
 
-const unfollowSpaceRequest = (name: string) => ({
+const unfollowSpaceRequest = (id: string) => ({
   type: SPACE_UNFOLLOW_REQUEST,
-  name,
+  id,
 });
 
-const unfollowSpaceSuccess = (name: string, space: APIEntity) => ({
+const unfollowSpaceSuccess = (id: string, space: APIEntity) => ({
   type: SPACE_UNFOLLOW_SUCCESS,
-  name,
+  id,
   space,
 });
 
-const unfollowSpaceFail = (name: string, error: unknown) => ({
+const unfollowSpaceFail = (id: string, error: unknown) => ({
   type: SPACE_UNFOLLOW_FAIL,
-  name,
+  id,
   error,
 });
-
-const fetchFollowedSpaces = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch(fetchFollowedSpacesRequest());
-
-  api(getState).get('/api/followed_spaces').then(response => {
-    const next = getLinks(response).refs.find(link => link.rel === 'next');
-    dispatch(fetchFollowedSpacesSuccess(response.data, next ? next.uri : null));
-  }).catch(err => {
-    dispatch(fetchFollowedSpacesFail(err));
-  });
-};
-
-const fetchFollowedSpacesRequest = () => ({
-  type: FOLLOWED_SPACES_FETCH_REQUEST,
-});
-
-const fetchFollowedSpacesSuccess = (followed_spaces: APIEntity[], next: string | null) => ({
-  type: FOLLOWED_SPACES_FETCH_SUCCESS,
-  followed_spaces,
-  next,
-});
-
-const fetchFollowedSpacesFail = (error: unknown) => ({
-  type: FOLLOWED_SPACES_FETCH_FAIL,
-  error,
-});
-
-const expandFollowedSpaces = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  const url = getState().followed_spaces.next;
-
-  if (url === null) {
-    return;
-  }
-
-  dispatch(expandFollowedSpacesRequest());
-
-  api(getState).get(url).then(response => {
-    const next = getLinks(response).refs.find(link => link.rel === 'next');
-    dispatch(expandFollowedSpacesSuccess(response.data, next ? next.uri : null));
-  }).catch(error => {
-    dispatch(expandFollowedSpacesFail(error));
-  });
-};
-
-const expandFollowedSpacesRequest = () => ({
-  type: FOLLOWED_SPACES_EXPAND_REQUEST,
-});
-
-const expandFollowedSpacesSuccess = (followed_spaces: APIEntity[], next: string | null) => ({
-  type: FOLLOWED_SPACES_EXPAND_SUCCESS,
-  followed_spaces,
-  next,
-});
-
-const expandFollowedSpacesFail = (error: unknown) => ({
-  type: FOLLOWED_SPACES_EXPAND_FAIL,
-  error,
-});
-
 
 export {
   SPACE_FETCH_REQUEST,
@@ -211,12 +158,6 @@ export {
   SPACE_UNFOLLOW_REQUEST,
   SPACE_UNFOLLOW_SUCCESS,
   SPACE_UNFOLLOW_FAIL,
-  FOLLOWED_SPACES_FETCH_REQUEST,
-  FOLLOWED_SPACES_FETCH_SUCCESS,
-  FOLLOWED_SPACES_FETCH_FAIL,
-  FOLLOWED_SPACES_EXPAND_REQUEST,
-  FOLLOWED_SPACES_EXPAND_SUCCESS,
-  FOLLOWED_SPACES_EXPAND_FAIL,
   fetchSpace,
   fetchSpaceRequest,
   fetchSpaceSuccess,
@@ -233,12 +174,4 @@ export {
   unfollowSpaceRequest,
   unfollowSpaceSuccess,
   unfollowSpaceFail,
-  fetchFollowedSpaces,
-  fetchFollowedSpacesRequest,
-  fetchFollowedSpacesSuccess,
-  fetchFollowedSpacesFail,
-  expandFollowedSpaces,
-  expandFollowedSpacesRequest,
-  expandFollowedSpacesSuccess,
-  expandFollowedSpacesFail,
 };

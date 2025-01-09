@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { patchMeSuccess } from "src/actions/me";
-import { useAppDispatch, useOwnAccount } from "src/hooks";
 import { useApi } from "src/hooks/useApi";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
 import toast from "src/toast";
 
-// TODO: Update to what we need
 export type IAccount = {
   avatar: string;
   avatar_static: string;
@@ -49,8 +49,8 @@ const useUpdateCredentials = () => {
 
       return { cachedAccount };
     },
-    onSuccess(response) {
-      dispatch(patchMeSuccess(response.data));
+    async onSuccess(response) {
+      dispatch(patchMeSuccess(await response.json()));
       toast.success("Chat Settings updated successfully");
     },
     onError(_error, _variables, context: any) {

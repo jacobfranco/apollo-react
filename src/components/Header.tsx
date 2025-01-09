@@ -1,5 +1,19 @@
+import atIcon from "@tabler/icons/outline/at.svg";
+import banIcon from "@tabler/icons/outline/ban.svg";
+import circleXIcon from "@tabler/icons/outline/circle-x.svg";
+import clipboardCopyIcon from "@tabler/icons/outline/clipboard-copy.svg";
+import dotsIcon from "@tabler/icons/outline/dots.svg";
+import flagIcon from "@tabler/icons/outline/flag.svg";
+import gavelIcon from "@tabler/icons/outline/gavel.svg";
+import mailIcon from "@tabler/icons/outline/mail.svg";
+import messagesIcon from "@tabler/icons/outline/messages.svg";
+import repeatIcon from "@tabler/icons/outline/repeat.svg";
+import searchIcon from "@tabler/icons/outline/search.svg";
+import settingsIcon from "@tabler/icons/outline/settings.svg";
+import uploadIcon from "@tabler/icons/outline/upload.svg";
+import userXIcon from "@tabler/icons/outline/user-x.svg";
+import userIcon from "@tabler/icons/outline/user.svg";
 import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { List as ImmutableList } from "immutable";
 import React from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
@@ -7,11 +21,9 @@ import { useHistory } from "react-router-dom";
 
 import {
   blockAccount,
-  pinAccount,
   removeFromFollowers,
   unblockAccount,
   unmuteAccount,
-  unpinAccount,
 } from "src/actions/accounts";
 import { mentionCompose, directCompose } from "src/actions/compose";
 import { openModal } from "src/actions/modals";
@@ -19,26 +31,27 @@ import { initMuteModal } from "src/actions/mutes";
 import { initReport, ReportableEntities } from "src/actions/reports";
 import { setSearchAccount } from "src/actions/search";
 import { getSettings } from "src/actions/settings";
-import { useFollow } from "src/api/hooks/useFollow";
-import DropdownMenu, { Menu } from "src/components/dropdown-menu";
-import {
-  ActionButton,
-  Badge,
-  HStack,
-  IconButton,
-  MovedNote,
-  StillImage,
-  VerificationBadge,
-} from "src/components";
-import { useAppDispatch, useAppSelector, useOwnAccount } from "src/hooks";
-import { normalizeAttachment } from "src/normalizers";
+import { HTTPError } from "src/api/HTTPError";
+import { useFollow } from "src/api/hooks/index";
+import Badge from "src/components/Badge";
+import DropdownMenu, { Menu } from "src/components/dropdown-menu/index";
+import StillImage from "src/components/StillImage";
+import Avatar from "src/components/Avatar";
+import HStack from "src/components/HStack";
+import IconButton from "src/components/IconButton";
+import VerificationBadge from "src/components/VerificationBadge";
+import MovedNote from "src/components/MovedNote";
+import ActionButton from "src/components/ActionButton";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
+import { normalizeAttachment } from "src/normalizers/index";
 import { ChatKeys, useChats } from "src/queries/chats";
 import { queryClient } from "src/queries/client";
-import { Account } from "src/schemas";
+import { Account } from "src/schemas/index";
 import toast from "src/toast";
 import { isDefaultHeader } from "src/utils/accounts";
 import copy from "src/utils/copy";
-import Avatar from "./Avatar";
 
 const messages = defineMessages({
   edit_profile: { id: "account.edit_profile", defaultMessage: "Edit profile" },
@@ -60,14 +73,23 @@ const messages = defineMessages({
   mute: { id: "account.mute", defaultMessage: "Mute @{name}" },
   report: { id: "account.report", defaultMessage: "Report @{name}" },
   copy: { id: "account.copy", defaultMessage: "Copy link to profile" },
+  npub: { id: "account.npub", defaultMessage: "Copy user npub" },
   share: { id: "account.share", defaultMessage: "Share @{name}'s profile" },
   media: { id: "account.media", defaultMessage: "Media" },
+  blockDomain: {
+    id: "account.block_domain",
+    defaultMessage: "Hide everything from {domain}",
+  },
+  unblockDomain: {
+    id: "account.unblock_domain",
+    defaultMessage: "Unhide {domain}",
+  },
   hideReposts: {
-    id: "account.hide_reblogs",
+    id: "account.hide_reposts",
     defaultMessage: "Hide reposts from @{name}",
   },
   showReposts: {
-    id: "account.show_reblogs",
+    id: "account.show_reposts",
     defaultMessage: "Show reposts from @{name}",
   },
   preferences: {
@@ -79,6 +101,10 @@ const messages = defineMessages({
     defaultMessage: "Follow requests",
   },
   blocks: { id: "navigation_bar.blocks", defaultMessage: "Blocks" },
+  domain_blocks: {
+    id: "navigation_bar.domain_blocks",
+    defaultMessage: "Domain blocks",
+  },
   mutes: { id: "navigation_bar.mutes", defaultMessage: "Mutes" },
   endorse: { id: "account.endorse", defaultMessage: "Feature on profile" },
   unendorse: {
@@ -107,6 +133,10 @@ const messages = defineMessages({
     defaultMessage: "Unfollow",
   },
   blockConfirm: { id: "confirmations.block.confirm", defaultMessage: "Block" },
+  blockDomainConfirm: {
+    id: "confirmations.domain_block.confirm",
+    defaultMessage: "Hide entire domain",
+  },
   blockAndReport: {
     id: "confirmations.block.block_and_report",
     defaultMessage: "Block & Report",
@@ -115,11 +145,23 @@ const messages = defineMessages({
     id: "confirmations.remove_from_followers.confirm",
     defaultMessage: "Remove",
   },
+  userEndorsed: {
+    id: "account.endorse.success",
+    defaultMessage: "You are now featuring @{username} on your profile",
+  },
+  userUnendorsed: {
+    id: "account.unendorse.success",
+    defaultMessage: "You are no longer featuring @{username}",
+  },
   profileExternal: {
     id: "account.profile_external",
     defaultMessage: "View profile on {domain}",
   },
   header: { id: "account.header.alt", defaultMessage: "Profile header" },
+  subscribeFeed: {
+    id: "account.rss_feed",
+    defaultMessage: "Subscribe to RSS feed",
+  },
 });
 
 interface IHeader {
@@ -138,12 +180,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
   const createAndNavigateToChat = useMutation({
     mutationFn: (accountId: string) => getOrCreateChatByAccountId(accountId),
-    onError: (error: AxiosError) => {
-      const data = error.response?.data as any;
-      toast.error(data?.error);
+    onError: (error) => {
+      if (error instanceof HTTPError) {
+        toast.showAlertForError(error);
+      }
     },
-    onSuccess: (response) => {
-      history.push(`/chats/${response.data.id}`);
+    onSuccess: async (response) => {
+      const data = await response.json();
+      history.push(`/chats/${data.id}`);
       queryClient.invalidateQueries({
         queryKey: ChatKeys.chatSearch(),
       });
@@ -154,13 +198,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
     return (
       <div className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6">
         <div>
-          <div className="relative h-32 w-full bg-gray-200 md:rounded-t-xl lg:h-48 dark:bg-gray-900/50" />
+          <div className="relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48" />
         </div>
 
         <div className="px-4 sm:px-6">
           <HStack alignItems="bottom" space={5} className="-mt-12">
             <div className="relative flex">
-              <div className="h-24 w-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800" />
+              <div className="size-24 rounded-5px bg-gray-400 ring-4 ring-white dark:ring-gray-800" />
             </div>
           </HStack>
         </div>
@@ -174,7 +218,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     } else {
       dispatch(
         openModal("CONFIRM", {
-          icon: require("@tabler/icons/outline/ban.svg"),
+          icon: banIcon,
           heading: (
             <FormattedMessage
               id="confirmations.block.heading"
@@ -192,7 +236,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
                 ),
               }}
             />
-          ),
+          ), // eslint-disable-line formatjs/no-literal-string-in-jsx
           confirm: intl.formatMessage(messages.blockConfirm),
           onConfirm: () => dispatch(blockAccount(account.id)),
           secondary: intl.formatMessage(messages.blockAndReport),
@@ -253,7 +297,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
                   ),
                 }}
               />
-            ),
+            ), // eslint-disable-line formatjs/no-literal-string-in-jsx
             confirm: intl.formatMessage(messages.removeFromFollowersConfirm),
             onConfirm: () => dispatch(removeFromFollowers(account.id)),
           })
@@ -274,7 +318,9 @@ const Header: React.FC<IHeader> = ({ account }) => {
       type: "image",
       url: account.avatar,
     });
-    dispatch(openModal("MEDIA", { media: ImmutableList.of(avatar), index: 0 }));
+    dispatch(
+      openModal("MEDIA", { media: ImmutableList.of(avatar).toJS(), index: 0 })
+    );
   };
 
   const handleAvatarClick: React.MouseEventHandler = (e) => {
@@ -289,7 +335,9 @@ const Header: React.FC<IHeader> = ({ account }) => {
       type: "image",
       url: account.header,
     });
-    dispatch(openModal("MEDIA", { media: ImmutableList.of(header), index: 0 }));
+    dispatch(
+      openModal("MEDIA", { media: ImmutableList.of(header).toJS(), index: 0 })
+    );
   };
 
   const handleHeaderClick: React.MouseEventHandler = (e) => {
@@ -325,14 +373,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.share, { name: account.username }),
         action: handleShare,
-        icon: require("@tabler/icons/outline/upload.svg"),
+        icon: uploadIcon,
       });
     }
 
     menu.push({
       text: intl.formatMessage(messages.copy),
       action: handleCopy,
-      icon: require("@tabler/icons/outline/clipboard-copy.svg"),
+      icon: clipboardCopyIcon,
     });
 
     if (!ownAccount) return menu;
@@ -343,7 +391,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
         { name: account.username }
       ),
       action: onSearch,
-      icon: require("@tabler/icons/outline/search.svg"),
+      icon: searchIcon,
     });
 
     if (menu.length) {
@@ -354,35 +402,34 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.edit_profile),
         to: "/settings/profile",
-        icon: require("@tabler/icons/outline/user.svg"),
+        icon: userIcon,
       });
       menu.push({
         text: intl.formatMessage(messages.preferences),
         to: "/settings",
-        icon: require("@tabler/icons/outline/settings.svg"),
+        icon: settingsIcon,
       });
       menu.push(null);
       menu.push({
         text: intl.formatMessage(messages.mutes),
         to: "/mutes",
-        icon: require("@tabler/icons/outline/circle-x.svg"),
+        icon: circleXIcon,
       });
       menu.push({
         text: intl.formatMessage(messages.blocks),
         to: "/blocks",
-        icon: require("@tabler/icons/outline/ban.svg"),
+        icon: banIcon,
       });
     } else {
       menu.push({
         text: intl.formatMessage(messages.mention, { name: account.username }),
         action: onMention,
-        icon: require("@tabler/icons/outline/at.svg"),
+        icon: atIcon,
       });
-
       menu.push({
         text: intl.formatMessage(messages.direct, { name: account.username }),
         action: onDirect,
-        icon: require("@tabler/icons/outline/mail.svg"),
+        icon: mailIcon,
       });
 
       if (account.relationship?.following) {
@@ -392,7 +439,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
               name: account.username,
             }),
             action: onRepostToggle,
-            icon: require("@tabler/icons/outline/repeat.svg"),
+            icon: repeatIcon,
           });
         } else {
           menu.push({
@@ -400,32 +447,30 @@ const Header: React.FC<IHeader> = ({ account }) => {
               name: account.username,
             }),
             action: onRepostToggle,
-            icon: require("@tabler/icons/outline/repeat.svg"),
+            icon: repeatIcon,
           });
         }
       }
 
       menu.push(null);
 
-      if (account.relationship?.followed_by) {
-        menu.push({
-          text: intl.formatMessage(messages.removeFromFollowers),
-          action: onRemoveFromFollowers,
-          icon: require("@tabler/icons/outline/user-x.svg"),
-        });
-      }
+      menu.push({
+        text: intl.formatMessage(messages.removeFromFollowers),
+        action: onRemoveFromFollowers,
+        icon: userXIcon,
+      });
 
       if (account.relationship?.muting) {
         menu.push({
           text: intl.formatMessage(messages.unmute, { name: account.username }),
           action: onMute,
-          icon: require("@tabler/icons/outline/circle-x.svg"),
+          icon: circleXIcon,
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.mute, { name: account.username }),
           action: onMute,
-          icon: require("@tabler/icons/outline/circle-x.svg"),
+          icon: circleXIcon,
         });
       }
 
@@ -435,20 +480,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
             name: account.username,
           }),
           action: onBlock,
-          icon: require("@tabler/icons/outline/ban.svg"),
-        });
-      } else {
-        menu.push({
-          text: intl.formatMessage(messages.block, { name: account.username }),
-          action: onBlock,
-          icon: require("@tabler/icons/outline/ban.svg"),
+          icon: banIcon,
         });
       }
 
       menu.push({
         text: intl.formatMessage(messages.report, { name: account.username }),
         action: onReport,
-        icon: require("@tabler/icons/outline/flag.svg"),
+        icon: flagIcon,
       });
     }
 
@@ -460,7 +499,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
           name: account.username,
         }),
         action: onModerate,
-        icon: require("@tabler/icons/outline/gavel.svg"),
+        icon: gavelIcon,
       });
     }
 
@@ -541,7 +580,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (account.accepts_chat_messages) {
       return (
         <IconButton
-          src={require("@tabler/icons/outline/messages.svg")}
+          src={messagesIcon}
           onClick={() => createAndNavigateToChat.mutate(account.id)}
           title={intl.formatMessage(messages.chat, { name: account.username })}
           theme="outlined"
@@ -565,7 +604,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
     return (
       <IconButton
-        src={require("@tabler/icons/outline/upload.svg")}
+        src={uploadIcon}
         onClick={handleShare}
         title={intl.formatMessage(messages.share, { name: account.username })}
         theme="outlined"
@@ -585,7 +624,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       )}
 
       <div>
-        <div className="relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 md:rounded-t-xl lg:h-48 dark:bg-gray-900/50">
+        <div className="relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48">
           {renderHeader()}
 
           <div className="absolute left-2 top-2">
@@ -607,12 +646,12 @@ const Header: React.FC<IHeader> = ({ account }) => {
               <Avatar
                 src={account.avatar}
                 size={96}
-                className="relative h-24 w-24 rounded-full bg-white ring-4 ring-white dark:bg-primary-900 dark:ring-primary-900"
+                className="relative size-24 rounded-5px bg-white ring-4 ring-primary-200 dark:bg-primary-900 dark:ring-secondary-800"
               />
             </a>
             {account.verified && (
               <div className="absolute bottom-0 right-0">
-                <VerificationBadge className="h-6 w-6 rounded-full bg-white ring-2 ring-white dark:bg-primary-900 dark:ring-primary-900" />
+                <VerificationBadge className="size-6 rounded-5px bg-primary-200 ring-3 ring-primary-200 dark:bg-secondary-800 dark:ring-secondary-800" />
               </div>
             )}
           </div>
@@ -625,7 +664,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
               {menu.length > 0 && (
                 <DropdownMenu items={menu} placement="bottom-end">
                   <IconButton
-                    src={require("@tabler/icons/outline/dots.svg")}
+                    src={dotsIcon}
                     theme="outlined"
                     className="px-2"
                     iconClassName="h-4 w-4"

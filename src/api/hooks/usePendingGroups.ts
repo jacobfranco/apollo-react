@@ -12,7 +12,7 @@ function usePendingGroups() {
     [Entities.GROUPS, account?.id!, "pending"],
     () =>
       api.get("/api/groups", {
-        params: {
+        searchParams: {
           pending: true,
         },
       }),

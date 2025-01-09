@@ -6,6 +6,7 @@ import {
   TrendsPanel,
   SignUpPanel,
   CtaBanner,
+  TrendingSpacesPanel,
 } from "src/features/AsyncComponents";
 import { useAppSelector } from "src/hooks";
 
@@ -32,6 +33,7 @@ const StatusPage: React.FC<IStatusPage> = ({ children }) => {
       <Layout.Aside>
         {!me && <SignUpPanel />}
         <TrendsPanel limit={5} />
+        <TrendingSpacesPanel limit={3} />
         {me && <WhoToFollowPanel limit={3} />}
         <LinkFooter />
       </Layout.Aside>

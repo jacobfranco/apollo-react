@@ -1,14 +1,21 @@
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import calendarStatsIcon from "@tabler/icons/outline/calendar-stats.svg";
+import { defineMessages, useIntl } from "react-intl";
 
-import { addSchedule, removeSchedule } from 'src/actions/compose';
-import { useAppDispatch, useCompose } from 'src/hooks';
+import { addSchedule, removeSchedule } from "src/actions/compose";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useCompose } from "src/hooks/useCompose";
 
-import ComposeFormButton from './ComposeFormButton';
+import ComposeFormButton from "./ComposeFormButton";
 
 const messages = defineMessages({
-  add_schedule: { id: 'schedule_button.add_schedule', defaultMessage: 'Schedule post for later' },
-  remove_schedule: { id: 'schedule_button.remove_schedule', defaultMessage: 'Post immediately' },
+  add_schedule: {
+    id: "schedule_button.add_schedule",
+    defaultMessage: "Schedule post for later",
+  },
+  remove_schedule: {
+    id: "schedule_button.remove_schedule",
+    defaultMessage: "Post immediately",
+  },
 });
 
 interface IScheduleButton {
@@ -39,8 +46,10 @@ const ScheduleButton: React.FC<IScheduleButton> = ({ composeId, disabled }) => {
 
   return (
     <ComposeFormButton
-      icon={require('@tabler/icons/outline/calendar-stats.svg')}
-      title={intl.formatMessage(active ? messages.remove_schedule : messages.add_schedule)}
+      icon={calendarStatsIcon}
+      title={intl.formatMessage(
+        active ? messages.remove_schedule : messages.add_schedule
+      )}
       active={active}
       disabled={disabled}
       onClick={handleClick}

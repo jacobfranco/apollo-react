@@ -1,32 +1,40 @@
-import api from '../api';
+import api from "../api";
 
-import type { AppDispatch, RootState } from 'src/store';
-import type { APIEntity } from 'src/types/entities';
+import type { AppDispatch, RootState } from "src/store";
+import type { APIEntity } from "src/types/entities";
 
-const TRENDS_FETCH_REQUEST = 'TRENDS_FETCH_REQUEST';
-const TRENDS_FETCH_SUCCESS = 'TRENDS_FETCH_SUCCESS';
-const TRENDS_FETCH_FAIL = 'TRENDS_FETCH_FAIL';
+const TRENDS_FETCH_REQUEST = "TRENDS_FETCH_REQUEST";
+const TRENDS_FETCH_SUCCESS = "TRENDS_FETCH_SUCCESS";
+const TRENDS_FETCH_FAIL = "TRENDS_FETCH_FAIL";
 
-const TRENDING_SPACES_FETCH_REQUEST = 'TRENDING_SPACES_FETCH_REQUEST';
-const TRENDING_SPACES_FETCH_SUCCESS = 'TRENDING_SPACES_FETCH_SUCCESS';
-const TRENDING_SPACES_FETCH_FAIL = 'TRENDING_SPACES_FETCH_FAIL';
+const TRENDING_SPACES_FETCH_REQUEST = "TRENDING_SPACES_FETCH_REQUEST";
+const TRENDING_SPACES_FETCH_SUCCESS = "TRENDING_SPACES_FETCH_SUCCESS";
+const TRENDING_SPACES_FETCH_FAIL = "TRENDING_SPACES_FETCH_FAIL";
 
-const fetchTrends = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchTrends =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchTrendsRequest());
 
-    api(getState).get('/api/trends').then(response => {
-      dispatch(fetchTrendsSuccess(response.data));
-    }).catch(error => dispatch(fetchTrendsFail(error)));
+    api(getState)
+      .get("/api/trends")
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(fetchTrendsSuccess(data));
+      })
+      .catch((error) => dispatch(fetchTrendsFail(error)));
   };
 
-const fetchTrendingSpaces = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+const fetchTrendingSpaces =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(fetchTrendingSpacesRequest());
 
-    api(getState).get('/api/trends/spaces').then(response => {
-      dispatch(fetchTrendingSpacesSuccess(response.data));
-    }).catch(error => dispatch(fetchTrendingSpacesFail(error)));
+    api(getState)
+      .get("/api/trends/spaces")
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(fetchTrendsSuccess(data));
+      })
+      .catch((error) => dispatch(fetchTrendsFail(error)));
   };
 
 const fetchTrendsRequest = () => ({
@@ -79,5 +87,5 @@ export {
   fetchTrendingSpaces,
   fetchTrendingSpacesRequest,
   fetchTrendingSpacesSuccess,
-  fetchTrendingSpacesFail
+  fetchTrendingSpacesFail,
 };

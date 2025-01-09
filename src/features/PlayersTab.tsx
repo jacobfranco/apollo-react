@@ -38,17 +38,25 @@ const PlayersTab: React.FC = () => {
 
   // Track whether initial fetch has been attempted
   const [hasInitiatedFetch, setHasInitiatedFetch] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Improved data fetching logic
   useEffect(() => {
     if (!esportName || hasInitiatedFetch) return;
 
     const fetchData = async () => {
+      setIsInitialLoad(true);
+      setIsLoading(true);
       setHasInitiatedFetch(true);
-      await Promise.all([
-        dispatch(fetchPlayers(esportName)),
-        dispatch(fetchTeams(esportName)),
-      ]);
+      try {
+        await Promise.all([
+          dispatch(fetchPlayers(esportName)),
+          dispatch(fetchTeams(esportName)),
+        ]);
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
     };
 
     fetchData();
@@ -169,13 +177,11 @@ const PlayersTab: React.FC = () => {
     }));
   }, []);
 
-  // Enhanced loading state handling
-  const isLoading = loadingPlayers || loadingTeams;
   const hasNoData = !isLoading && players.length === 0;
   const hasError = Boolean(errorPlayers);
 
   if (isLoading) {
-    return <Spinner withText={false} />;
+    return <Spinner />;
   }
 
   if (hasError) {
@@ -190,6 +196,22 @@ const PlayersTab: React.FC = () => {
 
   const sortedPlayers = getSortedPlayers(playersWithComputedValues);
   const gridTemplateColumns = `100px repeat(${columns.length - 1}, 1fr)`;
+
+  if (isInitialLoad) {
+    return (
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="space-y-3 mt-4">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -1,53 +1,54 @@
-import { useMutation } from '@tanstack/react-query';
-import clsx from 'clsx';
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable';
-import escape from 'lodash/escape';
-import React, { useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import checkIcon from "@tabler/icons/outline/check.svg";
+import copyIcon from "@tabler/icons/outline/copy.svg";
+import dotsIcon from "@tabler/icons/outline/dots.svg";
+import flagIcon from "@tabler/icons/outline/flag.svg";
+import moodSmileIcon from "@tabler/icons/outline/mood-smile.svg";
+import trashIcon from "@tabler/icons/outline/trash.svg";
+import { useMutation } from "@tanstack/react-query";
+import clsx from "clsx";
+import { escape } from "es-toolkit";
+import { useMemo, useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
 
-import { openModal } from 'src/actions/modals';
-import { initReport, ReportableEntities } from 'src/actions/reports';
-import DropdownMenu from 'src/components/dropdown-menu';
-import { HStack, Stack, Text } from 'src/components';
-import emojify from 'src/features/emoji';
-import { MediaGallery } from 'src/features/AsyncComponents';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { ChatKeys, IChat, useChatActions } from 'src/queries/chats';
-import { queryClient } from 'src/queries/client';
-import { stripHTML } from 'src/utils/html';
-import { onlyEmoji } from 'src/utils/rich-content';
+import { openModal } from "src/actions/modals";
+import { initReport, ReportableEntities } from "src/actions/reports";
+import DropdownMenu from "src/components/dropdown-menu/index";
+import HStack from "src/components/HStack";
+import Icon from "src/components/Icon";
+import Stack from "src/components/Stack";
+import Text from "src/components/Text";
+import { MediaGallery } from "src/features/AsyncComponents";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { ChatKeys, IChat, useChatActions } from "src/queries/chats";
+import { queryClient } from "src/queries/client";
+import { Attachment } from "src/schemas/index";
+import { htmlToPlaintext } from "src/utils/html";
 
-import ChatMessageReaction from './ChatMessageReaction';
-import ChatMessageReactionWrapper from './ChatMessageReactionWrapper';
+import ChatMessageReactionWrapper from "./ChatMessageReactionWrapper";
+import ChatMessageReaction from "./ChatMessageReaction";
 
-import type { Menu as IMenu } from 'src/components/dropdown-menu';
-import type { ChatMessage as ChatMessageEntity } from 'src/types/entities';
-import Icon from 'src/components/Icon';
+import type { Menu as IMenu } from "src/components/dropdown-menu/index";
+import type { ChatMessage as ChatMessageEntity } from "src/types/entities";
 
 const messages = defineMessages({
-  copy: { id: 'chats.actions.copy', defaultMessage: 'Copy' },
-  delete: { id: 'chats.actions.delete', defaultMessage: 'Delete for both' },
-  deleteForMe: { id: 'chats.actions.delete_for_me', defaultMessage: 'Delete for me' },
-  more: { id: 'chats.actions.more', defaultMessage: 'More' },
-  report: { id: 'chats.actions.report', defaultMessage: 'Report' },
+  copy: { id: "chats.actions.copy", defaultMessage: "Copy" },
+  delete: { id: "chats.actions.delete", defaultMessage: "Delete for both" },
+  deleteForMe: {
+    id: "chats.actions.delete_for_me",
+    defaultMessage: "Delete for me",
+  },
+  more: { id: "chats.actions.more", defaultMessage: "More" },
+  report: { id: "chats.actions.report", defaultMessage: "Report" },
 });
 
-const BIG_EMOJI_LIMIT = 3;
-
-const makeEmojiMap = (record: any) => record.get('emojis', ImmutableList()).reduce((map: ImmutableMap<string, any>, emoji: ImmutableMap<string, any>) => {
-  return map.set(`:${emoji.get('shortcode')}:`, emoji);
-}, ImmutableMap());
-
 const parsePendingContent = (content: string) => {
-  return escape(content).replace(/(?:\r\n|\r|\n)/g, '<br>');
+  return escape(content).replace(/(?:\r\n|\r|\n)/g, "<br>");
 };
 
 const parseContent = (chatMessage: ChatMessageEntity) => {
-  const content = chatMessage.content || '';
-  const pending = chatMessage.pending;
-  const deleting = chatMessage.deleting;
-  const formatted = (pending && !deleting) ? parsePendingContent(content) : content;
-  return emojify(formatted);
+  const { content, pending, deleting } = chatMessage;
+  return pending && !deleting ? parsePendingContent(content) : content;
 };
 
 interface IChatMessage {
@@ -62,9 +63,12 @@ const ChatMessage = (props: IChatMessage) => {
   const intl = useIntl();
 
   const me = useAppSelector((state) => state.me);
-  const { createReaction, deleteChatMessage, deleteReaction } = useChatActions(chat.id);
+  const { createReaction, deleteChatMessage, deleteReaction } = useChatActions(
+    chat.id
+  );
 
-  const [isReactionSelectorOpen, setIsReactionSelectorOpen] = useState<boolean>(false);
+  const [isReactionSelectorOpen, setIsReactionSelectorOpen] =
+    useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const handleDeleteMessage = useMutation({
@@ -77,20 +81,19 @@ const ChatMessage = (props: IChatMessage) => {
   });
 
   const content = parseContent(chatMessage);
-  const lastReadMessageDateString = chat.latest_read_message_by_account?.find((latest) => latest.id === chat.account.id)?.date;
-  const lastReadMessageTimestamp = lastReadMessageDateString ? new Date(lastReadMessageDateString) : null;
+  const lastReadMessageDateString = chat.latest_read_message_by_account?.find(
+    (latest) => latest.id === chat.account.id
+  )?.date;
+  const lastReadMessageTimestamp = lastReadMessageDateString
+    ? new Date(lastReadMessageDateString)
+    : null;
   const isMyMessage = chatMessage.account_id === me;
 
   // did this occur before this time?
-  const isRead = isMyMessage
-    && lastReadMessageTimestamp
-    && lastReadMessageTimestamp >= new Date(chatMessage.created_at);
-
-  const isOnlyEmoji = useMemo(() => {
-    const hiddenEl = document.createElement('div');
-    hiddenEl.innerHTML = content;
-    return onlyEmoji(hiddenEl, BIG_EMOJI_LIMIT, false);
-  }, []);
+  const isRead =
+    isMyMessage &&
+    lastReadMessageTimestamp &&
+    lastReadMessageTimestamp >= new Date(chatMessage.created_at);
 
   const emojiReactionRows = useMemo(() => {
     if (!chatMessage.emoji_reactions) {
@@ -98,13 +101,16 @@ const ChatMessage = (props: IChatMessage) => {
     }
 
     return chatMessage.emoji_reactions.reduce((rows: any, key: any, index) => {
-      return (index % 4 === 0 ? rows.push([key])
-        : rows[rows.length - 1].push(key)) && rows;
+      return (
+        (index % 4 === 0
+          ? rows.push([key])
+          : rows[rows.length - 1].push(key)) && rows
+      );
     }, []);
   }, [chatMessage.emoji_reactions]);
 
   const onOpenMedia = (media: any, index: number) => {
-    dispatch(openModal('MEDIA', { media, index }));
+    dispatch(openModal("MEDIA", { media, index }));
   };
 
   const maybeRenderMedia = (chatMessage: ChatMessageEntity) => {
@@ -113,10 +119,10 @@ const ChatMessage = (props: IChatMessage) => {
     return (
       <MediaGallery
         className={clsx({
-          'rounded-br-sm': isMyMessage && content,
-          'rounded-bl-sm': !isMyMessage && content,
+          "rounded-br-sm": isMyMessage && content,
+          "rounded-bl-sm": !isMyMessage && content,
         })}
-        media={chatMessage.media_attachments}
+        media={chatMessage.media_attachments.toJS() as unknown as Attachment[]}
         onOpenMedia={onOpenMedia}
         visible
       />
@@ -125,7 +131,7 @@ const ChatMessage = (props: IChatMessage) => {
 
   const handleCopyText = (chatMessage: ChatMessageEntity) => {
     if (navigator.clipboard) {
-      const text = stripHTML(chatMessage.content);
+      const text = htmlToPlaintext(chatMessage.content);
       navigator.clipboard.writeText(text);
     }
   };
@@ -133,21 +139,21 @@ const ChatMessage = (props: IChatMessage) => {
     if (!c) return;
     const links = c.querySelectorAll('a[rel="ugc"]');
 
-    links.forEach(link => {
-      link.classList.add('chat-link');
-      link.setAttribute('rel', 'ugc nofollow noopener');
-      link.setAttribute('target', '_blank');
+    links.forEach((link) => {
+      link.classList.add("chat-link");
+      link.setAttribute("rel", "ugc nofollow noopener");
+      link.setAttribute("target", "_blank");
     });
   };
 
   const getFormattedTimestamp = (chatMessage: ChatMessageEntity) => {
     return intl.formatDate(new Date(chatMessage.created_at), {
       hour12: false,
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -158,7 +164,7 @@ const ChatMessage = (props: IChatMessage) => {
       menu.push({
         text: intl.formatMessage(messages.copy),
         action: () => handleCopyText(chatMessage),
-        icon: require('@tabler/icons/outline/copy.svg'),
+        icon: copyIcon,
       });
     }
 
@@ -166,19 +172,25 @@ const ChatMessage = (props: IChatMessage) => {
       menu.push({
         text: intl.formatMessage(messages.delete),
         action: () => handleDeleteMessage.mutate(chatMessage.id),
-        icon: require('@tabler/icons/outline/trash.svg'),
+        icon: trashIcon,
         destructive: true,
       });
     } else {
       menu.push({
         text: intl.formatMessage(messages.report),
-        action: () => dispatch(initReport(ReportableEntities.CHAT_MESSAGE, chat.account, { chatMessage })),
-        icon: require('@tabler/icons/outline/flag.svg'),
+        action: () =>
+          dispatch(
+            initReport(ReportableEntities.CHAT_MESSAGE, chat.account, {
+              chatMessage,
+            })
+          ),
+        icon: flagIcon,
       });
+
       menu.push({
         text: intl.formatMessage(messages.deleteForMe),
         action: () => handleDeleteMessage.mutate(chatMessage.id),
-        icon: require('@tabler/icons/outline/trash.svg'),
+        icon: trashIcon,
         destructive: true,
       });
     }
@@ -188,39 +200,42 @@ const ChatMessage = (props: IChatMessage) => {
 
   return (
     <div
-      className={
-        clsx({
-          'group relative px-4 py-2 hover:bg-gray-200/40 dark:hover:bg-gray-800/40': true,
-          'bg-gray-200/40 dark:bg-gray-800/40': isMenuOpen || isReactionSelectorOpen,
-        })
-      }
-      data-testid='chat-message'
+      className={clsx({
+        "group relative px-4 py-2 hover:bg-gray-200/40 dark:hover:bg-gray-800/40":
+          true,
+        "bg-gray-200/40 dark:bg-gray-800/40":
+          isMenuOpen || isReactionSelectorOpen,
+      })}
+      data-testid="chat-message"
     >
       <div
-        className={
-          clsx({
-            'p-1 flex items-center space-x-0.5 z-10 absolute opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 rounded-md shadow-lg bg-white dark:bg-gray-900 dark:ring-2 dark:ring-primary-700': true,
-            'top-2 right-2': !isMyMessage,
-            'top-2 left-2': isMyMessage,
-            '!opacity-100': isMenuOpen || isReactionSelectorOpen,
-          })
-        }
+        className={clsx({
+          "p-1 flex items-center space-x-0.5 z-10 absolute opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 rounded-md shadow-lg bg-white dark:bg-gray-900 dark:ring-2 dark:ring-primary-700":
+            true,
+          "top-2 right-2": !isMyMessage,
+          "top-2 left-2": isMyMessage,
+          "!opacity-100": isMenuOpen || isReactionSelectorOpen,
+        })}
       >
         <ChatMessageReactionWrapper
           onOpen={setIsReactionSelectorOpen}
-          onSelect={(emoji) => createReaction.mutate({ emoji, messageId: chatMessage.id, chatMessage })}
+          onSelect={(emoji) =>
+            createReaction.mutate({
+              emoji,
+              messageId: chatMessage.id,
+              chatMessage,
+            })
+          }
         >
           <button
             title={intl.formatMessage(messages.more)}
             className={clsx({
-              'p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0': true,
-              '!text-gray-700 dark:!text-gray-500': isReactionSelectorOpen,
+              "p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0":
+                true,
+              "!text-gray-700 dark:!text-gray-500": isReactionSelectorOpen,
             })}
           >
-            <Icon
-              src={require('@tabler/icons/outline/mood-smile.svg')}
-              className='h-4 w-4'
-            />
+            <Icon src={moodSmileIcon} className="size-4" />
           </button>
         </ChatMessageReactionWrapper>
 
@@ -233,15 +248,13 @@ const ChatMessage = (props: IChatMessage) => {
             <button
               title={intl.formatMessage(messages.more)}
               className={clsx({
-                'p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0': true,
-                '!text-gray-700 dark:!text-gray-500': isMenuOpen,
+                "p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md text-gray-600 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-500 focus:text-gray-700 dark:focus:text-gray-500 focus:ring-0":
+                  true,
+                "!text-gray-700 dark:!text-gray-500": isMenuOpen,
               })}
-              data-testid='chat-message-menu'
+              data-testid="chat-message-menu"
             >
-              <Icon
-                src={require('@tabler/icons/outline/dots.svg')}
-                className='h-4 w-4'
-              />
+              <Icon src={dotsIcon} className="size-4" />
             </button>
           </DropdownMenu>
         )}
@@ -250,51 +263,54 @@ const ChatMessage = (props: IChatMessage) => {
       <Stack
         space={1.5}
         className={clsx({
-          'ml-auto': isMyMessage,
+          "ml-auto": isMyMessage,
         })}
       >
         <HStack
-          alignItems='center'
-          justifyContent={isMyMessage ? 'end' : 'start'}
+          alignItems="center"
+          justifyContent={isMyMessage ? "end" : "start"}
           className={clsx({
-            'opacity-50': chatMessage.pending,
+            "opacity-50": chatMessage.pending,
           })}
         >
           <Stack
             space={0.5}
             className={clsx({
-              'max-w-[85%]': true,
-              'flex-1': !!chatMessage.media_attachments.size,
-              'order-3': isMyMessage,
-              'order-1': !isMyMessage,
+              "max-w-[85%]": true,
+              "flex-1": !!chatMessage.media_attachments.size,
+              "order-3": isMyMessage,
+              "order-1": !isMyMessage,
             })}
-            alignItems={isMyMessage ? 'end' : 'start'}
+            alignItems={isMyMessage ? "end" : "start"}
           >
             {maybeRenderMedia(chatMessage)}
 
             {content && (
-              <HStack alignItems='bottom' className='max-w-full'>
+              <HStack alignItems="bottom" className="max-w-full">
                 <div
                   title={getFormattedTimestamp(chatMessage)}
-                  className={
-                    clsx({
-                      'text-ellipsis break-words relative rounded-md py-2 px-3 max-w-full space-y-2 [&_.mention]:underline': true,
-                      'rounded-tr-sm': (!!chatMessage.media_attachments.size) && isMyMessage,
-                      'rounded-tl-sm': (!!chatMessage.media_attachments.size) && !isMyMessage,
-                      '[&_.mention]:text-primary-600 dark:[&_.mention]:text-accent-blue': !isMyMessage,
-                      '[&_.mention]:text-white dark:[&_.mention]:white': isMyMessage,
-                      'bg-primary-500 text-white': isMyMessage,
-                      'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100': !isMyMessage,
-                      '!bg-transparent !p-0 emoji-lg': isOnlyEmoji,
-                    })
-                  }
+                  className={clsx({
+                    "text-ellipsis break-words relative rounded-md py-2 px-3 max-w-full space-y-2 [&_.mention]:underline":
+                      true,
+                    "rounded-tr-sm":
+                      !!chatMessage.media_attachments.size && isMyMessage,
+                    "rounded-tl-sm":
+                      !!chatMessage.media_attachments.size && !isMyMessage,
+                    "[&_.mention]:text-primary-600 dark:[&_.mention]:text-accent-blue":
+                      !isMyMessage,
+                    "[&_.mention]:text-white dark:[&_.mention]:white":
+                      isMyMessage,
+                    "bg-primary-500 text-white": isMyMessage,
+                    "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100":
+                      !isMyMessage,
+                  })}
                   ref={setBubbleRef}
                   tabIndex={0}
                 >
                   <Text
-                    size='sm'
-                    theme='inherit'
-                    className='break-word-nested'
+                    size="sm"
+                    theme="inherit"
+                    className="break-word-nested"
                     dangerouslySetInnerHTML={{ __html: content }}
                   />
                 </div>
@@ -303,30 +319,39 @@ const ChatMessage = (props: IChatMessage) => {
           </Stack>
         </HStack>
 
-        {(chatMessage.emoji_reactions?.length) ? (
+        {chatMessage.emoji_reactions?.length ? (
           <div
             className={clsx({
-              'space-y-1': true,
-              'ml-auto': isMyMessage,
-              'mr-auto': !isMyMessage,
+              "space-y-1": true,
+              "ml-auto": isMyMessage,
+              "mr-auto": !isMyMessage,
             })}
           >
             {emojiReactionRows?.map((emojiReactionRow: any, idx: number) => (
               <HStack
                 key={idx}
-                className={
-                  clsx({
-                    'flex items-center gap-1': true,
-                    'flex-row-reverse': isMyMessage,
-                  })
-                }
+                className={clsx({
+                  "flex items-center gap-1": true,
+                  "flex-row-reverse": isMyMessage,
+                })}
               >
                 {emojiReactionRow.map((emojiReaction: any, idx: number) => (
                   <ChatMessageReaction
                     key={idx}
                     emojiReaction={emojiReaction}
-                    onAddReaction={(emoji) => createReaction.mutate({ emoji, messageId: chatMessage.id, chatMessage })}
-                    onRemoveReaction={(emoji) => deleteReaction.mutate({ emoji, messageId: chatMessage.id })}
+                    onAddReaction={(emoji) =>
+                      createReaction.mutate({
+                        emoji,
+                        messageId: chatMessage.id,
+                        chatMessage,
+                      })
+                    }
+                    onRemoveReaction={(emoji) =>
+                      deleteReaction.mutate({
+                        emoji,
+                        messageId: chatMessage.id,
+                      })
+                    }
                   />
                 ))}
               </HStack>
@@ -335,42 +360,32 @@ const ChatMessage = (props: IChatMessage) => {
         ) : null}
 
         <HStack
-          alignItems='center'
+          alignItems="center"
           space={2}
           className={clsx({
-            'ml-auto': isMyMessage,
+            "ml-auto": isMyMessage,
           })}
         >
           <div
             className={clsx({
-              'text-right': isMyMessage,
-              'order-2': !isMyMessage,
+              "text-right": isMyMessage,
+              "order-2": !isMyMessage,
             })}
           >
-            <span className='flex items-center space-x-1.5'>
-              <Text theme='muted' size='xs'>
+            <span className="flex items-center space-x-1.5">
+              <Text theme="muted" size="xs">
                 {intl.formatTime(chatMessage.created_at)}
               </Text>
 
-              <>
-                {isRead ? (
-                  <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-primary-500 p-0.5 text-white dark:border-primary-400 dark:bg-primary-400 dark:text-primary-900'>
-                    <Icon
-                      src={require('@tabler/icons/outline/check.svg')}
-                      strokeWidth={3}
-                      className='h-2.5 w-2.5'
-                    />
-                  </span>
-                ) : (
-                  <span className='flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-transparent p-0.5 text-primary-500 dark:border-primary-400 dark:text-primary-400'>
-                    <Icon
-                      src={require('@tabler/icons/outline/check.svg')}
-                      strokeWidth={3}
-                      className='h-2.5 w-2.5'
-                    />
-                  </span>
-                )}
-              </>
+              {isRead ? (
+                <span className="flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-primary-500 p-0.5 text-white dark:border-primary-400 dark:bg-primary-400 dark:text-primary-900">
+                  <Icon src={checkIcon} strokeWidth={3} className="size-2.5" />
+                </span>
+              ) : (
+                <span className="flex flex-col items-center justify-center rounded-full border border-solid border-primary-500 bg-transparent p-0.5 text-primary-500 dark:border-primary-400 dark:text-primary-400">
+                  <Icon src={checkIcon} strokeWidth={3} className="size-2.5" />
+                </span>
+              )}
             </span>
           </div>
         </HStack>

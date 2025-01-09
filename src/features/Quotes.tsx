@@ -1,5 +1,5 @@
 import { OrderedSet as ImmutableOrderedSet } from "immutable";
-import debounce from "lodash/debounce";
+import { debounce } from "es-toolkit";
 import React from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
@@ -21,7 +21,7 @@ const handleLoadMore = debounce(
   (statusId: string, dispatch: React.Dispatch<any>) =>
     dispatch(expandStatusQuotes(statusId)),
   300,
-  { leading: true }
+  { edges: ["leading"] }
 );
 
 const Quotes: React.FC = () => {

@@ -1,31 +1,37 @@
-import { AxiosError } from 'axios';
-import clsx from 'clsx';
-import React, { MutableRefObject, useEffect, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import clsx from "clsx";
+import React, { MutableRefObject, useEffect, useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
 
-import { uploadMedia } from 'src/actions/media';
-import { Stack } from 'src/components';
-import { useAppDispatch, useAppSelector } from 'src/hooks';
-import { normalizeAttachment } from 'src/normalizers';
-import { IChat, useChatActions } from 'src/queries/chats';
-import toast from 'src/toast';
+import { uploadMedia } from "src/actions/media";
+import { Stack } from "src/components";
+import { useAppDispatch, useAppSelector } from "src/hooks";
+import { normalizeAttachment } from "src/normalizers";
+import { IChat, useChatActions } from "src/queries/chats";
+import toast from "src/toast";
 
-import ChatComposer from './ChatComposer';
-import ChatMessageList from './ChatMessageList';
+import ChatComposer from "./ChatComposer";
+import ChatMessageList from "./ChatMessageList";
 
-import type { Attachment } from 'src/types/entities';
+import type { Attachment } from "src/types/entities";
+import { HTTPError } from "src/api/HTTPError";
 
-const fileKeyGen = (): number => Math.floor((Math.random() * 0x10000));
+const fileKeyGen = (): number => Math.floor(Math.random() * 0x10000);
 
 const messages = defineMessages({
-  failedToSend: { id: 'chat.failed_to_send', defaultMessage: 'Message failed to send.' },
-  uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
+  failedToSend: {
+    id: "chat.failed_to_send",
+    defaultMessage: "Message failed to send.",
+  },
+  uploadErrorLimit: {
+    id: "upload_error.limit",
+    defaultMessage: "File upload limit exceeded.",
+  },
 });
 
 interface ChatInterface {
-  chat: IChat
-  inputRef?: MutableRefObject<HTMLTextAreaElement | null>
-  className?: string
+  chat: IChat;
+  inputRef?: MutableRefObject<HTMLTextAreaElement | null>;
+  className?: string;
 }
 
 /**
@@ -35,11 +41,14 @@ interface ChatInterface {
  * beyond one line
  */
 const clearNativeInputValue = (element: HTMLTextAreaElement) => {
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+    window.HTMLTextAreaElement.prototype,
+    "value"
+  )?.set;
   if (nativeInputValueSetter) {
-    nativeInputValueSetter.call(element, '');
+    nativeInputValueSetter.call(element, "");
 
-    const ev2 = new Event('input', { bubbles: true });
+    const ev2 = new Event("input", { bubbles: true });
     element.dispatchEvent(ev2);
   }
 };
@@ -55,7 +64,7 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
   const { createChatMessage, acceptChat } = useChatActions(chat.id);
   const attachmentLimit = 4; // TODO: Change if necessary
 
-  const [content, setContent] = useState<string>('');
+  const [content, setContent] = useState<string>("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploadCount, setUploadCount] = useState(0);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -66,16 +75,23 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
   const isSubmitDisabled = content.length === 0 && attachments.length === 0;
 
   const submitMessage = () => {
-    createChatMessage.mutate({ chatId: chat.id, content, mediaIds: attachments.map(a => a.id) }, {
-      onSuccess: () => {
-        setErrorMessage(undefined);
-      },
-      onError: (error: AxiosError<{ error: string }>, _variables, context) => {
-        const message = error.response?.data?.error;
-        setErrorMessage(message || intl.formatMessage(messages.failedToSend));
-        setContent(context.prevContent as string);
-      },
-    });
+    createChatMessage.mutate(
+      { chatId: chat.id, content, mediaIds: attachments.map((a) => a.id) },
+      {
+        onSuccess: () => {
+          setErrorMessage(undefined);
+        },
+        onError: async (error: unknown, _variables, context) => {
+          if (error instanceof HTTPError) {
+            const data = await error.response.error();
+            setErrorMessage(
+              data?.error || intl.formatMessage(messages.failedToSend)
+            );
+            setContent(context.prevContent as string);
+          }
+        },
+      }
+    );
 
     clearState();
   };
@@ -84,7 +100,7 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
     if (inputRef?.current) {
       clearNativeInputValue(inputRef.current);
     }
-    setContent('');
+    setContent("");
     setAttachments([]);
     setUploadCount(0);
     setUploadProgress(0);
@@ -102,26 +118,32 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
     }
   };
 
-  const insertLine = () => setContent(content + '\n');
+  const insertLine = () => setContent(content + "\n");
 
   const handleKeyDown: React.KeyboardEventHandler = (event) => {
     markRead();
 
-    if (event.key === 'Enter' && event.shiftKey) {
+    if (event.key === "Enter" && event.shiftKey) {
       event.preventDefault();
       insertLine();
-    } else if (event.key === 'Enter') {
+    } else if (event.key === "Enter") {
       event.preventDefault();
       sendMessage();
     }
   };
 
-  const handleContentChange: React.ChangeEventHandler<HTMLTextAreaElement> = (event) => {
+  const handleContentChange: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    event
+  ) => {
     setContent(event.target.value);
   };
 
   const handlePaste: React.ClipboardEventHandler<HTMLTextAreaElement> = (e) => {
-    if (isSubmitDisabled && e.clipboardData && e.clipboardData.files.length === 1) {
+    if (
+      isSubmitDisabled &&
+      e.clipboardData &&
+      e.clipboardData.files.length === 1
+    ) {
       handleFiles(e.clipboardData.files);
     }
   };
@@ -153,11 +175,12 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
 
     setUploadCount(files.length);
 
-    const promises = Array.from(files).map(async(file) => {
+    const promises = Array.from(files).map(async (file) => {
       const data = new FormData();
-      data.append('file', file);
+      data.append("file", file);
       const response = await dispatch(uploadMedia(data, onUploadProgress));
-      return normalizeAttachment(response.data);
+      const json = await response.json();
+      return normalizeAttachment(json);
     });
 
     return Promise.all(promises)
@@ -175,8 +198,11 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
   }, [chat.id, inputRef?.current]);
 
   return (
-    <Stack className={clsx('flex grow overflow-hidden', className)} onMouseOver={handleMouseOver}>
-      <div className='flex h-full grow justify-center overflow-hidden'>
+    <Stack
+      className={clsx("flex grow overflow-hidden", className)}
+      onMouseOver={handleMouseOver}
+    >
+      <div className="flex h-full grow justify-center overflow-hidden">
         <ChatMessageList chat={chat} />
       </div>
 

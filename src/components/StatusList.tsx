@@ -1,12 +1,14 @@
 import clsx from "clsx";
-import debounce from "lodash/debounce";
-import React, { useRef, useCallback } from "react";
+import { debounce } from "es-toolkit";
+import { useRef, useCallback } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { LoadGap, ScrollableList, PendingStatus } from "src/components";
-import PlaceholderStatus from "src/components/PlaceholderStatus";
+import LoadGap from "src/components/LoadGap";
+import ScrollableList from "src/components/ScrollableList";
 import StatusContainer from "src/containers/StatusContainer";
 import FeedSuggestions from "src/features/FeedSuggestions";
+import PlaceholderStatus from "src/components/PlaceholderStatus";
+import PendingStatus from "src/components/PendingStatus";
 
 import type { OrderedSet as ImmutableOrderedSet } from "immutable";
 import type { VirtuosoHandle } from "react-virtuoso";
@@ -41,7 +43,10 @@ interface IStatusList extends Omit<IScrollableList, "onLoadMore" | "children"> {
   showGroup?: boolean;
 }
 
-/** Feed of statuses, built atop ScrollableList. */
+/**
+ * Legacy Feed of statuses, built atop ScrollableList.
+ * @deprecated Use the PureStatusList component.
+ */
 const StatusList: React.FC<IStatusList> = ({
   statusIds,
   lastStatusId,
@@ -53,6 +58,7 @@ const StatusList: React.FC<IStatusList> = ({
   isPartial,
   showAds = false,
   showGroup = true,
+  className,
   ...other
 }) => {
   const node = useRef<VirtuosoHandle>(null);
@@ -91,7 +97,7 @@ const StatusList: React.FC<IStatusList> = ({
         }
       },
       300,
-      { leading: true }
+      { edges: ["leading"] }
     ),
     [onLoadMore, lastStatusId, statusIds.last()]
   );
@@ -213,14 +219,15 @@ const StatusList: React.FC<IStatusList> = ({
 
   if (isPartial) {
     return (
-      <div className="regeneration-indicator">
-        <div>
-          <div className="regeneration-indicator__label">
-            <FormattedMessage
-              id="regeneration_indicator.label"
-              tagName="strong"
-              defaultMessage="Loading…"
-            />
+      <div className="flex flex-1 cursor-default items-center justify-center rounded-lg p-5 text-center text-[16px] font-medium text-gray-900 sm:rounded-none">
+        <div className="w-full bg-transparent pt-0">
+          <div>
+            <strong className="mb-2.5 block text-gray-900">
+              <FormattedMessage
+                id="regeneration_indicator.label"
+                defaultMessage="Loading…"
+              />
+            </strong>
             <FormattedMessage
               id="regeneration_indicator.sublabel"
               defaultMessage="Your home feed is being prepared!"
@@ -245,11 +252,12 @@ const StatusList: React.FC<IStatusList> = ({
       )}
       placeholderCount={20}
       ref={node}
-      className={clsx(
+      listClassName={clsx(
         "divide-y divide-solid divide-gray-200 dark:divide-gray-800",
         {
           "divide-none": divideType !== "border",
-        }
+        },
+        className
       )}
       itemClassName={clsx({
         "pb-3": divideType !== "border",
