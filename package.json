@@ -14,7 +14,7 @@
     "start": "vite serve",
     "dev": "vite serve",
     "build": "vite build --emptyOutDir",
-    "vercel-build": "vite  --emptyOutDir",
+    "vercel-build": "vite build  --emptyOutDir --mode staging",
     "preview": "vite preview",
     "i18n": "formatjs extract 'src/**/*.{ts,tsx}' --ignore '**/*.d.ts' --out-file build/messages.json && formatjs compile build/messages.json --out-file src/locales/en.json",
     "test": "vitest",
