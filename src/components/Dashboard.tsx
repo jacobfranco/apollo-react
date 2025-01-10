@@ -6,20 +6,23 @@ import List, { ListItem } from "src/components/List";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import { useOwnAccount } from "src/hooks/useOwnAccount";
 import { useAppSelector } from "src/hooks/useAppSelector";
-import { fetchInstanceStats } from "src/actions/instance";
+import { fetchInstanceStats, fetchInstanceMetrics } from "src/actions/instance";
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const { account } = useOwnAccount();
+
   const {
     userCount,
     statusCount,
     mau,
+    metrics,
     isLoading = true,
   } = useAppSelector((state) => ({
     userCount: state.instance.get("userCount"),
     statusCount: state.instance.get("statusCount"),
     mau: state.instance.get("mau"),
+    metrics: state.instance.get("metrics"),
     isLoading: state.instance.get("isLoading"),
   }));
 
@@ -30,12 +33,14 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchInstanceStats());
+    dispatch(fetchInstanceMetrics());
   }, [dispatch]);
 
   if (!account) return null;
 
   return (
     <Stack space={6} className="mt-4">
+      {/* Top row: Current activity metrics */}
       <DashCounters>
         <DashCounter
           count={mau}
@@ -48,15 +53,29 @@ const Dashboard: React.FC = () => {
           }
         />
         <DashCounter
-          count={userCount}
+          count={metrics?.uniqueIPs}
           isLoading={isLoading}
           label={
             <FormattedMessage
-              id="admin.dashcounters.user_count_label"
-              defaultMessage="total users"
+              id="admin.dashcounters.unique_visitors_label"
+              defaultMessage="Unique visitors/hr"
             />
           }
         />
+        <DashCounter
+          count={metrics?.requests}
+          isLoading={isLoading}
+          label={
+            <FormattedMessage
+              id="admin.dashcounters.requests_label"
+              defaultMessage="API requests/hr"
+            />
+          }
+        />
+      </DashCounters>
+
+      {/* Bottom row: Overall stats */}
+      <DashCounters>
         <DashCounter
           count={retention}
           isLoading={isLoading}
@@ -69,16 +88,27 @@ const Dashboard: React.FC = () => {
           percent
         />
         <DashCounter
+          count={userCount}
+          isLoading={isLoading}
+          label={
+            <FormattedMessage
+              id="admin.dashcounters.user_count_label"
+              defaultMessage="total users"
+            />
+          }
+        />
+        <DashCounter
           count={statusCount}
           isLoading={isLoading}
           label={
             <FormattedMessage
               id="admin.dashcounters.status_count_label"
-              defaultMessage="posts"
+              defaultMessage="total posts"
             />
           }
         />
       </DashCounters>
+
       <List>
         <ListItem
           to="/admin/users"
