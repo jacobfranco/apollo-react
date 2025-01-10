@@ -4,15 +4,16 @@ import path from "node:path";
 
 import react from "@vitejs/plugin-react-swc";
 import { visualizer } from "rollup-plugin-visualizer";
-import { defineConfig, Plugin, UserConfig, loadEnv } from "vite";
+import { Connect, defineConfig, Plugin, UserConfig } from "vite";
 import checker from "vite-plugin-checker";
 import { createHtmlPlugin } from "vite-plugin-html";
 import compileTime from "vite-plugin-compile-time";
 import { VitePWA } from "vite-plugin-pwa";
 
-const { NODE_ENV } = process.env;
-const backendUrl = process.env.BACKEND_URL || "http://localhost:8080";
-export default defineConfig(() => {
+const { NODE_ENV, VITE_BACKEND_URL } = process.env;
+
+export default defineConfig(({ mode }) => {
+  console.log("Vite running in mode:", mode);
   const config: UserConfig = {
     build: {
       assetsDir: "packs",
@@ -74,6 +75,20 @@ export default defineConfig(() => {
         filename: "report.html",
         title: "Apollo Bundle",
       }) as Plugin,
+      {
+        name: "vite-apollo-dev",
+        configureServer(server) {
+          const notFoundHandler: Connect.SimpleHandleFunction = (_req, res) => {
+            res.statusCode = 404;
+            res.end();
+          };
+
+          server.middlewares.use("/api/", notFoundHandler);
+          server.middlewares.use("/oauth/", notFoundHandler);
+          server.middlewares.use("/nodeinfo/", notFoundHandler);
+          server.middlewares.use("/.well-known/", notFoundHandler);
+        },
+      },
     ],
     resolve: {
       alias: {
@@ -99,13 +114,13 @@ function buildCSP(env: string | undefined): string {
 
   if (env === "development") {
     csp.push(
-      `connect-src 'self' blob: https: wss: ws: ${backendUrl}`,
+      `connect-src 'self' blob: https: wss: ws: ${VITE_BACKEND_URL}`,
       "img-src 'self' data: blob: https: http://*",
       "media-src 'self' https: http://*"
     );
   } else {
     csp.push(
-      `connect-src 'self' blob: https: wss: ${backendUrl}`,
+      `connect-src 'self' blob: https: wss: ${VITE_BACKEND_URL}`,
       "img-src 'self' data: blob: https:",
       "media-src 'self' https:"
     );

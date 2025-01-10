@@ -2,7 +2,7 @@ import { createSelector } from "reselect";
 
 import { ApolloClient } from "src/api/ApolloClient";
 import * as BuildConfig from "src/build-config";
-import { selectAccount } from "src/selectors/";
+import { selectAccount } from "src/selectors";
 import { RootState } from "src/store";
 import { getAccessToken, getAppToken, parseBaseURL } from "src/utils/auth";
 
@@ -26,11 +26,10 @@ export const baseClient = (
   accessToken?: string | null,
   baseURL?: string
 ): ApolloClient => {
-  const client = new ApolloClient(
-    baseURL || BuildConfig.BACKEND_URL || location.origin,
+  return new ApolloClient(
+    BuildConfig.BACKEND_URL || location.origin,
     accessToken || undefined
   );
-  return client;
 };
 
 /**
@@ -49,5 +48,6 @@ export default (
     (me ? getAuthBaseURL(state, me) : undefined) ||
     location.origin;
 
+  console.log("Creating client with:", { accessToken, baseURL, me });
   return baseClient(accessToken, baseURL);
 };

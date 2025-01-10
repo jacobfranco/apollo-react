@@ -56,6 +56,7 @@ const fetchMe = () => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(fetchMeRequest());
 
   // verifyCredentials should return a promise
+  console.log("actions/me.ts - fetchMe- calling verify credentials");
   return dispatch(verifyCredentials(token, accountUrl!))
     .then((response: any) => {
       console.log("fetchMe: verifyCredentials response:", response);

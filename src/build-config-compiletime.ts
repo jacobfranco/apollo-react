@@ -1,4 +1,4 @@
-const { NODE_ENV, BACKEND_URL, SENTRY_DSN } = process.env;
+const { NODE_ENV, VITE_BACKEND_URL, SENTRY_DSN } = process.env;
 
 const sanitizeURL = (url: string = ""): string => {
   try {
@@ -10,8 +10,8 @@ const sanitizeURL = (url: string = ""): string => {
 
 const env = {
   NODE_ENV: NODE_ENV || "development",
-  BACKEND_URL: sanitizeURL(BACKEND_URL),
-  SENTRY_DSN,
+  BACKEND_URL: sanitizeURL(VITE_BACKEND_URL),
+  SENTRY_DSN: SENTRY_DSN,
 };
 
 export type ApolloEnv = typeof env;

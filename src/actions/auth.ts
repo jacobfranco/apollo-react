@@ -4,7 +4,6 @@ import { AppDispatch, RootState } from "src/store";
 import { createAccount } from "src/actions/accounts";
 import { startOnboarding } from "src/actions/onboarding";
 import { fetchMeSuccess, fetchMeFail } from "src/actions/me";
-import { createApp } from "src/actions/apps";
 import { obtainOAuthToken, revokeOAuthToken } from "src/actions/oauth";
 import { getLoggedInAccount, parseBaseURL } from "src/utils/auth";
 import { queryClient } from "src/queries/client";

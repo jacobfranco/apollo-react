@@ -1,5 +1,5 @@
-import { HTTPError } from "./HTTPError";
-import { ApolloResponse } from "./ApolloResponse";
+import { HTTPError } from "./HTTPError.ts";
+import { ApolloResponse } from "./ApolloResponse.ts";
 
 interface Opts {
   searchParams?:
@@ -76,39 +76,40 @@ export class ApolloClient {
     return this.request("OPTIONS", path, undefined, opts);
   }
 
-  private cleanUrl(path: string): URL {
-    const cleanBaseUrl = this.baseUrl.replace(/\/$/, "");
-    const cleanPath = path.replace(/^\//, "");
-    return new URL(cleanPath, cleanBaseUrl);
-  }
-
   async request(
     method: string,
     path: string,
     data: unknown,
     opts: Opts = {}
   ): Promise<ApolloResponse> {
-    const url = this.cleanUrl(path);
+    const url = new URL(path, this.baseUrl);
 
     if (opts.searchParams) {
       const params =
         opts.searchParams instanceof URLSearchParams
           ? opts.searchParams
-          : Object.entries(opts.searchParams).reduce<[string, string][]>(
+          : Object.entries(opts.searchParams).reduce<URLSearchParams>(
               (acc, [key, value]) => {
                 if (Array.isArray(value)) {
                   for (const v of value) {
-                    acc.push([`${key}[]`, String(v)]);
+                    acc.append(`${key}[]`, String(v));
                   }
                 } else if (value !== undefined && value !== null) {
-                  acc.push([key, String(value)]);
+                  acc.append(key, String(value));
                 }
                 return acc;
               },
-              []
+              new URLSearchParams()
             );
 
-      url.search = new URLSearchParams(params).toString();
+      // Merge search params.
+      // If a key exists in the URL, it will be replaced. Otherwise it will be added.
+      for (const key of params.keys()) {
+        url.searchParams.delete(key);
+      }
+      for (const [key, value] of params) {
+        url.searchParams.append(key, value);
+      }
     }
 
     const headers = new Headers(opts.headers);
