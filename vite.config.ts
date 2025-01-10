@@ -10,7 +10,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import compileTime from "vite-plugin-compile-time";
 import { VitePWA } from "vite-plugin-pwa";
 
-const { NODE_ENV, VITE_BACKEND_URL, VITE_STREAMING_URL } = process.env;
+const { NODE_ENV, BACKEND_URL, STREAMING_URL } = process.env;
 
 export default defineConfig(({ mode }) => {
   console.log("Vite running in mode:", mode);
@@ -114,13 +114,13 @@ function buildCSP(env: string | undefined): string {
 
   if (env === "development") {
     csp.push(
-      `connect-src 'self' blob: https: wss: ws: ${VITE_BACKEND_URL} ${VITE_STREAMING_URL}`,
+      `connect-src 'self' blob: https: wss: ws: ${BACKEND_URL} ${STREAMING_URL}`,
       "img-src 'self' data: blob: https: http://*",
       "media-src 'self' https: http://*"
     );
   } else {
     csp.push(
-      `connect-src 'self' blob: https: wss: ${VITE_BACKEND_URL} ${VITE_STREAMING_URL}`,
+      `connect-src 'self' blob: https: wss: ${BACKEND_URL} ${STREAMING_URL}`,
       "img-src 'self' data: blob: https:",
       "media-src 'self' https:"
     );
