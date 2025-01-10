@@ -27,7 +27,7 @@ export const baseClient = (
   baseURL?: string
 ): ApolloClient => {
   return new ApolloClient(
-    BuildConfig.BACKEND_URL || location.origin,
+    baseURL || BuildConfig.BACKEND_URL || location.origin,
     accessToken || undefined
   );
 };

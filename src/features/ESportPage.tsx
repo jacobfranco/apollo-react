@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, Suspense, useCallback } from "react";
+import React, { useEffect } from "react";
 import { defineMessages, useIntl } from "react-intl";
 import { Route, Switch, useLocation, useParams } from "react-router-dom";
 import { Tabs } from "src/components";
@@ -7,15 +7,9 @@ import esportsConfig from "src/esports-config";
 import { SpaceTimeline } from "./SpaceTimeline";
 import { useAppDispatch, useAppSelector } from "src/hooks";
 import { fetchSpace } from "src/actions/spaces";
-import {
-  connectMatchUpdatesStream,
-  connectSeriesUpdatesStream,
-} from "src/actions/streaming";
-
 import ScheduleTab from "./ScheduleTab";
 import TeamsTab from "./TeamsTab";
 import PlayersTab from "./PlayersTab";
-import FantasyTab from "./FantasyTab";
 import { fetchPlayers } from "src/actions/players";
 import { fetchTeams } from "src/actions/teams";
 
@@ -24,7 +18,6 @@ const messages = defineMessages({
   schedule: { id: "esports_page.schedule", defaultMessage: "Schedule" },
   teams: { id: "esports_page.teams", defaultMessage: "Teams" },
   players: { id: "esports_page.players", defaultMessage: "Players" },
-  fantasy: { id: "esports_page.fantasy", defaultMessage: "Fantasy" },
 });
 
 const TabLoading = () => (
@@ -45,54 +38,24 @@ interface TabContainerProps {
   children: React.ReactNode;
 }
 
-const TabContainer = React.memo(({ children }: TabContainerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 100);
-    return () => clearTimeout(timer);
-  }, [children]);
-
-  return isLoading ? <TabLoading /> : children;
-});
+const TabContainer = React.memo(({ children }: TabContainerProps) => (
+  <div className="tab-container">{children}</div>
+));
 
 const EsportPage = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { esportName } = useParams<{ esportName: string }>();
+
+  // Core state
   const game = esportsConfig.find((g) => g.path === esportName);
-  const spacePath = esportName + "esports";
+  const spacePath = `${esportName}esports`;
   const space = useAppSelector((state) => state.spaces.get(spacePath));
   const currentPath = location.pathname;
   const activeTab = currentPath.split("/").pop() || "esports";
 
-  const prefetchData = useCallback(
-    (tabName: string) => {
-      if (game?.hasApiSupport) {
-        switch (tabName) {
-          case "players":
-            dispatch(fetchPlayers(esportName));
-            break;
-          case "teams":
-            dispatch(fetchTeams(esportName));
-            break;
-        }
-      }
-    },
-    [dispatch, esportName, game]
-  );
-
-  useEffect(() => {
-    const disconnectSeriesUpdates = dispatch(connectSeriesUpdatesStream());
-    const disconnectMatchUpdates = dispatch(connectMatchUpdatesStream());
-    return () => {
-      disconnectSeriesUpdates?.();
-      disconnectMatchUpdates?.();
-    };
-  }, [dispatch]);
-
+  // Simple space fetching like SpacePage
   useEffect(() => {
     if (spacePath && !space) {
       dispatch(fetchSpace(spacePath));
@@ -103,6 +66,10 @@ const EsportPage = () => {
     return <div className="text-center text-red-500">Invalid esport name</div>;
   }
 
+  if (!space) {
+    return <div className="text-center text-red-500">Loading esport...</div>;
+  }
+
   const renderTabBar = () => {
     const items = game.hasApiSupport
       ? [
@@ -111,28 +78,24 @@ const EsportPage = () => {
             to: `/esports/${esportName}`,
             name: "esports",
             title: intl.formatMessage(messages.esports),
-            onMouseEnter: () => prefetchData("esports"),
           },
           {
             text: intl.formatMessage(messages.schedule),
             to: `/esports/${esportName}/schedule`,
             name: "schedule",
             title: intl.formatMessage(messages.schedule),
-            onMouseEnter: () => prefetchData("schedule"),
           },
           {
             text: intl.formatMessage(messages.teams),
             to: `/esports/${esportName}/teams`,
             name: "teams",
             title: intl.formatMessage(messages.teams),
-            onMouseEnter: () => prefetchData("teams"),
           },
           {
             text: intl.formatMessage(messages.players),
             to: `/esports/${esportName}/players`,
             name: "players",
             title: intl.formatMessage(messages.players),
-            onMouseEnter: () => prefetchData("players"),
           },
         ]
       : [
@@ -152,36 +115,34 @@ const EsportPage = () => {
       <div className="space-y-6">
         {renderTabBar()}
         <div className="tab-content">
-          <Suspense fallback={<TabLoading />}>
-            <Switch>
-              <Route exact path="/esports/:esportName">
+          <Switch>
+            <Route exact path="/esports/:esportName">
+              <TabContainer>
+                <SpaceTimeline spacePath={spacePath} />
+              </TabContainer>
+            </Route>
+            <Route path="/esports/:esportName/schedule">
+              {game.hasApiSupport && (
                 <TabContainer>
-                  <SpaceTimeline spacePath={spacePath} />
+                  <ScheduleTab />
                 </TabContainer>
-              </Route>
-              <Route path="/esports/:esportName/schedule">
-                {game.hasApiSupport ? (
-                  <TabContainer>
-                    <ScheduleTab />
-                  </TabContainer>
-                ) : null}
-              </Route>
-              <Route path="/esports/:esportName/teams">
-                {game.hasApiSupport ? (
-                  <TabContainer>
-                    <TeamsTab />
-                  </TabContainer>
-                ) : null}
-              </Route>
-              <Route path="/esports/:esportName/players">
-                {game.hasApiSupport ? (
-                  <TabContainer>
-                    <PlayersTab />
-                  </TabContainer>
-                ) : null}
-              </Route>
-            </Switch>
-          </Suspense>
+              )}
+            </Route>
+            <Route path="/esports/:esportName/teams">
+              {game.hasApiSupport && (
+                <TabContainer>
+                  <TeamsTab />
+                </TabContainer>
+              )}
+            </Route>
+            <Route path="/esports/:esportName/players">
+              {game.hasApiSupport && (
+                <TabContainer>
+                  <PlayersTab />
+                </TabContainer>
+              )}
+            </Route>
+          </Switch>
         </div>
       </div>
     </Column>

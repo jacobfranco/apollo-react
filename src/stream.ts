@@ -4,7 +4,6 @@ import { getAccessToken } from "src/utils/auth";
 import * as BuildConfig from "src/build-config";
 
 import type { AppDispatch, RootState } from "src/store";
-import { urls } from "./utils/urls";
 
 const randomIntUpTo = (max: number) =>
   Math.floor(Math.random() * Math.floor(max));
@@ -26,7 +25,7 @@ export function connectStream(
   ) => ConnectStreamCallbacks
 ) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    const streamingAPIBaseURL = urls.STREAMING_URL;
+    const streamingAPIBaseURL = BuildConfig.STREAMING_URL;
     const accessToken = getAccessToken(getState());
     const { onConnect, onDisconnect, onReceive } = callbacks(
       dispatch,

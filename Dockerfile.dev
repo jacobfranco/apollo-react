@@ -6,6 +6,7 @@ WORKDIR /app
 
 ENV NODE_ENV=development
 ENV VITE_BACKEND_URL=http://host.docker.internal:8080
+ENV VITE_STREAMING_URL=ws://host.docker.internal:8080
 ENV SENTRY_DSN=""
 
 COPY package*.json ./

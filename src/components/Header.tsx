@@ -176,7 +176,9 @@ const Header: React.FC<IHeader> = ({ account }) => {
   const { account: ownAccount } = useOwnAccount();
   const { follow } = useFollow();
 
-  const { getOrCreateChatByAccountId } = useChats();
+  // const { getOrCreateChatByAccountId } = useChats();
+
+  /* TODO: Implement chats
 
   const createAndNavigateToChat = useMutation({
     mutationFn: (accountId: string) => getOrCreateChatByAccountId(accountId),
@@ -193,6 +195,8 @@ const Header: React.FC<IHeader> = ({ account }) => {
       });
     },
   });
+
+  */
 
   if (!account) {
     return (
@@ -572,6 +576,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     return header;
   };
 
+  /*
   const renderMessageButton = () => {
     if (!ownAccount || !account || account.id === ownAccount?.id) {
       return null;
@@ -592,6 +597,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       return null;
     }
   };
+  */
 
   const renderShareButton = () => {
     const canShare = "share" in navigator;
@@ -658,7 +664,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
           <div className="mt-6 flex w-full justify-end sm:pb-1">
             <HStack space={2} className="mt-10">
-              {renderMessageButton()}
+              {/* renderMessageButton() */}
               {renderShareButton()}
 
               {menu.length > 0 && (

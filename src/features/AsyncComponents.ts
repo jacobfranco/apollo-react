@@ -73,7 +73,7 @@ export const Filters = lazy(() => import("./Filters"));
 export const EditFilter = lazy(() => import("./EditFilter"));
 export const Search = lazy(() => import("./Search"));
 export const Bookmarks = lazy(() => import("./Bookmarks"));
-export const ChatIndex = lazy(() => import("./chats"));
+// export const ChatIndex = lazy(() => import("./chats"));
 export const ScheduledStatuses = lazy(() => import("./ScheduledStatuses"));
 export const FollowRecommendations = lazy(
   () => import("./FollowRecommendations")

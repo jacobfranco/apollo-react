@@ -101,7 +101,7 @@ export const verifyCredentials = (token: string, accountUrl?: string) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
 
-    return baseClient(token, baseURL)
+    return baseClient(token)
       .get("/api/accounts/verify_credentials")
       .then((response) => response.json())
       .then((account) => {

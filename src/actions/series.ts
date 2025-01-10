@@ -57,17 +57,12 @@ export const fetchSeries = ({
     dispatch(fetchSeriesRequest());
     try {
       const client = api(getState);
+      // Construct path with query parameters if timestamp exists
+      const path = timestamp
+        ? `/api/${gamePath}/series/week?timestamp=${timestamp}`
+        : `/api/${gamePath}/series/week`;
 
-      // Construct URL with query parameters
-      const url = new URL(
-        `/api/${gamePath}/series/week`,
-        window.location.origin
-      );
-      if (timestamp) {
-        url.searchParams.set("timestamp", timestamp.toString());
-      }
-
-      const response = await client.get(url.toString());
+      const response = await client.get(path);
       const data = await response.json();
       console.log("API Response Data:", data);
       const parsedData = seriesSchema.array().parse(data);

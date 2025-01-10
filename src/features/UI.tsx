@@ -74,7 +74,7 @@ import {
   EmailConfirmation,
   DeleteAccount,
   // MfaForm,
-  ChatIndex,
+  // ChatIndex,
   ChatWidget,
   ServerInfo,
   Admin,
@@ -313,6 +313,8 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         content={children}
       />
 
+      {/*
+
       <WrappedRoute
         path="/chats"
         exact
@@ -338,6 +340,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         component={ChatIndex}
         content={children}
       />
+      */}
 
       <WrappedRoute
         path="/follow_requests"
