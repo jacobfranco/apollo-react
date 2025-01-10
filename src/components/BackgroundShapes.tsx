@@ -16,7 +16,7 @@ const BackgroundShapes: React.FC<IBackgroundShapes> = ({
       "pointer-events-none inset-x-0 top-0 flex justify-center overflow-hidden"
     )}
   >
-    <div className="bg-gradient-sm lg:bg-gradient-light lg:dark:bg-gradient-dark h-screen w-screen" />
+    <div className="bg-gradient-sm-light dark:bg-gradient-sm-dark lg:bg-gradient-light lg:dark:bg-gradient-dark h-screen w-screen" />
   </div>
 );
 
