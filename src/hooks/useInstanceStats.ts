@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useApi } from "src/hooks/useApi";
+import type { ApolloResponse } from "src/api/ApolloResponse";
 
 interface InstanceStats {
   userCount: number;
@@ -16,6 +18,7 @@ interface UseInstanceStatsReturn {
 }
 
 export const useInstanceStats = (): UseInstanceStatsReturn => {
+  const api = useApi();
   const [stats, setStats] = useState<InstanceStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -23,14 +26,14 @@ export const useInstanceStats = (): UseInstanceStatsReturn => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/admin/instance");
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setStats(data);
+        const response = (await api.get(
+          "/api/admin/instance"
+        )) as ApolloResponse & InstanceStats;
+        setStats({
+          userCount: response.userCount,
+          statusCount: response.statusCount,
+          mau: response.mau,
+        });
         setError(null);
       } catch (e) {
         setError(e instanceof Error ? e : new Error("Failed to fetch stats"));
@@ -41,7 +44,7 @@ export const useInstanceStats = (): UseInstanceStatsReturn => {
     };
 
     fetchStats();
-  }, []);
+  }, [api]);
 
   const calculateRetention = (userCount: number, mau: number) => {
     if (!userCount || !mau) return undefined;

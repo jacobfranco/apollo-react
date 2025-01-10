@@ -16,6 +16,7 @@ import followed_tags from "./followed-tags";
 import group_memberships from "./group-memberships";
 import group_relationships from "./group-relationships";
 import groups from "./groups";
+import instance from "./instance";
 import matches from "./matches";
 import me from "./me";
 import meta from "./meta";
@@ -64,6 +65,7 @@ const reducers = {
   group_memberships,
   group_relationships,
   groups,
+  instance,
   matches,
   me,
   meta,

@@ -6,7 +6,6 @@ import {
   TrendsPanel,
   SignUpPanel,
   CtaBanner,
-  SuggestedGroupsPanel,
   TrendingSpacesPanel,
 } from "src/features/AsyncComponents";
 import { useAppSelector } from "src/hooks";
@@ -37,8 +36,6 @@ const SearchPage: React.FC<ISearchPage> = ({ children }) => {
         <TrendingSpacesPanel limit={3} />
 
         {me && <WhoToFollowPanel limit={3} />}
-
-        <SuggestedGroupsPanel />
 
         <LinkFooter />
       </Layout.Aside>

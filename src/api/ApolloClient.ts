@@ -1,5 +1,5 @@
-import { HTTPError } from "./HTTPError.ts";
-import { ApolloResponse } from "./ApolloResponse.ts";
+import { HTTPError } from "./HTTPError";
+import { ApolloResponse } from "./ApolloResponse";
 
 interface Opts {
   searchParams?:

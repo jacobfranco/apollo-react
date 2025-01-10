@@ -12,6 +12,7 @@ import { fetchScheduledStatuses } from "src/actions/scheduled-statuses";
 import { fetchSuggestionsForTimeline } from "src/actions/suggestions";
 import { expandHomeTimeline } from "src/actions/timelines";
 // import { useUserStream } from 'src/api/hooks';
+import * as BuildConfig from "src/build-config";
 import {
   SidebarNavigation,
   ThumbNavigation,
@@ -715,7 +716,7 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     if (account.staff) {
       dispatch(fetchReports({ resolved: false }));
-      dispatch(fetchUsers({}));
+      dispatch(fetchUsers({}, 1, null, 50, BuildConfig.BACKEND_URL));
     }
 
     setTimeout(() => dispatch(fetchFilters()), 500);

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import Stack from "src/components/Stack";
 import { DashCounter, DashCounters } from "src/components/DashCounter";
 import List, { ListItem } from "src/components/List";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import { useOwnAccount } from "src/hooks/useOwnAccount";
-import { useInstanceStats } from "src/hooks/useInstanceStats";
+import { useAppSelector } from "src/hooks/useAppSelector";
+import { fetchInstanceStats } from "src/actions/instance";
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -14,9 +15,22 @@ const Dashboard: React.FC = () => {
     userCount,
     statusCount,
     mau,
-    retention,
     isLoading = true,
-  } = useInstanceStats();
+  } = useAppSelector((state) => ({
+    userCount: state.instance.get("userCount"),
+    statusCount: state.instance.get("statusCount"),
+    mau: state.instance.get("mau"),
+    isLoading: state.instance.get("isLoading"),
+  }));
+
+  const retention = (() => {
+    if (!userCount || !mau) return undefined;
+    return Math.round((mau / userCount) * 100);
+  })();
+
+  useEffect(() => {
+    dispatch(fetchInstanceStats());
+  }, [dispatch]);
 
   if (!account) return null;
 
