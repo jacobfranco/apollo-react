@@ -1,21 +1,26 @@
 import atIcon from "@tabler/icons/outline/at.svg";
 import banIcon from "@tabler/icons/outline/ban.svg";
+import boltIcon from "@tabler/icons/outline/bolt.svg";
 import circleXIcon from "@tabler/icons/outline/circle-x.svg";
 import clipboardCopyIcon from "@tabler/icons/outline/clipboard-copy.svg";
 import dotsIcon from "@tabler/icons/outline/dots.svg";
+import externalLinkIcon from "@tabler/icons/outline/external-link.svg";
 import flagIcon from "@tabler/icons/outline/flag.svg";
 import gavelIcon from "@tabler/icons/outline/gavel.svg";
+import listIcon from "@tabler/icons/outline/list.svg";
 import mailIcon from "@tabler/icons/outline/mail.svg";
 import messagesIcon from "@tabler/icons/outline/messages.svg";
 import repeatIcon from "@tabler/icons/outline/repeat.svg";
+import rssIcon from "@tabler/icons/outline/rss.svg";
 import searchIcon from "@tabler/icons/outline/search.svg";
 import settingsIcon from "@tabler/icons/outline/settings.svg";
 import uploadIcon from "@tabler/icons/outline/upload.svg";
+import userCheckIcon from "@tabler/icons/outline/user-check.svg";
 import userXIcon from "@tabler/icons/outline/user-x.svg";
 import userIcon from "@tabler/icons/outline/user.svg";
 import { useMutation } from "@tanstack/react-query";
 import { List as ImmutableList } from "immutable";
-import React from "react";
+import { nip19 } from "nostr-tools";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 
@@ -40,7 +45,6 @@ import Avatar from "src/components/Avatar";
 import HStack from "src/components/HStack";
 import IconButton from "src/components/IconButton";
 import VerificationBadge from "src/components/VerificationBadge";
-import MovedNote from "src/components/MovedNote";
 import ActionButton from "src/components/ActionButton";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import { useAppSelector } from "src/hooks/useAppSelector";
@@ -162,6 +166,7 @@ const messages = defineMessages({
     id: "account.rss_feed",
     defaultMessage: "Subscribe to RSS feed",
   },
+  zap: { id: "zap.send_to", defaultMessage: "Send zaps to {target}" },
 });
 
 interface IHeader {
@@ -176,9 +181,10 @@ const Header: React.FC<IHeader> = ({ account }) => {
   const { account: ownAccount } = useOwnAccount();
   const { follow } = useFollow();
 
-  // const { getOrCreateChatByAccountId } = useChats();
-
-  /* TODO: Implement chats
+  {
+    /* 
+  // TODO: Implement chats
+  const { getOrCreateChatByAccountId } = useChats();
 
   const createAndNavigateToChat = useMutation({
     mutationFn: (accountId: string) => getOrCreateChatByAccountId(accountId),
@@ -197,6 +203,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
   });
 
   */
+  }
 
   if (!account) {
     return (
@@ -208,7 +215,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
         <div className="px-4 sm:px-6">
           <HStack alignItems="bottom" space={5} className="-mt-12">
             <div className="relative flex">
-              <div className="size-24 rounded-5px bg-gray-400 ring-4 ring-white dark:ring-gray-800" />
+              <div className="size-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800" />
             </div>
           </HStack>
         </div>
@@ -279,6 +286,18 @@ const Header: React.FC<IHeader> = ({ account }) => {
     } else {
       dispatch(initMuteModal(account));
     }
+  };
+
+  const onProfileExternal = (url: string) => {
+    window.open(url, "_blank");
+  };
+
+  const onAddToList = () => {
+    dispatch(
+      openModal("LIST_ADDER", {
+        accountId: account.id,
+      })
+    );
   };
 
   const onModerate = () => {
@@ -430,11 +449,18 @@ const Header: React.FC<IHeader> = ({ account }) => {
         action: onMention,
         icon: atIcon,
       });
-      menu.push({
-        text: intl.formatMessage(messages.direct, { name: account.username }),
-        action: onDirect,
-        icon: mailIcon,
-      });
+
+      {
+        /* TODO: Implement messages
+      if (features.privacyScopes) {
+        menu.push({
+          text: intl.formatMessage(messages.direct, { name: account.username }),
+          action: onDirect,
+          icon: mailIcon,
+        });
+      }
+        */
+      }
 
       if (account.relationship?.following) {
         if (account.relationship?.showing_reposts) {
@@ -458,11 +484,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
       menu.push(null);
 
-      menu.push({
-        text: intl.formatMessage(messages.removeFromFollowers),
-        action: onRemoveFromFollowers,
-        icon: userXIcon,
-      });
+      if (account.relationship?.followed_by) {
+        menu.push({
+          text: intl.formatMessage(messages.removeFromFollowers),
+          action: onRemoveFromFollowers,
+          icon: userXIcon,
+        });
+      }
 
       if (account.relationship?.muting) {
         menu.push({
@@ -481,6 +509,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
       if (account.relationship?.blocking) {
         menu.push({
           text: intl.formatMessage(messages.unblock, {
+            name: account.username,
+          }),
+          action: onBlock,
+          icon: banIcon,
+        });
+      } else {
+        menu.push({
+          text: intl.formatMessage(messages.block, {
             name: account.username,
           }),
           action: onBlock,
@@ -576,13 +612,34 @@ const Header: React.FC<IHeader> = ({ account }) => {
     return header;
   };
 
-  /*
+  {
+    /* 
+
+    TODO: Implement chats
   const renderMessageButton = () => {
     if (!ownAccount || !account || account.id === ownAccount?.id) {
       return null;
     }
 
-    if (account.accepts_chat_messages) {
+    if (features.chatsWithFollowers) {
+      // Truth Social
+      const canChat = account.relationship?.followed_by;
+      if (!canChat) {
+        return null;
+      }
+
+      return (
+        <IconButton
+          src={messagesIcon}
+          onClick={() => createAndNavigateToChat.mutate(account.id)}
+          title={intl.formatMessage(messages.chat, { name: account.username })}
+          theme="outlined"
+          className="px-2"
+          iconClassName="h-4 w-4"
+          disabled={createAndNavigateToChat.isPending}
+        />
+      );
+    } else if (account.pleroma?.accepts_chat_messages) {
       return (
         <IconButton
           src={messagesIcon}
@@ -597,7 +654,9 @@ const Header: React.FC<IHeader> = ({ account }) => {
       return null;
     }
   };
+
   */
+  }
 
   const renderShareButton = () => {
     const canShare = "share" in navigator;
@@ -625,10 +684,6 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
   return (
     <div className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6">
-      {account.moved && typeof account.moved === "object" && (
-        <MovedNote from={account} to={account.moved as Account} />
-      )}
-
       <div>
         <div className="relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48">
           {renderHeader()}
@@ -652,19 +707,21 @@ const Header: React.FC<IHeader> = ({ account }) => {
               <Avatar
                 src={account.avatar}
                 size={96}
-                className="relative size-24 rounded-5px bg-white ring-4 ring-primary-200 dark:bg-primary-900 dark:ring-secondary-800"
+                className="relative size-24 rounded-full bg-white ring-4 ring-white dark:bg-primary-900 dark:ring-primary-900"
               />
             </a>
             {account.verified && (
               <div className="absolute bottom-0 right-0">
-                <VerificationBadge className="size-6 rounded-5px bg-primary-200 ring-3 ring-primary-200 dark:bg-secondary-800 dark:ring-secondary-800" />
+                <VerificationBadge className="size-6 rounded-full bg-white ring-2 ring-white dark:bg-primary-900 dark:ring-primary-900" />
               </div>
             )}
           </div>
 
           <div className="mt-6 flex w-full justify-end sm:pb-1">
             <HStack space={2} className="mt-10">
-              {/* renderMessageButton() */}
+              {/* 
+              {renderMessageButton()}
+              */}
               {renderShareButton()}
 
               {menu.length > 0 && (

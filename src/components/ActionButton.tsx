@@ -101,16 +101,6 @@ const ActionButton: React.FC<IActionButton> = ({
     dispatch(rejectFollowRequest(account.id));
   };
 
-  const handleRemoteFollow = () => {
-    dispatch(
-      openModal("UNAUTHORIZED", {
-        action: "FOLLOW",
-        account: account.id,
-        ap_id: account.url,
-      })
-    );
-  };
-
   /** Handles actionType='muting' */
   const mutingAction = () => {
     const isMuted = account.relationship?.muting;
