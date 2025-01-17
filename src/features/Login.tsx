@@ -62,6 +62,11 @@ const Login = () => {
     event.preventDefault();
   };
 
+  if (shouldRedirect) {
+    const redirectUri = "";
+    return <Redirect to={redirectUri} />;
+  }
+
   return (
     <BigCard
       title={
