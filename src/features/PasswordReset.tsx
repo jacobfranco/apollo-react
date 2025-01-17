@@ -13,7 +13,7 @@ import Button from "src/components/Button";
 const messages = defineMessages({
   nicknameOrEmail: {
     id: "password_reset.fields.username_placeholder",
-    defaultMessage: "Email or username",
+    defaultMessage: "Username",
   },
   email: {
     id: "password_reset.fields.email_placeholder",

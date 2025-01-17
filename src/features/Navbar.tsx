@@ -28,7 +28,7 @@ const messages = defineMessages({
   login: { id: "navbar.login.action", defaultMessage: "Log in" },
   username: {
     id: "navbar.login.username.placeholder",
-    defaultMessage: "Email or username",
+    defaultMessage: "Username",
   },
   email: {
     id: "navbar.login.email.placeholder",
@@ -74,11 +74,14 @@ const Navbar = () => {
         }
       });
   };
+  {
+    /* TODO: Implement mfa 
 
   if (mfaToken) {
     return <Redirect to={`/login?token=${encodeURIComponent(mfaToken)}`} />;
   }
-
+*/
+  }
   return (
     <nav
       className={clsx(

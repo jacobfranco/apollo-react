@@ -115,38 +115,22 @@ const Settings = () => {
             />
           </List>
         </CardBody>
+        <CardHeader>
+          <CardTitle title={intl.formatMessage(messages.security)} />
+        </CardHeader>
 
-        {/* TODO: Implement security and mfa
-        {(features.security || features.sessions) && (
-          <>
-            <CardHeader>
-              <CardTitle title={intl.formatMessage(messages.security)} />
-            </CardHeader>
-
-            <CardBody>
-              <List>
-                {features.security && (
-                  <>
-                    <ListItem label={intl.formatMessage(messages.changeEmail)} to='/settings/email' />
-                    <ListItem label={intl.formatMessage(messages.changePassword)} to='/settings/password' />
-                    <ListItem label={intl.formatMessage(messages.configureMfa)} to='/settings/mfa'>
-                      <span>
-                        {isMfaEnabled ?
-                          intl.formatMessage(messages.mfaEnabled) :
-                          intl.formatMessage(messages.mfaDisabled)}
-                      </span>
-                    </ListItem>
-                  </>
-                )}
-                {features.sessions && (
-                  <ListItem label={intl.formatMessage(messages.sessions)} to='/settings/tokens' />
-                )}
-              </List>
-            </CardBody>
-          </>
-        )}
-
-        */}
+        <CardBody>
+          <List>
+            <ListItem
+              label={intl.formatMessage(messages.changeEmail)}
+              to="/settings/email"
+            />
+            <ListItem
+              label={intl.formatMessage(messages.changePassword)}
+              to="/settings/password"
+            />
+          </List>
+        </CardBody>
 
         {/* <>
          TODO: Implement chats

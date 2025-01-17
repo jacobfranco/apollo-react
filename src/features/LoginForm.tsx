@@ -1,23 +1,23 @@
-import React from 'react';
-import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { FormattedMessage, defineMessages, useIntl } from "react-intl";
+import { Link } from "react-router-dom";
 
-import { Form, FormActions, FormGroup } from 'src/components';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
+import { Form, FormActions, FormGroup } from "src/components";
+import Button from "src/components/Button";
+import Input from "src/components/Input";
 
 const messages = defineMessages({
   username: {
-    id: 'login.fields.username_label',
-    defaultMessage: 'Email or username',
+    id: "login.fields.username_label",
+    defaultMessage: "Username",
   },
   email: {
-    id: 'login.fields.email_label',
-    defaultMessage: 'E-mail address',
+    id: "login.fields.email_label",
+    defaultMessage: "E-mail address",
   },
   password: {
-    id: 'login.fields.password_placeholder',
-    defaultMessage: 'Password',
+    id: "login.fields.password_placeholder",
+    defaultMessage: "Password",
   },
 });
 
@@ -38,10 +38,10 @@ const LoginForm: React.FC<ILoginForm> = ({ isLoading, handleSubmit }) => {
         <Input
           aria-label={usernameLabel}
           placeholder={usernameLabel}
-          type='text'
-          name='username'
-          autoCorrect='off'
-          autoCapitalize='off'
+          type="text"
+          name="username"
+          autoCorrect="off"
+          autoCapitalize="off"
           required
         />
       </FormGroup>
@@ -49,10 +49,10 @@ const LoginForm: React.FC<ILoginForm> = ({ isLoading, handleSubmit }) => {
       <FormGroup
         labelText={passwordLabel}
         hintText={
-          <Link to='/reset-password' className='hover:underline' tabIndex={-1}>
+          <Link to="/reset-password" className="hover:underline" tabIndex={-1}>
             <FormattedMessage
-              id='login.reset_password_hint'
-              defaultMessage='Trouble logging in?'
+              id="login.reset_password_hint"
+              defaultMessage="Trouble logging in?"
             />
           </Link>
         }
@@ -60,22 +60,18 @@ const LoginForm: React.FC<ILoginForm> = ({ isLoading, handleSubmit }) => {
         <Input
           aria-label={passwordLabel}
           placeholder={passwordLabel}
-          type='password'
-          name='password'
-          autoComplete='off'
-          autoCorrect='off'
-          autoCapitalize='off'
+          type="password"
+          name="password"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
           required
         />
       </FormGroup>
 
       <FormActions>
-        <Button
-          theme='primary'
-          type='submit'
-          disabled={isLoading}
-        >
-          <FormattedMessage id='login.sign_in' defaultMessage='Sign in' />
+        <Button theme="primary" type="submit" disabled={isLoading}>
+          <FormattedMessage id="login.sign_in" defaultMessage="Sign in" />
         </Button>
       </FormActions>
     </Form>
