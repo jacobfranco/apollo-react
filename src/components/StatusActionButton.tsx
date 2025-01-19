@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { forwardRef } from "react";
 import Icon from "src/components/Icon";
 import Text from "src/components/Text";
+import { useTheme } from "src/hooks";
 import { shortNumberFormat } from "src/utils/numbers";
 
 interface IStatusActionCounter {
@@ -43,21 +44,98 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
       ...filteredProps
     } = props;
 
-    // Get the color based on action type
+    const currentTheme = useTheme();
+
+    // Determine the action color based on the type and currentTheme.
     const getActionColor = () => {
-      switch (actionType) {
-        case "reply":
-          return "#5B98F1";
-        case "repost":
-          return "#81fccc";
-        case "like":
-          return "#FC81B1";
-        default:
-          return undefined;
-      }
+      const colors = {
+        light: {
+          reply: "#0095FF",
+          repost: "#00D085",
+          like: "#FF3B99",
+        },
+        dark: {
+          reply: "#45CAFF",
+          repost: "#3DFF9E",
+          like: "#FF5FB3",
+        },
+      };
+      if (!actionType) return undefined;
+      return colors[currentTheme][actionType];
     };
 
     const actionColor = getActionColor();
+
+    const buttonClasses = clsx(
+      "relative flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
+      "group hover:scale-105 transition-all duration-300",
+      {
+        "text-gray-600 dark:hover:text-white bg-transparent":
+          theme === "default",
+        "text-white/80 hover:text-white bg-transparent": theme === "inverse",
+      },
+      actionType && "group",
+      className
+    );
+
+    // Render four irregularly positioned particles that are only visible on hover.
+    const renderParticles = () => {
+      if (!actionColor) return null;
+      return (
+        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+          {/* Top-left particle */}
+          <div
+            className="absolute w-1 h-1 rounded-full animate-shimmer"
+            style={{
+              top: "10%",
+              left: "15%",
+              backgroundColor: actionColor,
+              animationDelay: "700ms",
+            }}
+          />
+          {/* Top-right particle */}
+          <div
+            className="absolute w-1 h-1 rounded-full animate-shimmer"
+            style={{
+              top: "10%",
+              right: "25%",
+              backgroundColor: actionColor,
+              animationDelay: "400ms",
+            }}
+          />
+          {/* Bottom-right particle */}
+          <div
+            className="absolute w-1 h-1 rounded-full animate-shimmer"
+            style={{
+              bottom: "15%",
+              right: "20%",
+              backgroundColor: actionColor,
+              animationDelay: "0ms",
+            }}
+          />
+          {/* Bottom-left particle */}
+          <div
+            className="absolute w-1 h-1 rounded-full animate-shimmer"
+            style={{
+              bottom: "10%",
+              left: "20%",
+              backgroundColor: actionColor,
+              animationDelay: "100ms",
+            }}
+          />
+          {/* Center particle */}
+          <div
+            className="absolute w-1 h-1 rounded-full animate-shimmer"
+            style={{
+              bottom: "55%",
+              right: "55%",
+              backgroundColor: actionColor,
+              animationDelay: "200ms",
+            }}
+          />
+        </div>
+      );
+    };
 
     const renderIcon = () => (
       <Icon
@@ -72,45 +150,14 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
 
     const renderText = () => {
       if (count) {
-        return <StatusActionCounter count={count} />;
+        return (
+          <div className={clsx({ "text-current": active })}>
+            <StatusActionCounter count={count} />
+          </div>
+        );
       }
+      return null;
     };
-
-    const renderParticles = () => {
-      if (!active || !actionColor) return null;
-
-      return (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-          <div
-            className="absolute top-0 left-1/4 w-1 h-1 rounded-full animate-ping"
-            style={{ backgroundColor: actionColor }}
-          />
-          <div
-            className="absolute bottom-1/4 right-0 w-1 h-1 rounded-full animate-ping delay-100"
-            style={{ backgroundColor: actionColor }}
-          />
-        </div>
-      );
-    };
-
-    const buttonClasses = clsx(
-      // Base styles
-      "relative flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
-      "group hover:scale-105",
-      "transition-all duration-300",
-
-      // Theme variations
-      {
-        "text-gray-600 dark:hover:text-white bg-transparent":
-          theme === "default",
-        "text-white/80 hover:text-white bg-transparent": theme === "inverse",
-      },
-
-      // Active state
-      active && actionColor && "group", // Add group class for particle effects
-
-      className
-    );
 
     return (
       <button

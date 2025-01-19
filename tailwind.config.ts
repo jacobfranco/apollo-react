@@ -93,6 +93,7 @@ const config: Config = {
         "loader-label":
           "loader-label 1.15s infinite cubic-bezier(0.215, 0.61, 0.355, 1)",
         fade: "fade 150ms linear",
+        shimmer: "shimmer 1s ease-in-out infinite",
         "sonar-scale-4": "sonar-scale-4 3s linear infinite",
         "sonar-scale-3": "sonar-scale-3 3s 0.5s linear infinite",
         "sonar-scale-2": "sonar-scale-2 3s 1s linear infinite",
@@ -127,6 +128,10 @@ const config: Config = {
             opacity: "0",
             backgroundColor: "transparent",
           },
+        },
+        shimmer: {
+          "0%, 100%": { opacity: "0.0", transform: "scale(1)" },
+          "50%": { opacity: "0.35", transform: "scale(1.3)" },
         },
         "loader-label": {
           "0%": { opacity: "0.25" },
