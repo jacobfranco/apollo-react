@@ -79,15 +79,11 @@ const SidebarNavigation = () => {
         });
       }
       {
-        /* TODO: Put back in
-
-      menu.push({
-        to: "/bookmarks",
-        text: intl.formatMessage(messages.bookmarks),
-        icon: bookmarkIcon,
-      });
-
-      */
+        menu.push({
+          to: "/bookmarks",
+          text: intl.formatMessage(messages.bookmarks),
+          icon: bookmarkIcon,
+        });
       }
 
       if (isDeveloper) {
