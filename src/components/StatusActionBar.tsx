@@ -887,10 +887,6 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     replyTitle = intl.formatMessage(messages.replyAll);
   }
 
-  const canShare =
-    "share" in navigator &&
-    (status.visibility === "public" || status.visibility === "group");
-
   const spacing: {
     [key: string]: React.ComponentProps<typeof HStack>["space"];
   } = {

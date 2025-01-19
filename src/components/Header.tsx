@@ -371,14 +371,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const handleShare = () => {
-    navigator
-      .share({
-        text: `@${account.username}`,
-        url: account.url,
+    copy(account.url);
+    toast.success(
+      intl.formatMessage({
+        id: "status.link_copied",
+        defaultMessage: "Link copied to clipboard!",
       })
-      .catch((e) => {
-        if (e.name !== "AbortError") console.error(e);
-      });
+    );
   };
 
   const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {
@@ -392,18 +391,10 @@ const Header: React.FC<IHeader> = ({ account }) => {
       return [];
     }
 
-    if ("share" in navigator) {
-      menu.push({
-        text: intl.formatMessage(messages.share, { name: account.username }),
-        action: handleShare,
-        icon: uploadIcon,
-      });
-    }
-
     menu.push({
-      text: intl.formatMessage(messages.copy),
-      action: handleCopy,
-      icon: clipboardCopyIcon,
+      text: intl.formatMessage(messages.share, { name: account.username }),
+      action: handleShare,
+      icon: uploadIcon,
     });
 
     if (!ownAccount) return menu;
