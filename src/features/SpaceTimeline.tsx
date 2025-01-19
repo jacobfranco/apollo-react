@@ -3,8 +3,12 @@ import { FormattedMessage } from "react-intl";
 import { expandSpaceTimeline, clearTimeline } from "src/actions/timelines";
 import { useSpaceStream } from "src/api/hooks";
 import Timeline from "src/features/Timeline";
-import { useAppDispatch, useAppSelector, useTheme } from "src/hooks";
-import { useIsMobile } from "src/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useTheme,
+  useIsMobile,
+} from "src/hooks";
 
 interface ISpaceTimeline {
   spacePath: string;

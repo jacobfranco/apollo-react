@@ -1,80 +1,53 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "src/hooks";
-import { fetchPlayers } from "src/actions/players";
-import { fetchTeams } from "src/actions/teams";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import Spinner from "src/components/Spinner";
+import StatsTable from "src/components/StatsTable";
+import LolPlayerRow from "src/components/LolPlayerRow";
+import { useAppSelector } from "src/hooks";
 import {
   selectPlayersList,
   selectPlayersLoading,
   selectPlayersError,
-  selectTeamsById,
   selectTeamsList,
   selectTeamsLoading,
 } from "src/selectors";
 import { Player } from "src/schemas/player";
 import { PlayerAggStats } from "src/schemas/player-agg-stats";
-import Spinner from "src/components/Spinner";
-import StatsTable from "src/components/StatsTable";
-import LolPlayerRow from "src/components/LolPlayerRow";
+import { Team } from "src/schemas/team";
+import esportsConfig from "src/esports-config";
+
+type PlayersTabProps = {
+  esportName: string;
+};
 
 interface PlayerWithComputedValues extends Player {
   computedValues: {
-    kda: number;
     teamLogo: string;
     teamName: string;
   };
 }
 
-const PlayersTab: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { esportName } = useParams<{ esportName: string }>();
+const PlayersTab: React.FC<PlayersTabProps> = ({ esportName }) => {
+  // Identify which game config
+  const game = esportsConfig.find((g) => g.path === esportName);
 
+  // Store selectors
   const players = useAppSelector(selectPlayersList);
-  const loadingPlayers = useAppSelector(selectPlayersLoading);
-  const errorPlayers = useAppSelector(selectPlayersError);
+  const playersLoading = useAppSelector(selectPlayersLoading);
+  const playersError = useAppSelector(selectPlayersError);
   const teams = useAppSelector(selectTeamsList);
-  const teamsById = useAppSelector(selectTeamsById);
-  const loadingTeams = useAppSelector(selectTeamsLoading);
+  const teamsLoading = useAppSelector(selectTeamsLoading);
 
-  // Track whether initial fetch has been attempted
-  const [hasInitiatedFetch, setHasInitiatedFetch] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!esportName || hasInitiatedFetch) return;
-
-    const fetchData = async () => {
-      setIsInitialLoad(true);
-      setIsLoading(true);
-      setHasInitiatedFetch(true);
-      try {
-        await Promise.all([
-          dispatch(fetchPlayers(esportName)),
-          dispatch(fetchTeams(esportName)),
-        ]);
-      } finally {
-        setIsLoading(false);
-        setIsInitialLoad(false);
-      }
-    };
-
-    fetchData();
-  }, [dispatch, esportName, hasInitiatedFetch]);
-
-  // Reset fetch flag when esportName changes
-  useEffect(() => {
-    setHasInitiatedFetch(false);
-  }, [esportName]);
-
+  // Sorting config
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
-  }>({
-    key: "kda",
-    direction: "desc",
-  });
+  }>({ key: "kda", direction: "desc" });
 
+  // Pagination config
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 150; // You can adjust this as desired
+
+  // Define table columns
   const columns = useMemo(
     () => [
       { label: "Team", key: "teamName" },
@@ -89,153 +62,135 @@ const PlayersTab: React.FC = () => {
     []
   );
 
-  // More permissive filtering that only removes clearly invalid entries
-  const filteredPlayers = useMemo(() => {
-    return players.filter((player) => {
-      const aggStats = player.aggStats;
-      return aggStats && player.teamIds && player.teamIds.length > 0;
-    });
-  }, [players]);
+  // Sort the players
+  const sortedPlayers = useMemo<PlayerWithComputedValues[]>(() => {
+    const validPlayers = players.filter((p) => p.aggStats && p.teamIds?.length);
 
-  const playersWithComputedValues = useMemo(() => {
-    return filteredPlayers.map((player) => {
-      const aggStats = player.aggStats!;
-      const {
-        averageKills = 0,
-        averageDeaths = 0,
-        averageAssists = 0,
-      } = aggStats;
-
-      // Improved KDA calculation with safety checks
-      const kda =
-        averageDeaths === 0
-          ? averageKills + averageAssists
-          : Number(
-              ((averageKills + averageAssists) / averageDeaths).toFixed(2)
-            );
-
-      const lastTeamId = player.teamIds?.[player.teamIds.length - 1];
-      const team = lastTeamId ? teamsById.get(lastTeamId) : undefined;
-      const teamLogo = team?.images?.[0]?.url ?? "";
-      const teamName = team?.name ?? "Team";
-
+    // Add computed team name/logo
+    const enriched = validPlayers.map((player) => {
+      const lastTeamId = player.teamIds![player.teamIds!.length - 1];
+      const team = teams.find((t: Team) => t.id === lastTeamId);
       return {
         ...player,
         computedValues: {
-          kda: isNaN(kda) ? 0 : kda,
-          teamLogo,
-          teamName,
+          teamLogo: team?.images?.[0]?.url ?? "",
+          teamName: team?.name ?? "Team",
         },
       };
     });
-  }, [filteredPlayers, teamsById]);
 
-  const getSortedPlayers = useCallback(
-    (playersToSort: PlayerWithComputedValues[]) => {
-      if (!sortConfig) return playersToSort;
-
-      return [...playersToSort].sort((a, b) => {
-        let comparison = 0;
-
-        switch (sortConfig.key) {
-          case "teamName":
-            comparison = (a.computedValues.teamLogo || "").localeCompare(
-              b.computedValues.teamLogo || ""
-            );
-            break;
-          case "name":
-            comparison = (a.nickName || "").localeCompare(b.nickName || "");
-            break;
-          case "kda":
-            comparison =
-              (a.computedValues.kda || 0) - (b.computedValues.kda || 0);
-            break;
-          case "totalMatches":
-            comparison =
-              (a.aggStats?.totalMatches || 0) - (b.aggStats?.totalMatches || 0);
-            break;
-          default:
-            const statKey = sortConfig.key as keyof PlayerAggStats;
-            const aStat = a.aggStats?.[statKey] || 0;
-            const bStat = b.aggStats?.[statKey] || 0;
-            comparison = (aStat as number) - (bStat as number);
+    // Perform sorting
+    enriched.sort((a, b) => {
+      let comparison = 0;
+      switch (sortConfig.key) {
+        case "teamName":
+          comparison = a.computedValues.teamName.localeCompare(
+            b.computedValues.teamName
+          );
+          break;
+        case "name":
+          comparison = (a.nickName || "").localeCompare(b.nickName || "");
+          break;
+        case "kda":
+          comparison = (a.aggStats?.kda ?? 0) - (b.aggStats?.kda ?? 0);
+          break;
+        case "totalMatches":
+          comparison =
+            (a.aggStats?.totalMatches ?? 0) - (b.aggStats?.totalMatches ?? 0);
+          break;
+        default: {
+          // For averageKills, averageAssists, etc.
+          const skey = sortConfig.key as keyof PlayerAggStats;
+          const aStat = a.aggStats?.[skey] ?? 0;
+          const bStat = b.aggStats?.[skey] ?? 0;
+          comparison = (aStat as number) - (bStat as number);
         }
+      }
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+    return enriched;
+  }, [players, teams, sortConfig]);
 
-        return sortConfig.direction === "asc" ? comparison : -comparison;
-      });
-    },
-    [sortConfig]
-  );
+  // Slice for pagination
+  const paginatedPlayers = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return sortedPlayers.slice(startIndex, endIndex);
+  }, [sortedPlayers, currentPage, pageSize]);
 
+  // Handle sort
   const handleSort = useCallback((key: string) => {
-    setSortConfig((prevConfig) => ({
-      key,
-      direction:
-        prevConfig.key === key && prevConfig.direction === "desc"
-          ? "asc"
-          : "desc",
-    }));
+    setSortConfig((prev) =>
+      prev.key === key
+        ? { key, direction: prev.direction === "desc" ? "asc" : "desc" }
+        : { key, direction: "desc" }
+    );
   }, []);
 
-  const hasNoData = !isLoading && players.length === 0;
-  const hasError = Boolean(errorPlayers);
-
-  if (isLoading) {
-    return <Spinner />;
-  }
-
-  if (hasError) {
-    return (
-      <div className="text-center text-red-500">Error: {errorPlayers}</div>
-    );
-  }
-
-  if (hasNoData) {
-    return <div className="text-center">No player data available</div>;
-  }
-
-  const sortedPlayers = getSortedPlayers(playersWithComputedValues);
+  // Grid template for the StatsTable
   const gridTemplateColumns = `100px repeat(${columns.length - 1}, 1fr)`;
 
-  if (isInitialLoad) {
-    return (
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="space-y-3 mt-4">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  // Check loading/error states
+  const isLoading = playersLoading || teamsLoading;
+  const error = playersError;
+  if (!game) {
+    return <div className="text-center text-red-500">Invalid eSport name</div>;
+  }
+  if (error) {
+    return <div className="text-center text-red-500">Error: {error}</div>;
+  }
+  if (isLoading && players.length === 0) {
+    return <Spinner />;
+  }
+  if (players.length === 0) {
+    return <div className="text-center">No players found.</div>;
   }
 
   return (
     <div>
-      {sortedPlayers.length === 0 ? (
-        <div className="text-center">No players match the current criteria</div>
-      ) : (
-        <StatsTable<PlayerWithComputedValues>
-          columns={columns}
-          data={sortedPlayers}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          gridTemplateColumns={gridTemplateColumns}
-          rowKey={(player) => player.id}
-          renderRow={(player) => (
-            <LolPlayerRow
-              key={player.id}
-              player={player}
-              columns={columns}
-              gridTemplateColumns={gridTemplateColumns}
-              esportName={esportName}
-            />
-          )}
-        />
+      {/* If still loading but we already have some data, show a small spinner above the table */}
+      {isLoading && players.length > 0 && (
+        <div className="mb-2 text-center">
+          <Spinner />
+        </div>
       )}
+
+      <StatsTable<PlayerWithComputedValues>
+        columns={columns}
+        data={paginatedPlayers}
+        sortConfig={sortConfig}
+        onSort={handleSort}
+        gridTemplateColumns={gridTemplateColumns}
+        rowKey={(p) => p.id}
+        renderRow={(p) => (
+          <LolPlayerRow
+            key={p.id}
+            player={p}
+            columns={columns}
+            gridTemplateColumns={gridTemplateColumns}
+            esportName={esportName}
+          />
+        )}
+      />
+
+      {/* Basic pagination controls */}
+      <div className="flex justify-center space-x-4 mt-4">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
+        >
+          Previous
+        </button>
+        <span className="self-center">Page {currentPage}</span>
+        <button
+          onClick={() => setCurrentPage((p) => p + 1)}
+          disabled={paginatedPlayers.length < pageSize}
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

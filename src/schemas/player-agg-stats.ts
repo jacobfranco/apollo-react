@@ -11,6 +11,7 @@ export const playerAggStatsSchema = z.object({
   averageAssists: z.number(),
   totalCreepScore: z.number(),
   averageCreepScore: z.number(),
+  kda: z.number(),
 });
 
 export type PlayerAggStats = z.infer<typeof playerAggStatsSchema>;

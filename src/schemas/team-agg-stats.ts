@@ -24,6 +24,8 @@ export const teamAggStatsSchema = z.object({
   totalSeries: z.number(),
   totalSeriesWins: z.number(),
   totalSeriesLosses: z.number(),
+  totalWinRate: z.number(),
+  seriesWinRate: z.number(),
 });
 
 export type TeamAggStats = z.infer<typeof teamAggStatsSchema>;

@@ -1,39 +1,37 @@
-// TeamsTab.tsx
-
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import React, { useMemo, useState, useCallback } from "react";
+import Spinner from "src/components/Spinner";
+import StatsTable from "src/components/StatsTable";
+import LolTeamRow from "src/components/LolTeamRow";
+import { openModal, closeModal } from "src/actions/modals";
+import { groupLeaguesByTier, teamData } from "src/teams";
 import { useAppSelector, useAppDispatch } from "src/hooks";
-import { fetchTeams } from "src/actions/teams";
 import {
   selectTeamsList,
   selectTeamsLoading,
   selectTeamsError,
 } from "src/selectors";
+import esportsConfig from "src/esports-config";
 import { Team } from "src/schemas/team";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
-import LolTeamRow from "src/components/LolTeamRow";
-import { openModal, closeModal } from "src/actions/modals";
-import { groupLeaguesByTier, teamData } from "src/teams";
-import Spinner from "src/components/Spinner";
-import StatsTable from "src/components/StatsTable";
 
-// Cache for computed values
-interface TeamWithComputedValues extends Team {
+type TeamsTabProps = {
+  esportName: string;
+};
+
+interface TeamWithComputed extends Team {
   league: string;
-  computedValues: {
-    seriesWinRate: number;
-    winRate: number;
-  };
 }
 
-const TeamsTab: React.FC = () => {
+const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
   const dispatch = useAppDispatch();
-  const { esportName } = useParams<{ esportName: string }>();
+  const game = esportsConfig.find((g) => g.path === esportName);
 
+  // Read store data
   const teams = useAppSelector(selectTeamsList);
   const loading = useAppSelector(selectTeamsLoading);
   const error = useAppSelector(selectTeamsError);
 
+  // Local UI states
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
@@ -41,29 +39,27 @@ const TeamsTab: React.FC = () => {
     key: "seriesRecord",
     direction: "desc",
   });
-
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
-  const [isCombined, setIsCombined] = useState(false); // Changed default to false
+  const [isCombined, setIsCombined] = useState(false);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (esportName) {
-      dispatch(fetchTeams(esportName));
-    }
-  }, [dispatch, esportName]);
+  // Pagination config
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 150; // Adjust as needed
 
-  // Memoize columns configuration
+  // Build columns
   const columns = useMemo(() => {
-    const basicColumns: Array<{ label: string; key: string }> = [
-      { label: "Team", key: "name" },
-      { label: "Record", key: "seriesRecord" },
-      { label: "Wins", key: "totalWins" },
-      { label: "Losses", key: "totalLosses" },
-      { label: "WR%", key: "winRate" },
-      { label: "Streak", key: "currentWinStreak" },
-    ];
-
-    const advancedColumns: Array<{ label: string; key: string }> = [
+    if (!showAdvancedStats) {
+      return [
+        { label: "Team", key: "name" },
+        { label: "Record", key: "seriesRecord" },
+        { label: "Wins", key: "totalWins" },
+        { label: "Losses", key: "totalLosses" },
+        { label: "WR%", key: "winRate" },
+        { label: "Streak", key: "currentWinStreak" },
+      ];
+    }
+    return [
       { label: "Team", key: "name" },
       { label: "Gold", key: "averageGoldEarned" },
       { label: "Kills", key: "averageScore" },
@@ -74,50 +70,93 @@ const TeamsTab: React.FC = () => {
       { label: "Heralds", key: "averageHeraldKills" },
       { label: "Voidgrubs", key: "averageVoidGrubKills" },
     ];
-
-    return showAdvancedStats ? advancedColumns : basicColumns;
   }, [showAdvancedStats]);
 
-  // Memoize teams with computed values
-  const teamsWithComputedValues = useMemo((): TeamWithComputedValues[] => {
-    return teams.map((team) => {
-      const cleanName = team.name
+  // Transform + Filter + Sort
+  const sortedTeams = useMemo<TeamWithComputed[]>(() => {
+    let newTeams = teams.map((team) => {
+      const nameClean = team.name
         .replace(/[\u200B-\u200D\uFEFF\u2060]/g, "")
         .trim();
-      const teamInfo = teamData[cleanName];
-      const seriesWins = team.aggStats?.totalSeriesWins ?? 0;
-      const seriesLosses = team.aggStats?.totalSeriesLosses ?? 0;
-      const totalSeriesGames = seriesWins + seriesLosses;
-
-      const wins = team.aggStats?.totalWins ?? 0;
-      const totalMatches = team.aggStats?.totalMatches ?? 0;
-
+      const info = teamData[nameClean];
       return {
         ...team,
-        league: teamInfo?.league ?? "Unknown",
-        computedValues: {
-          seriesWinRate:
-            totalSeriesGames > 0 ? seriesWins / totalSeriesGames : 0,
-          winRate: totalMatches > 0 ? wins / totalMatches : 0,
-        },
+        league: info?.league ?? "",
       };
     });
-  }, [teams]);
 
-  // Memoize filtered teams
-  const filteredTeams = useMemo(() => {
-    if (selectedLeagues.length === 0) return teamsWithComputedValues;
-    return teamsWithComputedValues.filter((team) => {
-      // Always include unknown league teams or check conditionally if needed
-      if (team.league === "Unknown") return true;
-      return selectedLeagues.includes(team.league);
+    if (selectedLeagues.length > 0) {
+      newTeams = newTeams.filter((t) => {
+        if (t.league === "Unknown") return false;
+        return selectedLeagues.includes(t.league);
+      });
+    }
+
+    newTeams.sort((a, b) => {
+      let comparison = 0;
+      switch (sortConfig.key) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "seriesRecord":
+          comparison =
+            (a.aggStats?.seriesWinRate ?? 0) - (b.aggStats?.seriesWinRate ?? 0);
+          break;
+        case "winRate":
+          comparison =
+            (a.aggStats?.totalWinRate ?? 0) - (b.aggStats?.totalWinRate ?? 0);
+          break;
+        case "totalWins":
+          comparison =
+            (a.aggStats?.totalWins ?? 0) - (b.aggStats?.totalWins ?? 0);
+          break;
+        case "totalLosses":
+          comparison =
+            (a.aggStats?.totalLosses ?? 0) - (b.aggStats?.totalLosses ?? 0);
+          break;
+        case "currentWinStreak":
+          comparison =
+            (a.aggStats?.currentWinStreak ?? 0) -
+            (b.aggStats?.currentWinStreak ?? 0);
+          break;
+        default: {
+          const statKey = sortConfig.key as keyof TeamAggStats;
+          const aVal = a.aggStats?.[statKey] ?? 0;
+          const bVal = b.aggStats?.[statKey] ?? 0;
+          comparison = (aVal as number) - (bVal as number);
+        }
+      }
+      return sortConfig.direction === "asc" ? comparison : -comparison;
     });
-  }, [teamsWithComputedValues, selectedLeagues]);
 
-  // Get ordered league list
+    return newTeams;
+  }, [teams, selectedLeagues, sortConfig]);
+
+  // Pagination: if combined, we paginate the entire sortedTeams list
+  // If not combined, we show separate league sections—so pagination is more complicated.
+  // For demonstration, let's only paginate when `isCombined = true`.
+  const paginatedTeams = useMemo(() => {
+    if (!isCombined) return sortedTeams; // no pagination if separating by league
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return sortedTeams.slice(startIndex, endIndex);
+  }, [sortedTeams, isCombined, currentPage, pageSize]);
+
+  // Group by league if not combined
+  const leagueGroups = useMemo(() => {
+    if (isCombined) return null;
+    const grouped: Record<string, TeamWithComputed[]> = {};
+    sortedTeams.forEach((t) => {
+      const key = t.league || "Unknown";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(t);
+    });
+    return grouped;
+  }, [isCombined, sortedTeams]);
+
+  // Tiers for ordering leagues
   const orderedLeagues = useMemo(() => {
     const tiers = groupLeaguesByTier();
-    // Flatten tiers into a single ordered array
     return [
       ...tiers[1],
       ...tiers[2],
@@ -128,93 +167,17 @@ const TeamsTab: React.FC = () => {
     ];
   }, []);
 
-  // Memoize teams by league with ordering
-  const teamsByLeague = useMemo(() => {
-    const leagueGroups = filteredTeams.reduce((acc, team) => {
-      const leagueKey = team.league || "Unknown";
-      if (!acc[leagueKey]) {
-        acc[leagueKey] = [];
-      }
-      acc[leagueKey].push(team);
-      return acc;
-    }, {} as { [league: string]: TeamWithComputedValues[] });
-
-    const allLeagues = [
-      ...orderedLeagues,
-      ...(leagueGroups["Unknown"] ? ["Unknown"] : []),
-    ];
-
-    return Object.fromEntries(
-      allLeagues
-        .filter((league) => leagueGroups[league])
-        .map((league) => [league, leagueGroups[league]])
-    );
-  }, [filteredTeams, orderedLeagues]);
-
-  // Memoize sort function
-  const getSortedTeams = useCallback(
-    (teamsToSort: TeamWithComputedValues[]) => {
-      if (!sortConfig) return teamsToSort;
-
-      return [...teamsToSort].sort((a, b) => {
-        let comparison = 0;
-
-        switch (sortConfig.key) {
-          case "name":
-            comparison = a.name
-              .toLowerCase()
-              .localeCompare(b.name.toLowerCase());
-            break;
-          case "seriesRecord":
-            comparison =
-              a.computedValues.seriesWinRate - b.computedValues.seriesWinRate;
-            break;
-          case "winRate":
-            comparison = a.computedValues.winRate - b.computedValues.winRate;
-            break;
-          case "totalWins":
-            comparison =
-              (a.aggStats?.totalWins ?? 0) - (b.aggStats?.totalWins ?? 0);
-            break;
-          case "totalLosses":
-            comparison =
-              (a.aggStats?.totalLosses ?? 0) - (b.aggStats?.totalLosses ?? 0);
-            break;
-          case "currentWinStreak":
-            comparison =
-              (a.aggStats?.currentWinStreak ?? 0) -
-              (b.aggStats?.currentWinStreak ?? 0);
-            break;
-          default:
-            const statKey = sortConfig.key as keyof TeamAggStats;
-            comparison =
-              ((a.aggStats?.[statKey] ?? 0) as number) -
-              ((b.aggStats?.[statKey] ?? 0) as number);
-        }
-
-        return sortConfig.direction === "asc" ? comparison : -comparison;
-      });
-    },
-    [sortConfig]
-  );
-
+  // Sorting
   const handleSort = useCallback((key: string) => {
-    setSortConfig((prevConfig) => {
-      if (prevConfig && prevConfig.key === key) {
-        return {
-          key,
-          direction: prevConfig.direction === "asc" ? "desc" : "asc",
-        };
-      } else {
-        return {
-          key,
-          direction: "desc",
-        };
-      }
-    });
+    setSortConfig((prev) =>
+      prev.key === key
+        ? { key, direction: prev.direction === "desc" ? "asc" : "desc" }
+        : { key, direction: "desc" }
+    );
   }, []);
 
-  const handleLeagueFilter = useCallback(
+  // Filter apply
+  const handleFilterApply = useCallback(
     (leagues: string[]) => {
       setSelectedLeagues(leagues);
       dispatch(closeModal());
@@ -222,34 +185,44 @@ const TeamsTab: React.FC = () => {
     [dispatch]
   );
 
-  if (loading) {
-    return <Spinner />;
-  }
+  // Grid template for StatsTable
+  const gridTemplateColumns = `225px repeat(${columns.length - 1}, 1fr)`;
 
+  // Early returns after hooks
+  if (!game) {
+    return <div className="text-center text-red-500">Invalid eSport name</div>;
+  }
   if (error) {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
-
-  const gridTemplateColumns = `225px repeat(${columns.length - 1}, 1fr)`;
+  if (loading && teams.length === 0) {
+    return <Spinner />;
+  }
+  if (teams.length === 0) {
+    return <div className="text-center">No teams found.</div>;
+  }
 
   return (
     <div>
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end mb-2 space-x-2">
         <button
           onClick={() =>
             dispatch(
               openModal("LOL_REGION_FILTER", {
-                onApplyFilter: handleLeagueFilter,
+                onApplyFilter: handleFilterApply,
               })
             )
           }
-          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600 mr-2"
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
         >
           Filter
         </button>
         <button
-          onClick={() => setIsCombined((prev) => !prev)}
-          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600 mr-2"
+          onClick={() => {
+            setIsCombined((prev) => !prev);
+            setCurrentPage(1); // reset pagination if toggling
+          }}
+          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
         >
           {isCombined ? "Separate by League" : "Combine All Teams"}
         </button>
@@ -261,47 +234,77 @@ const TeamsTab: React.FC = () => {
         </button>
       </div>
 
+      {loading && teams.length > 0 && (
+        <div className="text-center mb-2">
+          <Spinner />
+        </div>
+      )}
+
       {isCombined ? (
-        <StatsTable<TeamWithComputedValues>
-          columns={columns}
-          data={getSortedTeams(filteredTeams)}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          gridTemplateColumns={gridTemplateColumns}
-          rowKey={(team) => team.id}
-          renderRow={(team) => (
-            <LolTeamRow
-              key={team.id}
-              team={team}
-              columns={columns}
-              gridTemplateColumns={gridTemplateColumns}
-              esportName={esportName}
-            />
-          )}
-        />
-      ) : (
-        Object.entries(teamsByLeague).map(([league, teamsInLeague]) => (
-          <div key={league} className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">{league}</h2>
-            <StatsTable<TeamWithComputedValues>
-              columns={columns}
-              data={getSortedTeams(teamsInLeague)}
-              sortConfig={sortConfig}
-              onSort={handleSort}
-              gridTemplateColumns={gridTemplateColumns}
-              rowKey={(team) => team.id}
-              renderRow={(team) => (
-                <LolTeamRow
-                  key={team.id}
-                  team={team}
-                  columns={columns}
-                  gridTemplateColumns={gridTemplateColumns}
-                  esportName={esportName}
-                />
-              )}
-            />
+        <>
+          <StatsTable<TeamWithComputed>
+            columns={columns}
+            data={paginatedTeams}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            gridTemplateColumns={gridTemplateColumns}
+            rowKey={(team) => team.id}
+            renderRow={(team) => (
+              <LolTeamRow
+                key={team.id}
+                team={team}
+                columns={columns}
+                gridTemplateColumns={gridTemplateColumns}
+                esportName={esportName}
+              />
+            )}
+          />
+
+          {/* Pagination controls (only visible if combining all teams) */}
+          <div className="flex justify-center space-x-4 mt-4">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
+            >
+              Previous
+            </button>
+            <span className="self-center">Page {currentPage}</span>
+            <button
+              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={paginatedTeams.length < pageSize}
+              className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
+            >
+              Next
+            </button>
           </div>
-        ))
+        </>
+      ) : (
+        // League‐by‐league render
+        orderedLeagues
+          .filter((lg) => leagueGroups?.[lg]?.length)
+          .map((lg) => (
+            <div key={lg} className="mb-8">
+              <h2 className="text-xl font-semibold mb-4">{lg}</h2>
+              <StatsTable<TeamWithComputed>
+                columns={columns}
+                data={leagueGroups![lg]}
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                gridTemplateColumns={gridTemplateColumns}
+                rowKey={(team) => team.id}
+                renderRow={(team) => (
+                  <LolTeamRow
+                    key={team.id}
+                    team={team}
+                    columns={columns}
+                    gridTemplateColumns={gridTemplateColumns}
+                    esportName={esportName}
+                  />
+                )}
+              />
+            </div>
+          ))
       )}
     </div>
   );

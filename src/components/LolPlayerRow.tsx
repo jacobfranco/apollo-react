@@ -12,7 +12,6 @@ import { useTheme } from "src/hooks/useTheme";
 
 interface PlayerWithComputedValues extends Player {
   computedValues: {
-    kda: number;
     teamLogo: string;
     teamName: string;
   };
@@ -107,7 +106,7 @@ const LolPlayerRow: React.FC<LolPlayerRowProps> = ({
               </div>
             );
           } else if (column.key === "kda") {
-            const kda = computedValues.kda;
+            const kda = aggStats?.kda ? aggStats.kda : 0;
             value = isFinite(kda) ? kda.toFixed(2) : "Perfect";
           } else if (column.key === "totalMatches") {
             value = aggStats?.totalMatches

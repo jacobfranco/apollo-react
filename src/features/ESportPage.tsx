@@ -1,17 +1,29 @@
-import React, { useEffect } from "react";
+import React, {
+  useEffect,
+  lazy,
+  Suspense,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { defineMessages, useIntl } from "react-intl";
-import { Route, Switch, useLocation, useParams } from "react-router-dom";
-import { Tabs } from "src/components";
-import { Column } from "src/components/Column";
+import { useParams } from "react-router-dom";
+
 import esportsConfig from "src/esports-config";
-import { SpaceTimeline } from "./SpaceTimeline";
 import { useAppDispatch, useAppSelector } from "src/hooks";
 import { fetchSpace } from "src/actions/spaces";
-import ScheduleTab from "./ScheduleTab";
-import TeamsTab from "./TeamsTab";
-import PlayersTab from "./PlayersTab";
 import { fetchPlayers } from "src/actions/players";
 import { fetchTeams } from "src/actions/teams";
+
+import Spinner from "src/components/Spinner";
+import Tabs from "src/components/Tabs";
+import { Column } from "src/components/Column";
+import { SpaceTimeline } from "./SpaceTimeline";
+
+// Lazy‐load each tab
+const ScheduleTab = lazy(() => import("./ScheduleTab"));
+const TeamsTab = lazy(() => import("./TeamsTab"));
+const PlayersTab = lazy(() => import("./PlayersTab"));
 
 const messages = defineMessages({
   esports: { id: "esports_page.esports", defaultMessage: "Esports" },
@@ -20,130 +32,108 @@ const messages = defineMessages({
   players: { id: "esports_page.players", defaultMessage: "Players" },
 });
 
-const TabLoading = () => (
-  <div className="flex items-center justify-center p-8">
-    <div className="animate-pulse flex space-x-4">
-      <div className="flex-1 space-y-4 py-1">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-interface TabContainerProps {
-  children: React.ReactNode;
-}
-
-const TabContainer = React.memo(({ children }: TabContainerProps) => (
-  <div className="tab-container">{children}</div>
-));
-
-const EsportPage = () => {
+const EsportPage: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const location = useLocation();
   const { esportName } = useParams<{ esportName: string }>();
 
-  // Core state
+  // Look up which game config we’re dealing with
   const game = esportsConfig.find((g) => g.path === esportName);
-  const spacePath = `${esportName}esports`;
-  const space = useAppSelector((state) => state.spaces.get(spacePath));
-  const currentPath = location.pathname;
-  const activeTab = currentPath.split("/").pop() || "esports";
-
-  // Simple space fetching like SpacePage
-  useEffect(() => {
-    if (spacePath && !space) {
-      dispatch(fetchSpace(spacePath));
-    }
-  }, [dispatch, spacePath, space]);
-
   if (!game) {
     return <div className="text-center text-red-500">Invalid esport name</div>;
   }
 
-  if (!space) {
-    return <div className="text-center text-red-500">Loading esport...</div>;
-  }
+  // Compose the “spacePath” for the SpaceTimeline
+  const spacePath = `${game.path}esports`;
 
-  const renderTabBar = () => {
-    const items = game.hasApiSupport
-      ? [
-          {
-            text: intl.formatMessage(messages.esports),
-            to: `/esports/${esportName}`,
-            name: "esports",
-            title: intl.formatMessage(messages.esports),
-          },
-          {
-            text: intl.formatMessage(messages.schedule),
-            to: `/esports/${esportName}/schedule`,
-            name: "schedule",
-            title: intl.formatMessage(messages.schedule),
-          },
-          {
-            text: intl.formatMessage(messages.teams),
-            to: `/esports/${esportName}/teams`,
-            name: "teams",
-            title: intl.formatMessage(messages.teams),
-          },
-          {
-            text: intl.formatMessage(messages.players),
-            to: `/esports/${esportName}/players`,
-            name: "players",
-            title: intl.formatMessage(messages.players),
-          },
-        ]
-      : [
-          {
-            text: intl.formatMessage(messages.esports),
-            to: `/esports/${esportName}`,
-            name: "esports",
-            title: intl.formatMessage(messages.esports),
-          },
-        ];
+  // Default tab is the “esports” timeline
+  const [activeTab, setActiveTab] = useState<
+    "esports" | "schedule" | "teams" | "players"
+  >("esports");
 
-    return <Tabs items={items} activeItem={activeTab} />;
-  };
+  // This key increments every time we switch tabs, forcing <Suspense> to remount
+  const [tabKey, setTabKey] = useState(0);
+
+  const handleTabChange = useCallback(
+    (tabName: "esports" | "schedule" | "teams" | "players") => {
+      setActiveTab(tabName);
+      setTabKey((prev) => prev + 1);
+    },
+    []
+  );
+
+  // Fetch space, players, and teams once on mount or if esportName changes
+  useEffect(() => {
+    dispatch(fetchSpace(spacePath));
+    if (game.hasApiSupport) {
+      dispatch(fetchPlayers(esportName));
+      dispatch(fetchTeams(esportName));
+    }
+  }, [dispatch, esportName, spacePath, game]);
+
+  // Build out the tab items
+  const tabItems = useMemo(() => {
+    if (!game.hasApiSupport) {
+      return [
+        {
+          name: "esports",
+          text: intl.formatMessage(messages.esports),
+          title: intl.formatMessage(messages.esports),
+          action: () => handleTabChange("esports"),
+        },
+      ];
+    }
+    return [
+      {
+        name: "esports",
+        text: intl.formatMessage(messages.esports),
+        title: intl.formatMessage(messages.esports),
+        action: () => handleTabChange("esports"),
+      },
+      {
+        name: "schedule",
+        text: intl.formatMessage(messages.schedule),
+        title: intl.formatMessage(messages.schedule),
+        action: () => handleTabChange("schedule"),
+      },
+      {
+        name: "teams",
+        text: intl.formatMessage(messages.teams),
+        title: intl.formatMessage(messages.teams),
+        action: () => handleTabChange("teams"),
+      },
+      {
+        name: "players",
+        text: intl.formatMessage(messages.players),
+        title: intl.formatMessage(messages.players),
+        action: () => handleTabChange("players"),
+      },
+    ];
+  }, [game, intl, handleTabChange]);
 
   return (
-    <Column label={game.name} transparent={false} withHeader={true}>
+    <Column label={game.name} transparent={false} withHeader>
       <div className="space-y-6">
-        {renderTabBar()}
-        <div className="tab-content">
-          <Switch>
-            <Route exact path="/esports/:esportName">
-              <TabContainer>
-                <SpaceTimeline spacePath={spacePath} />
-              </TabContainer>
-            </Route>
-            <Route path="/esports/:esportName/schedule">
-              {game.hasApiSupport && (
-                <TabContainer>
-                  <ScheduleTab />
-                </TabContainer>
-              )}
-            </Route>
-            <Route path="/esports/:esportName/teams">
-              {game.hasApiSupport && (
-                <TabContainer>
-                  <TeamsTab />
-                </TabContainer>
-              )}
-            </Route>
-            <Route path="/esports/:esportName/players">
-              {game.hasApiSupport && (
-                <TabContainer>
-                  <PlayersTab />
-                </TabContainer>
-              )}
-            </Route>
-          </Switch>
-        </div>
+        <Tabs items={tabItems} activeItem={activeTab} />
+
+        {/* Render each tab. The timeline tab is shown by default. */}
+        {activeTab === "esports" && <SpaceTimeline spacePath={spacePath} />}
+
+        {activeTab === "schedule" && (
+          <Suspense fallback={<Spinner />} key={`schedule-${tabKey}`}>
+            <ScheduleTab />
+          </Suspense>
+        )}
+        {activeTab === "teams" && (
+          <Suspense fallback={<Spinner />} key={`teams-${tabKey}`}>
+            <TeamsTab esportName={game.path} />
+          </Suspense>
+        )}
+        {activeTab === "players" && (
+          <Suspense fallback={<Spinner />} key={`players-${tabKey}`}>
+            <PlayersTab esportName={game.path} />
+          </Suspense>
+        )}
       </div>
     </Column>
   );
