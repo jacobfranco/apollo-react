@@ -49,7 +49,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
         case "reply":
           return "#5B98F1";
         case "repost":
-          return "#A981FC";
+          return "#81fccc";
         case "like":
           return "#FC81B1";
         default:
@@ -101,10 +101,9 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
 
       // Theme variations
       {
-        "text-gray-600 dark:hover:text-white bg-white dark:bg-transparent":
+        "text-gray-600 dark:hover:text-white bg-transparent":
           theme === "default",
-        "text-white/80 hover:text-white bg-transparent dark:bg-transparent":
-          theme === "inverse",
+        "text-white/80 hover:text-white bg-transparent": theme === "inverse",
       },
 
       // Active state
