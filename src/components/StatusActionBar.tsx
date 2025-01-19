@@ -327,15 +327,15 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     }
   };
 
-  const handleShareClick = () => {
-    navigator
-      .share({
-        text: status.search_index,
-        url: status.uri,
+  const handleShareClick: React.EventHandler<React.MouseEvent> = () => {
+    const { uri } = status;
+    copy(uri);
+    toast.success(
+      intl.formatMessage({
+        id: "status.link_copied",
+        defaultMessage: "Link copied to clipboard!",
       })
-      .catch((e) => {
-        if (e.name !== "AbortError") console.error(e);
-      });
+    );
   };
 
   const handleLikeClick: React.EventHandler<React.MouseEvent> = (e) => {
@@ -867,7 +867,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const repostButton = (
     <StatusActionButton
       icon={repostIcon}
-      color="success"
+      actionType="repost"
       disabled={!publicStatus}
       title={
         !publicStatus
@@ -910,10 +910,13 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
       >
         <GroupPopover group={status.group as any} isEnabled={replyDisabled}>
           <StatusActionButton
-            title={replyTitle}
+            title={intl.formatMessage(messages.reply)}
             icon={messageCircleIcon}
+            actionType="reply"
+            filled={true}
             onClick={handleReplyClick}
             count={replyCount}
+            active={false}
             disabled={replyDisabled}
             theme={statusActionButtonTheme}
           />
@@ -930,21 +933,20 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
         <StatusActionButton
           title={intl.formatMessage(messages.like)}
           icon={heartIcon}
-          color="accent"
-          filled
+          actionType="like"
+          filled={true}
           onClick={handleLikeClick}
+          active={status.liked}
           count={likeCount}
           theme={statusActionButtonTheme}
         />
 
-        {canShare && (
-          <StatusActionButton
-            title={intl.formatMessage(messages.share)}
-            icon={uploadIcon}
-            onClick={handleShareClick}
-            theme={statusActionButtonTheme}
-          />
-        )}
+        <StatusActionButton
+          title={intl.formatMessage(messages.share)}
+          icon={shareIcon}
+          onClick={handleShareClick}
+          theme={statusActionButtonTheme}
+        />
 
         <DropdownMenu items={menu} status={status.toJS() as StatusEntity}>
           <StatusActionButton

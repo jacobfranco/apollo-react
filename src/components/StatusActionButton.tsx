@@ -1,22 +1,13 @@
 import clsx from "clsx";
 import { forwardRef } from "react";
-
 import Icon from "src/components/Icon";
 import Text from "src/components/Text";
 import { shortNumberFormat } from "src/utils/numbers";
-
-const COLORS = {
-  accent: "accent",
-  success: "success",
-};
-
-type Color = keyof typeof COLORS;
 
 interface IStatusActionCounter {
   count: number;
 }
 
-/** Action button numerical counter, eg "5" likes. */
 const StatusActionCounter: React.FC<IStatusActionCounter> = ({
   count = 0,
 }): JSX.Element => {
@@ -33,7 +24,7 @@ interface IStatusActionButton
   icon: string;
   count?: number;
   active?: boolean;
-  color?: Color;
+  actionType?: "reply" | "repost" | "like";
   filled?: boolean;
   theme?: "default" | "inverse";
 }
@@ -45,27 +36,39 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
       className,
       iconClassName,
       active,
-      color,
+      actionType,
       filled = false,
       count = 0,
       theme = "default",
       ...filteredProps
     } = props;
 
-    const renderIcon = () => {
-      return (
-        <Icon
-          src={icon}
-          className={clsx(
-            {
-              "fill-accent-300 text-accent-300 hover:fill-accent-300":
-                active && filled && color === COLORS.accent,
-            },
-            iconClassName
-          )}
-        />
-      );
+    // Get the color based on action type
+    const getActionColor = () => {
+      switch (actionType) {
+        case "reply":
+          return "#5B98F1";
+        case "repost":
+          return "#A981FC";
+        case "like":
+          return "#FC81B1";
+        default:
+          return undefined;
+      }
     };
+
+    const actionColor = getActionColor();
+
+    const renderIcon = () => (
+      <Icon
+        src={icon}
+        className={clsx(
+          "transition-all duration-300",
+          { "scale-110": active },
+          iconClassName
+        )}
+      />
+    );
 
     const renderText = () => {
       if (count) {
@@ -73,29 +76,52 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
       }
     };
 
+    const renderParticles = () => {
+      if (!active || !actionColor) return null;
+
+      return (
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <div
+            className="absolute top-0 left-1/4 w-1 h-1 rounded-full animate-ping"
+            style={{ backgroundColor: actionColor }}
+          />
+          <div
+            className="absolute bottom-1/4 right-0 w-1 h-1 rounded-full animate-ping delay-100"
+            style={{ backgroundColor: actionColor }}
+          />
+        </div>
+      );
+    };
+
+    const buttonClasses = clsx(
+      // Base styles
+      "relative flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
+      "group hover:scale-105",
+      "transition-all duration-300",
+
+      // Theme variations
+      {
+        "text-gray-600 dark:hover:text-white bg-white dark:bg-transparent":
+          theme === "default",
+        "text-white/80 hover:text-white bg-transparent dark:bg-transparent":
+          theme === "inverse",
+      },
+
+      // Active state
+      active && actionColor && "group", // Add group class for particle effects
+
+      className
+    );
+
     return (
       <button
         ref={ref}
         type="button"
-        className={clsx(
-          "flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
-          "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-offset-0",
-          {
-            "text-gray-600 hover:text-gray-600 dark:hover:text-white bg-white dark:bg-transparent":
-              theme === "default",
-            "text-white/80 hover:text-white bg-transparent dark:bg-transparent":
-              theme === "inverse",
-            "hover:text-gray-600 dark:hover:text-white":
-              !filteredProps.disabled,
-            "text-accent-300 hover:text-accent-300 dark:hover:text-accent-300":
-              active && color === COLORS.accent,
-            "text-success-600 hover:text-success-600 dark:hover:text-success-600":
-              active && color === COLORS.success,
-          },
-          className
-        )}
+        className={buttonClasses}
+        style={active && actionColor ? { color: actionColor } : undefined}
         {...filteredProps}
       >
+        {renderParticles()}
         {renderIcon()}
         {renderText()}
       </button>
