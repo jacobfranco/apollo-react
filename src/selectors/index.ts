@@ -305,10 +305,8 @@ export const getSpaceMediaGallery = createSelector(
       const status = statuses.get(statusId);
       if (!status) return medias;
       if (status.repost) return medias;
-
-      // Add the media attachments to the beginning of the list instead of the end
-      return medias.unshift(
-        ...status.media_attachments.map((media) =>
+      return medias.concat(
+        status.media_attachments.map((media) =>
           media.merge({ status, account: status.account })
         )
       );

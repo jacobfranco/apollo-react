@@ -45,7 +45,7 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
 
   // Pagination config
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 150; // Adjust as needed
+  const pageSize = 100; // Adjust as needed
 
   // Build columns
   const columns = useMemo(() => {

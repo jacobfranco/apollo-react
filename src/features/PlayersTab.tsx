@@ -45,7 +45,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({ esportName }) => {
 
   // Pagination config
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 150; // You can adjust this as desired
+  const pageSize = 100; // adjust as needed
 
   // Define table columns
   const columns = useMemo(
