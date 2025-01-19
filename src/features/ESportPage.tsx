@@ -27,7 +27,7 @@ const TeamsTab = lazy(() => import("./TeamsTab"));
 const PlayersTab = lazy(() => import("./PlayersTab"));
 
 const messages = defineMessages({
-  esports: { id: "esports_page.esports", defaultMessage: "Esports" },
+  esports: { id: "esports_page.esports", defaultMessage: "Community" },
   schedule: { id: "esports_page.schedule", defaultMessage: "Schedule" },
   teams: { id: "esports_page.teams", defaultMessage: "Teams" },
   players: { id: "esports_page.players", defaultMessage: "Players" },
@@ -57,8 +57,8 @@ const EsportPage: React.FC = () => {
     [esportName]
   );
 
-  // Default tab is "esports"
-  const [activeTab, setActiveTab] = useState<TabType>("esports");
+  // Default tab is "schedule"
+  const [activeTab, setActiveTab] = useState<TabType>("schedule");
   const [tabKey, setTabKey] = useState(0);
 
   const handleTabChange = useCallback((tabName: TabType) => {
@@ -89,7 +89,7 @@ const EsportPage: React.FC = () => {
   // Build out the tab items
   const tabItems = useMemo(() => {
     if (!game) return [];
-    const baseEsportsTab = [
+    const esportsTab = [
       {
         name: "esports",
         text: intl.formatMessage(messages.esports),
@@ -107,11 +107,10 @@ const EsportPage: React.FC = () => {
     ];
 
     if (!game.hasApiSupport) {
-      return [...baseEsportsTab, ...mediaTab];
+      return [...esportsTab, ...mediaTab];
     }
 
     const apiSupportedTabs = [
-      ...baseEsportsTab,
       {
         name: "schedule",
         text: intl.formatMessage(messages.schedule),
@@ -130,6 +129,7 @@ const EsportPage: React.FC = () => {
         title: intl.formatMessage(messages.players),
         action: () => handleTabChange("players"),
       },
+      ...esportsTab,
       ...mediaTab,
     ];
     return apiSupportedTabs;
