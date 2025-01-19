@@ -105,11 +105,11 @@ const SpacePage: React.FC = () => {
           {/* Content */}
           <div className="relative px-6 pb-2 pt-28">
             <div className="flex items-center justify-between">
-              <div className="inline-flex items-baseline space-x-2 px-4 py-2 rounded-lg bg-primary-200 dark:bg-secondary-800/90 backdrop-blur-sm">
-                <h1 className="text-2xl font-bold text-black dark:text-white">
+              <div className="inline-flex items-baseline space-x-2 px-4 py-2 rounded-lg bg-primary-400/20 dark:bg-secondary-800/40 backdrop-blur-sm">
+                <h1 className="text-2xl font-bold text-white">
                   {space.get("name")}
                 </h1>
-                <span className="text-md font-bold text-gray-700 dark:text-gray-300">
+                <span className="text-md font-bold text-gray-300">
                   /s/{spaceName}
                 </span>
               </div>
