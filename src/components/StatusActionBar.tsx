@@ -79,12 +79,13 @@ import { useSettings } from "src/hooks/useSettings";
 import { GroupRoles } from "src/schemas/group-member";
 import { Status as StatusEntity } from "src/schemas/index";
 import toast from "src/toast";
-import copy from "src/utils/copy";
+import copy, { getCopiedStatuses, markStatusAsCopied } from "src/utils/copy";
 
 import GroupPopover from "src/components/GroupPopover";
 
 import type { Menu } from "src/components/dropdown-menu/index";
 import type { Group, Status as LegacyStatus } from "src/types/entities";
+import { useEffect, useState } from "react";
 
 const messages = defineMessages({
   adminAccount: {
@@ -306,6 +307,26 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const isStaff = account ? account.staff : false;
   const isAdmin = account ? account.admin : false;
 
+  useEffect(() => {
+    localStorage.removeItem("copied_statuses");
+  }, []);
+
+  const [isCopied, setIsCopied] = useState(() => {
+    const copiedStatuses = getCopiedStatuses();
+    return copiedStatuses.has(status.id);
+  });
+
+  const hasReplied = useAppSelector((state) => {
+    const replies = state.contexts.replies.get(status.id);
+    if (!replies || !me) return false;
+
+    // Check if any of the replies are from the current user
+    return replies.some((replyId) => {
+      const replyStatus = state.statuses.get(replyId);
+      return replyStatus?.account.id === me;
+    });
+  });
+
   if (!status) {
     return null;
   }
@@ -330,6 +351,11 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const handleShareClick: React.EventHandler<React.MouseEvent> = () => {
     const { uri } = status;
     copy(uri);
+
+    // Persist the copied state
+    markStatusAsCopied(status.id);
+    setIsCopied(true);
+
     toast.success(
       intl.formatMessage({
         id: "status.link_copied",
@@ -497,15 +523,6 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
           dispatch(blockAccount(account.id));
           dispatch(initReport(ReportableEntities.STATUS, account, { status }));
         },
-      })
-    );
-  };
-
-  const handleEmbed = () => {
-    dispatch(
-      openModal("EMBED", {
-        url: status.url,
-        onError: (error: any) => toast.showAlertForError(error),
       })
     );
   };
@@ -898,59 +915,65 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   return (
     <HStack data-testid="status-action-bar">
       <HStack
-        justifyContent={space === "lg" ? "between" : undefined}
+        justifyContent="between"
         space={spacing[space]}
-        grow={space === "lg"}
+        grow
         onClick={(e) => e.stopPropagation()}
         alignItems="center"
       >
-        <GroupPopover group={status.group as any} isEnabled={replyDisabled}>
+        {/* Primary actions group */}
+        <HStack space={spacing[space]} alignItems="center">
+          <GroupPopover group={status.group as any} isEnabled={replyDisabled}>
+            <StatusActionButton
+              title={intl.formatMessage(messages.reply)}
+              icon={messageCircleIcon}
+              actionType="reply"
+              filled={true}
+              onClick={handleReplyClick}
+              count={replyCount}
+              active={hasReplied}
+              disabled={replyDisabled}
+              theme={statusActionButtonTheme}
+            />
+          </GroupPopover>
+          <DropdownMenu
+            items={repostMenu}
+            disabled={!publicStatus}
+            onShiftClick={handleRepostClick}
+          >
+            {repostButton}
+          </DropdownMenu>
           <StatusActionButton
-            title={intl.formatMessage(messages.reply)}
-            icon={messageCircleIcon}
-            actionType="reply"
+            title={intl.formatMessage(messages.like)}
+            icon={heartIcon}
+            actionType="like"
             filled={true}
-            onClick={handleReplyClick}
-            count={replyCount}
-            active={false}
-            disabled={replyDisabled}
+            onClick={handleLikeClick}
+            active={status.liked}
+            count={likeCount}
             theme={statusActionButtonTheme}
           />
-        </GroupPopover>
+        </HStack>
 
-        <DropdownMenu
-          items={repostMenu}
-          disabled={!publicStatus}
-          onShiftClick={handleRepostClick}
-        >
-          {repostButton}
-        </DropdownMenu>
-
-        <StatusActionButton
-          title={intl.formatMessage(messages.like)}
-          icon={heartIcon}
-          actionType="like"
-          filled={true}
-          onClick={handleLikeClick}
-          active={status.liked}
-          count={likeCount}
-          theme={statusActionButtonTheme}
-        />
-
-        <StatusActionButton
-          title={intl.formatMessage(messages.share)}
-          icon={shareIcon}
-          onClick={handleShareClick}
-          theme={statusActionButtonTheme}
-        />
-
-        <DropdownMenu items={menu} status={status.toJS() as StatusEntity}>
+        {/* Secondary actions group */}
+        <HStack space={spacing[space]} alignItems="center">
           <StatusActionButton
-            title={intl.formatMessage(messages.more)}
-            icon={dotsIcon}
+            title={intl.formatMessage(messages.share)}
+            icon={shareIcon}
+            onClick={handleShareClick}
+            actionType="share"
+            active={isCopied}
+            filled={isCopied}
             theme={statusActionButtonTheme}
           />
-        </DropdownMenu>
+          <DropdownMenu items={menu} status={status.toJS() as StatusEntity}>
+            <StatusActionButton
+              title={intl.formatMessage(messages.more)}
+              icon={dotsIcon}
+              theme={statusActionButtonTheme}
+            />
+          </DropdownMenu>
+        </HStack>
       </HStack>
     </HStack>
   );

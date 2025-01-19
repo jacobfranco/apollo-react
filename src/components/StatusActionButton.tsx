@@ -25,7 +25,7 @@ interface IStatusActionButton
   icon: string;
   count?: number;
   active?: boolean;
-  actionType?: "reply" | "repost" | "like";
+  actionType?: "reply" | "repost" | "like" | "share";
   filled?: boolean;
   theme?: "default" | "inverse";
 }
@@ -53,11 +53,13 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
           reply: "#0095FF",
           repost: "#00D085",
           like: "#FF3B99",
+          share: "#7B4DFF",
         },
         dark: {
           reply: "#45CAFF",
           repost: "#3DFF9E",
           like: "#FF5FB3",
+          share: "#7B4DFF",
         },
       };
       if (!actionType) return undefined;
