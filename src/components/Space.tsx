@@ -44,7 +44,7 @@ const Space: React.FC<ISpace> = ({ space }) => {
               .map((day) => +day.uses)
               .toArray()}
           >
-            <SparklinesCurve style={{ fill: "none" }} color="#818cf8" />
+            <SparklinesCurve color="#A981FC" />
           </Sparklines>
         </div>
       )}

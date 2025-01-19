@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 const themes = {
   primary:
-    "bg-primary-600 hover:bg-primary-300 dark:hover:bg-primary-600 border-transparent focus:bg-primary-500 text-black dark:text-accent-500 focus:ring-primary-300",
+    "bg-primary-500 hover:bg-primary-300 dark:hover:bg-primary-600 border-transparent focus:bg-primary-500 text-black dark:text-accent-500 focus:ring-primary-300",
   secondary:
     "border-primary-500 bg-primary-100 dark:bg-secondary-700 hover:bg-primary-50 dark:hover:bg-secondary-800 focus:bg-primary-100 dark:focus:bg-primary-800 text-primary-500 dark:text-primary-500",
   tertiary:

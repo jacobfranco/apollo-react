@@ -49,7 +49,7 @@ const Hashtag: React.FC<IHashtag> = ({ hashtag }) => {
               .map((day) => +day.uses)
               .toArray()}
           >
-            <SparklinesCurve style={{ fill: "none" }} color="#818cf8" />
+            <SparklinesCurve color="#A981FC" />
           </Sparklines>
         </div>
       )}

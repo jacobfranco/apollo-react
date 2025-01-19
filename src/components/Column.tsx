@@ -130,7 +130,7 @@ const Column = forwardRef<HTMLDivElement, IColumn>(
               backHref={backHref}
               className={clsx({
                 "rounded-t-3xl": !isScrolled && !transparent,
-                "sticky top-12 z-10 bg-transprent dark:bg-transparent black:bg-black/90 backdrop-blur lg:top-16":
+                "sticky top-12 z-10 bg-transprent dark:bg-transparent black:bg-black/90 lg:top-16":
                   !transparent,
                 "p-4 sm:p-0 sm:pb-4 black:p-4": transparent,
                 "-mt-4 p-4": size !== "lg" && !transparent,
