@@ -9,8 +9,8 @@ import React, {
 import { defineMessages, useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
 import esportsConfig from "src/esports-config";
-import { useAppDispatch, useAppSelector } from "src/hooks";
-import { fetchSpace } from "src/actions/spaces";
+import { useAppDispatch, useAppSelector, useLoggedIn } from "src/hooks";
+import { fetchSpace, followSpace, unfollowSpace } from "src/actions/spaces";
 import { fetchPlayers } from "src/actions/players";
 import { fetchTeams } from "src/actions/teams";
 import Spinner from "src/components/Spinner";
@@ -18,6 +18,8 @@ import Tabs from "src/components/Tabs";
 import { Column } from "src/components/Column";
 import { SpaceTimeline } from "./SpaceTimeline";
 import SpaceGallery from "./SpaceGallery";
+import Button from "src/components/Button";
+import plusIcon from "@tabler/icons/outline/plus.svg";
 
 // Lazy‐load each tab
 const ScheduleTab = lazy(() => import("./ScheduleTab"));
@@ -30,6 +32,9 @@ const messages = defineMessages({
   teams: { id: "esports_page.teams", defaultMessage: "Teams" },
   players: { id: "esports_page.players", defaultMessage: "Players" },
   media: { id: "esports_page.media", defaultMessage: "Media" },
+  loading: { id: "spaces_page.loading", defaultMessage: "Loading space..." },
+  follow: { id: "space.follow", defaultMessage: "Follow" },
+  unfollow: { id: "space.unfollow", defaultMessage: "Unfollow" },
 });
 
 type TabType = "esports" | "media" | "schedule" | "teams" | "players";
@@ -38,17 +43,22 @@ const EsportPage: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const { esportName } = useParams<{ esportName: string }>();
+  const { isLoggedIn } = useLoggedIn();
 
-  // Look up which game config we're dealing with
+  // Compose the space path
+  const spacePath = useMemo(() => `${esportName}esports`, [esportName]);
+
+  // Get the space data
+  const space = useAppSelector((state) => state.spaces.get(spacePath));
+
+  // Look up which game config we're dealing with - only for hasApiSupport
   const game = useMemo(
     () => esportsConfig.find((g) => g.path === esportName),
     [esportName]
   );
 
-  // Default tab is the "esports" timeline
+  // Default tab is "esports"
   const [activeTab, setActiveTab] = useState<TabType>("esports");
-
-  // This key increments every time we switch tabs, forcing <Suspense> to remount
   const [tabKey, setTabKey] = useState(0);
 
   const handleTabChange = useCallback((tabName: TabType) => {
@@ -56,10 +66,6 @@ const EsportPage: React.FC = () => {
     setTabKey((prev) => prev + 1);
   }, []);
 
-  // Compose the "spacePath" for the SpaceTimeline
-  const spacePath = useMemo(() => (game ? `${game.path}esports` : ""), [game]);
-
-  // Fetch space, players, and teams once on mount or if esportName changes
   useEffect(() => {
     if (spacePath) {
       dispatch(fetchSpace(spacePath));
@@ -70,10 +76,19 @@ const EsportPage: React.FC = () => {
     }
   }, [dispatch, esportName, spacePath, game]);
 
+  const handleFollow = () => {
+    const shortId = space?.get("id");
+    if (!shortId) return;
+    if (space?.get("following")) {
+      dispatch(unfollowSpace(shortId));
+    } else {
+      dispatch(followSpace(shortId));
+    }
+  };
+
   // Build out the tab items
   const tabItems = useMemo(() => {
     if (!game) return [];
-
     const baseEsportsTab = [
       {
         name: "esports",
@@ -82,7 +97,6 @@ const EsportPage: React.FC = () => {
         action: () => handleTabChange("esports"),
       },
     ];
-
     const mediaTab = [
       {
         name: "media",
@@ -118,43 +132,85 @@ const EsportPage: React.FC = () => {
       },
       ...mediaTab,
     ];
-
     return apiSupportedTabs;
   }, [game, intl, handleTabChange]);
 
-  if (!game) {
-    return <div className="text-center text-red-500">Invalid esport name</div>;
+  if (!space) {
+    return (
+      <div className="text-center text-gray-500">
+        {intl.formatMessage(messages.loading)}
+      </div>
+    );
   }
 
   return (
-    <Column label={game.name} transparent={false} withHeader>
-      <div className="space-y-6">
+    <Column transparent={false} withHeader>
+      <div className="flex flex-col space-y-2">
+        {/* Header with backdrop image */}
+        <div className="relative overflow-hidden -mt-16 -mx-4 rounded-lg">
+          {/* Backdrop Image */}
+          {space.get("imageUrl") && (
+            <div className="absolute inset-0">
+              <img
+                src={space.get("imageUrl")}
+                alt=""
+                className="w-full h-64 object-cover"
+              />
+              {/* Gradient overlay - lighter for more image visibility */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 rounded-t-lg" />
+            </div>
+          )}
+
+          {/* Content */}
+          <div className="relative px-6 pb-2 pt-28">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-baseline space-x-2 px-4 py-2 rounded-lg bg-primary-200 dark:bg-secondary-800/90 backdrop-blur-sm">
+                <h1 className="text-2xl font-bold text-black dark:text-white">
+                  {space.get("name")}
+                </h1>
+                <span className="text-md font-bold text-gray-700 dark:text-gray-300">
+                  /s/{spacePath}
+                </span>
+              </div>
+              {isLoggedIn && (
+                <Button
+                  theme={space.get("following") ? "secondary" : "primary"}
+                  size="sm"
+                  icon={!space.get("following") ? plusIcon : undefined}
+                  onClick={handleFollow}
+                >
+                  {space.get("following")
+                    ? intl.formatMessage(messages.unfollow)
+                    : intl.formatMessage(messages.follow)}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
         <Tabs items={tabItems} activeItem={activeTab} />
 
-        {/* Render each tab */}
+        {/* Tab content */}
         {activeTab === "esports" && <SpaceTimeline spacePath={spacePath} />}
-
         {activeTab === "media" && (
           <Suspense fallback={<Spinner />} key={`media-${tabKey}`}>
             <SpaceGallery spacePath={spacePath} />
           </Suspense>
         )}
-
         {activeTab === "schedule" && (
           <Suspense fallback={<Spinner />} key={`schedule-${tabKey}`}>
             <ScheduleTab />
           </Suspense>
         )}
-
         {activeTab === "teams" && (
           <Suspense fallback={<Spinner />} key={`teams-${tabKey}`}>
-            <TeamsTab esportName={game.path} />
+            <TeamsTab esportName={game!.path} />
           </Suspense>
         )}
-
         {activeTab === "players" && (
           <Suspense fallback={<Spinner />} key={`players-${tabKey}`}>
-            <PlayersTab esportName={game.path} />
+            <PlayersTab esportName={game!.path} />
           </Suspense>
         )}
       </div>

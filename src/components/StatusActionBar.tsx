@@ -830,36 +830,6 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const repostCount = status.reposts_count;
   const likeCount = status.likes_count;
 
-  const emojiReactCount =
-    status.reactions?.reduce(
-      (acc, reaction) => acc + (reaction.count ?? 0),
-      0
-    ) ?? 0; // allow all emojis
-
-  const meEmojiReact =
-    status.reactions?.find((emojiReact) => emojiReact.me) ?? // allow all emojis
-    (status.liked && account
-      ? { count: 1, me: status.account.id === account.id, name: "👍" }
-      : undefined);
-
-  const meEmojiName = meEmojiReact?.name as
-    | keyof typeof reactMessages
-    | undefined;
-
-  const reactMessages = {
-    "👍": messages.reactionLike,
-    "❤️": messages.reactionHeart,
-    "😆": messages.reactionLaughing,
-    "😮": messages.reactionOpenMouth,
-    "😢": messages.reactionCry,
-    "😩": messages.reactionWeary,
-    "": messages.like,
-  };
-
-  const meEmojiTitle = intl.formatMessage(
-    reactMessages[meEmojiName || ""] || messages.like
-  );
-
   const menu = _makeMenu(publicStatus);
   let repostIcon = repeatIcon;
   let replyTitle;
@@ -963,7 +933,6 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
           color="accent"
           filled
           onClick={handleLikeClick}
-          active={Boolean(meEmojiName)}
           count={likeCount}
           theme={statusActionButtonTheme}
         />

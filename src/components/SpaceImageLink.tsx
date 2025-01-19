@@ -1,8 +1,7 @@
 import React from "react";
-import starIcon from "@tabler/icons/filled/star.svg";
 import { Link } from "react-router-dom";
-import { SvgIcon } from "src/components";
 import { Space } from "src/types/entities";
+import SpaceFollowButton from "./SpaceFollowButton";
 import clsx from "clsx";
 
 interface SpaceImageLinkProps {
@@ -39,17 +38,11 @@ const SpaceImageLink: React.FC<SpaceImageLinkProps> = ({
           </h2>
         </div>
       </Link>
-      <button
-        onClick={onToggleFollow}
-        className="absolute top-2 right-2 p-2 rounded-full focus:ring-2 focus:ring-primary-500"
-      >
-        <SvgIcon
-          src={starIcon}
-          className={`h-6 w-6 ${
-            isFollowed ? "text-yellow-400" : "text-primary-400"
-          }`}
-        />
-      </button>
+      <SpaceFollowButton
+        isFollowed={isFollowed}
+        onToggleFollow={onToggleFollow}
+        className="absolute top-2 right-2"
+      />
     </div>
   );
 };

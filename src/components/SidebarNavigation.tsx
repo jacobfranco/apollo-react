@@ -21,6 +21,7 @@ import userPlusIcon from "@tabler/icons/outline/user-plus.svg";
 import userIcon from "@tabler/icons/outline/user.svg";
 import worldIcon from "@tabler/icons/outline/world.svg";
 import planetIcon from "@tabler/icons/outline/planet.svg";
+import d20Icon from "@tabler/icons/outline/ikosaedr.svg";
 import controllerIcon from "@tabler/icons/outline/device-gamepad-2.svg";
 
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
@@ -159,7 +160,7 @@ const SidebarNavigation = () => {
 
         <SidebarNavigationLink
           to="/s"
-          icon={planetIcon}
+          icon={d20Icon}
           text={
             <FormattedMessage id="tabs_bar.games" defaultMessage="Spaces" />
           }

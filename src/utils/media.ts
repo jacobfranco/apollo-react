@@ -92,15 +92,4 @@ const addAutoPlay = (html: string): string => {
   return html;
 };
 
-const getImage = (path: string) => {
-  return new URL(`/src/assets/images/esports/${path}.jpg`, import.meta.url)
-    .href;
-};
-
-export {
-  getVideoDuration,
-  formatBytes,
-  truncateFilename,
-  addAutoPlay,
-  getImage,
-};
+export { getVideoDuration, formatBytes, truncateFilename, addAutoPlay };
