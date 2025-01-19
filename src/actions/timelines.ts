@@ -449,6 +449,28 @@ const expandSpaceTimeline = (
   );
 };
 
+const expandSpaceMediaTimeline = (
+  space: string,
+  { url, maxId, spaces }: Record<string, any> = {},
+  done = noOp
+) => {
+  return expandTimeline(
+    `space:${space}:media`,
+    url || `/api/timelines/space/${space}`,
+    url
+      ? {}
+      : {
+          max_id: maxId,
+          only_media: true,
+          limit: 40,
+          any: parseSpaces(spaces, "any"),
+          all: parseSpaces(spaces, "all"),
+          none: parseSpaces(spaces, "none"),
+        },
+    done
+  );
+};
+
 const expandTimelineRequest = (timeline: string, isLoadingMore: boolean) => ({
   type: TIMELINE_EXPAND_REQUEST,
   timeline,
@@ -544,6 +566,7 @@ export {
   expandGroupMediaTimeline,
   expandHashtagTimeline,
   expandSpaceTimeline,
+  expandSpaceMediaTimeline,
   expandTimelineRequest,
   expandTimelineSuccess,
   expandTimelineFail,

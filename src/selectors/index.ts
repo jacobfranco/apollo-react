@@ -293,6 +293,29 @@ export const getAccountGallery = createSelector(
   }
 );
 
+export const getSpaceMediaGallery = createSelector(
+  [
+    (state: RootState, spacePath: string) =>
+      state.timelines.get(`space:${spacePath}:media`)?.items ||
+      ImmutableOrderedSet<string>(),
+    (state: RootState) => state.statuses,
+  ],
+  (statusIds, statuses) => {
+    return statusIds.reduce((medias: ImmutableList<any>, statusId: string) => {
+      const status = statuses.get(statusId);
+      if (!status) return medias;
+      if (status.repost) return medias;
+
+      // Add the media attachments to the beginning of the list instead of the end
+      return medias.unshift(
+        ...status.media_attachments.map((media) =>
+          media.merge({ status, account: status.account })
+        )
+      );
+    }, ImmutableList());
+  }
+);
+
 export const makeGetReport = () => {
   const getStatus = makeGetStatus();
 

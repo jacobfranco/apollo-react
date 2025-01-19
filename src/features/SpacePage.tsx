@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector, useLoggedIn } from "src/hooks";
 import { fetchSpace, followSpace, unfollowSpace } from "src/actions/spaces";
 import { Column } from "src/components/Column";
 import SpaceTimeline from "./SpaceTimeline";
+import SpaceGallery from "./SpaceGallery";
 
 const messages = defineMessages({
   community: { id: "spaces_page.community", defaultMessage: "Community" },
@@ -32,8 +33,6 @@ const SpacePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"community" | "media">(
     "community"
   );
-
-  // This key increments every time we switch tabs, forcing <Suspense> to remount
   const [tabKey, setTabKey] = useState(0);
 
   const handleTabChange = useCallback((tabName: "community" | "media") => {
@@ -41,12 +40,29 @@ const SpacePage: React.FC = () => {
     setTabKey((prev) => prev + 1);
   }, []);
 
-  // Fetch space data once on mount or if spaceName changes
   useEffect(() => {
     if (spaceName && !space) {
       dispatch(fetchSpace(spaceName));
     }
   }, [dispatch, spaceName, space]);
+
+  const tabItems = useMemo(
+    () => [
+      {
+        name: "community",
+        text: intl.formatMessage(messages.community),
+        title: intl.formatMessage(messages.community),
+        action: () => handleTabChange("community"),
+      },
+      {
+        name: "media",
+        text: intl.formatMessage(messages.media),
+        title: intl.formatMessage(messages.media),
+        action: () => handleTabChange("media"),
+      },
+    ],
+    [intl, handleTabChange]
+  );
 
   if (!space) {
     return (
@@ -65,25 +81,6 @@ const SpacePage: React.FC = () => {
       dispatch(followSpace(shortId));
     }
   };
-
-  // Build out the tab items
-  const tabItems = useMemo(
-    () => [
-      {
-        name: "community",
-        text: intl.formatMessage(messages.community),
-        title: intl.formatMessage(messages.community),
-        action: () => handleTabChange("community"),
-      },
-      {
-        name: "media",
-        text: intl.formatMessage(messages.media),
-        title: intl.formatMessage(messages.media),
-        action: () => handleTabChange("media"),
-      },
-    ],
-    [intl, handleTabChange]
-  );
 
   return (
     <Column label={space.get("name")} transparent={false} withHeader>
@@ -123,7 +120,7 @@ const SpacePage: React.FC = () => {
         )}
         {activeTab === "media" && (
           <Suspense fallback={<Spinner />} key={`media-${tabKey}`}>
-            <SpaceTimeline spacePath={spaceName} />
+            <SpaceGallery spacePath={spaceName} />
           </Suspense>
         )}
       </div>
