@@ -40,7 +40,7 @@ const ProfileField: React.FC<IProfileField> = ({ field }) => {
   return (
     <HStack className="ring-1 ring-primary-500 rounded-5px ring-opacity-50 px-2">
       <dl>
-        <dt className="font-bold text-primary-500" title={field.name}>
+        <dt className="font-bold text-primary-500 pt-1" title={field.name}>
           {field.name}
         </dt>
 
@@ -61,7 +61,7 @@ const ProfileField: React.FC<IProfileField> = ({ field }) => {
             )}
 
             <Markup
-              className="overflow-hidden break-words"
+              className="overflow-hidden break-words pb-1"
               tag="span"
               html={{ __html: field.value }}
             />

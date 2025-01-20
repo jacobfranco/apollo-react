@@ -120,10 +120,10 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
       <Layout.Aside>
         {!me && <SignUpPanel />}
 
-        <ProfileMediaPanel account={account} />
         {account && account.fields.length > 0 && (
           <ProfileFieldsPanel account={account} />
         )}
+        <ProfileMediaPanel account={account} />
         <WhoToFollowPanel limit={3} />
 
         <LinkFooter key="link-footer" />
