@@ -349,8 +349,8 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   };
 
   const handleShareClick: React.EventHandler<React.MouseEvent> = () => {
-    const { uri } = status;
-    copy(uri);
+    const { url } = status;
+    copy(url);
 
     // Persist the copied state
     markStatusAsCopied(status.id);
