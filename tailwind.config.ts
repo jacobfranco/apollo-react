@@ -131,10 +131,6 @@ const config: Config = {
             backgroundColor: "transparent",
           },
         },
-        shimmer: {
-          "0%, 100%": { opacity: "0.0", transform: "scale(1)" },
-          "50%": { opacity: "0.35", transform: "scale(1.3)" },
-        },
         "loader-label": {
           "0%": { opacity: "0.25" },
           "30%": { opacity: "1" },
@@ -167,6 +163,10 @@ const config: Config = {
         leave: {
           from: { transform: "scale(1)", opacity: "1" },
           to: { transform: "scale(0.9)", opacity: "0" },
+        },
+        shimmer: {
+          "0%, 100%": { opacity: "0.0", transform: "scale(1)" },
+          "50%": { opacity: "0.35", transform: "scale(1.3)" },
         },
       },
     },
