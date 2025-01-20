@@ -12,7 +12,7 @@ import searchIcon from "@tabler/icons/outline/search.svg";
 import planetIcon from "@tabler/icons/outline/planet.svg";
 import controllerIcon from "@tabler/icons/outline/device-gamepad-2.svg";
 import { FormattedMessage } from "react-intl";
-
+import d20Icon from "@tabler/icons/outline/ikosaedr.svg";
 import ThumbNavigationLink from "src/components/ThumbNavigationLink";
 import { useStatContext } from "src/contexts/stat-context";
 import { useAppSelector } from "src/hooks/useAppSelector";
@@ -75,7 +75,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
   return (
     <div
-      className="hide-scrollbar fixed inset-x-0 bottom-0 z-50 flex w-full border-t border-solid border-gray-200 bg-white/90 shadow-2xl backdrop-blur-md black:bg-black/90 dark:border-gray-800 dark:bg-primary-900/90 lg:hidden"
+      className="hide-scrollbar fixed inset-x-0 bottom-0 z-50 flex w-full border-t border-solid border-transparent bg-primary-100/20 shadow-2xl backdrop-blur-md dark:border-transparent dark:bg-secondary-900/40 lg:hidden"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)", // iOS PWA
         overflowX: "auto",
@@ -86,7 +86,6 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       <ThumbNavigationLink
         src={homeIcon}
         activeSrc={homeFilledIcon}
-        text={<FormattedMessage id="navigation.home" defaultMessage="Home" />}
         to="/"
         exact
       />
@@ -105,41 +104,13 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       )}
         */}
 
-      <ThumbNavigationLink
-        src={searchIcon}
-        text={
-          <FormattedMessage id="navigation.search" defaultMessage="Discover" />
-        }
-        to="/search"
-        exact
-      />
-      <ThumbNavigationLink
-        src={planetIcon}
-        text={
-          <FormattedMessage id="navigation.spaces" defaultMessage="Spaces" />
-        }
-        to="/s"
-        exact
-      />
-      <ThumbNavigationLink
-        src={controllerIcon}
-        text={
-          <FormattedMessage id="navigation.search" defaultMessage="ESports" />
-        }
-        to="/esports"
-        exact
-      />
+      <ThumbNavigationLink src={searchIcon} to="/search" exact />
+      <ThumbNavigationLink src={d20Icon} to="/s" exact />
 
       {account && (
         <ThumbNavigationLink
           src={bellIcon}
           activeSrc={bellFilledIcon}
-          text={
-            <FormattedMessage
-              id="navigation.notifications"
-              defaultMessage="Notifications"
-            />
-          }
           to="/notifications"
           exact
           count={notificationCount}
@@ -149,19 +120,6 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       {/* TODO: Implement
       {account && renderMessagesLink()}
 */}
-      {account && account.staff && (
-        <ThumbNavigationLink
-          src={dashboardIcon}
-          text={
-            <FormattedMessage
-              id="navigation.dashboard"
-              defaultMessage="Dashboard"
-            />
-          }
-          to="/admin"
-          count={dashboardCount}
-        />
-      )}
     </div>
   );
 };

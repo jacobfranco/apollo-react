@@ -10,7 +10,7 @@ interface IThumbNavigationLink {
   countMax?: number;
   src: string;
   activeSrc?: string;
-  text: string | React.ReactElement;
+  text?: string | React.ReactElement;
   to: string;
   exact?: boolean;
   paths?: Array<string>;
@@ -44,15 +44,18 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
     <NavLink
       to={to}
       exact={exact}
-      className="flex flex-1 flex-col items-center space-y-1 px-2 py-2.5 text-lg text-gray-600"
+      className={clsx({
+        "flex flex-1 flex-col items-center space-y-1 px-2 py-3.5": true,
+        "bg-primary-500/5 dark:bg-secondary-500/5 rounded-5px": active,
+      })}
     >
       {count !== undefined ? (
         <IconWithCounter
           src={icon}
           className={clsx({
             "h-5 w-5": true,
-            "text-gray-600 black:text-white": !active,
-            "text-primary-500": active,
+            "text-gray-700 dark:text-gray-600": !active,
+            "text-primary-600": active,
           })}
           count={count}
           countMax={countMax}
@@ -62,8 +65,8 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
           src={icon}
           className={clsx({
             "h-5 w-5": true,
-            "text-gray-600 black:text-white": !active,
-            "text-primary-500": active,
+            "text-gray-700 dark:text-gray-600": !active,
+            "text-primary-600": active,
           })}
         />
       )}
@@ -73,8 +76,7 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({
         size="xs"
         weight="medium"
         className={clsx({
-          "text-gray-600": !active,
-          "text-primary-500": active,
+          "text-black": active,
         })}
       >
         {text}

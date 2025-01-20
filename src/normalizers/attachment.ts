@@ -23,7 +23,7 @@ export const AttachmentRecord = ImmutableRecord({
   url: "",
 
   // Internal fields
-  // TODO: Remove these? They're set in selectors/index.js
+  // TODO: Remove these?
   account: null as any,
   status: null as any,
 

@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useLayoutEffect, useState } from "react";
+import ReactDOM from "react-dom";
 
 interface IPortal {
   children: React.ReactNode;
@@ -19,11 +19,9 @@ const Portal: React.FC<IPortal> = ({ children }) => {
     return null;
   }
 
-  return (
-    ReactDOM.createPortal(
-      children,
-      document.getElementById('apollo') as HTMLDivElement, // TODO: Make sure that this is reflected at the top of structure
-    )
+  return ReactDOM.createPortal(
+    children,
+    document.getElementById("apollo") as HTMLDivElement
   );
 };
 

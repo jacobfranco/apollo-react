@@ -1,8 +1,8 @@
-import React from 'react';
-import clsx from 'clsx';
-import InlineSVG from 'react-inlinesvg';
+import React from "react";
+import clsx from "clsx";
+import InlineSVG from "react-inlinesvg";
 
-import { Counter } from 'src/components/';
+import { Counter } from "src/components/";
 
 // Using this implementation instead of the Icon component
 export interface IIcon extends React.HTMLAttributes<HTMLDivElement> {
@@ -21,30 +21,29 @@ interface IIconWithCounter extends React.HTMLAttributes<HTMLDivElement> {
 
 const Icon: React.FC<IIcon> = ({ src, alt, className, ...rest }) => {
   return (
-    <div
-      className={clsx('svg-icon', className)}
-      {...rest}
-    >
+    <div className={clsx("svg-icon", className)} {...rest}>
       <InlineSVG src={src} title={alt} loader={<></>} />
     </div>
   );
 };
 
-
-const IconWithCounter: React.FC<IIconWithCounter> = ({ icon, count, countMax, ...rest }) => {
+const IconWithCounter: React.FC<IIconWithCounter> = ({
+  icon,
+  count,
+  countMax,
+  ...rest
+}) => {
   return (
-    <div className='relative'>
-      <Icon id={icon} {...rest as IIcon} />
+    <div className="relative">
+      <Icon id={icon} {...(rest as IIcon)} />
 
       {count > 0 && (
-        <span className='absolute -right-3 -top-2'>
+        <span className="absolute -right-3 -top-2">
           <Counter count={count} countMax={countMax} />
         </span>
       )}
     </div>
   );
 };
-
-
 
 export default IconWithCounter;

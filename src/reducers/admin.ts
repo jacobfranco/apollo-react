@@ -27,7 +27,6 @@ import { normalizeId } from "src/utils/normalizers";
 
 import type { AnyAction } from "redux";
 import type { APIEntity, Space } from "src/types/entities";
-import type { Config } from "src/utils/config-db";
 import { ReducerAccount } from "./accounts";
 
 const ReducerRecord = ImmutableRecord({
@@ -36,7 +35,6 @@ const ReducerRecord = ImmutableRecord({
   users: ImmutableMap<string, ReducerAccount>(),
   latestUsers: ImmutableOrderedSet<string>(),
   awaitingApproval: ImmutableOrderedSet<string>(),
-  configs: ImmutableList<Config>(),
   needsReboot: false,
   spaces: ImmutableMap<string, Space>(),
 });

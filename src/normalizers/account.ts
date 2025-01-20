@@ -23,7 +23,7 @@ import type {
   Field,
   EmbeddedEntity,
   Relationship,
-} from "src/types/entities"; // TODO: Implement fields
+} from "src/types/entities";
 
 // https://docs.joinmastodon.org/entities/account/
 export const AccountRecord = ImmutableRecord({

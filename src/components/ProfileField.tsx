@@ -38,35 +38,37 @@ const ProfileField: React.FC<IProfileField> = ({ field }) => {
   const valuePlain = htmlToPlaintext(field.value);
 
   return (
-    <dl>
-      <dt className="font-bold" title={field.name}>
-        {field.name}
-      </dt>
+    <HStack className="ring-1 ring-primary-500 rounded-5px ring-opacity-50 px-2">
+      <dl>
+        <dt className="font-bold text-primary-500" title={field.name}>
+          {field.name}
+        </dt>
 
-      <dd
-        className={clsx({ "text-success-500": field.verified_at })}
-        title={valuePlain}
-      >
-        <HStack space={2} alignItems="center">
-          {field.verified_at && (
-            <span
-              className="flex-none"
-              title={intl.formatMessage(messages.linkVerifiedOn, {
-                date: intl.formatDate(field.verified_at, dateFormatOptions),
-              })}
-            >
-              <Icon src={checkIcon} />
-            </span>
-          )}
+        <dd
+          className={clsx({ "text-success-500": field.verified_at })}
+          title={valuePlain}
+        >
+          <HStack space={2} alignItems="center">
+            {field.verified_at && (
+              <span
+                className="flex-none"
+                title={intl.formatMessage(messages.linkVerifiedOn, {
+                  date: intl.formatDate(field.verified_at, dateFormatOptions),
+                })}
+              >
+                <Icon src={checkIcon} />
+              </span>
+            )}
 
-          <Markup
-            className="overflow-hidden break-words"
-            tag="span"
-            html={{ __html: field.value }}
-          />
-        </HStack>
-      </dd>
-    </dl>
+            <Markup
+              className="overflow-hidden break-words"
+              tag="span"
+              html={{ __html: field.value }}
+            />
+          </HStack>
+        </dd>
+      </dl>
+    </HStack>
   );
 };
 

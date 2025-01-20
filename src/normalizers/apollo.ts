@@ -77,8 +77,8 @@ export const ApolloConfigRecord = ImmutableRecord(
   {
     appleAppId: null,
     authProvider: "",
-    logo: "",
-    logoDarkMode: null,
+    logo: "/favicon.png",
+    logoDarkMode: "/favicon.png",
     banner: "",
     brandColor: "#A981FC",
     accentColor: "110132",
@@ -178,14 +178,6 @@ const maybeAddMissingColors = (
   return apolloConfig.set("colors", missing.mergeDeep(colors));
 };
 
-const normalizePromoPanel = (
-  apolloConfig: ApolloConfigMap
-): ApolloConfigMap => {
-  const promoPanel = PromoPanelRecord(apolloConfig.get("promoPanel"));
-  const items = promoPanel.items.map(PromoPanelItemRecord);
-  return apolloConfig.set("promoPanel", promoPanel.set("items", items));
-};
-
 export const normalizeApolloConfig = (apolloConfig: Record<string, any>) => {
   return ApolloConfigRecord(
     ImmutableMap(fromJS(apolloConfig)).withMutations((apolloConfig) => {
@@ -194,7 +186,6 @@ export const normalizeApolloConfig = (apolloConfig: Record<string, any>) => {
       normalizeColors(apolloConfig);
       maybeAddMissingColors(apolloConfig);
       normalizeFooterLinks(apolloConfig);
-      normalizePromoPanel(apolloConfig);
     })
   );
 };

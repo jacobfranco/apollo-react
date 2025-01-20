@@ -5,9 +5,6 @@ import { useStatContext } from "src/contexts/stat-context";
 import { useAppSelector } from "src/hooks";
 import { useSettings } from "src/hooks/useSettings";
 import { RootState } from "src/store";
-import FaviconService from "src/utils/favicon-service";
-
-FaviconService.initFaviconService();
 
 const getNotifTotals = (state: RootState): number => {
   const notifications = state.notifications.unread || 0;
@@ -33,18 +30,6 @@ const Helmet: React.FC<IHelmet> = ({ children }) => {
   const addCounter = (string: string) => {
     return hasUnreadNotifications ? `(${unreadCount}) ${string}` : string;
   };
-
-  const updateFaviconBadge = () => {
-    if (hasUnreadNotifications) {
-      FaviconService.drawFaviconBadge();
-    } else {
-      FaviconService.clearFaviconBadge();
-    }
-  };
-
-  React.useEffect(() => {
-    updateFaviconBadge();
-  }, [unreadCount, demetricator]);
 
   return (
     <ReactHelmet

@@ -85,9 +85,10 @@ const Navbar = () => {
   return (
     <nav
       className={clsx(
-        "sticky top-0 z-50 border-gray-200 shadow",
+        "sticky top-0 z-50 shadow",
         // Light mode gradient: white to primary-100
-        "bg-gradient-to-r from-white via-primary-200 to-white from-0% via-85% to-100%",
+        "bg-primary-200/50",
+        "backdrop-blur-md",
         // Dark mode gradient: black to secondary-800
         "dark:bg-gradient-to-r dark:from-black dark:to-secondary-800",
         "dark:border-gray-800",
