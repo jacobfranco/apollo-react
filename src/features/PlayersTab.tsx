@@ -149,7 +149,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({ esportName }) => {
   }
 
   return (
-    <div>
+    <div className="pt-2">
       {/* If still loading but we already have some data, show a small spinner above the table */}
       {isLoading && players.length > 0 && (
         <div className="mb-2 text-center">

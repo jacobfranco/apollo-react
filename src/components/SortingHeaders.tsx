@@ -20,7 +20,7 @@ const SortingHeaders: React.FC<SortingHeadersProps> = ({
 }) => (
   <button
     onClick={() => onSort(sortKey)}
-    className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-500 text-black dark:text-white font-semibold hover:bg-primary-300"
+    className="flex items-center justify-center w-full px-2 py-1 bg-primary-200 dark:bg-secondary-800 text-black dark:text-white font-semibold hover:bg-primary-300"
   >
     {label}
     {sortConfig?.key === sortKey ? (

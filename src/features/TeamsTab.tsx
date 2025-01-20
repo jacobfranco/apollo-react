@@ -13,6 +13,7 @@ import {
 import esportsConfig from "src/esports-config";
 import { Team } from "src/schemas/team";
 import { TeamAggStats } from "src/schemas/team-agg-stats";
+import Button from "src/components/Button";
 
 type TeamsTabProps = {
   esportName: string;
@@ -206,34 +207,29 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
 
   return (
     <div>
-      <div className="flex justify-end mb-2 space-x-2">
-        <button
+      <div className="flex justify-end mb-4 space-x-2 pt-2">
+        <Button
           onClick={() =>
             dispatch(
-              openModal("LOL_REGION_FILTER", {
+              openModal("LOL_REGION", {
                 onApplyFilter: handleFilterApply,
               })
             )
           }
-          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
         >
           Filter
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             setIsCombined((prev) => !prev);
-            setCurrentPage(1); // reset pagination if toggling
+            setCurrentPage(1);
           }}
-          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
         >
           {isCombined ? "Separate by League" : "Combine All Teams"}
-        </button>
-        <button
-          onClick={() => setShowAdvancedStats((prev) => !prev)}
-          className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
-        >
+        </Button>
+        <Button onClick={() => setShowAdvancedStats((prev) => !prev)}>
           {showAdvancedStats ? "Show Standings" : "Show Stats"}
-        </button>
+        </Button>
       </div>
 
       {loading && teams.length > 0 && (
@@ -264,21 +260,19 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
 
           {/* Pagination controls (only visible if combining all teams) */}
           <div className="flex justify-center space-x-4 mt-4">
-            <button
+            <Button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
             >
               Previous
-            </button>
+            </Button>
             <span className="self-center">Page {currentPage}</span>
-            <button
+            <Button
               onClick={() => setCurrentPage((p) => p + 1)}
               disabled={paginatedTeams.length < pageSize}
-              className="px-4 py-2 bg-primary-500 text-secondary-500 rounded hover:bg-primary-600"
             >
               Next
-            </button>
+            </Button>
           </div>
         </>
       ) : (

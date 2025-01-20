@@ -75,7 +75,7 @@ const ScheduleTab: React.FC = () => {
 
   const handleOpenFilterModal = () => {
     dispatch(
-      openModal("LOL_REGION_FILTER", {
+      openModal("LOL_REGION", {
         onApplyFilter: (leagues: string[]) => {
           setSelectedLeagues(leagues);
           dispatch(closeModal());
@@ -164,12 +164,12 @@ const ScheduleTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 mt-4">
+    <div className="space-y-4">
       <HStack
         justifyContent="center"
         alignItems="center"
         space={4}
-        className="pt-2"
+        className="pt-4"
       >
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
         <Button onClick={handleOpenFilterModal}>Filter Leagues</Button>

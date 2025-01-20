@@ -59,7 +59,7 @@ const LolPlayerRow: React.FC<LolPlayerRowProps> = ({
   return (
     <Link to={`/esports/${esportName}/player/${player.id}`} className="block">
       <div
-        className="grid gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow"
+        className="grid gap-0 p-2 bg-primary-200 dark:bg-secondary-800 rounded-md mb-1 shadow"
         style={{ gridTemplateColumns }}
       >
         {columns.map((column) => {

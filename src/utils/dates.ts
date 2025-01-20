@@ -5,8 +5,8 @@ export const dateStringOrNumber = z.union([z.string(), z.number()]).nullable();
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
+    weekday: "short",
+    month: "short",
     day: "numeric",
   });
 };
