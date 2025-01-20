@@ -95,9 +95,8 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
       "relative flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
       "group hover:scale-105 transition-all duration-300",
       {
-        "text-gray-600 dark:hover:text-white bg-transparent":
-          theme === "default",
-        "text-white/80 hover:text-white bg-transparent": theme === "inverse",
+        "text-gray-600 bg-transparent": theme === "default",
+        "text-white/80 bg-transparent": theme === "inverse",
       },
       active && actionType && getActionColorClass(),
       className
