@@ -32,14 +32,12 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({
 }) => {
   const intl = useIntl();
 
-  // Convert existing ISO date string to local Date
   const selected = useMemo(() => {
     if (!value) return;
     const date = new Date(value);
     return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
   }, [value]);
 
-  // When a new Date is chosen, convert back to YYYY-MM-DD
   const handleChange = (date: Date) => {
     if (!date) {
       onChange("");
@@ -53,7 +51,6 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({
 
   return (
     <div className="relative mt-1 rounded-md shadow-sm">
-      {/* If you want a label or placeholder, place it near the date dropdowns or text above them */}
       <Datepicker
         value={selected}
         onChange={handleChange}

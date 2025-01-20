@@ -33,6 +33,7 @@ const Datepicker = ({ value, onChange, min, max, ...rest }: IDatepicker) => {
   const defaultDate = useMemo(() => {
     const date = new Date();
     date.setFullYear(date.getFullYear() - 16);
+    date.setDate(date.getDate() + 1);
     return date;
   }, []);
 

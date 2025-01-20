@@ -346,7 +346,7 @@ const SignupForm: React.FC<ISignupForm> = ({ inviteToken }) => {
     }
 
     const birthday = params.get("birthday", "");
-    if (birthday && !isOldEnough(birthday)) {
+    if (!birthday || !isOldEnough(birthday)) {
       setUnder16Error(true);
       return;
     }
