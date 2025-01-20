@@ -57,7 +57,7 @@ const LiveStreamEmbed: React.FC<LiveStreamEmbedProps> = ({ broadcaster }) => {
   if (hasError) {
     return (
       <div className="flex items-center justify-center w-full h-full bg-gray-100 dark:bg-gray-800 rounded">
-        <p className="text-red-500">Failed to load stream.</p>
+        <p className="text-danger-500">Failed to load stream.</p>
       </div>
     );
   }

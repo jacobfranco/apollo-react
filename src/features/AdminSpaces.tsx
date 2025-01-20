@@ -203,7 +203,7 @@ const AdminSpaces: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(space.id)}
-                        className="px-4 py-2 rounded-md bg-red-600 text-white"
+                        className="px-4 py-2 rounded-md bg-danger-600 text-white"
                       >
                         {intl.formatMessage(messages.deleteSpace)}
                       </button>

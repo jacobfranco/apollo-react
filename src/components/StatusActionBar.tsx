@@ -884,7 +884,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   const repostButton = (
     <StatusActionButton
       icon={repostIcon}
-      actionType="repost"
+      actionType="success"
       disabled={!publicStatus}
       title={
         !publicStatus
@@ -927,7 +927,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
             <StatusActionButton
               title={intl.formatMessage(messages.reply)}
               icon={messageCircleIcon}
-              actionType="reply"
+              actionType="info"
               filled={true}
               onClick={handleReplyClick}
               count={replyCount}
@@ -946,7 +946,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
           <StatusActionButton
             title={intl.formatMessage(messages.like)}
             icon={heartIcon}
-            actionType="like"
+            actionType="danger"
             filled={true}
             onClick={handleLikeClick}
             active={status.liked}
@@ -961,7 +961,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
             title={intl.formatMessage(messages.share)}
             icon={shareIcon}
             onClick={handleShareClick}
-            actionType="share"
+            actionType="misc"
             active={isCopied}
             filled={isCopied}
             theme={statusActionButtonTheme}

@@ -190,10 +190,12 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
 
   // Early returns after hooks
   if (!game) {
-    return <div className="text-center text-red-500">Invalid eSport name</div>;
+    return (
+      <div className="text-center text-danger-500">Invalid eSport name</div>
+    );
   }
   if (error) {
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    return <div className="text-center text-danger-500">Error: {error}</div>;
   }
   if (loading && teams.length === 0) {
     return <Spinner />;

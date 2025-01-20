@@ -183,7 +183,7 @@ const PlayerDetail: React.FC = () => {
         return (
           <SvgIcon
             src={youtubeIcon}
-            className="h-5 w-5 text-gray-600 hover:text-red-500"
+            className="h-5 w-5 text-gray-600 hover:text-danger-500"
           />
         );
       default:
@@ -443,7 +443,7 @@ const PlayerDetail: React.FC = () => {
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{String(error)}</div>;
+    return <div className="p-4 text-danger-500">{String(error)}</div>;
   }
 
   const renderTabContent = () => {

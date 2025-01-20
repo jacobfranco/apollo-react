@@ -115,7 +115,7 @@ const Textarea = React.forwardRef(
               "bg-transparent border-0 focus:border-0 focus:ring-0":
                 theme === "transparent",
               "font-mono": isCodeEditor,
-              "text-red-600 border-red-600": hasError,
+              "text-danger-600 border-danger-600": hasError,
               "resize-none": !isResizeable,
             }
           )}

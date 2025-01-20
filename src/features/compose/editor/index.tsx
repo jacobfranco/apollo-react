@@ -72,7 +72,7 @@ const theme: InitialConfigType["theme"] = {
     underline: "underline",
     underlineStrikethrough: "underline-line-through",
   },
-  space: "text-red-500",
+  space: "text-danger-500",
   heading: {
     h1: "text-2xl font-bold",
     h2: "text-xl font-bold",

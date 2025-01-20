@@ -22,7 +22,7 @@ const Badge: React.FC<IBadge> = ({ title, slug }) => {
         "inline-flex items-center rounded px-2 py-0.5 text-xs font-medium",
         {
           "bg-emerald-800 text-white": slug === "badge:donor",
-          "bg-red-700 text-white": slug === "badge:dev",
+          "bg-danger-700 text-white": slug === "badge:dev",
           "bg-black text-white": slug === "admin",
           "bg-cyan-600 text-white": slug === "moderator",
           "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100":

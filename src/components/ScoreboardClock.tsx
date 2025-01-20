@@ -131,7 +131,7 @@ const ScoreboardClock: React.FC<ScoreboardClockProps> = ({
 
   return (
     <div>
-      <div className="font-bold opacity-60 text-red-500 dark:text-red-500">
+      <div className="font-bold opacity-60 text-danger-500 dark:text-danger-500">
         {formattedClock}
       </div>
     </div>

@@ -61,7 +61,7 @@ const StreamPage: React.FC = () => {
     console.log("Rendering error state:", seriesError);
     return (
       <div className="w-full h-full flex items-center justify-center p-4">
-        <div className="text-lg text-red-600">Error: {seriesError}</div>
+        <div className="text-lg text-danger-600">Error: {seriesError}</div>
       </div>
     );
   }

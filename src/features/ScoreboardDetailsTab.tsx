@@ -40,7 +40,7 @@ const ScoreboardDetailsTab: React.FC = () => {
   if (!game) {
     return (
       <Column label="Error" transparent={false} withHeader={true}>
-        <div className="text-center text-red-500">Invalid esport name.</div>
+        <div className="text-center text-danger-500">Invalid esport name.</div>
       </Column>
     );
   }

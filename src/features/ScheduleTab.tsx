@@ -64,11 +64,13 @@ const ScheduleTab: React.FC = () => {
   }, [dispatch, selectedDate, game]);
 
   if (!game) {
-    return <div className="text-center text-red-500">Invalid eSport name</div>;
+    return (
+      <div className="text-center text-danger-500">Invalid eSport name</div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    return <div className="text-center text-danger-500">Error: {error}</div>;
   }
 
   const handleOpenFilterModal = () => {

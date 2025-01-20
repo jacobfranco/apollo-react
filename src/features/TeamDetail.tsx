@@ -222,7 +222,7 @@ const TeamDetail: React.FC = () => {
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return <div className="p-4 text-danger-500">{error}</div>;
   }
 
   if (!rosterId) {
@@ -258,7 +258,7 @@ const TeamDetail: React.FC = () => {
         return (
           <SvgIcon
             src={youtubeIcon}
-            className="h-5 w-5 text-gray-600 hover:text-red-500"
+            className="h-5 w-5 text-gray-600 hover:text-danger-500"
           />
         );
       default:
@@ -388,7 +388,9 @@ const TeamDetail: React.FC = () => {
       className: "text-center justify-center",
       render: (matchStat: TeamMatchStats) => (
         <span
-          className={matchStat.isWinner ? "text-green-500" : "text-red-500"}
+          className={
+            matchStat.isWinner ? "text-success-400" : "text-danger-400"
+          }
         >
           {matchStat.isWinner ? "Win" : "Loss"}
         </span>
@@ -622,7 +624,7 @@ const TeamDetail: React.FC = () => {
           <Card className="flex-1 pr-6">
             <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
               {rosterLoading && <p>Loading roster players...</p>}
-              {rosterError && <p className="text-red-500">{rosterError}</p>}
+              {rosterError && <p className="text-danger-500">{rosterError}</p>}
               {rosterPlayers.length > 0 ? (
                 <div className="flex flex-wrap justify-between gap-2">
                   {rosterPlayers

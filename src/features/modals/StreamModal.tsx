@@ -101,7 +101,7 @@ const StreamModal: React.FC<StreamModalProps> = ({ broadcasters, onClose }) => {
 
         {/* Error Message on Broadcaster Switch Failure */}
         {hasSwitchError && (
-          <div className="text-red-500 mb-4 text-center">
+          <div className="text-danger-500 mb-4 text-center">
             Failed to switch broadcaster. Please try again.
           </div>
         )}

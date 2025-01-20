@@ -7,7 +7,7 @@ const themes = {
   primary: "text-primary-600 dark:text-accent-blue",
   muted: "text-gray-700 dark:text-gray-600",
   subtle: "text-gray-400 dark:text-gray-500",
-  success: "text-success-600",
+  success: "text-success-400",
   inherit: "text-inherit",
   white: "text-white",
 };

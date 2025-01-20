@@ -242,7 +242,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={repeatIcon} className="size-4 text-green-600" />}
+          icon={<Icon src={repeatIcon} className="size-4 text-success-400" />}
           text={
             <FormattedMessage
               id="status.reposted_by_with_group"
@@ -276,7 +276,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={repeatIcon} className="size-4 text-green-600" />}
+          icon={<Icon src={repeatIcon} className="size-4 text-success-400" />}
           text={
             <FormattedMessage
               id="status.reposted_by"

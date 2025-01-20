@@ -46,7 +46,7 @@ const Toast = (props: IToast) => {
         return (
           <Icon
             src={circleCheckIcon}
-            className="size-6 text-success-500 dark:text-success-400"
+            className="size-6 text-success-400 dark:text-success-300"
             aria-hidden
           />
         );
@@ -54,7 +54,7 @@ const Toast = (props: IToast) => {
         return (
           <Icon
             src={infoCircleIcon}
-            className="size-6 text-primary-600 dark:text-accent-blue"
+            className="size-6 text-info-500 dark:text-info-400"
             aria-hidden
           />
         );
@@ -109,7 +109,7 @@ const Toast = (props: IToast) => {
     <div
       data-testid="toast"
       className={clsx({
-        "p-4 pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white black:bg-black dark:bg-gray-900 shadow-lg dark:ring-2 dark:ring-gray-800":
+        "p-4 pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-primary-200 black:bg-black dark:bg-secondary-900 shadow-lg ring-2 ring-gray-500 dark:ring-2 dark:ring-primary-700":
           true,
         "animate-enter": t.visible,
         "animate-leave": !t.visible,

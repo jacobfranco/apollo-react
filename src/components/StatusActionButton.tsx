@@ -25,7 +25,7 @@ interface IStatusActionButton
   icon: string;
   count?: number;
   active?: boolean;
-  actionType?: "reply" | "repost" | "like" | "share";
+  actionType?: "info" | "success" | "danger" | "misc";
   filled?: boolean;
   theme?: "default" | "inverse";
 }
@@ -46,27 +46,50 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
 
     const currentTheme = useTheme();
 
-    // Determine the action color based on the type and currentTheme.
-    const getActionColor = () => {
-      const colors = {
-        light: {
-          reply: "#0095FF",
-          repost: "#00D085",
-          like: "#FF3B99",
-          share: "#7B4DFF",
-        },
-        dark: {
-          reply: "#45CAFF",
-          repost: "#3DFF9E",
-          like: "#FF5FB3",
-          share: "#7B4DFF",
-        },
-      };
+    // Map action types to Tailwind color classes
+    const getActionColorClass = () => {
       if (!actionType) return undefined;
-      return colors[currentTheme][actionType];
+
+      const colorClassMap = {
+        info: currentTheme === "dark" ? "text-info-400" : "text-info-500",
+        success:
+          currentTheme === "dark" ? "text-success-400" : "text-success-500",
+        danger:
+          currentTheme === "dark"
+            ? "text-danger-400 !text-danger-400"
+            : "text-danger-500 !text-danger-500",
+        misc: "text-misc-400",
+      };
+
+      return colorClassMap[actionType];
     };
 
-    const actionColor = getActionColor();
+    // Map action types to RGB values for particles
+    const getParticleColor = () => {
+      if (!actionType) return undefined;
+
+      const rgbMap = {
+        info: {
+          light: { r: 0, g: 149, b: 255 },
+          dark: { r: 69, g: 202, b: 255 },
+        },
+        success: {
+          light: { r: 0, g: 208, b: 133 },
+          dark: { r: 61, g: 255, b: 158 },
+        },
+        danger: {
+          light: { r: 255, g: 59, b: 153 },
+          dark: { r: 255, g: 95, b: 179 },
+        },
+        misc: {
+          light: { r: 123, g: 77, b: 255 },
+          dark: { r: 123, g: 77, b: 255 },
+        },
+      };
+
+      const color = rgbMap[actionType][currentTheme];
+      return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    };
 
     const buttonClasses = clsx(
       "relative flex items-center space-x-1 rounded-full p-1 rtl:space-x-reverse",
@@ -76,13 +99,14 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
           theme === "default",
         "text-white/80 hover:text-white bg-transparent": theme === "inverse",
       },
-      actionType && "group",
+      active && actionType && getActionColorClass(),
       className
     );
 
-    // Render four irregularly positioned particles that are only visible on hover.
     const renderParticles = () => {
-      if (!actionColor) return null;
+      const particleColor = getParticleColor();
+      if (!particleColor) return null;
+
       return (
         <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
           {/* Top-left particle */}
@@ -91,7 +115,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
             style={{
               top: "10%",
               left: "15%",
-              backgroundColor: actionColor,
+              backgroundColor: particleColor,
               animationDelay: "700ms",
             }}
           />
@@ -101,7 +125,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
             style={{
               top: "10%",
               right: "25%",
-              backgroundColor: actionColor,
+              backgroundColor: particleColor,
               animationDelay: "400ms",
             }}
           />
@@ -111,7 +135,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
             style={{
               bottom: "15%",
               right: "20%",
-              backgroundColor: actionColor,
+              backgroundColor: particleColor,
               animationDelay: "0ms",
             }}
           />
@@ -121,7 +145,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
             style={{
               bottom: "10%",
               left: "20%",
-              backgroundColor: actionColor,
+              backgroundColor: particleColor,
               animationDelay: "100ms",
             }}
           />
@@ -131,7 +155,7 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
             style={{
               bottom: "55%",
               right: "55%",
-              backgroundColor: actionColor,
+              backgroundColor: particleColor,
               animationDelay: "200ms",
             }}
           />
@@ -166,7 +190,6 @@ const StatusActionButton = forwardRef<HTMLButtonElement, IStatusActionButton>(
         ref={ref}
         type="button"
         className={buttonClasses}
-        style={active && actionColor ? { color: actionColor } : undefined}
         {...filteredProps}
       >
         {renderParticles()}
