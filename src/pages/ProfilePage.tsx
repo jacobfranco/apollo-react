@@ -97,7 +97,7 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
         <SidebarNavigation />
       </Layout.Sidebar>
       <Layout.Main>
-        <Column size="lg" label={`@${username}`} withHeader={false}>
+        <Column size="lg" label={`${account?.display_name}`} withHeader={false}>
           <div className="space-y-4">
             <Header account={account} />
             <ProfileInfoPanel username={username} account={account} />
