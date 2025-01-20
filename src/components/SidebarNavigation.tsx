@@ -10,6 +10,8 @@ import calendarEventIcon from "@tabler/icons/outline/calendar-event.svg";
 import circlesIcon from "@tabler/icons/outline/circles.svg";
 import codeIcon from "@tabler/icons/outline/code.svg";
 import dashboardIcon from "@tabler/icons/outline/dashboard.svg";
+import gateIcon from "@tabler/icons/outline/torii.svg";
+import plantIcon from "@tabler/icons/outline/plant-2.svg";
 import dotsCircleHorizontalIcon from "@tabler/icons/outline/dots-circle-horizontal.svg";
 import homeIcon from "@tabler/icons/outline/home.svg";
 import listIcon from "@tabler/icons/outline/list.svg";
@@ -228,7 +230,7 @@ const SidebarNavigation = () => {
             {account.staff && (
               <SidebarNavigationLink
                 to="/admin"
-                icon={dashboardIcon}
+                icon={plantIcon}
                 count={dashboardCount}
                 text={
                   <FormattedMessage

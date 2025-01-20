@@ -186,14 +186,14 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
       <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />
 
       <div
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-primary-500 dark:bg-primary-600 rounded-b px-6 py-2 flex items-center justify-center"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-transparent rounded-b px-6 py-2 pt-3 flex items-center justify-center"
         style={{
           minWidth: "35%",
           maxWidth: "100%",
           height: "10%",
         }}
       >
-        <div className="text-black dark:text-white font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+        <div className="text-gray-900 dark:text-gray-100 font-bold whitespace-nowrap overflow-hidden text-ellipsis">
           {formattedTitle}
         </div>
       </div>

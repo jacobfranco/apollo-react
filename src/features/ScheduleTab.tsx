@@ -169,7 +169,7 @@ const ScheduleTab: React.FC = () => {
         justifyContent="center"
         alignItems="center"
         space={4}
-        className="mb-4"
+        className="pt-2"
       >
         <WeekPicker selectedDate={selectedDate} onChange={setSelectedDate} />
         <Button onClick={handleOpenFilterModal}>Filter Leagues</Button>
