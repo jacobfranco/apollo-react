@@ -110,7 +110,7 @@ const ComposeForm = <ID extends string>({
   const showSearch = useAppSelector(
     (state) => state.search.submitted && !state.search.hidden
   );
-  const maxTootChars = 360; // TODO: Change max characters when you figure it out
+  const maxTootChars = 500;
 
   const {
     spoiler,
