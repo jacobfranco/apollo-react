@@ -31,7 +31,7 @@ const themes = {
     "bg-gradient-to-br from-secondary-500 via-secondary-600 to-secondary-700",
     "hover:from-secondary-500 hover:via-secondary-500 hover:to-secondary-700",
     "text-white",
-    "shadow-lg shadow-secondary-600/50",
+    "shadow-lg shadow-secondary-600/30",
     "backdrop-blur-sm"
   ),
 
