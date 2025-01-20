@@ -101,20 +101,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
   let quote;
 
   if (actualStatus.quote) {
-    if (actualStatus.pleroma.get("quote_visible", true) === false) {
-      quote = (
-        <div>
-          <p>
-            <FormattedMessage
-              id="status.quote_tombstone"
-              defaultMessage="Post is unavailable."
-            />
-          </p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote as string} />;
-    }
+    quote = <QuotedStatus statusId={actualStatus.quote as string} />;
   }
 
   if (actualStatus.visibility === "direct") {
