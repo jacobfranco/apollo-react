@@ -349,11 +349,6 @@ const Notification: React.FC<INotification> = (props) => {
     }
   };
 
-  const updateName = async (name: string) => {
-    await dispatch(patchMe({ nip05: name }));
-    toast.success(messages.updateNameSuccess);
-  };
-
   const renderIcon = (): React.ReactNode => {
     if (validType(type)) {
       return (

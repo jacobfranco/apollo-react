@@ -26,10 +26,6 @@ const TrendingSpacesPanel = ({ limit }: ITrendingSpacesPanel) => {
 
   const { data: trends, isFetching } = useTrendingSpaces();
 
-  const setSpacesFilter = () => {
-    dispatch(setFilter("spaces"));
-  };
-
   if (!isFetching && !trends?.length) {
     return null;
   }
@@ -40,7 +36,7 @@ const TrendingSpacesPanel = ({ limit }: ITrendingSpacesPanel) => {
         <FormattedMessage id="trending_spaces.title" defaultMessage="Spaces" />
       }
       action={
-        <Link className="text-right" to="/search" onClick={setSpacesFilter}>
+        <Link className="text-right" to="/s">
           <Text
             tag="span"
             theme="primary"
