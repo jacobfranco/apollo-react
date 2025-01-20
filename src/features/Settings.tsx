@@ -10,6 +10,7 @@ import {
   CardTitle,
   MessagesSettings,
 } from "src/components";
+import Text from "src/components/Text";
 import { Column } from "src/components/Column";
 import { useAppDispatch, useOwnAccount } from "src/hooks";
 
@@ -103,19 +104,6 @@ const Settings = () => {
         </CardBody>
 
         <CardHeader>
-          <CardTitle title={intl.formatMessage(messages.privacy)} />
-        </CardHeader>
-
-        <CardBody>
-          <List>
-            <ListItem label={intl.formatMessage(messages.mutes)} to="/mutes" />
-            <ListItem
-              label={intl.formatMessage(messages.blocks)}
-              to="/blocks"
-            />
-          </List>
-        </CardBody>
-        <CardHeader>
           <CardTitle title={intl.formatMessage(messages.security)} />
         </CardHeader>
 
@@ -128,6 +116,20 @@ const Settings = () => {
             <ListItem
               label={intl.formatMessage(messages.changePassword)}
               to="/settings/password"
+            />
+          </List>
+        </CardBody>
+
+        <CardHeader>
+          <CardTitle title={intl.formatMessage(messages.privacy)} />
+        </CardHeader>
+
+        <CardBody>
+          <List>
+            <ListItem label={intl.formatMessage(messages.mutes)} to="/mutes" />
+            <ListItem
+              label={intl.formatMessage(messages.blocks)}
+              to="/blocks"
             />
           </List>
         </CardBody>
@@ -151,42 +153,20 @@ const Settings = () => {
           <Preferences />
         </CardBody>
 
-        {/*  TODO: Implement security and mfa
-        {(features.security || features.accountAliases) && (
-          <>
-            <CardHeader>
-              <CardTitle title={intl.formatMessage(messages.other)} />
-            </CardHeader>
-
-            <CardBody>
-              <List>
-                {features.importData && (
-                  <ListItem label={intl.formatMessage(messages.importData)} to='/settings/import' />
-                )}
-
-                {features.exportData && (
-                  <ListItem label={intl.formatMessage(messages.exportData)} to='/settings/export' />
-                )}
-
-                {features.backups && (
-                  <ListItem label={intl.formatMessage(messages.backups)} to='/settings/backups' />
-                )}
-
-                {features.federating && (features.accountMoving ? (
-                  <ListItem label={intl.formatMessage(messages.accountMigration)} to='/settings/migration' />
-                ) : features.accountAliases && (
-                  <ListItem label={intl.formatMessage(messages.accountAliases)} to='/settings/aliases' />
-                ))}
-
-                {features.security && (
-                  <ListItem label={<Text theme='danger'>{intl.formatMessage(messages.deleteAccount)}</Text>} to='/settings/account' />
-                )}
-              </List>
-            </CardBody>
-          </>
-        )}
-
-        */}
+        <>
+          <CardBody>
+            <List>
+              <ListItem
+                label={
+                  <Text theme="danger">
+                    {intl.formatMessage(messages.deleteAccount)}
+                  </Text>
+                }
+                to="/settings/account"
+              />
+            </List>
+          </CardBody>
+        </>
       </Card>
     </Column>
   );

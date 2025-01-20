@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import { forwardRef } from "react";
 
 const themes = {
   default: "text-gray-900 dark:text-gray-100",
@@ -7,7 +7,7 @@ const themes = {
   primary: "text-primary-600 dark:text-accent-blue",
   muted: "text-gray-700 dark:text-gray-600",
   subtle: "text-gray-400 dark:text-gray-500",
-  success: "text-success-400",
+  success: "text-success-600",
   inherit: "text-inherit",
   white: "text-white",
 };
@@ -45,11 +45,6 @@ const transformProperties = {
   uppercase: "uppercase",
 };
 
-const families = {
-  sans: "font-sans",
-  mono: "font-mono",
-};
-
 export type Sizes = keyof typeof sizes;
 type Tags =
   | "abbr"
@@ -81,8 +76,6 @@ interface IText
   className?: string;
   /** Text direction. */
   direction?: Directions;
-  /** Typeface of the text. */
-  family?: keyof typeof families;
   /** The "for" attribute specifies which form element a label is bound to. */
   htmlFor?: string;
   /** Font size of the text. */
@@ -104,12 +97,11 @@ interface IText
 }
 
 /** UI-friendly text container with dark mode support. */
-const Text = React.forwardRef<any, IText>((props, ref) => {
+const Text = forwardRef<any, IText>((props, ref) => {
   const {
     align,
     className,
     direction,
-    family = "sans",
     size = "md",
     tag = "p",
     theme = "default",
@@ -140,7 +132,6 @@ const Text = React.forwardRef<any, IText>((props, ref) => {
           [themes[theme]]: true,
           [weights[weight]]: true,
           [trackingSizes[tracking]]: true,
-          [families[family]]: true,
           [alignmentClass]: typeof align !== "undefined",
           [transformProperties[transform]]: typeof transform !== "undefined",
         },
