@@ -27,14 +27,14 @@ const SpaceFollowButton: React.FC<SpaceFollowButtonProps> = ({
         "group hover:scale-105",
         isFollowed
           ? [
-              "bg-gradient-to-br from-blue-700 via-primary-500 to-primary-400",
-              "hover:from-blue-700 hover:via-primary-500 hover:to-primary-400",
+              "bg-gradient-to-br from-info-500 via-primary-500 to-primary-400",
+              "hover:from-info-500 hover:via-primary-500 hover:to-primary-400",
               "text-white",
               "shadow-lg shadow-primary-500/50",
             ]
           : [
               "bg-gradient-to-br from-secondary-800 to-secondary-900",
-              "hover:from-blue-600 hover:via-primary-600 hover:to-primary-500",
+              "hover:from-info-500 hover:via-primary-600 hover:to-primary-500",
               "text-secondary-400 hover:text-white",
               "shadow-lg shadow-secondary-900/50",
             ],
