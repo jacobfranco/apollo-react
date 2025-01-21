@@ -186,15 +186,10 @@ const toServerSideType = (columnType: string): ContextType => {
   switch (columnType) {
     case "home":
     case "notifications":
-    case "public":
     case "thread":
       return columnType;
     default:
-      if (columnType.includes("list:")) {
-        return "home";
-      } else {
-        return "public"; // community, account, hashtag
-      }
+      return "home";
   }
 };
 

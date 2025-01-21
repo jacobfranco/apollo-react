@@ -112,18 +112,9 @@ const transformStatus = <T extends TransformableStatus>({
   return {
     ...status,
     approval_status: "approval" as const,
-    content: DOMPurify.sanitize(stripCompatibilityFeatures(status.content), {
-      USE_PROFILES: { html: true },
-    }),
     expectsCard: false,
     filtered: [],
     hidden: false,
-    pleroma: pleroma
-      ? (() => {
-          const { ...rest } = pleroma;
-          return rest;
-        })()
-      : undefined,
     search_index: buildSearchIndex(status),
     showFiltered: false, // TODO: this should be removed from the schema and done somewhere else
     translation: undefined as Translation | undefined,
@@ -139,28 +130,6 @@ const statusSchema = baseStatusSchema
   .extend({
     quote: embeddedStatusSchema,
     repost: embeddedStatusSchema,
-    pleroma: statusPleromaSchema
-      .extend({
-        quote: embeddedStatusSchema,
-        emoji_reactions: filteredArray(emojiReactionSchema),
-      })
-      .optional()
-      .catch(undefined),
-  })
-  .transform(({ pleroma, ...status }) => {
-    return {
-      ...status,
-      quote: pleroma?.quote || status.quote || null,
-      reactions: pleroma?.emoji_reactions || status.reactions || null,
-      // There's apparently no better way to do this...
-      // Just trying to remove the `event` and `quote` keys from the object.
-      pleroma: pleroma
-        ? (() => {
-            const { quote, emoji_reactions, ...rest } = pleroma;
-            return rest;
-          })()
-        : undefined,
-    };
   })
   .transform(transformStatus);
 

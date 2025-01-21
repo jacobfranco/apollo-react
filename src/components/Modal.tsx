@@ -17,7 +17,7 @@ const messages = defineMessages({
 
 const themes = {
   normal:
-    "bg-white black:bg-black dark:bg-secondary-700 p-6 shadow-xl text-gray-900 dark:text-gray-100",
+    "bg-white black:bg-black dark:bg-black p-6 shadow-xl text-gray-900 dark:text-gray-100",
   transparent: "bg-transparent p-0 shadow-none",
 };
 

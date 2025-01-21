@@ -72,7 +72,7 @@ const LinkFooter: React.FC = (): JSX.Element => {
             <FooterLink to="/followed_tags">
               <FormattedMessage
                 id="navigation_bar.followed_tags"
-                defaultMessage="Followed hashtags"
+                defaultMessage="Followed tags"
               />
             </FooterLink>
             {account.locked && (

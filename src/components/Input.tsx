@@ -136,7 +136,7 @@ const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
             "text-gray-600": props.disabled,
             "rounded-5px bg-white dark:bg-black border-gray-400 dark:border-gray-800":
               theme === "normal",
-            "rounded-5px bg-gray-200 border-gray-200 dark:bg-black dark:border-gray-800 focus:bg-white dark:focus:bg-gray-900":
+            "rounded-5px bg-gray-100 border-gray-200 dark:bg-black dark:border-gray-800 focus:bg-white dark:focus:bg-gray-900":
               theme === "search",
 
             "pr-10 rtl:pl-10 rtl:pr-3": isPassword || append,

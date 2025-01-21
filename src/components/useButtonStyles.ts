@@ -5,7 +5,7 @@ const themes = {
     "bg-gradient-to-br from-primary-600 via-primary-500 to-primary-500",
     "hover:from-primary-500 hover:via-primary-400 hover:to-primary-400",
     "text-secondary-900",
-    "shadow-md shadow-primary-400/20",
+    "shadow-lg shadow-primary-800/40",
     "ring-primary-500/50 hover:ring-primary-400/50",
     "backdrop-blur-sm"
   ),
@@ -36,7 +36,7 @@ const themes = {
   ),
 
   danger: clsx(
-    "bg-gradient-to-br from-danger-400 via-danger-400 to-danger-500",
+    "bg-gradient-to-br from-danger-500 via-danger-500 to-danger-400",
     "hover:from-danger-400 hover:via-danger-500 hover:to-danger-600",
     "text-white font-bold",
     "shadow-lg shadow-danger-600/30",

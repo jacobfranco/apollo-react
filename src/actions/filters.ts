@@ -3,7 +3,7 @@ import { defineMessages } from "react-intl";
 import toast from "src/toast";
 import { isLoggedIn } from "src/utils/auth";
 
-import api from "src/api";
+import api from "../api/index";
 
 import type { AppDispatch, RootState } from "src/store";
 
@@ -34,7 +34,7 @@ const messages = defineMessages({
 
 type FilterKeywords = { keyword: string; whole_word: boolean }[];
 
-const fetchFilters =
+const fetchFiltersV2 =
   () => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({
       type: FILTERS_FETCH_REQUEST,
@@ -61,7 +61,13 @@ const fetchFilters =
       );
   };
 
-const fetchFilter =
+const fetchFilters =
+  () => (dispatch: AppDispatch, getState: () => RootState) => {
+    if (!isLoggedIn(getState)) return;
+    return dispatch(fetchFiltersV2());
+  };
+
+const fetchFilterV2 =
   (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({
       type: FILTER_FETCH_REQUEST,
@@ -88,7 +94,11 @@ const fetchFilter =
       );
   };
 
-const createFilter =
+const fetchFilter = (id: string) => (dispatch: AppDispatch) => {
+  return dispatch(fetchFilterV2(id));
+};
+
+const createFilterV2 =
   (
     title: string,
     expires_in: string | null,
@@ -116,7 +126,19 @@ const createFilter =
       });
   };
 
-const updateFilter =
+const createFilter =
+  (
+    title: string,
+    expires_in: string | null,
+    context: Array<string>,
+    hide: boolean,
+    keywords: FilterKeywords
+  ) =>
+  (dispatch: AppDispatch) => {
+    return dispatch(createFilterV2(title, expires_in, context, hide, keywords));
+  };
+
+const updateFilterV2 =
   (
     id: string,
     title: string,
@@ -145,7 +167,22 @@ const updateFilter =
       });
   };
 
-const deleteFilter =
+const updateFilter =
+  (
+    id: string,
+    title: string,
+    expires_in: string | null,
+    context: Array<string>,
+    hide: boolean,
+    keywords: FilterKeywords
+  ) =>
+  (dispatch: AppDispatch) => {
+    return dispatch(
+      updateFilterV2(id, title, expires_in, context, hide, keywords)
+    );
+  };
+
+const deleteFilterV2 =
   (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: FILTERS_DELETE_REQUEST });
     return api(getState)
@@ -159,6 +196,10 @@ const deleteFilter =
         dispatch({ type: FILTERS_DELETE_FAIL, error });
       });
   };
+
+const deleteFilter = (id: string) => (dispatch: AppDispatch) => {
+  return dispatch(deleteFilterV2(id));
+};
 
 export {
   FILTERS_FETCH_REQUEST,

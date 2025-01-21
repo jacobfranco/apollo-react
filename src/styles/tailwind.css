@@ -104,7 +104,7 @@
   }
 
   .thread {
-    @apply bg-primary-100 dark:bg-secondary-700;
+    @apply bg-primary-200 dark:bg-secondary-900;
 
     .status--content-wrapper {
       @apply pl-[54px] rtl:pl-0 rtl:pr-[54px];

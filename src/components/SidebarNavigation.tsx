@@ -230,7 +230,7 @@ const SidebarNavigation = () => {
             {account.staff && (
               <SidebarNavigationLink
                 to="/admin"
-                icon={plantIcon}
+                icon={planetIcon}
                 count={dashboardCount}
                 text={
                   <FormattedMessage

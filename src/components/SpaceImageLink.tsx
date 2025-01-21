@@ -21,7 +21,7 @@ const SpaceImageLink: React.FC<SpaceImageLinkProps> = ({
         "relative overflow-hidden",
         "bg-primary-100 dark:bg-secondary-500",
         "text-gray-900 dark:text-gray-100",
-        "shadow-lg dark:shadow-none",
+        "shadow-lg",
         "sm:rounded-xl",
         "transition-transform hover:scale-105"
       )}
