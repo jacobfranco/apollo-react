@@ -75,14 +75,6 @@ const LinkFooter: React.FC = (): JSX.Element => {
                 defaultMessage="Followed tags"
               />
             </FooterLink>
-            {account.locked && (
-              <FooterLink to="/follow_requests">
-                <FormattedMessage
-                  id="navigation_bar.follow_requests"
-                  defaultMessage="Follow requests"
-                />
-              </FooterLink>
-            )}
             <FooterLink to="/logout" onClick={onClickLogOut}>
               <FormattedMessage
                 id="navigation_bar.logout"

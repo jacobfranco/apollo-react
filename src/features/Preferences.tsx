@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
-
 import { changeSetting } from "src/actions/settings";
+import { updateNotificationSettings } from "src/actions/accounts";
+import { patchMe } from "src/actions/me";
 import List, { ListItem } from "src/components/List";
 import { Form, SettingToggle } from "src/components";
 import { SelectDropdown } from "src/features/Forms";
 import { useAppDispatch } from "src/hooks";
 import { useSettings } from "src/hooks/useSettings";
+import { useOwnAccount } from "src/hooks/useOwnAccount";
 import ThemeToggle from "src/features/ThemeToggle";
+import Toggle from "src/components/Toggle";
 
 const languages = {
   en: "English",
@@ -76,17 +79,13 @@ const languages = {
 
 const messages = defineMessages({
   heading: { id: "column.preferences", defaultMessage: "Preferences" },
-  displayPostsDefault: {
-    id: "preferences.fields.display_media.default",
-    defaultMessage: "Hide posts marked as sensitive",
-  },
   displayPostsHideAll: {
     id: "preferences.fields.display_media.hide_all",
-    defaultMessage: "Always hide posts",
+    defaultMessage: "Hide",
   },
   displayPostsShowAll: {
     id: "preferences.fields.display_media.show_all",
-    defaultMessage: "Always show posts",
+    defaultMessage: "Show",
   },
   privacy_public: {
     id: "preferences.options.privacy_public",
@@ -114,6 +113,18 @@ const Preferences = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const settings = useSettings();
+  const { account } = useOwnAccount();
+  const [muteStrangers, setMuteStrangers] = useState(false);
+
+  const handleAccountSettingChange = async (key: string, value: boolean) => {
+    const formdata = new FormData();
+    formdata.set(key, String(value));
+    try {
+      await dispatch(patchMe(formdata));
+    } catch (error) {
+      console.error("Failed to update account setting:", error);
+    }
+  };
 
   const onSelectChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
@@ -126,13 +137,25 @@ const Preferences = () => {
     dispatch(changeSetting(key, checked, { showAlert: true }));
   };
 
+  const handleStrangerNotificationsChange = async (checked: boolean) => {
+    setMuteStrangers(checked);
+    try {
+      await dispatch(
+        updateNotificationSettings({
+          block_from_strangers: checked,
+        })
+      );
+    } catch (error) {
+      console.error("Failed to update notification settings:", error);
+    }
+  };
+
   const displayMediaOptions = React.useMemo(
     () => ({
-      default: intl.formatMessage(messages.displayPostsDefault),
       hide_all: intl.formatMessage(messages.displayPostsHideAll),
       show_all: intl.formatMessage(messages.displayPostsShowAll),
     }),
-    []
+    [intl]
   );
 
   const defaultPrivacyOptions = React.useMemo(
@@ -140,7 +163,7 @@ const Preferences = () => {
       public: intl.formatMessage(messages.privacy_public),
       private: intl.formatMessage(messages.privacy_followers_only),
     }),
-    []
+    [intl]
   );
 
   const defaultContentTypeOptions = React.useMemo(
@@ -148,43 +171,12 @@ const Preferences = () => {
       "text/plain": intl.formatMessage(messages.content_type_plaintext),
       "text/markdown": intl.formatMessage(messages.content_type_markdown),
     }),
-    []
+    [intl]
   );
 
   return (
     <Form>
-      <List>
-        <ListItem
-          label={
-            <FormattedMessage
-              id="home.column_settings.show_reposts"
-              defaultMessage="Show reposts"
-            />
-          }
-        >
-          <SettingToggle
-            settings={settings}
-            settingPath={["home", "shows", "repost"]}
-            onChange={onToggleChange}
-          />
-        </ListItem>
-
-        <ListItem
-          label={
-            <FormattedMessage
-              id="home.column_settings.show_replies"
-              defaultMessage="Show replies"
-            />
-          }
-        >
-          <SettingToggle
-            settings={settings}
-            settingPath={["home", "shows", "reply"]}
-            onChange={onToggleChange}
-          />
-        </ListItem>
-      </List>
-
+      {/* Display Settings Group */}
       <List>
         <ListItem
           label={
@@ -250,61 +242,78 @@ const Preferences = () => {
             }
           />
         </ListItem>
+      </List>
 
-        {/* 
+      {/* Account Settings Group */}
+      <List>
         <ListItem
           label={
             <FormattedMessage
-              id="preferences.fields.content_type_label"
-              defaultMessage="Default post format"
+              id="edit_profile.fields.locked_label"
+              defaultMessage="Private account"
             />
           }
         >
-          <SelectDropdown
-            className="max-w-[200px]"
-            items={defaultContentTypeOptions}
-            defaultValue={settings.defaultContentType}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-              onSelectChange(event, ["defaultContentType"])
+          <Toggle
+            checked={account?.locked || false}
+            onChange={(e) =>
+              handleAccountSettingChange("locked", e.target.checked)
             }
           />
         </ListItem>
-*/}
-        {/* 
+
         <ListItem
           label={
             <FormattedMessage
-              id="preferences.fields.preserve_spoilers_label"
-              defaultMessage="Preserve content warning when replying"
+              id="edit_profile.fields.bot_label"
+              defaultMessage="Bot account"
             />
           }
         >
-          <SettingToggle
-            settings={settings}
-            settingPath={["preserveSpoilers"]}
-            onChange={onToggleChange}
+          <Toggle
+            checked={account?.bot || false}
+            onChange={(e) =>
+              handleAccountSettingChange("bot", e.target.checked)
+            }
           />
         </ListItem>
-        */}
       </List>
 
+      {/* Status Settings Group */}
       <List>
-        {/** TODO: Fix this
         <ListItem
           label={
             <FormattedMessage
-              id="preferences.fields.boost_modal_label"
-              defaultMessage="Show confirmation dialog before reposting"
+              id="home.column_settings.show_reposts"
+              defaultMessage="Show reposts"
             />
           }
         >
           <SettingToggle
             settings={settings}
-            settingPath={["boostModal"]}
+            settingPath={["home", "shows", "repost"]}
             onChange={onToggleChange}
           />
         </ListItem>
-*/}
+
+        <ListItem
+          label={
+            <FormattedMessage
+              id="home.column_settings.show_replies"
+              defaultMessage="Show replies"
+            />
+          }
+        >
+          <SettingToggle
+            settings={settings}
+            settingPath={["home", "shows", "reply"]}
+            onChange={onToggleChange}
+          />
+        </ListItem>
+      </List>
+
+      {/* General Settings Group */}
+      <List>
         <ListItem
           label={
             <FormattedMessage
@@ -319,9 +328,22 @@ const Preferences = () => {
             onChange={onToggleChange}
           />
         </ListItem>
-      </List>
 
-      <List>
+        <ListItem
+          label={
+            <FormattedMessage
+              id="edit_profile.fields.stranger_notifications_label"
+              defaultMessage="Block notifications from strangers"
+            />
+          }
+        >
+          <Toggle
+            checked={muteStrangers}
+            onChange={(e) =>
+              handleStrangerNotificationsChange(e.target.checked)
+            }
+          />
+        </ListItem>
         <ListItem
           label={
             <FormattedMessage
