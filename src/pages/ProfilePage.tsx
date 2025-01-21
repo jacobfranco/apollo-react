@@ -120,9 +120,11 @@ const ProfilePage: React.FC<IProfilePage> = ({ params, children }) => {
       <Layout.Aside>
         {!me && <SignUpPanel />}
 
-        {account && account.fields.length > 0 && (
-          <ProfileFieldsPanel account={account} />
-        )}
+        {account &&
+          account.fields.length > 0 &&
+          (account.fields[0].name != "" || account.fields[0].value != "") && (
+            <ProfileFieldsPanel account={account} />
+          )}
         <ProfileMediaPanel account={account} />
         <WhoToFollowPanel limit={3} />
 

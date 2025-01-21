@@ -90,7 +90,7 @@ const DropdownMenuItem = ({ index, item, onClick }: IDropdownMenuItem) => {
         target={item.target}
         title={item.text}
         className={clsx({
-          "flex px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-primary-100 dark:hover:bg-secondary-800 cursor-pointer":
+          "flex px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-primary-200 dark:hover:bg-secondary-800 cursor-pointer":
             true,
           "text-danger-600 dark:text-danger-400": item.destructive,
         })}

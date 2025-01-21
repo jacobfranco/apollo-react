@@ -33,7 +33,7 @@ const messages = defineMessages({
   },
   private_short: {
     id: "privacy.private.short",
-    defaultMessage: "Followers-only",
+    defaultMessage: "Private",
   },
   private_long: {
     id: "privacy.private.long",
@@ -250,22 +250,10 @@ const PrivacyDropdown: React.FC<IPrivacyDropdown> = ({ composeId }) => {
       meta: intl.formatMessage(messages.public_long),
     },
     {
-      icon: lockOpenIcon,
-      value: "unlisted",
-      text: intl.formatMessage(messages.unlisted_short),
-      meta: intl.formatMessage(messages.unlisted_long),
-    },
-    {
       icon: lockIcon,
       value: "private",
       text: intl.formatMessage(messages.private_short),
       meta: intl.formatMessage(messages.private_long),
-    },
-    {
-      icon: mailIcon,
-      value: "direct",
-      text: intl.formatMessage(messages.direct_short),
-      meta: intl.formatMessage(messages.direct_long),
     },
   ];
 

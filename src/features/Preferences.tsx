@@ -98,7 +98,7 @@ const messages = defineMessages({
   },
   privacy_followers_only: {
     id: "preferences.options.privacy_followers_only",
-    defaultMessage: "Followers-only",
+    defaultMessage: "Private",
   },
   content_type_plaintext: {
     id: "preferences.options.content_type_plaintext",
@@ -153,7 +153,6 @@ const Preferences = () => {
 
   return (
     <Form>
-      {/* TODO: Put back in
       <List>
         <ListItem
           label={
@@ -185,7 +184,6 @@ const Preferences = () => {
           />
         </ListItem>
       </List>
-      */}
 
       <List>
         <ListItem

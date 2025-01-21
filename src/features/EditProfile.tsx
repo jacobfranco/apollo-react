@@ -378,6 +378,22 @@ const EditProfile: React.FC = () => {
         <FormGroup
           labelText={
             <FormattedMessage
+              id="edit_profile.fields.bio_label"
+              defaultMessage="Bio"
+            />
+          }
+        >
+          <Textarea
+            value={data.note}
+            onChange={handleTextChange("note")}
+            autoComplete="off"
+            placeholder={intl.formatMessage(messages.bioPlaceholder)}
+          />
+        </FormGroup>
+
+        <FormGroup
+          labelText={
+            <FormattedMessage
               id="edit_profile.fields.location_label"
               defaultMessage="Location"
             />
@@ -407,34 +423,18 @@ const EditProfile: React.FC = () => {
           />
         </FormGroup>
 
-        <FormGroup
-          labelText={
-            <FormattedMessage
-              id="edit_profile.fields.bio_label"
-              defaultMessage="Bio"
-            />
-          }
-        >
-          <Textarea
-            value={data.note}
-            onChange={handleTextChange("note")}
-            autoComplete="off"
-            placeholder={intl.formatMessage(messages.bioPlaceholder)}
-          />
-        </FormGroup>
-
         <List>
           <ListItem
             label={
               <FormattedMessage
                 id="edit_profile.fields.locked_label"
-                defaultMessage="Lock account"
+                defaultMessage="Private account"
               />
             }
             hint={
               <FormattedMessage
                 id="edit_profile.hints.locked"
-                defaultMessage="Requires you to manually approve followers"
+                defaultMessage="Manually approve followers"
               />
             }
           >
@@ -448,13 +448,13 @@ const EditProfile: React.FC = () => {
             label={
               <FormattedMessage
                 id="edit_profile.fields.bot_label"
-                defaultMessage="This is a bot account"
+                defaultMessage="Bot account"
               />
             }
             hint={
               <FormattedMessage
                 id="edit_profile.hints.bot"
-                defaultMessage="This account mainly performs automated actions and might not be monitored"
+                defaultMessage="This account mainly performs automated actions"
               />
             }
           >
@@ -478,26 +478,6 @@ const EditProfile: React.FC = () => {
             <Toggle
               checked={muteStrangers}
               onChange={(e) => setMuteStrangers(e.target.checked)}
-            />
-          </ListItem>
-
-          <ListItem
-            label={
-              <FormattedMessage
-                id="edit_profile.fields.discoverable_label"
-                defaultMessage="Allow account discovery"
-              />
-            }
-            hint={
-              <FormattedMessage
-                id="edit_profile.hints.discoverable"
-                defaultMessage="Display account in profile directory and allow indexing by external services"
-              />
-            }
-          >
-            <Toggle
-              checked={data.discoverable}
-              onChange={handleCheckboxChange("discoverable")}
             />
           </ListItem>
         </List>

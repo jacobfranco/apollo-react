@@ -24,7 +24,7 @@ const ESportLink: React.FC<ESportLinkProps> = ({
         "relative overflow-hidden",
         "bg-primary-100 dark:bg-secondary-500",
         "text-gray-900 dark:text-gray-100",
-        "shadow-lg dark:shadow-none",
+        "shadow-lg shadow-gray-500 dark:shadow-secondary-900",
         "sm:rounded-xl",
         "transition-transform hover:scale-105"
       )}

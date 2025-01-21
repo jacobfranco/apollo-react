@@ -43,7 +43,7 @@ const ReplyIndicator: React.FC<IReplyIndicator> = ({
     <Stack
       space={2}
       className={clsx(
-        "max-h-72 overflow-y-auto rounded-lg bg-gray-100 p-4 black:bg-gray-900 dark:bg-secondary-800/70",
+        "max-h-72 overflow-y-auto rounded-lg bg-primary-200/70 p-4 black:bg-gray-900 dark:bg-secondary-800/70 shadow-lg",
         className
       )}
     >

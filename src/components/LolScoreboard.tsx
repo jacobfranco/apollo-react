@@ -93,7 +93,7 @@ const LolScoreboard: React.FC<LolScoreboardProps> = ({ seriesId }) => {
 
   return (
     <div
-      className="relative block w-full aspect-[2.5] text-center font-sans transform transition-transform duration-200 ease-in-out hover:scale-105"
+      className="relative block w-full aspect-[2.5] text-center font-sans transform transition-transform shadow-lg duration-200 ease-in-out hover:scale-105"
       style={{ textDecoration: "none" }}
     >
       <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />

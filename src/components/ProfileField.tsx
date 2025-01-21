@@ -38,9 +38,9 @@ const ProfileField: React.FC<IProfileField> = ({ field }) => {
   const valuePlain = htmlToPlaintext(field.value);
 
   return (
-    <HStack className="ring-1 ring-primary-500 rounded-5px ring-opacity-50 px-2">
+    <HStack className="ring-1 ring-primary-500 rounded-5px ring-opacity-50 px-2 py-2">
       <dl>
-        <dt className="font-bold text-primary-500 pt-1" title={field.name}>
+        <dt className="font-bold text-primary-500" title={field.name}>
           {field.name}
         </dt>
 

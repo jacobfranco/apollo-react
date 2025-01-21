@@ -268,7 +268,7 @@ const ComposeForm = <ID extends string>({
         {!group && !groupId && <PrivacyDropdown composeId={id} />}
         <ScheduleButton composeId={id} />
         <SpoilerButton composeId={id} />
-        <MarkdownButton composeId={id} />
+        {/* TODO: Implement <MarkdownButton composeId={id} /> */}
       </HStack>
     ),
     [id]

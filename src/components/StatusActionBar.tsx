@@ -671,6 +671,8 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     menu.push(null);
 
     if (ownAccount) {
+      {
+        /*
       if (publicStatus) {
         menu.push({
           text: intl.formatMessage(
@@ -691,6 +693,8 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
             icon: repeatIcon,
           });
         }
+      }
+    */
       }
 
       menu.push({
@@ -874,11 +878,13 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
       action: handleRepostClick,
       icon: repeatIcon,
     },
+    /* TODO: Fix quotes 
     {
       text: intl.formatMessage(messages.quotePost),
       action: handleQuoteClick,
       icon: quoteIcon,
     },
+    */
   ];
 
   const repostButton = (
