@@ -2,7 +2,7 @@ import bellFilledIcon from "@tabler/icons/filled/bell.svg";
 import circlesFilledIcon from "@tabler/icons/filled/circles.svg";
 import homeFilledIcon from "@tabler/icons/filled/home.svg";
 import mailFilledIcon from "@tabler/icons/filled/mail.svg";
-import bellIcon from "@tabler/icons/outline/bell.svg";
+
 import circlesIcon from "@tabler/icons/outline/circles.svg";
 import dashboardIcon from "@tabler/icons/outline/dashboard.svg";
 import homeIcon from "@tabler/icons/outline/home.svg";
@@ -106,16 +106,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       <ThumbNavigationLink src={searchIcon} to="/search" exact />
       <ThumbNavigationLink src={d20Icon} to="/s" exact />
-
-      {account && (
-        <ThumbNavigationLink
-          src={bellIcon}
-          activeSrc={bellFilledIcon}
-          to="/notifications"
-          exact
-          count={notificationCount}
-        />
-      )}
+      <ThumbNavigationLink src={controllerIcon} to="/esports" exact />
 
       {/* TODO: Implement
       {account && renderMessagesLink()}

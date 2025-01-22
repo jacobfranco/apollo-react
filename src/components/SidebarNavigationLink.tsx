@@ -48,7 +48,7 @@ const SidebarNavigationLink = React.forwardRef(
         className={clsx({
           "flex items-center px-4 py-3.5 text-base font-semibold space-x-4 rtl:space-x-reverse rounded-md group text-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-primary-500 hover:bg-primary-100 dark:hover:bg-secondary-900":
             true,
-          "text-black dark:text-primary-500 bg-primary-200 dark:bg-secondary-800":
+          "text-black dark:text-primary-500 bg-primary-200 dark:bg-secondary-800 shadow-md":
             isActive,
         })}
       >

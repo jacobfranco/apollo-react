@@ -6,10 +6,13 @@ import chevronDownIcon from "@tabler/icons/outline/chevron-down.svg";
 import circleXIcon from "@tabler/icons/outline/circle-x.svg";
 import circlesIcon from "@tabler/icons/outline/circles.svg";
 import codeIcon from "@tabler/icons/outline/code.svg";
+import bellIcon from "@tabler/icons/outline/bell.svg";
+import controllerIcon from "@tabler/icons/outline/device-gamepad-2.svg";
 import filterIcon from "@tabler/icons/outline/filter.svg";
 import hashIcon from "@tabler/icons/outline/hash.svg";
 import listIcon from "@tabler/icons/outline/list.svg";
 import logoutIcon from "@tabler/icons/outline/logout.svg";
+import planetIcon from "@tabler/icons/outline/planet.svg";
 import plusIcon from "@tabler/icons/outline/plus.svg";
 import settingsIcon from "@tabler/icons/outline/settings.svg";
 import userPlusIcon from "@tabler/icons/outline/user-plus.svg";
@@ -45,7 +48,7 @@ const messages = defineMessages({
   profile: { id: "account.profile", defaultMessage: "Profile" },
   preferences: {
     id: "navigation_bar.preferences",
-    defaultMessage: "Preferences",
+    defaultMessage: "Settings",
   },
   blocks: { id: "navigation_bar.blocks", defaultMessage: "Blocks" },
   domainBlocks: {
@@ -58,10 +61,11 @@ const messages = defineMessages({
     id: "navigation_bar.followed_tags",
     defaultMessage: "Followed hashtags",
   },
-  srcConfig: {
-    id: "navigation_bar.src_config",
-    defaultMessage: "Soapbox config",
+  esports: {
+    id: "navigation_bar.esports",
+    defaultMessage: "Esports",
   },
+
   accountMigration: {
     id: "navigation_bar.account_migration",
     defaultMessage: "Move account",
@@ -86,6 +90,10 @@ const messages = defineMessages({
     defaultMessage: "Follow requests",
   },
   close: { id: "lightbox.close", defaultMessage: "Close" },
+  notifications: {
+    id: "tabs_bar.notifications",
+    defaultMessage: "Notificatons",
+  },
 });
 
 interface ISidebarLink {
@@ -107,7 +115,7 @@ const SidebarLink: React.FC<ISidebarLink> = ({
 }) => {
   const body = (
     <HStack space={2} alignItems="center">
-      <div className="relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-secondary-800">
+      <div className="relative inline-flex rounded-full bg-transparent p-2">
         <Icon src={icon} className="size-5 text-primary-500" count={count} />
       </div>
 
@@ -120,7 +128,7 @@ const SidebarLink: React.FC<ISidebarLink> = ({
   if (to) {
     return (
       <NavLink
-        className="group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-secondary-800"
+        className="group rounded-5px text-gray-900 hover:bg-primary-100/40 dark:text-gray-100 dark:hover:bg-secondary-800"
         to={to}
         onClick={onClick}
       >
@@ -153,6 +161,10 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const settings = useAppSelector((state) => getSettings(state));
   const followRequestsCount = useAppSelector((state) =>
     state.user_lists.follow_requests.items.count()
+  );
+  const dashboardCount = useAppSelector(
+    (state) =>
+      state.admin.openReports.count() + state.admin.awaitingApproval.count()
   );
 
   const closeButtonRef = useRef(null);
@@ -220,14 +232,14 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
       })}
     >
       <button
-        className="fixed inset-0 bg-gray-500/90 black:bg-gray-900/90 dark:bg-gray-700/90"
+        className="fixed inset-0 bg-gray-500/90 black:bg-gray-900/90 dark:bg-secondary-800/90"
         onClick={handleClose}
       />
 
       <div className="fixed inset-0 z-[1000] flex">
         <div
           className={clsx({
-            "flex flex-col flex-1 bg-white black:bg-black dark:bg-primary-900 -translate-x-full rtl:translate-x-full w-full max-w-xs":
+            "flex flex-col flex-1 bg-primary-200 black:bg-black dark:bg-secondary-900 -translate-x-full rtl:translate-x-full w-full max-w-xs":
               true,
             "!translate-x-0": sidebarOpen,
           })}
@@ -274,6 +286,20 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   )}
 
                   <SidebarLink
+                    to="/notifications"
+                    icon={bellIcon}
+                    text={intl.formatMessage(messages.notifications)}
+                    onClick={onClose}
+                  />
+
+                  <SidebarLink
+                    to="/settings/preferences"
+                    icon={settingsIcon}
+                    text={intl.formatMessage(messages.preferences)}
+                    onClick={onClose}
+                  />
+
+                  <SidebarLink
                     to="/bookmarks"
                     icon={bookmarkIcon}
                     text={intl.formatMessage(messages.bookmarks)}
@@ -315,13 +341,6 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   />
 
                   <SidebarLink
-                    to="/settings/preferences"
-                    icon={settingsIcon}
-                    text={intl.formatMessage(messages.preferences)}
-                    onClick={onClose}
-                  />
-
-                  <SidebarLink
                     to="/filters"
                     icon={filterIcon}
                     text={intl.formatMessage(messages.filters)}
@@ -337,10 +356,16 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   {account.admin && (
                     <SidebarLink
-                      to="/src/config"
-                      icon={settingsIcon}
-                      text={intl.formatMessage(messages.srcConfig)}
+                      to="/admin"
+                      icon={planetIcon}
+                      count={dashboardCount}
                       onClick={onClose}
+                      text={
+                        <FormattedMessage
+                          id="tabs_bar.dashboard"
+                          defaultMessage="Dashboard"
+                        />
+                      }
                     />
                   )}
 

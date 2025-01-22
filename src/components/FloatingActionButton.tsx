@@ -38,8 +38,8 @@ const HomeFAB: React.FC = () => {
     <button
       onClick={handleOpenComposeModal}
       className={clsx(
-        "inline-flex appearance-none items-center rounded-full border p-4 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2",
-        "border-transparent bg-secondary-500 text-gray-100 hover:bg-secondary-400 focus:bg-secondary-500 focus:ring-secondary-300"
+        "inline-flex appearance-none items-center rounded-xl border p-4 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "border-transparent bg-primary-500 text-gray-800 hover:bg-secondary-400 focus:bg-secondary-500 focus:ring-secondary-300 shadow-lg"
       )}
       aria-label={intl.formatMessage(messages.publish)}
     >
