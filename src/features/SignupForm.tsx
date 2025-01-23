@@ -18,7 +18,6 @@ import Form from "src/components/Form";
 import Input from "src/components/Input";
 import Select from "src/components/Select";
 import Textarea from "src/components/Textarea";
-import CaptchaField from "src/features/Captcha";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import { useSettings } from "src/hooks/useSettings";
 
@@ -364,32 +363,10 @@ const SignupForm: React.FC<ISignupForm> = ({ inviteToken }) => {
       .then(postRegisterAction)
       .catch(() => {
         setSubmissionLoading(false);
-        refreshCaptcha();
       });
   };
 
-  const onCaptchaClick: React.MouseEventHandler = () => {
-    refreshCaptcha();
-  };
-
-  const onFetchCaptcha = (captcha: ImmutableMap<string, any>) => {
-    setCaptchaLoading(false);
-    updateParams({
-      captcha_token: captcha.get("token"),
-      captcha_answer_data: captcha.get("answer_data"),
-    });
-  };
-
-  const onFetchCaptchaFail = () => {
-    setCaptchaLoading(false);
-  };
-
-  const refreshCaptcha = () => {
-    setCaptchaIdempotencyKey(crypto.randomUUID());
-    updateParams({ captcha_solution: "" });
-  };
-
-  const isLoading = captchaLoading || submissionLoading;
+  const isLoading = submissionLoading;
 
   return (
     <Form onSubmit={onSubmit} data-testid="registrations-open">
@@ -509,16 +486,6 @@ const SignupForm: React.FC<ISignupForm> = ({ inviteToken }) => {
               required
             />
           </FormGroup>
-
-          <CaptchaField
-            onFetch={onFetchCaptcha}
-            onFetchFail={onFetchCaptchaFail}
-            onChange={onInputChange}
-            onClick={onCaptchaClick}
-            idempotencyKey={captchaIdempotencyKey}
-            name="captcha_solution"
-            value={params.get("captcha_solution", "")}
-          />
 
           <FormGroup
             labelText={intl.formatMessage(messages.agreement, {
