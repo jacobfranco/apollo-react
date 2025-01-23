@@ -8,6 +8,7 @@ ENV NODE_ENV=development
 ENV BACKEND_URL=http://host.docker.internal:8080
 ENV STREAMING_URL=ws://host.docker.internal:8080
 ENV SENTRY_DSN=""
+ENV IMGIX_DOMAIN=apollo-414916088.imgix.net
 
 COPY package*.json ./
 COPY yarn.lock ./

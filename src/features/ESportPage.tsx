@@ -20,6 +20,7 @@ import { SpaceTimeline } from "./SpaceTimeline";
 import SpaceGallery from "./SpaceGallery";
 import Button from "src/components/Button";
 import plusIcon from "@tabler/icons/outline/plus.svg";
+import { buildImageUrl } from "src/utils/image";
 
 // Lazy‐load each tab
 const ScheduleTab = lazy(() => import("./ScheduleTab"));
@@ -152,9 +153,15 @@ const EsportPage: React.FC = () => {
           {space.get("imageUrl") && (
             <div className="absolute inset-0">
               <img
-                src={space.get("imageUrl")}
+                src={buildImageUrl(space.get("imageUrl"), {
+                  width: 1200,
+                  height: 600,
+                })}
                 alt=""
                 className="w-full h-64 object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = space.get("imageUrl");
+                }}
               />
               {/* Gradient overlay - lighter for more image visibility */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 rounded-t-lg" />
