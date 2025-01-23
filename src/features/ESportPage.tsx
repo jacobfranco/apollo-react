@@ -164,7 +164,7 @@ const EsportPage: React.FC = () => {
                 }}
               />
               {/* Gradient overlay - lighter for more image visibility */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 rounded-t-lg" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60 rounded-t-lg" />
             </div>
           )}
 

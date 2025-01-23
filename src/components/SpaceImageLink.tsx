@@ -32,7 +32,7 @@ const SpaceImageLink: React.FC<SpaceImageLinkProps> = ({
           alt={space.get("name")}
           className="w-full h-64 object-cover sm:rounded-xl"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center sm:rounded-xl">
+        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center sm:rounded-xl">
           <h2 className="text-2xl font-bold text-white text-center">
             {space.get("name")}
           </h2>
