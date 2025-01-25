@@ -31,11 +31,11 @@ const Spaces: React.FC = () => {
     state.spaces.valueSeq().toArray()
   ) as Space[];
 
-  // Optionally fetch trending spaces
+  // Fetch trending spaces
   const { data: trendingSpaces = [], isLoading: isTrendingLoading } =
     useTrendingSpaces();
 
-  // Suppose you do something with trending order
+  // Trending weights
   const trendingWeights = useMemo(() => {
     return trendingSpaces.reduce((acc, space, index) => {
       acc[space.id] = trendingSpaces.length - index;
@@ -43,16 +43,20 @@ const Spaces: React.FC = () => {
     }, {} as Record<string, number>);
   }, [trendingSpaces]);
 
-  // Our local "initialOrder"
+  // Local "initialOrder" state
   const [initialOrder, setInitialOrder] = useState<string[]>([]);
 
   // Local search logic
   const searchValue = useAppSelector((state) => state.search.value);
   const submitted = useAppSelector((state) => state.search.submitted);
 
-  // Sort allSpaces whenever allSpaces or trendingSpaces changes
+  // Sort allSpaces only once when allSpaces and trendingSpaces are loaded
   useEffect(() => {
-    if (allSpaces.length > 0 && !isTrendingLoading) {
+    if (
+      allSpaces.length > 0 &&
+      !isTrendingLoading &&
+      initialOrder.length === 0
+    ) {
       const sortedSpaces = [...allSpaces].sort((a, b) => {
         const aFollowing = a.get("following");
         const bFollowing = b.get("following");
@@ -77,7 +81,7 @@ const Spaces: React.FC = () => {
 
       setInitialOrder(sortedSpaces.map((space) => space.get("id")));
     }
-  }, [allSpaces, trendingWeights, isTrendingLoading]);
+  }, [allSpaces, trendingWeights, isTrendingLoading, initialOrder.length]);
 
   // Filter spaces based on search text
   const filteredSpaces = useMemo(() => {
@@ -136,7 +140,6 @@ const Spaces: React.FC = () => {
     );
   }
 
-  // Render the component once the data is ready
   return (
     <Column
       label={intl.formatMessage(messages.heading)}
