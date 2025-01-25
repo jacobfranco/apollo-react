@@ -649,8 +649,11 @@ const fetchComposeSuggestions =
       case "#":
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);
         break;
-      case "/s/":
-        fetchComposeSuggestionsSpaces(dispatch, getState, composeId, token);
+      case "s":
+        // Only fetch space suggestions if it starts with "s/"
+        if (token.startsWith("s/")) {
+          fetchComposeSuggestionsSpaces(dispatch, getState, composeId, token);
+        }
         break;
       default:
         fetchComposeSuggestionsAccounts(dispatch, getState, composeId, token);
@@ -799,7 +802,7 @@ const insertIntoSpaceHistory =
     const oldHistory = state.compose.get(composeId)!.spaceHistory;
     const me = state.me;
     const ids = recognizedSpaces
-      .filter((space) => text.match(new RegExp(`/s/${space.id}`, "i")))
+      .filter((space) => text.match(new RegExp(`s/${space.id}`, "i")))
       .map((space) => space.id);
     const intersectedOldHistory = oldHistory.filter(
       (id) =>

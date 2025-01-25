@@ -16,7 +16,7 @@ const Space: React.FC<ISpace> = ({ space }) => {
   return (
     <HStack alignItems="center" justifyContent="between" data-testid="space">
       <Stack>
-        <Link to={`/s/${space.get("id")}`} className="hover:underline">
+        <Link to={`${space.get("id")}`} className="hover:underline">
           <Text tag="span" size="sm" weight="semibold">
             {space.get("name")}
           </Text>

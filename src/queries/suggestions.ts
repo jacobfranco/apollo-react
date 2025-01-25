@@ -34,7 +34,7 @@ const useSuggestions = () => {
   const api = useApi();
   const dispatch = useAppDispatch();
 
-  const getV2Suggestions = async (
+  const getSuggestions = async (
     pageParam: PageParam
   ): Promise<PaginatedResult<Result>> => {
     const endpoint = pageParam?.link || "/api/suggestions";
@@ -57,7 +57,7 @@ const useSuggestions = () => {
 
   const result = useInfiniteQuery({
     queryKey: SuggestionKeys.suggestions,
-    queryFn: ({ pageParam }: any) => getV2Suggestions(pageParam),
+    queryFn: ({ pageParam }: any) => getSuggestions(pageParam),
     placeholderData: keepPreviousData,
     initialPageParam: { nextLink: undefined },
     getNextPageParam: (config) => {
@@ -100,7 +100,7 @@ function useOnboardingSuggestions() {
   const api = useApi();
   const dispatch = useAppDispatch();
 
-  const getV2Suggestions = async (
+  const getSuggestions = async (
     pageParam: any
   ): Promise<{
     data: Suggestion[];
@@ -127,7 +127,7 @@ function useOnboardingSuggestions() {
 
   const result = useInfiniteQuery({
     queryKey: ["suggestions", "v2"],
-    queryFn: ({ pageParam }) => getV2Suggestions(pageParam),
+    queryFn: ({ pageParam }) => getSuggestions(pageParam),
     placeholderData: keepPreviousData,
     initialPageParam: { link: undefined as string | undefined },
     getNextPageParam: (config) => {

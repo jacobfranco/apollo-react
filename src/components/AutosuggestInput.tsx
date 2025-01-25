@@ -47,7 +47,7 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
   static defaultProps = {
     autoFocus: false,
     autoSelect: true,
-    searchTokens: ImmutableList(["@", ":", "#", "/s/"]),
+    searchTokens: ImmutableList(["@", ":", "#", "s/"]),
   };
 
   getFirstIndex = () => {
@@ -217,11 +217,7 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
     } else if (suggestion[0] === "#") {
       inner = suggestion;
       key = suggestion;
-    } else if (
-      suggestion[0] === "/" &&
-      suggestion[1] == "s" &&
-      suggestion[2] === "/"
-    ) {
+    } else if (suggestion[0] == "s" && suggestion[1] === "/") {
       inner = suggestion;
       key = suggestion;
     } else {
@@ -236,10 +232,9 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
         key={key}
         data-index={i}
         className={clsx({
-          "px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group black:hover:bg-gray-900 black:focus:bg-gray-900":
+          "flex px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-primary-200 dark:hover:bg-secondary-800 cursor-pointer":
             true,
-          "bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 black:bg-gray-900 black:hover:bg-gray-900":
-            i === selectedSuggestion,
+          "bg-primary-200 dark:bg-secondary-800": i === selectedSuggestion,
         })}
         onMouseDown={this.onSuggestionClick}
         onTouchEnd={this.onSuggestionClick}
@@ -270,15 +265,16 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
     const { menu, suggestions } = this.props;
     const { selectedSuggestion } = this.state;
 
-    if (!menu) {
-      return null;
-    }
+    if (!menu) return null;
 
     return menu.map((item, i) => (
-      <a // eslint-disable-line jsx-a11y/anchor-is-valid
+      <a
         className={clsx(
-          "flex cursor-pointer items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800 dark:focus:bg-primary-800",
-          { selected: suggestions.size - selectedSuggestion === i }
+          "flex cursor-pointer items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-primary-200 dark:hover:bg-secondary-800",
+          {
+            "bg-primary-200 dark:bg-secondary-800":
+              suggestions.size - selectedSuggestion === i,
+          }
         )}
         href="/"
         role="button"
@@ -286,9 +282,13 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
         onMouseDown={this.handleMenuItemClick(item)}
         key={i}
       >
-        {item?.icon && <Icon src={item.icon} />}
-
-        <span>{item?.text}</span>
+        {item?.icon && (
+          <Icon
+            src={item.icon}
+            className="mr-3 h-5 w-5 flex-none rtl:ml-3 rtl:mr-0"
+          />
+        )}
+        <span className="truncate font-medium">{item?.text}</span>
       </a>
     ));
   };
@@ -318,14 +318,12 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
       theme,
     } = this.props;
     const { suggestionsHidden } = this.state;
-
     const visible =
       !suggestionsHidden && (!suggestions.isEmpty() || (menu && value));
 
     return [
       <div key="input" className="relative w-full">
         <label className="sr-only">{placeholder}</label>
-
         <Input
           type="text"
           className={className}
@@ -351,16 +349,15 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
         <div
           style={this.setPortalPosition()}
           className={clsx({
-            "fixed w-full z-[1001] shadow bg-white dark:bg-gray-900 rounded-lg py-1 dark:ring-2 dark:ring-primary-700 focus:outline-none":
+            "fixed z-[1001] w-56 rounded-md bg-primary-100 py-1 shadow-lg transition-opacity duration-100 focus:outline-none black:bg-black dark:bg-secondary-900 dark:ring-2 dark:ring-primary-700":
               true,
-            hidden: !visible,
-            block: visible,
+            "opacity-0 pointer-events-none": !visible,
+            "opacity-100": visible,
           })}
         >
           <div className="space-y-0.5">
             {suggestions.map(this.renderSuggestion)}
           </div>
-
           {this.renderMenu()}
         </div>
       </Portal>,

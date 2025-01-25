@@ -37,7 +37,7 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
         <Stack space={3} className="mx-auto w-40 md:w-24">
           <img
             src={account.avatar}
-            className="mx-auto block size-16 min-w-[56px] rounded-full object-cover"
+            className="mx-auto block size-16 min-w-[56px] rounded-5px object-cover"
             alt={account.username}
           />
 

@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-import { Tooltip } from 'src/components';
+import { Tooltip } from "src/components";
 
-import type { Mention as MentionEntity } from 'src/schemas';
+import type { Mention as MentionEntity } from "src/schemas";
 
 interface IMention {
-  mention: Pick<MentionEntity, 'username'>;
+  mention: Pick<MentionEntity, "username">;
   disabled?: boolean;
 }
 
@@ -23,9 +23,9 @@ const Mention: React.FC<IMention> = ({ mention: { username }, disabled }) => {
     <Tooltip text={`@${username}`}>
       <Link
         to={`/@${username}`}
-        className='text-primary-600 hover:underline dark:text-accent-blue'
+        className="text-primary-600 hover:underline dark:text-accent-blue"
         onClick={handleClick}
-        dir='ltr'
+        dir="ltr"
       >
         @{username}
       </Link>

@@ -16,6 +16,7 @@ import type {
   EmbeddedEntity,
   Filter as FilterEntity,
   Notification,
+  Space,
   Status,
 } from "src/types/entities";
 import { EntityStore } from "src/entity-store/types";
@@ -287,6 +288,13 @@ export const getAccountGallery = createSelector(
     }, ImmutableList());
   }
 );
+
+export const selectSpace = (
+  state: RootState,
+  id: string
+): Space | undefined => {
+  return state.spaces.get(id);
+};
 
 export const getSpaceMediaGallery = createSelector(
   [

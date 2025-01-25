@@ -176,7 +176,7 @@ const EsportPage: React.FC = () => {
                   {space.get("name")}
                 </h1>
                 <span className="text-md font-bold text-gray-300">
-                  /s/{spacePath}
+                  s/{spacePath}
                 </span>
               </div>
               {isLoggedIn && (

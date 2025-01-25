@@ -26,12 +26,12 @@ import {
   $getRoot,
   type LexicalEditor,
 } from "lexical";
-import React, { useMemo, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { useAppDispatch } from "src/hooks";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
 
-import { useNodes } from "./nodes";
+import { useNodes } from "./nodes/index";
 import AutosuggestPlugin from "./plugins/AutosuggestPlugin";
 import FocusPlugin from "./plugins/FocusPlugin";
 import RefPlugin from "./plugins/RefPlugin";
@@ -62,17 +62,16 @@ interface IComposeEditor {
 const theme: InitialConfigType["theme"] = {
   emoji: "select-none",
   hashtag:
-    "hover:underline text-primary-600 dark:text-primary-500 hover:text-primary-800 dark:hover:text-primary-500",
-  link: "hover:underline text-primary-600 dark:text-secondary-500 hover:text-primary-800 dark:hover:text-primary-500",
+    "hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue",
+  link: "hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue",
   text: {
     bold: "font-bold",
     code: "font-mono",
     italic: "italic",
     strikethrough: "line-through",
     underline: "underline",
-    underlineStrikethrough: "underline-line-through",
+    underlineStrikethrough: "underline line-through",
   },
-  space: "text-danger-500",
   heading: {
     h1: "text-2xl font-bold",
     h2: "text-xl font-bold",
@@ -80,7 +79,7 @@ const theme: InitialConfigType["theme"] = {
   },
 };
 
-const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(
+const ComposeEditor = forwardRef<LexicalEditor, IComposeEditor>(
   (
     {
       className,
@@ -144,6 +143,15 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(
         defaultMessage="What's on your mind?"
       />
     );
+
+    if (hasPoll) {
+      textareaPlaceholder = (
+        <FormattedMessage
+          id="compose_form.poll_placeholder"
+          defaultMessage="Add a poll topic…"
+        />
+      );
+    }
 
     return (
       <LexicalComposer initialConfig={initialConfig}>

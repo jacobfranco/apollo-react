@@ -1,27 +1,30 @@
 import { isLoggedIn } from "src/utils/auth";
 
-import api from "../api";
+import api from "../api/index";
 
 import { fetchRelationships } from "./accounts";
 import { importFetchedAccounts } from "./importer";
 import { insertSuggestionsIntoTimeline } from "./timelines";
 
 import type { AppDispatch, RootState } from "src/store";
-import { APIEntity } from "src/types/entities";
-
-const SUGGESTIONS_DISMISS = "SUGGESTIONS_DISMISS";
+import type { APIEntity } from "src/types/entities";
 
 const SUGGESTIONS_FETCH_REQUEST = "SUGGESTIONS_FETCH_REQUEST";
 const SUGGESTIONS_FETCH_SUCCESS = "SUGGESTIONS_FETCH_SUCCESS";
 const SUGGESTIONS_FETCH_FAIL = "SUGGESTIONS_FETCH_FAIL";
 
-// Define the fetchSuggestions action creator
-const fetchSuggestions =
+const SUGGESTIONS_DISMISS = "SUGGESTIONS_DISMISS";
+
+const SUGGESTIONS_V2_FETCH_REQUEST = "SUGGESTIONS_V2_FETCH_REQUEST";
+const SUGGESTIONS_V2_FETCH_SUCCESS = "SUGGESTIONS_V2_FETCH_SUCCESS";
+const SUGGESTIONS_V2_FETCH_FAIL = "SUGGESTIONS_V2_FETCH_FAIL";
+
+const fetchSuggestionsV2 =
   (params: Record<string, any> = {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const next = getState().suggestions.next;
 
-    dispatch({ type: SUGGESTIONS_FETCH_REQUEST, skipLoading: true });
+    dispatch({ type: SUGGESTIONS_V2_FETCH_REQUEST, skipLoading: true });
 
     return api(getState)
       .get(next ?? "/api/suggestions", next ? {} : { searchParams: params })
@@ -32,7 +35,7 @@ const fetchSuggestions =
 
         dispatch(importFetchedAccounts(accounts));
         dispatch({
-          type: SUGGESTIONS_FETCH_SUCCESS,
+          type: SUGGESTIONS_V2_FETCH_SUCCESS,
           suggestions,
           next,
           skipLoading: true,
@@ -41,13 +44,24 @@ const fetchSuggestions =
       })
       .catch((error) => {
         dispatch({
-          type: SUGGESTIONS_FETCH_FAIL,
+          type: SUGGESTIONS_V2_FETCH_FAIL,
           error,
           skipLoading: true,
           skipAlert: true,
         });
         throw error;
       });
+  };
+
+const fetchSuggestions =
+  (params: Record<string, any> = { limit: 50 }) =>
+  (dispatch: AppDispatch) => {
+    return dispatch(fetchSuggestionsV2(params))
+      .then((suggestions: APIEntity[]) => {
+        const accountIds = suggestions.map(({ account }) => account.id);
+        dispatch(fetchRelationships(accountIds));
+      })
+      .catch(() => {});
   };
 
 const fetchSuggestionsForTimeline =
@@ -74,6 +88,10 @@ export {
   SUGGESTIONS_FETCH_SUCCESS,
   SUGGESTIONS_FETCH_FAIL,
   SUGGESTIONS_DISMISS,
+  SUGGESTIONS_V2_FETCH_REQUEST,
+  SUGGESTIONS_V2_FETCH_SUCCESS,
+  SUGGESTIONS_V2_FETCH_FAIL,
+  fetchSuggestionsV2,
   fetchSuggestions,
   fetchSuggestionsForTimeline,
   dismissSuggestion,

@@ -238,7 +238,7 @@ const updateSuggestionSpaces = (
   token: string,
   spaces: ImmutableList<Space>
 ) => {
-  const prefix = token.slice(4);
+  const prefix = token.slice(2);
 
   return compose.merge({
     suggestions: ImmutableList(
@@ -247,7 +247,7 @@ const updateSuggestionSpaces = (
           space.get("name").toLowerCase().startsWith(prefix.toLowerCase())
         )
         .slice(0, 4)
-        .map((space) => "/s/" + space.id)
+        .map((space) => "s/" + space.id)
     ),
     suggestion_token: token,
   });

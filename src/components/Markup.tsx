@@ -34,27 +34,12 @@ const Markup = forwardRef<any, IMarkup>(({ html, mentions, ...props }, ref) => {
         const classes = domNode.attribs.class?.split(" ");
 
         if (classes?.includes("hashtag")) {
-          const child = domToReact(domNode.children as DOMNode[]);
-
-          const hashtag: string | undefined = (() => {
-            // Mastodon wraps the hashtag in a span, with a sibling text node containing the hashtag.
-            if (Array.isArray(child) && child.length) {
-              if (
-                child[0]?.props?.children === "#" &&
-                typeof child[1] === "string"
-              ) {
-                return child[1];
-              }
-            }
-            // Pleroma renders a string directly inside the hashtag link.
-            if (typeof child === "string") {
-              return child.replace(/^#/, "");
-            }
-          })();
-
-          if (hashtag) {
-            return <HashtagLink hashtag={hashtag} />;
-          }
+          // Instead of all the prefix processing, just pass through the content
+          return (
+            <HashtagLink
+              hashtag={domToReact(domNode.children as DOMNode[]) as string}
+            />
+          );
         }
 
         if (classes?.includes("mention")) {
@@ -62,6 +47,7 @@ const Markup = forwardRef<any, IMarkup>(({ html, mentions, ...props }, ref) => {
             ({ url }) => domNode.attribs.href === url
           );
           if (mention) {
+            // Similarly, just pass through the mention content as-is
             return <Mention mention={mention} />;
           }
         }

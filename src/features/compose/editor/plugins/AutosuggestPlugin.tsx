@@ -22,9 +22,10 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import React, {
+import {
   MutableRefObject,
   ReactPortal,
+  startTransition,
   useCallback,
   useEffect,
   useRef,
@@ -37,9 +38,11 @@ import {
   fetchComposeSuggestions,
 } from "src/actions/compose";
 import { chooseEmoji } from "src/actions/emojis";
-import { AutosuggestEmoji } from "src/components";
-import { useAppDispatch, useCompose } from "src/hooks";
-import { selectAccount } from "src/selectors";
+import AutosuggestEmoji from "src/components/AutosuggestEmoji";
+import { isNativeEmoji } from "src/features/emoji/index";
+import { useAppDispatch } from "src/hooks/useAppDispatch";
+import { useCompose } from "src/hooks/useCompose";
+import { selectAccount } from "src/selectors/index";
 import { textAtCursorMatchesToken } from "src/utils/suggestions";
 
 import AutosuggestAccount from "../../components/AutosuggestAccount";
@@ -47,6 +50,7 @@ import { $createEmojiNode } from "../nodes/EmojiNode";
 import { $createMentionNode } from "../nodes/MentionNode";
 
 import type { AutoSuggestion } from "src/components/AutosuggestInput";
+import AutosuggestSpace from "src/components/AutosuggestSpace";
 
 type QueryMatch = {
   leadOffset: number;
@@ -102,14 +106,6 @@ const isSelectionOnEntityBoundary = (
     }
     return false;
   });
-};
-
-const startTransition = (callback: () => void) => {
-  if (React.startTransition) {
-    React.startTransition(callback);
-  } else {
-    callback();
-  }
 };
 
 // Got from https://stackoverflow.com/a/42543908/2013580
@@ -335,9 +331,11 @@ const AutosuggestPlugin = ({
         if (typeof suggestion === "object") {
           if (!suggestion.id) return;
           dispatch(chooseEmoji(suggestion));
-          replaceMatch($createEmojiNode(suggestion));
-
-          // TODO: Do this spaces
+          if (isNativeEmoji(suggestion)) {
+            replaceMatch(new TextNode(suggestion.native));
+          } else {
+            replaceMatch($createEmojiNode(suggestion));
+          }
         } else if (suggestion[0] === "#") {
           (node as TextNode).setTextContent(`${suggestion} `);
           node.select();
@@ -361,7 +359,7 @@ const AutosuggestPlugin = ({
       const [leadOffset, matchingString] = textAtCursorMatchesToken(
         node.getTextContent(),
         (state._selection as RangeSelection)?.anchor?.offset,
-        [":", "@"]
+        [":", "@", "s/"]
       );
 
       if (!leadOffset || !matchingString) return null;
@@ -378,9 +376,11 @@ const AutosuggestPlugin = ({
     if (typeof suggestion === "object") {
       inner = <AutosuggestEmoji emoji={suggestion} />;
       key = suggestion.id;
-      // TODO: Do this for spaces
     } else if (suggestion[0] === "#") {
       inner = suggestion;
+      key = suggestion;
+    } else if (suggestion.startsWith("s/")) {
+      inner = <AutosuggestSpace id={suggestion.slice(2)} />;
       key = suggestion;
     } else {
       inner = <AutosuggestAccount id={suggestion} />;
@@ -394,10 +394,9 @@ const AutosuggestPlugin = ({
         key={key}
         data-index={i}
         className={clsx({
-          "snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group":
+          "flex px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-primary-200 dark:hover:bg-secondary-800 cursor-pointer":
             true,
-          "snap-start snap-always bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800":
-            i === selectedSuggestion,
+          "bg-primary-200 dark:bg-secondary-800": i === selectedSuggestion,
         })}
         onMouseDown={handleSelectSuggestion}
       >
@@ -573,7 +572,7 @@ const AutosuggestPlugin = ({
           ? ReactDOM.createPortal(
               <div
                 className={clsx({
-                  "scroll-smooth snap-y snap-always will-change-scroll mt-6 overflow-y-auto max-h-56 relative w-max z-1000 shadow bg-white dark:bg-gray-900 rounded-lg py-1 space-y-0 dark:ring-2 dark:ring-primary-700 focus:outline-none":
+                  "fixed z-[1001] w-56 rounded-md bg-primary-100 py-1 shadow-lg transition-opacity duration-100 focus:outline-none black:bg-black dark:bg-secondary-900 dark:ring-2 dark:ring-primary-700":
                     true,
                   hidden: suggestionsHidden || suggestions.isEmpty(),
                   block: !suggestionsHidden && !suggestions.isEmpty(),
