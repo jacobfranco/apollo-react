@@ -573,7 +573,7 @@ export default function compose(
             ImmutableList(
               action.accounts
                 ? action.accounts.map((item: APIEntity) => item.id)
-                : action.emojis
+                : action.suggestions || action.emojis
             )
           )
           .set("suggestion_token", action.token)

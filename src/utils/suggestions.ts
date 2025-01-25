@@ -4,7 +4,7 @@ const textAtCursorMatchesToken = (
   str: string,
   caretPosition: number,
   searchTokens: string[]
-): CursorMatch => {
+): [number | null, string | null] => {
   let word;
 
   const left = str.slice(0, caretPosition).search(/\S+$/);
@@ -16,17 +16,22 @@ const textAtCursorMatchesToken = (
     word = str.slice(left, right + caretPosition);
   }
 
-  if (!word || word.trim().length < 3 || !searchTokens.includes(word[0])) {
-    return [null, null];
-  }
-
+  if (!word) return [null, null];
   word = word.trim().toLowerCase();
 
-  if (word.length > 0) {
+  // Add console.log to debug
+  console.log("Word:", word, "SearchTokens:", searchTokens);
+
+  // Make sure s/ is in searchTokens
+  if (word.startsWith("s/")) {
     return [left + 1, word];
-  } else {
+  }
+
+  if (!searchTokens.includes(word[0])) {
     return [null, null];
   }
+
+  return [left + 1, word];
 };
 
 export { textAtCursorMatchesToken };

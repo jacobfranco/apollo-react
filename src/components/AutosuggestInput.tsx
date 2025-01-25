@@ -12,6 +12,7 @@ import { textAtCursorMatchesToken } from "src/utils/suggestions";
 import type { Menu, MenuItem } from "src/components/dropdown-menu/index";
 import type { InputThemes } from "src/components/Input";
 import type { Emoji } from "src/features/emoji/index";
+import AutosuggestSpace from "./AutosuggestSpace";
 
 export type AutoSuggestion = string | Emoji;
 
@@ -205,23 +206,23 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
 
   renderSuggestion = (suggestion: AutoSuggestion, i: number) => {
     const { selectedSuggestion } = this.state;
-    let inner, key;
+    let inner: JSX.Element | string;
+    let key: React.Key;
 
-    if (this.props.renderSuggestion && typeof suggestion === "string") {
-      const RenderSuggestion = this.props.renderSuggestion;
-      inner = <RenderSuggestion id={suggestion} />;
-      key = suggestion;
-    } else if (typeof suggestion === "object") {
+    if (typeof suggestion === "object") {
+      // Handle emoji suggestions (these are objects with id and native properties)
       inner = <AutosuggestEmoji emoji={suggestion} />;
       key = suggestion.id;
-    } else if (suggestion[0] === "#") {
-      inner = suggestion;
-      key = suggestion;
-    } else if (suggestion[0] == "s" && suggestion[1] === "/") {
-      inner = suggestion;
-      key = suggestion;
     } else {
-      inner = <AutosuggestAccount id={suggestion} />;
+      // Handle all string-based suggestions (mentions, hashtags, spaces)
+      if (suggestion.startsWith("s/")) {
+        const spaceId = suggestion.slice(2);
+        inner = <AutosuggestSpace id={spaceId} />;
+      } else if (suggestion.startsWith("#")) {
+        inner = suggestion;
+      } else {
+        inner = <AutosuggestAccount id={suggestion} />;
+      }
       key = suggestion;
     }
 
@@ -318,6 +319,12 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
       theme,
     } = this.props;
     const { suggestionsHidden } = this.state;
+    console.log("Render state:", {
+      suggestions: suggestions.toJS(),
+      suggestionsHidden,
+      visible:
+        !suggestionsHidden && (!suggestions.isEmpty() || (menu && value)),
+    });
     const visible =
       !suggestionsHidden && (!suggestions.isEmpty() || (menu && value));
 
@@ -355,8 +362,19 @@ export default class AutosuggestInput extends PureComponent<IAutosuggestInput> {
             "opacity-100": visible,
           })}
         >
+          {/* Add debug output */}
+          <div style={{ display: "none" }}>
+            {JSON.stringify({
+              visible,
+              suggestionsEmpty: suggestions.isEmpty(),
+              menuValue: menu && value,
+            })}
+          </div>
           <div className="space-y-0.5">
-            {suggestions.map(this.renderSuggestion)}
+            {suggestions.map((suggestion, i) => {
+              console.log("Rendering suggestion:", suggestion);
+              return this.renderSuggestion(suggestion, i);
+            })}
           </div>
           {this.renderMenu()}
         </div>

@@ -51,6 +51,7 @@ import { $createMentionNode } from "../nodes/MentionNode";
 
 import type { AutoSuggestion } from "src/components/AutosuggestInput";
 import AutosuggestSpace from "src/components/AutosuggestSpace";
+import { $createSpaceNode } from "../nodes/SpaceNode";
 
 type QueryMatch = {
   leadOffset: number;
@@ -306,44 +307,72 @@ const AutosuggestPlugin = ({
   };
 
   const onSelectSuggestion = (index: number) => {
-    const suggestion = suggestions.get(index) as AutoSuggestion;
+    // Grab the chosen suggestion
+    const suggestion = suggestions.get(index) as AutoSuggestion | undefined;
+    if (!suggestion) return;
 
     editor.update(() => {
       dispatch((dispatch, getState) => {
         const state = editor.getEditorState();
-        const node = (state._selection as RangeSelection)?.anchor?.getNode();
+        // This is the current text selection
+        const rangeSelection = state._selection as RangeSelection | null;
+        if (!rangeSelection) return;
+
+        // The node at the anchor (cursor) position
+        const node = rangeSelection.anchor.getNode();
+        // Ensure it's a TextNode, otherwise splitText won't exist
+        if (!node || !$isTextNode(node)) return;
+
+        // Info about how many chars to replace, etc.
         const { leadOffset, matchingString } = resolution!.match;
-        /** Offset for the beginning of the matched text, including the token. */
+        // The typed token is preceded by an offset of -1 for the trigger (e.g. "@", "s/", etc.)
         const offset = leadOffset - 1;
 
-        /** Replace the matched text with the given node. */
+        // Helper to replace the typed substring with a new LexicalNode or text
         function replaceMatch(replaceWith: LexicalNode) {
+          // 1. Split out the substring (e.g. "s/lol") from the text node
           const result = (node as TextNode).splitText(
             offset,
             offset + matchingString.length
           );
+          // 2. We get back up to two text nodes: [0] is pre-split, [1] is the matched portion
           const textNode = result[1] ?? result[0];
+          // 3. Replace the matched portion with our new node
           const replacedNode = textNode.replace(replaceWith);
+          // 4. Insert a space after the new node and move the cursor
           replacedNode.insertAfter(new TextNode(" "));
           replacedNode.selectNext();
         }
 
+        // Distinguish between emoji objects, space suggestions, hashtags, or mention
         if (typeof suggestion === "object") {
+          // It's an emoji
           if (!suggestion.id) return;
           dispatch(chooseEmoji(suggestion));
+
           if (isNativeEmoji(suggestion)) {
+            // Insert raw text for native emoji
             replaceMatch(new TextNode(suggestion.native));
           } else {
+            // Insert a specialized emoji node
             replaceMatch($createEmojiNode(suggestion));
           }
+        } else if (suggestion.startsWith("s/")) {
+          // It's a space: "s/lol", "s/smite", etc.
+          const spaceId = suggestion.slice(2);
+          replaceMatch($createSpaceNode(spaceId));
         } else if (suggestion[0] === "#") {
-          (node as TextNode).setTextContent(`${suggestion} `);
+          // It's a hashtag => just replace with plain text
+          node.setTextContent(`${suggestion} `);
           node.select();
         } else {
-          const account = selectAccount(getState(), suggestion)!;
+          // It's a mention => an account ID
+          const account = selectAccount(getState(), suggestion);
+          if (!account) return;
           replaceMatch($createMentionNode(account));
         }
 
+        // Finally, hide the suggestions
         dispatch(clearComposeSuggestions(composeId));
       });
     });
@@ -376,11 +405,17 @@ const AutosuggestPlugin = ({
     if (typeof suggestion === "object") {
       inner = <AutosuggestEmoji emoji={suggestion} />;
       key = suggestion.id;
+    } else if (suggestion.startsWith("s/")) {
+      // Enhanced space suggestion rendering
+      const spaceId = suggestion.slice(2);
+      inner = (
+        <div className="flex items-center w-full">
+          <AutosuggestSpace id={spaceId} />
+        </div>
+      );
+      key = suggestion;
     } else if (suggestion[0] === "#") {
       inner = suggestion;
-      key = suggestion;
-    } else if (suggestion.startsWith("s/")) {
-      inner = <AutosuggestSpace id={suggestion.slice(2)} />;
       key = suggestion;
     } else {
       inner = <AutosuggestAccount id={suggestion} />;

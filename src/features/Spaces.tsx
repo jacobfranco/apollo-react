@@ -2,8 +2,7 @@ import React, { useEffect, useCallback, useMemo, useState } from "react";
 import { defineMessages, useIntl, FormattedMessage } from "react-intl";
 import searchIcon from "@tabler/icons/outline/search.svg";
 import xIcon from "@tabler/icons/outline/x.svg";
-import { useAppDispatch, useAppSelector, useLoggedIn } from "src/hooks";
-import { fetchAllSpaces, followSpace, unfollowSpace } from "src/actions/spaces";
+import { useAppDispatch, useAppSelector } from "src/hooks";
 import {
   changeSearch,
   clearSearchResults,
@@ -16,6 +15,7 @@ import { Column } from "src/components/Column";
 import Spinner from "src/components/Spinner";
 import type { Space } from "src/types/entities";
 import useTrendingSpaces from "src/queries/trending-spaces";
+import { unfollowSpace, followSpace } from "src/actions/spaces";
 
 const messages = defineMessages({
   heading: { id: "column.spaces", defaultMessage: "Spaces" },
@@ -25,19 +25,17 @@ const messages = defineMessages({
 const Spaces: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { isLoggedIn } = useLoggedIn();
-  const [isLoading, setIsLoading] = useState(true);
-  const { data: trendingSpaces = [] } = useTrendingSpaces();
-  const [initialOrder, setInitialOrder] = useState<string[]>([]);
 
+  // The list of all spaces from Redux
   const allSpaces = useAppSelector((state) =>
     state.spaces.valueSeq().toArray()
   ) as Space[];
 
-  const searchValue = useAppSelector((state) => state.search.value);
-  const submitted = useAppSelector((state) => state.search.submitted);
+  // Optionally fetch trending spaces
+  const { data: trendingSpaces = [], isLoading: isTrendingLoading } =
+    useTrendingSpaces();
 
-  // Create initial trending weights
+  // Suppose you do something with trending order
   const trendingWeights = useMemo(() => {
     return trendingSpaces.reduce((acc, space, index) => {
       acc[space.id] = trendingSpaces.length - index;
@@ -45,30 +43,33 @@ const Spaces: React.FC = () => {
     }, {} as Record<string, number>);
   }, [trendingSpaces]);
 
-  // Set initial order once when spaces and trending data are loaded
+  // Our local "initialOrder"
+  const [initialOrder, setInitialOrder] = useState<string[]>([]);
+
+  // Local search logic
+  const searchValue = useAppSelector((state) => state.search.value);
+  const submitted = useAppSelector((state) => state.search.submitted);
+
+  // Sort allSpaces whenever allSpaces or trendingSpaces changes
   useEffect(() => {
-    if (initialOrder.length === 0 && allSpaces.length > 0) {
+    if (allSpaces.length > 0 && !isTrendingLoading) {
       const sortedSpaces = [...allSpaces].sort((a, b) => {
         const aFollowing = a.get("following");
         const bFollowing = b.get("following");
 
-        // First sort by follow status
+        // Sort by follow status
         if (aFollowing !== bFollowing) {
           return aFollowing ? -1 : 1;
         }
 
-        const aId = a.get("id");
-        const bId = b.get("id");
-
         // Then by trending weight
-        const aWeight = trendingWeights[aId] || 0;
-        const bWeight = trendingWeights[bId] || 0;
-
+        const aWeight = trendingWeights[a.get("id")] || 0;
+        const bWeight = trendingWeights[b.get("id")] || 0;
         if (aWeight !== bWeight) {
           return bWeight - aWeight;
         }
 
-        // Finally alphabetically
+        // Finally, alphabetical
         const aName = (a.get("name") || "").toLowerCase();
         const bName = (b.get("name") || "").toLowerCase();
         return aName.localeCompare(bName);
@@ -76,39 +77,38 @@ const Spaces: React.FC = () => {
 
       setInitialOrder(sortedSpaces.map((space) => space.get("id")));
     }
-  }, [allSpaces, trendingWeights, initialOrder.length]);
+  }, [allSpaces, trendingWeights, isTrendingLoading]);
 
-  useEffect(() => {
-    const loadSpaces = async () => {
-      setIsLoading(true);
-      try {
-        await dispatch(fetchAllSpaces());
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadSpaces();
-  }, [dispatch, isLoggedIn]);
+  // Filter spaces based on search text
+  const filteredSpaces = useMemo(() => {
+    if (initialOrder.length === 0) {
+      return [];
+    }
+    // Create a map for O(1) lookups
+    const spacesMap = allSpaces.reduce((acc, space) => {
+      acc[space.get("id")] = space;
+      return acc;
+    }, {} as Record<string, Space>);
 
-  const handleToggleFollow = useCallback(
-    (space: Space, isFollowed: boolean) => {
-      const spaceId = space.get("id");
-      if (!spaceId) return;
-      if (isFollowed) {
-        dispatch(unfollowSpace(spaceId));
-      } else {
-        dispatch(followSpace(spaceId));
-      }
-    },
-    [dispatch]
-  );
+    return initialOrder
+      .map((id) => spacesMap[id])
+      .filter((space) => {
+        if (!space) return false;
+        const searchTerm = searchValue.toLowerCase();
+        const name = (space.get("name") || "").toLowerCase();
+        const sid = (space.get("id") || "").toLowerCase();
+        if (name.includes("esports")) return false;
+        return name.includes(searchTerm) || sid.includes(searchTerm);
+      });
+  }, [allSpaces, initialOrder, searchValue]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(changeSearch(event.target.value));
+  // UI handlers
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(changeSearch(e.target.value));
   };
 
-  const handleClear = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault();
+  const handleClear = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     if (searchValue.length > 0 || submitted) {
       dispatch(clearSearchResults());
     }
@@ -118,26 +118,25 @@ const Spaces: React.FC = () => {
     dispatch(showSearch());
   };
 
-  const filteredSpaces = useMemo(() => {
-    // Create a map for efficient lookup
-    const spacesMap = allSpaces.reduce((acc, space) => {
-      acc[space.get("id")] = space;
-      return acc;
-    }, {} as Record<string, Space>);
+  const handleToggleFollow = useCallback(
+    (space: Space, isFollowed: boolean) => {
+      const spaceId = space.get("id");
+      if (!spaceId) return;
+      dispatch(isFollowed ? unfollowSpace(spaceId) : followSpace(spaceId));
+    },
+    [dispatch]
+  );
 
-    // Filter spaces based on search and maintain initial order
-    return initialOrder
-      .map((id) => spacesMap[id])
-      .filter((space) => {
-        if (!space) return false;
-        const searchTerm = searchValue.toLowerCase();
-        const name = (space.get("name") || "").toLowerCase();
-        const id = (space.get("id") || "").toLowerCase();
-        if (name.includes("esports")) return false;
-        return name.includes(searchTerm) || id.includes(searchTerm);
-      });
-  }, [allSpaces, initialOrder, searchValue]);
+  // Don't render anything until initialOrder is set and trendingSpaces are loaded
+  if (initialOrder.length === 0 || isTrendingLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-48">
+        <Spinner size={40} />
+      </div>
+    );
+  }
 
+  // Render the component once the data is ready
   return (
     <Column
       label={intl.formatMessage(messages.heading)}
@@ -172,15 +171,11 @@ const Spaces: React.FC = () => {
             className={`h-4 w-4 text-gray-600 ${
               searchValue.length > 0 ? "" : "hidden"
             }`}
-            aria-label={intl.formatMessage(messages.placeholder)}
           />
         </div>
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center min-h-48">
-          <Spinner size={40} />
-        </div>
-      ) : filteredSpaces.length === 0 ? (
+
+      {filteredSpaces.length === 0 ? (
         <p className="text-center text-gray-500">
           <FormattedMessage
             id="empty_column.spaces"

@@ -8,6 +8,7 @@ import { fetchMe } from "src/actions/me";
 import { fetchApolloConfig } from "src/actions/apollo";
 import LoadingScreen from "src/components/LoadingScreen";
 import MESSAGES from "src/messages";
+import { fetchAllSpaces } from "src/actions/spaces";
 
 interface IApolloLoad {
   children: React.ReactNode;
@@ -19,7 +20,9 @@ const loadInitial = () => {
     await dispatch(fetchMe());
     console.log("loadInitial: 'me' fetched. Now fetching Apollo config...");
     await dispatch(fetchApolloConfig());
-    console.log("loadInitial: Apollo config fetched.");
+    console.log("loadInitial: Apollo config fetched.  Now fetching spaces...");
+    await dispatch(fetchAllSpaces());
+    console.log("loadInitial: All spaces fetched. Done!");
   };
 };
 

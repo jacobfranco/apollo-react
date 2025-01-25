@@ -9,6 +9,7 @@ import { AutoLinkNode } from "@lexical/link";
 
 import { EmojiNode } from "./EmojiNode";
 import { MentionNode } from "./MentionNode";
+import { SpaceNode } from "./SpaceNode";
 
 import type { Klass, LexicalNode } from "lexical";
 
@@ -18,6 +19,7 @@ const useNodes = () => {
     HashtagNode,
     EmojiNode,
     MentionNode,
+    SpaceNode,
   ];
 
   return nodes;

@@ -64,6 +64,8 @@ const theme: InitialConfigType["theme"] = {
   hashtag:
     "hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue",
   link: "hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue",
+  space:
+    "hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue",
   text: {
     bold: "font-bold",
     code: "font-mono",

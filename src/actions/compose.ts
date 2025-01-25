@@ -624,24 +624,41 @@ const fetchComposeSuggestionsTags = (
     });
 };
 
-const fetchComposeSuggestionsSpaces = (
+export const fetchComposeSuggestionsSpaces = (
   dispatch: AppDispatch,
   getState: () => RootState,
   composeId: string,
   token: string
 ) => {
-  cancelFetchComposeSuggestions?.abort();
-
+  console.log("Fetching space suggestions for token:", token);
   const state = getState();
+  const searchTerm = token.slice(2).toLowerCase(); // Remove "s/"
 
-  const currentTrends = state.trending_spaces.items;
+  // Filter spaces from Redux
+  const filteredSpaces = state.spaces
+    .valueSeq()
+    .filter((space) => {
+      const name = space.get("name").toLowerCase();
+      const id = space.get("id").toLowerCase();
+      return name.includes(searchTerm) || id.includes(searchTerm);
+    })
+    .slice(0, 4)
+    // Prepend "s/" so the suggestion is e.g. "s/lol"
+    .map((space) => `s/${space.get("id")}`);
 
-  return dispatch(updateSuggestionSpaces(composeId, token, currentTrends));
+  // Dispatch them as suggestions
+  dispatch({
+    type: COMPOSE_SUGGESTIONS_READY,
+    id: composeId,
+    token,
+    suggestions: filteredSpaces.toArray(),
+  });
 };
 
 const fetchComposeSuggestions =
   (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
+    console.log("Suggestion handler for token:", token);
     switch (token[0]) {
       case ":":
         fetchComposeSuggestionsEmojis(dispatch, composeId, token);
@@ -652,6 +669,7 @@ const fetchComposeSuggestions =
       case "s":
         // Only fetch space suggestions if it starts with "s/"
         if (token.startsWith("s/")) {
+          console.log("Handling space suggestion");
           fetchComposeSuggestionsSpaces(dispatch, getState, composeId, token);
         }
         break;
@@ -667,6 +685,7 @@ interface ComposeSuggestionsReadyAction {
   token: string;
   emojis?: Emoji[];
   accounts?: APIEntity[];
+  suggestions?: string[];
 }
 
 const readyComposeSuggestionsEmojis = (
@@ -713,16 +732,24 @@ const selectComposeSuggestion =
       startPosition = position;
 
     if (typeof suggestion === "object" && suggestion.id) {
+      // Handle emoji
       completion = suggestion.native;
       startPosition = position - 1;
-
       dispatch(chooseEmoji(suggestion));
-    } else if (typeof suggestion === "string" && suggestion[0] === "#") {
-      completion = suggestion;
-      startPosition = position - 1;
     } else if (typeof suggestion === "string") {
-      completion = selectAccount(getState(), suggestion)!.username;
-      startPosition = position;
+      if (suggestion[0] === "#") {
+        // Handle hashtag
+        completion = suggestion;
+        startPosition = position - 1;
+      } else if (suggestion.startsWith("s/")) {
+        // Handle space similar to hashtags
+        completion = suggestion;
+        startPosition = position - 1;
+      } else {
+        // Handle mention
+        completion = selectAccount(getState(), suggestion)!.username;
+        startPosition = position;
+      }
     }
 
     const action: ComposeSuggestionSelectAction = {
@@ -733,7 +760,6 @@ const selectComposeSuggestion =
       completion,
       path,
     };
-
     dispatch(action);
   };
 
