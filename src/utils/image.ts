@@ -11,13 +11,14 @@ export function buildImageUrl(
 ): string {
   const key = originalUrl.split(".amazonaws.com/")[1];
   if (!key) return originalUrl;
-
   const params = new URLSearchParams({
     w: options.width.toString(),
     h: options.height.toString(),
     fit: "crop",
     crop: "faces,entropy",
+    auto: "format,compress",
+    q: "85",
+    fm: "webp", // Prefer WebP when supported
   });
-
   return `https://${BuildConfig.IMGIX_DOMAIN}/${key}?${params.toString()}`;
 }
