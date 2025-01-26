@@ -171,6 +171,8 @@ const Navbar = () => {
                     className="max-w-[200px]"
                   />
 
+                  {/* TODO: Implement later 
+
                   <Link to="/reset-password">
                     <Tooltip text={intl.formatMessage(messages.forgotPassword)}>
                       <IconButton
@@ -180,6 +182,7 @@ const Navbar = () => {
                       />
                     </Tooltip>
                   </Link>
+                  */}
 
                   <Button theme="primary" type="submit" disabled={isLoading}>
                     {intl.formatMessage(messages.login)}

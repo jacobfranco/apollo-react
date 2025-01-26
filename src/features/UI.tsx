@@ -638,6 +638,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         publicRoute
         exact
       />
+      {/* TODO: Implement later 
       <WrappedRoute
         path="/reset-password"
         page={DefaultPage}
@@ -659,6 +660,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
         publicRoute
         exact
       />
+      */}
       <Redirect from="/auth/password/new" to="/reset-password" />
       <Redirect from="/auth/password/edit" to={`/edit-password${search}`} />
 
