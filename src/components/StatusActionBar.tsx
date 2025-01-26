@@ -537,12 +537,6 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     dispatch(toggleMuteStatus(status));
   };
 
-  const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {
-    const { uri } = status;
-
-    copy(uri);
-  };
-
   const onModerate: React.MouseEventHandler = (e) => {
     const account = status.account;
     dispatch(openModal("ACCOUNT_MODERATION", { accountId: account.id }));
@@ -624,7 +618,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     if (publicStatus) {
       menu.push({
         text: intl.formatMessage(messages.copy),
-        action: handleCopy,
+        action: handleShareClick,
         icon: clipboardCopyIcon,
       });
     }

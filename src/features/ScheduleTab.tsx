@@ -117,6 +117,11 @@ const ScheduleTab: React.FC = () => {
     return new Date(a).getTime() - new Date(b).getTime();
   });
 
+  // Sort series within each day by start time
+  sortedDays.forEach((day) => {
+    groupedSeries[day].sort((a, b) => a.start - b.start);
+  });
+
   const renderScoresContent = () => {
     if (loading) {
       return <Spinner />;

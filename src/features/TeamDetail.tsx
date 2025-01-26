@@ -385,11 +385,11 @@ const TeamDetail: React.FC = () => {
     {
       label: "Result",
       key: "isWinner",
-      className: "text-center justify-center",
+      className: "text-center justify-center font-bold",
       render: (matchStat: TeamMatchStats) => (
         <span
           className={
-            matchStat.isWinner ? "text-success-400" : "text-danger-400"
+            matchStat.isWinner ? "text-success-600" : "text-danger-600"
           }
         >
           {matchStat.isWinner ? "Win" : "Loss"}
@@ -429,8 +429,8 @@ const TeamDetail: React.FC = () => {
                     className="flex-1 min-w-[80px] max-w-[120px] flex-shrink flex-grow"
                   >
                     <div className="block pt-4 transition-all duration-200">
-                      <div className="bg-primary-200 dark:bg-secondary-500 rounded-lg p-2 shadow-sm transition-all duration-200 flex flex-col items-center space-y-2">
-                        <div className="text-sm text-gray-500 font-bold text-center uppercase">
+                      <div className="bg-primary-300 dark:bg-secondary-800 rounded-lg p-2 shadow-sm transition-all duration-200 flex flex-col items-center space-y-2">
+                        <div className="text-sm text-gray-800 dark:text-gray-300 font-bold text-center uppercase">
                           {label}
                         </div>
                         <div>
@@ -458,7 +458,7 @@ const TeamDetail: React.FC = () => {
                   renderRow={(matchStat) => (
                     <div
                       key={matchStat.matchId}
-                      className={`grid gap-0 p-2 bg-primary-200 dark:bg-secondary-500 rounded-md mb-1 shadow`}
+                      className={`grid gap-0 p-2 bg-primary-300 dark:bg-secondary-800 rounded-md mb-1 shadow`}
                       style={{
                         gridTemplateColumns: `repeat(${seasonStatsColumns.length}, 1fr)`,
                       }}
@@ -492,7 +492,7 @@ const TeamDetail: React.FC = () => {
           <>
             {/* Series History Section */}
             <Card>
-              <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+              <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
                 {seriesList && seriesList.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                     {seriesList.map((seriesItem) => {
@@ -541,7 +541,7 @@ const TeamDetail: React.FC = () => {
         <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
           {/* Team Info Card */}
           <Card className="flex-1">
-            <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+            <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
               <div className="flex items-start">
                 {/* Logo */}
                 <div className="w-32 h-32 flex-shrink-0">
@@ -622,7 +622,7 @@ const TeamDetail: React.FC = () => {
 
           {/* Roster */}
           <Card className="flex-1 pr-6">
-            <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+            <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
               {rosterLoading && <p>Loading roster players...</p>}
               {rosterError && <p className="text-danger-500">{rosterError}</p>}
               {rosterPlayers.length > 0 ? (

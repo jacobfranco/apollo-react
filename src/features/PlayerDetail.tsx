@@ -460,8 +460,8 @@ const PlayerDetail: React.FC = () => {
                       className="flex-1 min-w-[80px] max-w-[120px] flex-shrink flex-grow"
                     >
                       <div className="block pt-4 transition-all duration-200">
-                        <div className="bg-primary-200 dark:bg-secondary-500 rounded-lg p-2 shadow-sm transition-all duration-200 flex flex-col items-center space-y-2">
-                          <div className="text-sm text-gray-500 font-bold text-center uppercase">
+                        <div className="bg-primary-300 dark:bg-secondary-800 rounded-lg p-2 shadow-sm transition-all duration-200 flex flex-col items-center space-y-2">
+                          <div className="text-sm text-gray-800 dark:text-gray-300 font-bold text-center uppercase">
                             {label}
                           </div>
                           <div>
@@ -487,7 +487,7 @@ const PlayerDetail: React.FC = () => {
                       renderRow={(matchStat: any) => (
                         <div
                           key={matchStat.matchId}
-                          className="grid items-center bg-primary-200 dark:bg-secondary-500 rounded-md mb-1"
+                          className="grid items-center bg-primary-300 dark:bg-secondary-800 rounded-md mb-1"
                           style={{ gridTemplateColumns }}
                         >
                           {seasonStatsColumns.map((column) => (
@@ -517,7 +517,7 @@ const PlayerDetail: React.FC = () => {
         if (!player.schedule || player.schedule.length === 0) {
           return (
             <Card>
-              <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+              <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
                 <p className="text-gray-500">No schedule available</p>
               </CardBody>
             </Card>
@@ -526,7 +526,7 @@ const PlayerDetail: React.FC = () => {
 
         return (
           <Card>
-            <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+            <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
               {seriesList && seriesList.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-3">
                   {seriesList.map((seriesItem) => {
@@ -575,7 +575,7 @@ const PlayerDetail: React.FC = () => {
       <div className="space-y-6 p-4">
         {/* Player Info Card */}
         <Card className="flex-1">
-          <CardBody className="bg-primary-100 dark:bg-secondary-700 rounded-md">
+          <CardBody className="bg-primary-200 dark:bg-secondary-800 rounded-md">
             <div className="flex items-center justify-between">
               <div className="flex items-start">
                 {/* Player Image */}
@@ -638,7 +638,7 @@ const PlayerDetail: React.FC = () => {
               {team && (
                 <Link
                   to={`/esports/${esportName}/team/${team.id}`}
-                  className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-600 rounded-lg transition-colors duration-200 mr-16"
+                  className="flex flex-col items-center p-4 hover:bg-primary-200 dark:hover:bg-secondary-800 rounded-lg transition-colors duration-200 mr-16"
                 >
                   {team.images && team.images.length > 0 && (
                     <img
