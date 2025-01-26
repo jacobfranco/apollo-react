@@ -157,7 +157,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
 
   return (
     <Stack space={4}>
-      <Column label={intl.formatMessage(titleMessage())}>
+      <Column label={""}>
         <PullToRefresh onRefresh={handleRefresh}>
           <Thread status={status} next={next} handleLoadMore={handleLoadMore} />
         </PullToRefresh>

@@ -60,7 +60,7 @@ import type { Emoji } from "src/features/emoji/index";
 const messages = defineMessages({
   placeholder: {
     id: "compose_form.placeholder",
-    defaultMessage: "What's on your mind?",
+    defaultMessage: "What's up?",
   },
   pollPlaceholder: {
     id: "compose_form.poll_placeholder",

@@ -142,7 +142,7 @@ const ComposeEditor = forwardRef<LexicalEditor, IComposeEditor>(
     let textareaPlaceholder = placeholder || (
       <FormattedMessage
         id="compose_form.placeholder"
-        defaultMessage="What's on your mind?"
+        defaultMessage="What's going on?"
       />
     );
 

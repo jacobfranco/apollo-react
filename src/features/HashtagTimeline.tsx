@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
-import { FormattedMessage } from "react-intl";
-
+import { defineMessages, useIntl, FormattedMessage } from "react-intl";
 import { fetchHashtag, followHashtag, unfollowHashtag } from "src/actions/tags";
 import { expandHashtagTimeline, clearTimeline } from "src/actions/timelines";
 import { useHashtagStream } from "src/api/hooks";
-import { Toggle } from "src/components";
-import List, { ListItem } from "src/components/List";
+import Button from "src/components/Button";
+import plusIcon from "@tabler/icons/outline/plus.svg";
 import { Column } from "src/components/Column";
 import Timeline from "src/features/Timeline";
 import {
@@ -16,6 +15,11 @@ import {
   useTheme,
 } from "src/hooks";
 
+const messages = defineMessages({
+  follow: { id: "hashtag.follow", defaultMessage: "Follow" },
+  unfollow: { id: "hashtag.unfollow", defaultMessage: "Unfollow" },
+});
+
 interface IHashtagTimeline {
   params?: {
     id?: string;
@@ -24,7 +28,7 @@ interface IHashtagTimeline {
 
 export const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
   const id = params?.id || "";
-
+  const intl = useIntl();
   const dispatch = useAppDispatch();
   const tag = useAppSelector((state) => state.tags.get(id));
   const next = useAppSelector(
@@ -61,18 +65,18 @@ export const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
   return (
     <Column label={`#${id}`} transparent={!isMobile}>
       {isLoggedIn && (
-        <List>
-          <ListItem
-            label={
-              <FormattedMessage
-                id="hashtag.follow"
-                defaultMessage="Follow hashtag"
-              />
-            }
+        <div className="px-4 py-2">
+          <Button
+            theme={tag?.following ? "secondary" : "primary"}
+            size="sm"
+            icon={!tag?.following ? plusIcon : undefined}
+            onClick={handleFollow}
           >
-            <Toggle checked={tag?.following} onChange={handleFollow} />
-          </ListItem>
-        </List>
+            {tag?.following
+              ? intl.formatMessage(messages.unfollow)
+              : intl.formatMessage(messages.follow)}
+          </Button>
+        </div>
       )}
       <Timeline
         scrollKey="hashtag_timeline"
