@@ -224,30 +224,13 @@ const changeSetting =
 const saveSettingsImmediate =
   (opts?: SettingOpts) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
     const state = getState();
     if (getSettings(state).getIn(["saved"])) return;
 
-    const data = state.settings.delete("saved").toJS();
-
-    dispatch(
-      patchMe({
-        pleroma_settings_store: {
-          [FE_NAME]: data,
-        },
-      })
-    )
-      .then(() => {
-        dispatch({ type: SETTING_SAVE });
-
-        if (opts?.showAlert) {
-          toast.success(saveSuccessMessage);
-        }
-      })
-      .catch((error) => {
-        toast.showAlertForError(error);
-      });
+    dispatch({ type: SETTING_SAVE });
+    if (opts?.showAlert) {
+      toast.success(saveSuccessMessage);
+    }
   };
 
 const saveSettings = (opts?: SettingOpts) => (dispatch: AppDispatch) =>
