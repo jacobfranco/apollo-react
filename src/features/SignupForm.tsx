@@ -66,9 +66,16 @@ const messages = defineMessages({
   },
   agreement: {
     id: "registration.agreement",
-    defaultMessage: "I agree to the {tos}.",
+    defaultMessage: "I agree to the {tos} and {privacy}.",
   },
-  tos: { id: "registration.tos", defaultMessage: "Terms of Service" },
+  tos: {
+    id: "registration.tos",
+    defaultMessage: "Terms of Service",
+  },
+  privacy: {
+    id: "registration.privacy",
+    defaultMessage: "Privacy Policy",
+  },
   close: {
     id: "registration.confirmation_modal.close",
     defaultMessage: "Close",
@@ -487,21 +494,33 @@ const SignupForm: React.FC<ISignupForm> = ({ inviteToken }) => {
             />
           </FormGroup>
 
-          <FormGroup
-            labelText={intl.formatMessage(messages.agreement, {
-              tos: (
-                <Link to="/about/tos" target="_blank" key={0}>
-                  {intl.formatMessage(messages.tos)}
+          <FormGroup>
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                name="agreement"
+                onChange={onCheckboxChange}
+                checked={params.get("agreement", false)}
+                required
+              />
+              <span className="text-sm">
+                I agree to the{" "}
+                <Link
+                  to="/about/tos"
+                  target="_blank"
+                  className="text-primary-600 hover:underline"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="/about/privacy"
+                  target="_blank"
+                  className="text-primary-600 hover:underline"
+                >
+                  Privacy Policy
                 </Link>
-              ),
-            })}
-          >
-            <Checkbox
-              name="agreement"
-              onChange={onCheckboxChange}
-              checked={params.get("agreement", false)}
-              required
-            />
+              </span>
+            </div>
           </FormGroup>
 
           <FormActions>

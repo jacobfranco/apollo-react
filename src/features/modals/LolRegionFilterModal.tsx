@@ -59,8 +59,8 @@ const LolRegionFilterModal: React.FC<LolRegionFilterModalProps> = ({
       width="4xl"
     >
       <div className="p-4 max-w-screen-lg mx-auto">
-        <div className="grid grid-cols-5 gap-6">
-          {[1, 2, 3, 4, 5].map((tier) => (
+        <div className="grid grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((tier) => (
             <div key={tier} className="flex flex-col space-y-4">
               {groupedLeagues[tier as keyof typeof groupedLeagues].map(
                 (league) => (

@@ -114,12 +114,15 @@ import {
   // EditGroup,
   FollowedTags,
   AboutPage,
+  ContactPage,
+  TermsPage,
+  PrivacyPage,
   Signup,
   Login,
   PasswordReset,
   PasswordResetConfirm,
   SignupInvite,
-  LandingTimeline,
+  Landing,
   SpacePage,
   Spaces,
   ESportPage,
@@ -182,7 +185,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
           path="/"
           exact
           page={LandingPage}
-          component={LandingTimeline}
+          component={Landing}
           content={children}
           publicRoute
         />
@@ -583,7 +586,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       />
 
       <WrappedRoute
-        path="/about/:slug?"
+        path="/about"
         page={DefaultPage}
         component={AboutPage}
         publicRoute
@@ -591,9 +594,24 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({
       />
 
       <WrappedRoute
-        path="/info"
-        page={EmptyPage}
-        component={ServerInfo}
+        path="/about/tos"
+        page={DefaultPage}
+        component={TermsPage}
+        publicRoute
+        exact
+      />
+      <WrappedRoute
+        path="/about/privacy"
+        page={DefaultPage}
+        component={PrivacyPage}
+        publicRoute
+        exact
+      />
+
+      <WrappedRoute
+        path="/contact"
+        page={DefaultPage}
+        component={ContactPage}
         content={children}
       />
 

@@ -38,7 +38,6 @@ const ESports: React.FC = () => {
   const allSpaces = useAppSelector((state) =>
     state.spaces.valueSeq().toArray()
   ) as Space[];
-
   const searchValue = useAppSelector((state) => state.search.value);
   const submitted = useAppSelector((state) => state.search.submitted);
 
@@ -61,33 +60,52 @@ const ESports: React.FC = () => {
     }, {} as Record<string, number>);
   }, [trendingSpaces]);
 
+  // Get API support status for a space
+  const getApiSupport = useCallback((spaceId: string) => {
+    const gamePath = spaceId.replace("esports", "");
+    const config = esportsConfig.find((c) => c.path === gamePath);
+    return config?.hasApiSupport || false;
+  }, []);
+
   // Set initial order once when spaces and trending data are loaded
   useEffect(() => {
     if (initialOrder.length === 0 && esportsSpaces.length > 0) {
       const sortedSpaces = [...esportsSpaces].sort((a, b) => {
+        const aId = a.get("id");
+        const bId = b.get("id");
+
+        // First sort by API support
+        const aHasApi = getApiSupport(aId);
+        const bHasApi = getApiSupport(bId);
+        if (aHasApi !== bHasApi) {
+          return aHasApi ? -1 : 1;
+        }
+
+        // Then by follow status
         const aFollowing = a.get("following");
         const bFollowing = b.get("following");
-        // First sort by follow status
         if (aFollowing !== bFollowing) {
           return aFollowing ? -1 : 1;
         }
-        const aId = a.get("id");
-        const bId = b.get("id");
+
         // Then by trending weight
         const aWeight = trendingWeights[aId] || 0;
         const bWeight = trendingWeights[bId] || 0;
         if (aWeight !== bWeight) {
           return bWeight - aWeight;
         }
+
         // Finally alphabetically
         const aName = (a.get("name") || "").toLowerCase();
         const bName = (b.get("name") || "").toLowerCase();
         return aName.localeCompare(bName);
       });
+
       setInitialOrder(sortedSpaces.map((space) => space.get("id")));
     }
-  }, [esportsSpaces, trendingWeights, initialOrder.length]);
+  }, [esportsSpaces, trendingWeights, initialOrder.length, getApiSupport]);
 
+  // Rest of the component remains the same...
   useEffect(() => {
     const loadSpaces = async () => {
       setIsLoading(true);
@@ -129,13 +147,11 @@ const ESports: React.FC = () => {
   };
 
   const filteredSpaces = useMemo(() => {
-    // Create a map for efficient lookup
     const spacesMap = esportsSpaces.reduce((acc, space) => {
       acc[space.get("id")] = space;
       return acc;
     }, {} as Record<string, Space>);
 
-    // Filter spaces based on search and maintain initial order
     return initialOrder
       .map((id) => spacesMap[id])
       .filter((space) => {

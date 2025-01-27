@@ -75,6 +75,30 @@ const LinkFooter: React.FC = (): JSX.Element => {
                 defaultMessage="Followed tags"
               />
             </FooterLink>
+            <FooterLink to="/about">
+              <FormattedMessage
+                id="navigation_bar.about"
+                defaultMessage="FAQ"
+              />
+            </FooterLink>
+            <FooterLink to="/about/tos">
+              <FormattedMessage
+                id="navigation_bar.terms"
+                defaultMessage="Terms"
+              />
+            </FooterLink>
+            <FooterLink to="/about/privacy">
+              <FormattedMessage
+                id="navigation_bar.privacy"
+                defaultMessage="Privacy"
+              />
+            </FooterLink>
+            <FooterLink to="/contact">
+              <FormattedMessage
+                id="navigation_bar.contact"
+                defaultMessage="Contact"
+              />
+            </FooterLink>
             <FooterLink to="/logout" onClick={onClickLogOut}>
               <FormattedMessage
                 id="navigation_bar.logout"
@@ -84,15 +108,6 @@ const LinkFooter: React.FC = (): JSX.Element => {
           </>
         )}
       </div>
-
-      <Text theme="muted" size="sm">
-        <span
-          className="inline-block align-middle"
-          dangerouslySetInnerHTML={{
-            __html: emojify(apolloConfig.linkFooterMessage),
-          }}
-        />
-      </Text>
     </div>
   );
 };

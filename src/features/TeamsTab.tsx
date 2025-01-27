@@ -43,10 +43,8 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
   const [isCombined, setIsCombined] = useState(false);
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
-
-  // Pagination config
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 100; // Adjust as needed
+  const pageSize = 100;
 
   // Build columns
   const columns = useMemo(() => {
@@ -129,15 +127,12 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
       }
       return sortConfig.direction === "asc" ? comparison : -comparison;
     });
-
     return newTeams;
   }, [teams, selectedLeagues, sortConfig]);
 
-  // Pagination: if combined, we paginate the entire sortedTeams list
-  // If not combined, we show separate league sections—so pagination is more complicated.
-  // For demonstration, let's only paginate when `isCombined = true`.
+  // Pagination for combined view
   const paginatedTeams = useMemo(() => {
-    if (!isCombined) return sortedTeams; // no pagination if separating by league
+    if (!isCombined) return sortedTeams;
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return sortedTeams.slice(startIndex, endIndex);
@@ -148,27 +143,27 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
     if (isCombined) return null;
     const grouped: Record<string, TeamWithComputed[]> = {};
     sortedTeams.forEach((t) => {
-      const key = t.league || "Unknown";
+      const key = t.league;
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(t);
     });
     return grouped;
   }, [isCombined, sortedTeams]);
 
-  // Tiers for ordering leagues
+  // Get ordered leagues including Independent at the end
   const orderedLeagues = useMemo(() => {
     const tiers = groupLeaguesByTier();
-    return [
-      ...tiers[1],
-      ...tiers[2],
-      ...tiers[3],
-      ...tiers[4],
-      ...tiers[5],
-      ...tiers[6],
-    ];
-  }, []);
+    const regularLeagues = [...tiers[1], ...tiers[2], ...tiers[3], ...tiers[4]];
 
-  // Sorting
+    // Only add Independent if there are independent teams
+    const hasIndependentTeams = sortedTeams.some(
+      (team) => team.league === "Independent"
+    );
+    return hasIndependentTeams
+      ? [...regularLeagues, "Independent"]
+      : regularLeagues;
+  }, [sortedTeams]);
+
   const handleSort = useCallback((key: string) => {
     setSortConfig((prev) =>
       prev.key === key
@@ -177,7 +172,6 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
     );
   }, []);
 
-  // Filter apply
   const handleFilterApply = useCallback(
     (leagues: string[]) => {
       setSelectedLeagues(leagues);
@@ -186,21 +180,22 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
     [dispatch]
   );
 
-  // Grid template for StatsTable
   const gridTemplateColumns = `225px repeat(${columns.length - 1}, 1fr)`;
 
-  // Early returns after hooks
   if (!game) {
     return (
       <div className="text-center text-danger-500">Invalid eSport name</div>
     );
   }
+
   if (error) {
     return <div className="text-center text-danger-500">Error: {error}</div>;
   }
+
   if (loading && teams.length === 0) {
     return <Spinner />;
   }
+
   if (teams.length === 0) {
     return <div className="text-center">No teams found.</div>;
   }
@@ -257,8 +252,6 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
               />
             )}
           />
-
-          {/* Pagination controls (only visible if combining all teams) */}
           <div className="flex justify-center space-x-4 mt-4">
             <Button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
@@ -276,7 +269,6 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ esportName }) => {
           </div>
         </>
       ) : (
-        // League‐by‐league render
         orderedLeagues
           .filter((lg) => leagueGroups?.[lg]?.length)
           .map((lg) => (

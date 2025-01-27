@@ -58,7 +58,7 @@ const ScheduleTab: React.FC = () => {
 
   useEffect(() => {
     const timestamp = Math.floor(selectedDate.getTime() / 1000);
-    if (game) {
+    if (game?.hasApiSupport) {
       dispatch(fetchSeries({ timestamp, gamePath: game.path }));
     }
   }, [dispatch, selectedDate, game]);

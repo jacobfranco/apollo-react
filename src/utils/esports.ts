@@ -10,11 +10,23 @@ import { TeamMatchStats } from "src/schemas/team-match-stats";
  */
 export function formatScoreboardTitle(
   series: Series,
-  wordsToOmit: string[] = ["Bracket"]
+  wordsToOmit: string[] = ["Bracket", "UB", "LB"]
 ): string {
   if (!series.tournament?.title) {
     return series.title;
   }
+
+  // Abbreviation mapping
+  const abbreviations: { [key: string]: string } = {
+    "League of Legends Champions Korea": "LCK",
+    "League of Legends Pro League": "LPL",
+    "League of Legends Italian Tournament": "LIT",
+    "Northern League of Legends Championship": "NLC",
+    "League of Legend French League": "LFL",
+    "League of Legends Champion Pacific": "LCP",
+    "League of Legends EMEA": "LoL EMEA",
+    "LoL Championship of The Americas": "LTA",
+  };
 
   // Clean up the series title by removing specified words
   let cleanedSeriesTitle = series.title;
@@ -22,13 +34,23 @@ export function formatScoreboardTitle(
     cleanedSeriesTitle = cleanedSeriesTitle.replace(word, "").trim();
   });
 
+  // Remove "- Matches" from the title
+  cleanedSeriesTitle = cleanedSeriesTitle.replace("- Matches", "").trim();
+
   // Remove any leading or trailing dashes and clean up extra spaces
   cleanedSeriesTitle = cleanedSeriesTitle
     .replace(/^\s*-\s*|\s*-\s*$/g, "")
     .trim();
 
   // Combine the titles
-  return `${series.tournament.title} - ${cleanedSeriesTitle}`;
+  let combinedTitle = `${series.tournament.title} - ${cleanedSeriesTitle}`;
+
+  // Apply abbreviations to the combined title
+  Object.entries(abbreviations).forEach(([fullName, abbreviation]) => {
+    combinedTitle = combinedTitle.replace(fullName, abbreviation);
+  });
+
+  return combinedTitle;
 }
 
 /**

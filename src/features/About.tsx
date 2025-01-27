@@ -1,97 +1,88 @@
-import { useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
-import { Link, useParams } from "react-router-dom";
-
-import { fetchAboutPage } from "src/actions/about";
-import { Navlinks } from "src/components/Navlinks";
-import { Card } from "src/components/Card";
-import { useAppDispatch } from "src/hooks/useAppDispatch";
-import { useSettings } from "src/hooks/useSettings";
-import { useApolloConfig } from "src/hooks/useApolloConfig";
-
-import { languages } from "./Preferences";
 import React from "react";
+import { Card } from "src/components/Card";
 
-/** Displays arbitrary user-uploaded HTML on a page at `/about/:slug` */
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 const AboutPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { slug } = useParams<{ slug?: string }>();
-
-  const settings = useSettings();
-  const apolloConfig = useApolloConfig();
-
-  const [pageHtml, setPageHtml] = useState<string>("");
-  const [locale, setLocale] = useState<string>(settings.locale);
-
-  const { aboutPages } = apolloConfig;
-
-  const page = aboutPages.get(slug || "about");
-  const defaultLocale = page?.get("default") as string | undefined;
-  const pageLocales = page?.get("locales", []) as string[];
-
-  useEffect(() => {
-    const fetchLocale = Boolean(
-      page && locale !== defaultLocale && pageLocales.includes(locale)
-    );
-    dispatch(fetchAboutPage(slug, fetchLocale ? locale : undefined))
-      .then((html) => {
-        setPageHtml(html);
-      })
-      .catch((error) => {
-        // TODO: Better error handling. 404 page?
-        setPageHtml("<h1>Page not found</h1>");
-      });
-  }, [locale, slug]);
-
-  const alsoAvailable = defaultLocale && (
-    <div>
-      <FormattedMessage
-        id="about.also_available"
-        defaultMessage="Available in:"
-      />{" "}
-      {/* eslint-disable-line formatjs/no-literal-string-in-jsx */}
-      <ul className="inline list-none p-0">
-        <li className="inline after:content-['_·_']">
-          <Link to={"/"} className="inline-flex">
-            <button
-              className="space-x-2 !border-none !p-0 !text-primary-600 hover:!underline focus:!ring-transparent focus:!ring-offset-0 dark:!text-accent-blue rtl:space-x-reverse"
-              onClick={() => setLocale(defaultLocale)}
-            >
-              {/* @ts-ignore */}
-              {languages[defaultLocale] || defaultLocale}
-            </button>
-          </Link>
-        </li>
-        {pageLocales?.map((locale) => (
-          <li
-            className="inline after:content-['_·_'] last:after:content-none"
-            key={locale}
-          >
-            <Link to={"/"} className="inline-flex">
-              <button
-                className="space-x-2 !border-none !p-0 !text-primary-600 hover:!underline focus:!ring-transparent focus:!ring-offset-0 dark:!text-accent-blue rtl:space-x-reverse"
-                onClick={() => setLocale(locale)}
-              >
-                {/* @ts-ignore */}
-                {languages[locale] || locale}
-              </button>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  const faqs: FAQItem[] = [
+    {
+      question: "How do I get started?",
+      answer:
+        "Simply sign up using the button at the top right of the screen. You can then customize your profile and start following other users, spaces, or tags.",
+    },
+    {
+      question: "What are Spaces?",
+      answer:
+        "Spaces are game-specific communities to post into.  Simply type s/ and the space's ID and your post will be delivered to the space as well as the timelines of users who follow it.",
+    },
+    {
+      question: "What Esports do you offer scores and stats for?",
+      answer:
+        "We currently provide support for League of Legends esports information. We plan to expand to other major esports titles as soon as possible.",
+    },
+    {
+      question: "Do I need an account for Esports?",
+      answer:
+        "Not necessarily! We'd love for you to make an account, but if you just want to view scores, you can do that without an account.",
+    },
+  ];
 
   return (
     <div>
       <Card variant="rounded">
         <div className="prose mx-auto py-4 dark:prose-invert sm:p-6">
-          <div dangerouslySetInnerHTML={{ __html: pageHtml }} />
-          {alsoAvailable}
+          <h1>About Apollo</h1>
+          <section>
+            <p>
+              Apollo is a complete solution for the millions in the gaming and
+              esports communities who remain largely under-served. We are a
+              gaming social network, media ecosystem, and esports information
+              library in one application.
+            </p>
+          </section>
+
+          <section>
+            <h2>FAQ</h2>
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="space-y-2">
+                  <h3 className="font-medium">{faq.question}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2>Roadmap</h2>
+            <ul>
+              <li>More social features!</li>
+              <li>Fantasy esports offerings</li>
+              <li>Expanded esports coverage into other titles</li>
+              <li>Improved search functionality</li>
+              <li>Enhanced mobile experience</li>
+              <li>Bug fixes and quality-of-life improvements</li>
+            </ul>
+          </section>
+
+          <section
+            className="text-xs text-gray-500 pl-96
+           mt-8"
+          >
+            <a
+              href="https://github.com/jacobfranco/apollo-react"
+              className="hover:text-gray-700 dark:hover:text-gray-400"
+            >
+              Source
+            </a>
+          </section>
         </div>
       </Card>
-
-      <Navlinks type="homeFooter" />
     </div>
   );
 };

@@ -59,7 +59,9 @@ const EsportPage: React.FC = () => {
   );
 
   // Default tab is "schedule"
-  const [activeTab, setActiveTab] = useState<TabType>("schedule");
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    return game?.hasApiSupport ? "schedule" : "esports";
+  });
   const [tabKey, setTabKey] = useState(0);
 
   const handleTabChange = useCallback((tabName: TabType) => {
@@ -205,19 +207,19 @@ const EsportPage: React.FC = () => {
             <SpaceGallery spacePath={spacePath} />
           </Suspense>
         )}
-        {activeTab === "schedule" && (
+        {game?.hasApiSupport && activeTab === "schedule" && (
           <Suspense fallback={<Spinner />} key={`schedule-${tabKey}`}>
             <ScheduleTab />
           </Suspense>
         )}
-        {activeTab === "teams" && (
+        {game?.hasApiSupport && activeTab === "teams" && (
           <Suspense fallback={<Spinner />} key={`teams-${tabKey}`}>
-            <TeamsTab esportName={game!.path} />
+            <TeamsTab esportName={game.path} />
           </Suspense>
         )}
-        {activeTab === "players" && (
+        {game?.hasApiSupport && activeTab === "players" && (
           <Suspense fallback={<Spinner />} key={`players-${tabKey}`}>
-            <PlayersTab esportName={game!.path} />
+            <PlayersTab esportName={game.path} />
           </Suspense>
         )}
       </div>

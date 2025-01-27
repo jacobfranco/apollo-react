@@ -26,8 +26,8 @@ const AutosuggestSpace: React.FC<Props> = ({ id, disabled }) => {
       />
       <div className="flex flex-col">
         {/* Force text color for name, adjusting for light/dark mode */}
-        <span className="font-medium text-black dark:text-white">{name}</span>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="font-bold text-black dark:text-white">{name}</span>
+        <span className="text-sm text-primary-500 dark:text-primary-400">
           s/{spaceId}
         </span>
       </div>

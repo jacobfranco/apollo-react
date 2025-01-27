@@ -36,7 +36,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const dispatch = useAppDispatch();
   const getTeamData = useTeamData();
   const theme = useTheme();
-
   const coverageFact = getCoverageFact(match);
 
   // Use participants from match if coverage is available and participants are present, else use series participants
@@ -67,14 +66,12 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   // Team colors and logo types
   const { color: team1Color, logoType: team1LogoType } = getTeamData(team1Name);
   const { color: team2Color, logoType: team2LogoType } = getTeamData(team2Name);
-
   const isTeam1Placeholder = team1Logo === placeholderTeam;
   const isTeam2Placeholder = team2Logo === placeholderTeam;
 
   // Get match stats from team.matchStats if coverage is available
   let team1MatchStats: TeamMatchStats | null | undefined = null;
   let team2MatchStats: TeamMatchStats | null | undefined = null;
-
   if (coverageFact === "available") {
     team1MatchStats = team1?.matchStats;
     team2MatchStats = team2?.matchStats;
@@ -116,33 +113,28 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   };
 
   type StatValue = number | string;
+
   // Get team match stats or use '-' if not available
   const team1Kills: StatValue = team1MatchStats?.score ?? "-";
   const team2Kills: StatValue = team2MatchStats?.score ?? "-";
-
   const team1GoldValue: number | undefined = team1MatchStats?.goldEarned;
   const team2GoldValue: number | undefined = team2MatchStats?.goldEarned;
-
   const team1Gold: string =
     team1GoldValue !== undefined ? formatGold(team1GoldValue) : "-";
   const team2Gold: string =
     team2GoldValue !== undefined ? formatGold(team2GoldValue) : "-";
-
   const team1Towers: StatValue = team1MatchStats?.turretsDestroyed ?? "-";
   const team2Towers: StatValue = team2MatchStats?.turretsDestroyed ?? "-";
-
   const team1EliteCreepsKills = team1MatchStats?.creeps.neutrals;
   const team2EliteCreepsKills = team2MatchStats?.creeps.neutrals;
 
   // Determine status display
   let statusDisplay = "";
-
   if (match?.lifecycle === "over") {
     // Existing logic for when match is over
     const winnerParticipant = match.participants.find(
       (participant) => participant.winner
     );
-
     if (winnerParticipant && winnerParticipant.roster?.team) {
       const winnerTeam = winnerParticipant.roster.team;
       const winnerAbbr = winnerTeam.abbreviation || winnerTeam.name;
@@ -158,6 +150,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
     const startTime = series.start ? new Date(series.start * 1000) : null;
     statusDisplay = startTime ? `${formatDateTime(startTime)}` : "Upcoming";
   }
+
   // Helper function to determine text colors based on metric comparison
   const getMetricClasses = (
     team1Value: number | string,
@@ -169,7 +162,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
         team2Class: "text-gray-500",
       };
     }
-
     if (team1Value > team2Value) {
       return {
         team1Class: "text-black dark:text-white",
@@ -198,6 +190,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
   const towersClasses = getMetricClasses(team1Towers, team2Towers);
 
   // Function to handle opening the stream modal
+  /*
   const handleOpenStream = () => {
     if (series.broadcasters && series.broadcasters.length > 0) {
       // Create attachment objects representing the streams
@@ -212,7 +205,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
         meta: ImmutableMap(), // Ensure meta is initialized
         broadcaster,
       }));
-
       // Dispatch an action to open MediaModal with these attachments
       dispatch(
         openModal("MEDIA", {
@@ -224,6 +216,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
       // Handle cases with no broadcasters if necessary
     }
   };
+  */
 
   return (
     <div className="relative flex justify-between items-start pt-4 pb-6 space-x-8">
@@ -272,7 +265,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
         ) : (
           <div className="text-gray-500 font-bold">{statusDisplay}</div>
         )}
-
         {/* Always display the metrics containers with placeholder values */}
         {/* Kills Row */}
         <div className="flex items-center justify-between w-full">
@@ -290,7 +282,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             {team2Kills}
           </div>
         </div>
-
         {/* Gold Row */}
         <div className="flex items-center justify-between w-full">
           <div
@@ -307,7 +298,6 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             {team2Gold}
           </div>
         </div>
-
         {/* Towers Row */}
         <div className="flex items-center justify-between w-full">
           <div
@@ -324,12 +314,12 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
             {team2Towers}
           </div>
         </div>
-
         {/* Stream Button */}
         {series.broadcasters && series.broadcasters.length > 0 && (
           <DropdownMenu
             // The dropdown items array
             items={[
+              /*
               {
                 text: "Watch in Same Tab",
                 // Same behavior as your existing handleOpenStream function
@@ -338,6 +328,7 @@ const TeamsHeader: React.FC<TeamsHeaderProps> = ({
                   handleOpenStream();
                 },
               },
+              */
               {
                 text: "Watch in New Window",
                 // For example, open the first broadcaster link in a new window

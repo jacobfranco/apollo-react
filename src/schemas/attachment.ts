@@ -90,6 +90,19 @@ const audioAttachmentSchema = baseAttachmentSchema.extend({
     .catch({}),
 });
 
+const streamMetaSchema = z.object({
+  duration: z.number().optional().catch(undefined),
+  original: imageMetaSchema.optional().catch(undefined),
+  stream_url: z.string().url().optional().catch(undefined),
+  provider: z.string().optional().catch(undefined),
+  quality: z.string().optional().catch(undefined),
+});
+
+const streamAttachmentSchema = baseAttachmentSchema.extend({
+  type: z.literal("stream"),
+  meta: streamMetaSchema.catch({}),
+});
+
 const unknownAttachmentSchema = baseAttachmentSchema.extend({
   type: z.literal("unknown"),
   meta: z
@@ -107,6 +120,7 @@ const attachmentSchema = z
     videoAttachmentSchema,
     gifvAttachmentSchema,
     audioAttachmentSchema,
+    streamAttachmentSchema,
     unknownAttachmentSchema,
   ])
   .transform((attachment) => {

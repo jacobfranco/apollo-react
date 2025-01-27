@@ -25,7 +25,9 @@ export const PasswordResetConfirm = lazy(
   () => import("./PasswordResetConfirm")
 );
 export const SignupInvite = lazy(() => import("./SignupInvite"));
-export const LandingTimeline = lazy(() => import("./LandingTimeline"));
+export const Landing = lazy(() => import("./Landing"));
+export const TermsPage = lazy(() => import("./Terms"));
+export const PrivacyPage = lazy(() => import("./Privacy"));
 export const ComposeEditor = lazy(() => import("./compose/editor"));
 export const MediaGallery = lazy(() => import("./MediaGallery"));
 export const Video = lazy(() => import("./Video"));
@@ -126,6 +128,7 @@ export const PlayerDetail = lazy(() => import("./PlayerDetail"));
 export const StreamPage = lazy(() => import("./StreamPage"));
 export const LatestAccountsPanel = lazy(() => import("./LatestAccountsPanel"));
 export const AboutPage = lazy(() => import("./About"));
+export const ContactPage = lazy(() => import("./Contact"));
 export const Admin = lazy(() => import("./Admin"));
 export const ModerationLog = lazy(() => import("./ModerationLog"));
 export const UserIndex = lazy(() => import("./UserIndex"));

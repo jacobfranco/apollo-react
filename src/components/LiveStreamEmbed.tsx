@@ -17,8 +17,7 @@ const LiveStreamEmbed: React.FC<LiveStreamEmbedProps> = ({ broadcaster }) => {
     switch (broadcaster.broadcasterPlatformId) {
       case 1: {
         // Twitch
-        const parent =
-          process.env.REACT_APP_TWITCH_PARENT || window.location.hostname;
+        const parent = window.location.hostname;
         return `https://player.twitch.tv/?channel=${externalId}&parent=${parent}`;
       }
       case 8: {
