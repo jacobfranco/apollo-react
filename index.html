@@ -9,11 +9,32 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta http-equiv="content-security-policy" content="<%- csp %>" />
-    <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="./src/assets/images/favicon.png"
+    />
     <link href="/manifest.webmanifest" rel="manifest" />
     <!--server-generated-meta-->
     <script type="module" src="./src/main.tsx"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8815488788851936"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=AW-16828222863"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "AW-16828222863");
+    </script>
   </head>
   <body class="theme-mode-light no-reduce-motion">
     <div id="apollo" class="h-full">

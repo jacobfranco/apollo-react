@@ -297,6 +297,8 @@ const EditProfile: React.FC = () => {
           />
         </FormGroup>
 
+        {/* TODO: Put back in later
+
         <FormGroup
           labelText={
             <FormattedMessage
@@ -328,6 +330,8 @@ const EditProfile: React.FC = () => {
             placeholder={intl.formatMessage(messages.websitePlaceholder)}
           />
         </FormGroup>
+
+        */}
 
         <Streamfield
           label={

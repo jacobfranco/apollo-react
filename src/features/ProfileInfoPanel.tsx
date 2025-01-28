@@ -289,13 +289,15 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({
         {ownAccount ? null : <ProfileFamiliarFollowers account={account} />}
       </Stack>
 
-      {account.fields.length > 0 && (
-        <Stack space={2} className="mt-4 xl:hidden">
-          {account.fields.map((field, i) => (
-            <ProfileField field={field} key={i} />
-          ))}
-        </Stack>
-      )}
+      {account &&
+        account.fields.length > 0 &&
+        (account.fields[0].name !== "" || account.fields[0].value !== "") && (
+          <Stack space={2} className="mt-4 xl:hidden">
+            {account.fields.map((field, i) => (
+              <ProfileField field={field} key={i} />
+            ))}
+          </Stack>
+        )}
     </div>
   );
 };

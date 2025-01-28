@@ -1682,6 +1682,12 @@ export const teamData: { [key: string]: TeamProps } = {
     logoType: "color",
     league: "NACL",
   },
+  "Fortune Makers": {
+    light: "#AC182F",
+    dark: "#AC182F",
+    logoType: "color",
+    league: "Liga Nexo",
+  },
 };
 
 export const useTeamData = () => {

@@ -23,7 +23,7 @@ const Badge: React.FC<IBadge> = ({ title, slug }) => {
         {
           "bg-sucess-500 text-white": slug === "badge:donor",
           "bg-danger-700 text-white": slug === "badge:dev",
-          "bg-primary-500 text-black": slug === "admin",
+          "bg-secondary-800 text-white": slug === "admin",
           "bg-gray-700 dark:bg-gray-700 text-white": slug === "bot",
           "bg-info-500 text-white": slug === "moderator",
           "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100":

@@ -11,8 +11,6 @@ ENV IMGIX_DOMAIN=apollo-414916088.imgix.net
 RUN yarn build
 
 FROM nginx:stable-alpine
-RUN apk add --no-cache apache2-utils
-RUN htpasswd -cb /etc/nginx/.htpasswd admin 'Apollo420!'
 EXPOSE 80
 ENV PORT=80
 ENV FALLBACK_PORT=4444

@@ -72,9 +72,6 @@ const ApolloHead: React.FC<IApolloHead> = ({ children }) => {
     return () => observer.disconnect();
   }, []);
 
-  // Add this console.log right before the return
-  console.log("ApolloHead rendering with bodyClass:", bodyClass);
-
   return (
     <>
       <Helmet>

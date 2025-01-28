@@ -13,17 +13,13 @@ export const OAUTH_TOKEN_REVOKE_FAIL = "OAUTH_TOKEN_REVOKE_FAIL";
 export const obtainOAuthToken =
   (params: Record<string, unknown>, baseURL?: string) =>
   (dispatch: AppDispatch) => {
-    console.log("OAuth Request Params:", params); // Add this
-    console.log("OAuth Base URL:", baseURL); // Add this
     dispatch({ type: OAUTH_TOKEN_CREATE_REQUEST, params });
     return baseClient(null, baseURL)
       .post("/oauth/token", params)
       .then((response) => {
-        console.log("OAuth Success:", response); // Add this
         return response.json();
       })
       .catch((error) => {
-        console.error("OAuth Error Details:", error); // Add this
         dispatch({
           type: OAUTH_TOKEN_CREATE_FAIL,
           params,
