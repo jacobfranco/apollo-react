@@ -112,7 +112,7 @@ const StatusContent: React.FC<IStatusContent> = ({
     return (
       <div
         className={clsx({
-          "bg-gray-100 dark:bg-primary-800 rounded-md p-4": hasPoll,
+          "bg-primary-200 dark:bg-secondary-900 rounded-md p-4": hasPoll,
         })}
       >
         {output}

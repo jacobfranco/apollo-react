@@ -12,6 +12,7 @@ import { useAppSelector } from "src/hooks";
 import { selectMatchById, selectSeriesById } from "src/selectors";
 import { Participant, Team } from "src/schemas";
 import { useTheme } from "src/hooks/useTheme";
+import { useIsMobile } from "src/hooks/useIsMobile";
 import {
   formatScoreboardTitle,
   formatGold,
@@ -26,6 +27,7 @@ interface LolLiveScoreboardProps {
 
 const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
   const series = useAppSelector((state) => selectSeriesById(state, seriesId));
+  const isMobile = useIsMobile();
 
   if (!series) {
     return <div>Loading...</div>;
@@ -184,7 +186,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
       style={{ textDecoration: "none" }}
     >
       <div className="absolute inset-0 rounded-[5px] bg-gradient-to-b from-white to-gray-400 dark:from-gray-800 dark:to-gray-900 opacity-10 border border-solid border-gray-500" />
-
       <div
         className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-transparent rounded-b px-6 py-2 pt-3 flex items-center justify-center"
         style={{
@@ -197,7 +198,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
           {formattedTitle}
         </div>
       </div>
-
       <div className="absolute inset-x-0 top-[12%] bottom-[12%] flex flex-row items-center justify-between px-4">
         <div className="flex flex-col items-center w-1/3">
           <div className="w-[60px] h-[60px] flex items-center justify-center mb-2">
@@ -221,14 +221,16 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
               style={{ width: "100%", textAlign: "center" }}
             />
           </div>
-          {/* Use series scores instead of participant scores */}
           {renderScoreRectangles(seriesTeam1Score, team1Color)}
         </div>
-
         <div className="flex flex-col items-center w-1/3 justify-center space-y-2">
-          <ScoreboardClock liveMatch={liveMatch} coverageFact={coverageFact} />
-          {/* Always display the stats containers with placeholder values if stats are unavailable */}
-          <div className="flex flex-col space-y-2">
+          <div className={isMobile ? "pt-1" : ""}>
+            <ScoreboardClock
+              liveMatch={liveMatch}
+              coverageFact={coverageFact}
+            />
+          </div>
+          <div className={`flex flex-col space-y-2 ${isMobile ? "pb-2" : ""}`}>
             <div className="flex items-center justify-between">
               <div className="flex-1 text-right text-lg font-bold">
                 {team1Kills}
@@ -243,7 +245,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
                 {team2Kills}
               </div>
             </div>
-
             <div className="flex items-center justify-between">
               <div className="flex-1 text-right text-lg font-bold">
                 {team1Gold}
@@ -255,7 +256,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
                 {team2Gold}
               </div>
             </div>
-
             <div className="flex items-center justify-between">
               <div className="flex-1 text-right text-lg font-bold">
                 {team1Towers}
@@ -269,7 +269,6 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
             </div>
           </div>
         </div>
-
         <div className="flex flex-col items-center w-1/3">
           <div className="w-[60px] h-[60px] flex items-center justify-center mb-2">
             <img
@@ -292,11 +291,9 @@ const LolLiveScoreboard: React.FC<LolLiveScoreboardProps> = ({ seriesId }) => {
               style={{ width: "100%", textAlign: "center" }}
             />
           </div>
-          {/* Use series scores instead of participant scores */}
           {renderScoreRectangles(seriesTeam2Score, team2Color)}
         </div>
       </div>
-
       <div className="absolute left-[5%] right-[5%] bottom-[5%] h-0.5 opacity-10 border-t border-solid border-gray-900 dark:border-gray-100" />
     </div>
   );

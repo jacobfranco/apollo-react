@@ -90,6 +90,20 @@ const tryToPositionRange = (leadOffset: number, range: Range): boolean => {
   return true;
 };
 
+const getPosition = (anchorRect: DOMRect, editor: LexicalEditor) => {
+  const editorRoot = editor.getRootElement();
+  if (!editorRoot) return { top: 0, left: 0 };
+
+  const editorRect = editorRoot.getBoundingClientRect();
+  const lineHeight = parseInt(getComputedStyle(editorRoot).lineHeight) || 20;
+
+  // Position the menu below the current line
+  return {
+    top: anchorRect.top + lineHeight + window.scrollY,
+    left: anchorRect.left + window.scrollX,
+  };
+};
+
 const isSelectionOnEntityBoundary = (
   editor: LexicalEditor,
   offset: number
@@ -217,25 +231,28 @@ const useMenuAnchorRef = (
 ): MutableRefObject<HTMLElement> => {
   const [editor] = useLexicalComposerContext();
   const anchorElementRef = useRef<HTMLElement>(document.createElement("div"));
+
   const positionMenu = useCallback(() => {
     const rootElement = editor.getRootElement();
     const containerDiv = anchorElementRef.current;
 
     if (rootElement !== null && resolution !== null) {
-      const { left, top, width, height } = resolution.getRect();
-      containerDiv.style.top = `${top + window.scrollY}px`;
-      containerDiv.style.left = `${left + window.scrollX}px`;
-      containerDiv.style.height = `${height}px`;
-      containerDiv.style.width = `${width}px`;
+      const rect = resolution.getRect();
+      const { top, left } = getPosition(rect, editor);
+
+      containerDiv.style.top = `${top}px`;
+      containerDiv.style.left = `${left}px`;
+      containerDiv.style.position = "absolute";
+      containerDiv.style.zIndex = "1001";
 
       if (!containerDiv.isConnected) {
         containerDiv.setAttribute("aria-label", "Typeahead menu");
         containerDiv.setAttribute("id", "typeahead-menu");
         containerDiv.setAttribute("role", "listbox");
         containerDiv.style.display = "block";
-        containerDiv.style.position = "absolute";
         document.body.append(containerDiv);
       }
+
       anchorElementRef.current = containerDiv;
       rootElement.setAttribute("aria-controls", "typeahead-menu");
     }

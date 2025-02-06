@@ -31,7 +31,7 @@ export const seriesSchema = z.object({
   bracketPosition: bracketPositionSchema.optional().nullable(), // Adjusted to be optional and nullable
   participants: z.array(z.lazy(() => participantSchema)),
   tournament: tournamentSchema.optional(),
-  substage: substageSchema.optional(),
+  substage: substageSchema.optional().nullable(),
   game: gameSchema,
   matchIds: z.array(z.number()).optional(), // Adjusted to be optional
   casters: z.array(casterSchema).optional(), // Adjusted to be optional

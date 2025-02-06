@@ -32,7 +32,7 @@ const PollPercentageBar: React.FC<{ percent: number; leading: boolean }> = ({
     >
       {({ width }) => (
         <span
-          className="absolute inset-0 inline-block h-full rounded-l-md bg-primary-100 dark:bg-primary-500"
+          className="absolute inset-0 inline-block h-full rounded-l-md bg-primary-500 dark:bg-secondary-500"
           style={{ width: `${width}%` }}
         />
       )}
@@ -65,7 +65,7 @@ const PollOptionText: React.FC<IPollOptionText> = ({
   return (
     <label
       className={clsx(
-        "relative flex cursor-pointer rounded-3xl border border-solid bg-white p-2 hover:bg-primary-50 dark:bg-primary-900 dark:hover:bg-primary-800/50",
+        "relative flex cursor-pointer rounded-lg border border-solid bg-white p-2 hover:bg-primary-50 dark:bg-primary-900 dark:hover:bg-primary-800/50",
         {
           "border-primary-600 ring-1 ring-primary-600 bg-primary-50 dark:bg-primary-800/50 dark:border-primary-300 dark:ring-primary-300":
             active,
@@ -84,7 +84,7 @@ const PollOptionText: React.FC<IPollOptionText> = ({
 
       <div className="grid w-full items-center">
         <div className="col-start-1 row-start-1 ml-4 mr-6 justify-self-center">
-          <div className="text-primary-600 dark:text-white">
+          <div className="text-black dark:text-white">
             <Text theme="inherit" weight="medium" align="center">
               {option.title}
             </Text>
@@ -156,11 +156,11 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
           <HStack
             justifyContent="between"
             alignItems="center"
-            className="relative w-full overflow-hidden rounded-md bg-white p-2 dark:bg-primary-800"
+            className="relative w-full overflow-hidden rounded-md bg-primary-200 p-2 dark:bg-secondary-800"
           >
             <PollPercentageBar percent={percent} leading={leading} />
 
-            <div className="text-primary-600 dark:text-white">
+            <div className="text-black dark:text-white">
               <Text theme="inherit" weight="medium" className="relative">
                 {option.title}
               </Text>
@@ -171,13 +171,13 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
                 <Icon
                   src={circleCheckIcon}
                   alt={intl.formatMessage(messages.voted)}
-                  className="size-4 text-primary-600 dark:fill-white dark:text-primary-800"
+                  className="size-4 text-black dark:fill-white dark:text-primary-800"
                 />
               ) : (
                 <div className="flex size-4 items-center justify-center transition duration-200" />
               )}
 
-              <div className="text-primary-600 dark:text-white">
+              <div className="text-black dark:text-white">
                 <Text weight="medium" theme="inherit">
                   {Math.round(percent)}%
                 </Text>{" "}

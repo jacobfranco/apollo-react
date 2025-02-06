@@ -17,6 +17,7 @@ import { normalizeUsername } from "src/utils/input";
 import api, { baseClient } from "src/api";
 import { importFetchedAccount } from "src/actions/importer";
 import { HTTPError } from "src/api/HTTPError";
+import { trackSignup } from "src/utils/tracking";
 
 export const SWITCH_ACCOUNT = "SWITCH_ACCOUNT";
 
@@ -57,6 +58,7 @@ export const register =
       .then(() => dispatch(createAccount(params)))
       .then(({ token }: { token: Record<string, string | number> }) => {
         dispatch(startOnboarding());
+        trackSignup();
         return dispatch(authLoggedIn(token));
       });
   };

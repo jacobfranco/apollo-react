@@ -104,41 +104,31 @@ export default defineConfig(({ mode }) => {
 function buildCSP(env: string | undefined): string {
   const csp = [
     "default-src 'none'",
-    // Updated script-src to include all needed Google domains
-    "script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline' https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.adtrafficquality.google https://ep2.adtrafficquality.google",
+    // Added facebook.net to script-src
+    "script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline' https://*.facebook.net https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.adtrafficquality.google https://ep2.adtrafficquality.google",
     "style-src 'self' 'unsafe-inline'",
-    // Updated frame-src to include doubleclick
-    "frame-src 'self' https: https://*.doubleclick.net https://*.google.com",
+    "frame-src 'self' https: https://*.doubleclick.net https://*.google.com https://*.facebook.com",
     "font-src 'self'",
     "base-uri 'self'",
     "manifest-src 'self'",
-    // Added object-src restriction
     "object-src 'none'",
-    // Added worker-src for service workers
     "worker-src 'self' blob:",
-    // Added form-action
     "form-action 'self'",
-    // Added frame-ancestors
     "frame-ancestors 'none'",
-    // Added child-src
-    "child-src 'self' blob: https://*.google.com https://*.doubleclick.net",
+    "child-src 'self' blob: https://*.google.com https://*.doubleclick.net https://*.facebook.com",
   ];
 
   if (env === "development") {
     csp.push(
-      // Updated connect-src to include Google services
-      `connect-src 'self' blob: https: wss: ws: ${BACKEND_URL} ${STREAMING_URL} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
-      // Updated img-src to include Google services
-      "img-src 'self' data: blob: https: http://* https://*.google-analytics.com https://*.googletagmanager.com https://*.doubleclick.net",
-      "media-src 'self' https: http://*"
+      `connect-src 'self' blob: https: wss: ws: ${BACKEND_URL} ${STREAMING_URL} https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
+      "img-src 'self' data: blob: https: http://* https://*.facebook.com https://*.google-analytics.com https://*.googletagmanager.com https://*.doubleclick.net",
+      "media-src 'self' blob: https: http://*"
     );
   } else {
     csp.push(
-      // Updated connect-src for production
-      `connect-src 'self' blob: https: wss: ${BACKEND_URL} ${STREAMING_URL} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
-      // Updated img-src for production
-      "img-src 'self' data: blob: https: http://* *.imgix.net https://*.google-analytics.com https://*.googletagmanager.com https://*.doubleclick.net",
-      "media-src 'self' https:"
+      `connect-src 'self' blob: https: wss: ${BACKEND_URL} ${STREAMING_URL} https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
+      "img-src 'self' data: blob: https: http://* *.imgix.net https://*.facebook.com https://*.google-analytics.com https://*.googletagmanager.com https://*.doubleclick.net",
+      "media-src 'self' blob: https:"
     );
   }
 
